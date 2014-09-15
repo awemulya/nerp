@@ -1,7 +1,6 @@
 django
 gunicorn
 psycopg2
-django-debug-toolbar
 django-mptt
 linaro-django-pagination
 django-filter
@@ -11,4 +10,4 @@ Pillow
 django-haystack
 pyelasticsearch
 django-froala-editor
-pyinotify
+
