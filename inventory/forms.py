@@ -7,12 +7,13 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class ItemForm(KOModelForm):
-    #category = TreeNodeChoiceField(queryset=Category.objects.all(), required=False)
+    # category = TreeNodeChoiceField(queryset=Category.objects.all(), required=False)
     name = forms.CharField(label=_('Name'))
     description = forms.Field(label=_('Specification'), widget=forms.Textarea())
     unit = forms.CharField(label=_('Unit'))
-    property_classification_reference_number = forms.CharField(label=_('Inventory Classification Reference No.'))
-    account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'))
+    property_classification_reference_number = forms.CharField(label=_('Inventory Classification Reference No.'),
+                                                               required=False)
+    account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'), required=False)
     opening_balance = forms.Field(widget=forms.TextInput(), initial=0, label=_('Opening Balance'))
 
     def __init__(self, *args, **kwargs):
