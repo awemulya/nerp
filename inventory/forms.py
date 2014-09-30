@@ -28,8 +28,11 @@ class ItemForm(KOModelForm):
             self.fields['property_classification_reference_number'].widget = forms.HiddenInput()
         if self.instance.id:
             self.fields['opening_balance'].widget = forms.HiddenInput()
+            self.fields['account_no'].widget = forms.HiddenInput()
 
     def clean_account_no(self):
+        if self.cleaned_data['account_no'] == '':
+            return None
         try:
             existing = InventoryAccount.objects.get(account_no=self.cleaned_data['account_no'])
             if self.instance.id is not existing.id:
