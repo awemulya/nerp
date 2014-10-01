@@ -31,7 +31,7 @@
         <input type="hidden" name="table_model" data-bind="value: ko.toJSON($data.demand_rows, null, 2)">
 
 
-        {% trans 'Entry Report' %} {% trans 'No.' %}: <input type="number" name="entry_report_no" min="0"
+        {% trans 'Entry Report' %} {% trans 'No.' %}: <input type="text" name="entry_report_no" min="0"
                                                              id="id_entry_report_no"
                                                              data-bind="value: entry_report_no, localize: 1">
         {{ form.entry_report.errors }}
