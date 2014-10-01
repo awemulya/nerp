@@ -1,3 +1,5 @@
+@import url("print.foundation.css") print;
+
 .header, footer, .left-sidebar, .breadcrumbs, .breadcrumb, a.button, input[type="submit"], #alert_placeholder {
     display: none !important;
 }
