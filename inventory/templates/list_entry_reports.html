@@ -19,9 +19,9 @@
 
     <table class="table-bordered">
         <thead>
-        <th>{% anchor entry_report_no 'Entry Report No.' %}</th>
+        <th>{% anchor entry_report_no _('Entry Report No.') %}</th>
         <th>{% trans 'Source' %}</th>
-        <th>{% anchor date %}</th>
+        <th>{% anchor date _('Date') %}</th>
         </thead>
         <tbody>
         {% for item in paginated_objects %}

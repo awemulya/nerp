@@ -18,9 +18,9 @@
 
     <table class="table-bordered">
         <thead>
-        <th>{% anchor voucher_no 'Form No.' %}</th>
-        <th>{% anchor office 'Handed Over Office' %}</th>
-        <th>{% anchor date %}</th>
+        <th>{% anchor voucher_no _('Form No.') %}</th>
+        <th>{% anchor office _('Handed Over Office') %}</th>
+        <th>{% anchor date _('Date') %}</th>
         </thead>
         <tbody>
         {% for item in paginated_objects %}

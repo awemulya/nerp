@@ -18,10 +18,10 @@
 
     <table class="table-bordered">
         <thead>
-        <th>{% anchor name %}</th>
-        <th>{% anchor address %}</th>
-        <th>{% anchor phone_no 'Phone No.' %}</th>
-        <th>{% anchor pan_no 'PAN No.' %}</th>
+        <th>{% anchor name _('Name') %}</th>
+        <th>{% anchor address _('Address') %}</th>
+        <th>{% anchor phone_no _('Phone No.') %}</th>
+        <th>{% anchor pan_no _('PAN No.') %}</th>
         </thead>
         <tbody>
         {% for item in paginated_objects %}
