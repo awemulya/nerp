@@ -33,8 +33,11 @@ class InventoryAccount(models.Model):
     name = models.CharField(max_length=100)
     account_no = models.PositiveIntegerField()
     current_balance = models.FloatField(default=0)
-    #current_cr = models.FloatField(null=True, blank=True)
+    # current_cr = models.FloatField(null=True, blank=True)
     opening_balance = models.FloatField(default=0)
+
+    def __str__(self):
+        return str(self.account_no) + ' [' + self.name + ']'
 
     def get_absolute_url(self):
         return '/inventory_account/' + str(self.id)
@@ -49,18 +52,16 @@ class InventoryAccount(models.Model):
         else:
             return 1
 
-
     def get_category(self):
         try:
             item = self.item
         except:
             return None
         try:
-            category = self.item.category
+            category = item.category
         except:
             return None
         return category
-
 
     def add_category(self, category):
         category_instance, created = Category.objects.get_or_create(name=category)
@@ -71,20 +72,20 @@ class InventoryAccount(models.Model):
 
     categories = property(get_all_categories)
 
-    #def get_cr_amount(self, day):
-    #    transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
-    #        '-journal_entry__id', '-journal_entry__date')[:1]
-    #    if len(transactions) > 0:
-    #        return transactions[0].current_cr
-    #    return 0
+    # def get_cr_amount(self, day):
+    # transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
+    # '-journal_entry__id', '-journal_entry__date')[:1]
+    # if len(transactions) > 0:
+    #         return transactions[0].current_cr
+    #     return 0
     #
-    #def get_dr_amount(self, day):
-    #    #journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
-    #    transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
-    #        '-journal_entry__id', '-journal_entry__date')[:1]
-    #    if len(transactions) > 0:
-    #        return transactions[0].current_dr
-    #    return 0
+    # def get_dr_amount(self, day):
+    #     #journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
+    #     transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
+    #         '-journal_entry__id', '-journal_entry__date')[:1]
+    #     if len(transactions) > 0:
+    #         return transactions[0].current_dr
+    #     return 0
 
 
 class Item(models.Model):
@@ -92,7 +93,7 @@ class Item(models.Model):
     name = models.CharField(max_length=254)
     description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(Category, null=True, blank=True)
-    account = models.OneToOneField(InventoryAccount, related_name='item')
+    account = models.OneToOneField(InventoryAccount, related_name='item', null=True)
     type_choices = [('consumable', _('Consumable')), ('non-consumable', _('Non-Consumable'))]
     type = models.CharField(choices=type_choices, max_length=15, default='consumable')
     unit = models.CharField(max_length=50, default=_('pieces'))
@@ -102,9 +103,13 @@ class Item(models.Model):
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')
         opening_balance = kwargs.pop('opening_balance')
-        if self.pk is None:
-            account = InventoryAccount(code=self.code, name=self.name, account_no=account_no,
-                                       opening_balance=opening_balance, current_balance=opening_balance)
+        if account_no:
+            if self.account:
+                account = self.account
+                account.account_no = account_no
+            else:
+                account = InventoryAccount(code=self.code, name=self.name, account_no=account_no,
+                                           opening_balance=opening_balance, current_balance=opening_balance)
             account.save()
             self.account = account
         super(Item, self).save(*args, **kwargs)
@@ -122,10 +127,10 @@ class JournalEntry(models.Model):
     content_type = models.ForeignKey(ContentType, related_name='inventory_journal_entries')
     model_id = models.PositiveIntegerField()
     creator = generic.GenericForeignKey('content_type', 'model_id')
-    #country_of_production = models.CharField(max_length=50, blank=True, null=True)
-    #size = models.CharField(max_length=100, blank=True, null=True)
-    #expected_life = models.CharField(max_length=100, blank=True, null=True)
-    #source = models.CharField(max_length=100, blank=True, null=True)
+    # country_of_production = models.CharField(max_length=50, blank=True, null=True)
+    # size = models.CharField(max_length=100, blank=True, null=True)
+    # expected_life = models.CharField(max_length=100, blank=True, null=True)
+    # source = models.CharField(max_length=100, blank=True, null=True)
 
     @staticmethod
     def get_for(source):
@@ -192,10 +197,10 @@ def set_transactions(model, date, *args):
         alter(transaction.account, date, diff)
 
 
-#def set_transactions(submodel, date, *args):
-#    # [transaction.delete() for transaction in submodel.transactions.all()]
-#    # args = [arg for arg in args if arg is not None]
-#    journal_entry, created = JournalEntry.objects.get_or_create(
+# def set_transactions(submodel, date, *args):
+# # [transaction.delete() for transaction in submodel.transactions.all()]
+# # args = [arg for arg in args if arg is not None]
+# journal_entry, created = JournalEntry.objects.get_or_create(
 #        content_type=ContentType.objects.get_for_model(submodel), model_id=submodel.id,
 #        defaults={
 #            'date': date
@@ -267,7 +272,7 @@ def delete_rows(rows, model):
     for row in rows:
         if row.get('id'):
             instance = model.objects.get(id=row.get('id'))
-            #JournalEntry.objects.get(content_type=ContentType.objects.get_for_model(model),
+            # JournalEntry.objects.get(content_type=ContentType.objects.get_for_model(model),
             #                         model_id=instance.id).delete()
             instance.delete()
 
@@ -437,7 +442,7 @@ class InventoryAccountRow(models.Model):
     expense_total_cost_price = models.FloatField(blank=True, null=True)
     remaining_total_cost_price = models.FloatField(blank=True, null=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
-    #inventory_account = models.ForeignKey(InventoryAccount, related_name='rows')
+    # inventory_account = models.ForeignKey(InventoryAccount, related_name='rows')
     journal_entry = models.OneToOneField(JournalEntry, related_name='account_row')
 
 
@@ -465,8 +470,7 @@ def _transaction_delete(sender, instance, **kwargs):
     if transaction.cr_amount:
         transaction.account.current_balance += transaction.cr_amount
 
-    #alter(transaction.account, transaction.journal_entry.date, float(zero_for_none(transaction.dr_amount)) * -1,
-    #      float(zero_for_none(transaction.cr_amount)) * -1)
+    # alter(transaction.account, transaction.journal_entry.date, float(zero_for_none(transaction.dr_amount)) * -1,
+    #       float(zero_for_none(transaction.cr_amount)) * -1)
 
     transaction.account.save()
-

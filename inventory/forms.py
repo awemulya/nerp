@@ -7,11 +7,12 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class ItemForm(KOModelForm):
-    #category = TreeNodeChoiceField(queryset=Category.objects.all(), required=False)
+    # category = TreeNodeChoiceField(queryset=Category.objects.all(), required=False)
     name = forms.CharField(label=_('Name'))
-    description = forms.Field(label=_('Specification'), widget=forms.Textarea())
+    description = forms.Field(label=_('Specification'), widget=forms.Textarea(), required=False)
     unit = forms.CharField(label=_('Unit'))
-    property_classification_reference_number = forms.CharField(label=_('Inventory Classification Reference No.'))
+    property_classification_reference_number = forms.CharField(label=_('Inventory Classification Reference No.'),
+                                                               required=False)
     account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'))
     opening_balance = forms.Field(widget=forms.TextInput(), initial=0, label=_('Opening Balance'))
 
@@ -20,18 +21,26 @@ class ItemForm(KOModelForm):
         super(ItemForm, self).__init__(*args, **kwargs)
         # self.fields['vattable'].label = _('Vattable')
         self.fields['type'].label = _('Type')
-        self.fields['account_no'].initial = InventoryAccount.get_next_account_no()
+        if self.instance.account:
+            self.fields['account_no'].initial = self.instance.account.account_no
+        else:
+            self.fields['account_no'].initial = InventoryAccount.get_next_account_no()
         if not self.user.in_group('Store Keeper'):
             self.fields['account_no'].widget = forms.HiddenInput()
             self.fields['opening_balance'].widget = forms.HiddenInput()
             self.fields['property_classification_reference_number'].widget = forms.HiddenInput()
         if self.instance.id:
             self.fields['opening_balance'].widget = forms.HiddenInput()
+            # self.fields['account_no'].widget = forms.HiddenInput()
 
     def clean_account_no(self):
+        if not self.cleaned_data['account_no'].isdigit():
+            raise forms.ValidationError("The account no. must be a number.")
         try:
             existing = InventoryAccount.objects.get(account_no=self.cleaned_data['account_no'])
-            if self.instance.id is not existing.id:
+            # import ipdb
+            # ipdb.set_trace()
+            if self.instance.account.id is not existing.id:
                 raise forms.ValidationError("The account no. " + str(
                     self.cleaned_data['account_no']) + " is already in use.")
             return self.cleaned_data['account_no']
@@ -49,8 +58,8 @@ class CategoryForm(KOModelForm):
         exclude = ()
 
         # def clean(self):
-        #     """ This is the form's clean method, not a particular field's clean method """
-        #     cleaned_data = self.cleaned_data
+        # """ This is the form's clean method, not a particular field's clean method """
+        # cleaned_data = self.cleaned_data
         #
         #     name = cleaned_data.get('name')
         #

@@ -1,3 +1,5 @@
+@import url("print.foundation.css") print;
+
 .header, footer, .left-sidebar, .breadcrumbs, .breadcrumb, a.button, input[type="submit"], #alert_placeholder {
     display: none !important;
 }
@@ -27,7 +29,7 @@ a[href]:after {
     content: none;
 }
 
-a{
+a {
     text-decoration: none;
 }
 
@@ -80,4 +82,8 @@ input::-webkit-inner-spin-button {
 
 select {
     background-image: none;
+}
+
+[class*="column"] + [class*="column"]:last-child {
+    float: right;
 }

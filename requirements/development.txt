@@ -1,0 +1,14 @@
+django
+psycopg2
+django-debug-toolbar
+django-mptt
+linaro-django-pagination
+django-filter
+webstack-django-sorting
+djangorestframework
+Pillow
+django-haystack
+pyelasticsearch
+django-froala-editor
+pyinotify
+git-pylint-commit-hook
