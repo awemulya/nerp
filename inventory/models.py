@@ -73,9 +73,9 @@ class InventoryAccount(models.Model):
     categories = property(get_all_categories)
 
     # def get_cr_amount(self, day):
-    #     transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
-    #         '-journal_entry__id', '-journal_entry__date')[:1]
-    #     if len(transactions) > 0:
+    # transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
+    # '-journal_entry__id', '-journal_entry__date')[:1]
+    # if len(transactions) > 0:
     #         return transactions[0].current_cr
     #     return 0
     #
@@ -93,7 +93,7 @@ class Item(models.Model):
     name = models.CharField(max_length=254)
     description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(Category, null=True, blank=True)
-    account = models.OneToOneField(InventoryAccount, related_name='item')
+    account = models.OneToOneField(InventoryAccount, related_name='item', null=True)
     type_choices = [('consumable', _('Consumable')), ('non-consumable', _('Non-Consumable'))]
     type = models.CharField(choices=type_choices, max_length=15, default='consumable')
     unit = models.CharField(max_length=50, default=_('pieces'))
@@ -103,9 +103,13 @@ class Item(models.Model):
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')
         opening_balance = kwargs.pop('opening_balance')
-        if self.pk is None:
-            account = InventoryAccount(code=self.code, name=self.name, account_no=account_no,
-                                       opening_balance=opening_balance, current_balance=opening_balance)
+        if account_no:
+            if self.account:
+                account = self.account
+                account.account_no = account_no
+            else:
+                account = InventoryAccount(code=self.code, name=self.name, account_no=account_no,
+                                           opening_balance=opening_balance, current_balance=opening_balance)
             account.save()
             self.account = account
         super(Item, self).save(*args, **kwargs)
@@ -194,9 +198,9 @@ def set_transactions(model, date, *args):
 
 
 # def set_transactions(submodel, date, *args):
-#    # [transaction.delete() for transaction in submodel.transactions.all()]
-#    # args = [arg for arg in args if arg is not None]
-#    journal_entry, created = JournalEntry.objects.get_or_create(
+# # [transaction.delete() for transaction in submodel.transactions.all()]
+# # args = [arg for arg in args if arg is not None]
+# journal_entry, created = JournalEntry.objects.get_or_create(
 #        content_type=ContentType.objects.get_for_model(submodel), model_id=submodel.id,
 #        defaults={
 #            'date': date

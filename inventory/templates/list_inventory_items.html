@@ -54,9 +54,11 @@
                     <a href="{% url 'update_inventory_item' item.id %}">{{ item.name }}</a>
                 </td>
                 <td>
+                    {% if item.account %}
                     <a href="{% url 'view_inventory_account' item.account.id %}">
                         {{ item.account.account_no }}
                     </a>
+                    {% endif %}
                 </td>
                 <td>{{ item.description }}</td>
             </tr>
