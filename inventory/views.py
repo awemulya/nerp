@@ -1,7 +1,7 @@
 import json
-from datetime import date
-
-from django.utils.translation import ugettext as _
+# from datetime import date
+#
+# from django.utils.translation import ugettext as _
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -81,7 +81,7 @@ def delete_demand(request, id):
 @login_required
 def items_as_json(request):
     items = Item.objects.all()
-    items_data = ItemSerializer(items).data
+    items_data = ItemSerializer(items, many=True).data
     return JsonResponse(items_data, safe=False)
 
 
