@@ -29,7 +29,7 @@ a[href]:after {
     content: none;
 }
 
-a{
+a {
     text-decoration: none;
 }
 
@@ -82,4 +82,8 @@ input::-webkit-inner-spin-button {
 
 select {
     background-image: none;
+}
+
+[class*="column"] + [class*="column"]:last-child {
+    float: right;
 }
