@@ -5,9 +5,9 @@ from account.serializers import AccountSerializer
 from app.libr import form_view
 from core.forms import PartyForm, EmployeeForm
 from core.models import Party, Employee, BudgetHead, Donor, Activity, Account, TaxScheme, Language
-from core.serializers import PartySerializer, EmployeeSerializer, BudgetSerializer, ActivitySerializer, DonorSerializer, TaxSchemeSerializer, LanguageSerializer
+from core.serializers import PartySerializer, EmployeeSerializer, BudgetSerializer, ActivitySerializer, DonorSerializer, \
+    TaxSchemeSerializer, LanguageSerializer
 from users.models import group_required
-import json
 
 
 @group_required('Store Keeper', 'Chief', 'Accountant')
@@ -55,7 +55,7 @@ def delete_party(request, id):
 @group_required('Store Keeper', 'Chief', 'Accountant')
 def parties_as_json(request):
     objects = Party.objects.all()
-    objects_data = PartySerializer(objects).data
+    objects_data = PartySerializer(objects, many=True).data
     return JsonResponse(objects_data, safe=False)
 
 
