@@ -21,21 +21,21 @@
 
     <table class="table-bordered">
         <thead>
-        <th>{% anchor account_no 'Account No.' %}</th>
-        <th>{% anchor name %}</th>
-        <th>{% anchor item__unit 'Unit' %}</th>
+        <th>{% anchor account_no _('Account No.') %}</th>
+        <th>{% anchor name _('Name') %}</th>
+        <th>{% anchor item__unit _('Unit') %}</th>
         </thead>
         <tbody>
         {% for obj in paginated_objects %}
             <tr>
                 <td>
                     <a href="{% url 'view_inventory_account' obj.id %}">
-                    {{ obj.account_no|localize }}
+                        {{ obj.account_no|localize }}
                     </a>
                 </td>
                 <td>
                     <a href="{% url 'view_inventory_account' obj.id %}">
-                    {{ obj.item.name }}
+                        {{ obj.item.name }}
                     </a>
                 </td>
                 <td>{{ obj.item.unit }}</td>
