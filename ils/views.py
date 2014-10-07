@@ -52,17 +52,17 @@ def books_as_json(request):
 def acquisition(request):
     record_data = {}
     record = None
-
     if request.GET.get('isbn'):
         isbn = request.GET.get('isbn')
         if isbnpy.isValid(isbn):
+            if isbnpy.isI10(isbn):
+                isbn = isbnpy.convert(isbn)
             url = 'http://openlibrary.org/api/volumes/brief/json/isbn:' + isbn
             response = urllib2.urlopen(url)
             # response = urllib2.urlopen('http://127.0.0.1/json/3.json')
             data = json.load(response)
-            if isbnpy.isI10(isbn):
-                isbn = isbnpy.convert(isbn)
             if data == {}:
+                print 123
                 record_data['isbn13'] = isbn
                 record_form = RecordForm(instance=record)
                 return render(
@@ -182,9 +182,7 @@ def acquisition(request):
                     except Language.DoesNotExist:
                         try:
                             book_lang = Language.objects.get(
-                                code=lang_key[
-                                    :-
-                                    1])
+                                code=lang_key[:-1])
                         except Language.DoesNotExist:
                             raise Exception(
                                 "Please add a language with code " +
