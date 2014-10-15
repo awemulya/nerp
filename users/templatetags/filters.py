@@ -140,8 +140,6 @@ class GroupCheckNode(template.Node):
 
 @register.filter
 def setting(path):
-    import ipdb
-    ipdb.set_trace()
     to_import = '.'.join(path.split('.')[:-2])
     imported = importlib.import_module(to_import)
     group_name = path.split('.')[-2:-1][0]
