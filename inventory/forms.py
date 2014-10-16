@@ -61,7 +61,7 @@ class CategoryForm(KOModelForm):
         # """ This is the form's clean method, not a particular field's clean method """
         # cleaned_data = self.cleaned_data
         #
-        #     name = cleaned_data.get('name')
+        # name = cleaned_data.get('name')
         #
         #     if Category.objects.filter(name=name, company=self.company).count() > 0:
         #         raise forms.ValidationError("Category name already exists.")
