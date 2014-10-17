@@ -1,8 +1,7 @@
 from django.conf.urls import patterns, include, url
-from app.admin import admin_site
+# from app.admin import admin_site
 from django.conf import settings
 from django.contrib import admin
-# from app.admin import admin_site
 from users import views as users_views
 
 # admin.site = admin_site
@@ -24,16 +23,21 @@ urlpatterns = patterns('',
 
                        url(r'^froala_editor/', include('froala_editor.urls')),
 
+                       (r'^settings/', include('dbsettings.urls')),
+
                        (r'', include('core.urls')),
 
 
-)
+                       )
 
 if settings.DEBUG:
     urlpatterns += patterns('',
-                            url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
-                                {'document_root': settings.MEDIA_ROOT, }))
+                            url(r'^media/(?P<path>.*)$',
+                                'django.views.static.serve',
+                                {'document_root': settings.MEDIA_ROOT,
+                                 }))
     urlpatterns += patterns('',
-                            url(r'^static/(?P<path>.*)$', 'django.views.static.serve',
-                                {'document_root': settings.STATIC_ROOT, }))
-
+                            url(r'^static/(?P<path>.*)$',
+                                'django.views.static.serve',
+                                {'document_root': settings.STATIC_ROOT,
+                                 }))
