@@ -1,5 +1,6 @@
 from django.contrib import admin
-from models import Book, Record, Author, Subject, Transaction, BookFile, LibrarySetting, Publisher
+from .models import Book, Record, Author, Subject, Transaction, BookFile, \
+    Publisher
 
 admin.site.register(Book)
 admin.site.register(BookFile)
@@ -8,11 +9,3 @@ admin.site.register(Subject)
 admin.site.register(Author)
 admin.site.register(Transaction)
 admin.site.register(Publisher)
-# admin.site.register(LibrarySetting)
-
-class SettingsAdmin(admin.ModelAdmin):
-    def has_add_permission(self, request):
-        return False
-
-
-admin.site.register(LibrarySetting, SettingsAdmin)

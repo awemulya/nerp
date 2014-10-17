@@ -1,17 +1,29 @@
-from django.core.urlresolvers import reverse_lazy, reverse
+import dbsettings
+import datetime
+
+from django.core.urlresolvers import reverse
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
+import os
+
 from core.models import Language
 from app.libr import unique_slugify
 from users.models import User
-import os
-import datetime
+
+BOOK_TYPES = (
+    ('Reference', 'Reference'),
+    ('Circulative', 'Circulative')
+)
 
 
 class Subject(MPTTModel):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=254, null=True, blank=True)
-    parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
+    parent = TreeForeignKey(
+        'self',
+        blank=True,
+        null=True,
+        related_name='children')
     slug = models.SlugField(max_length=255, blank=True)
 
     def __unicode__(self):
@@ -86,7 +98,10 @@ class Record(models.Model):
         ('Hardcover', 'Hardcover'),
         ('eBook', 'eBook')
     )
-    format = models.CharField(max_length=10, default='Paperback', choices=formats)
+    format = models.CharField(
+        max_length=10,
+        default='Paperback',
+        choices=formats)
     pagination = models.CharField(max_length=254, null=True, blank=True)
     isbn13 = models.CharField(max_length=254, null=True, blank=True)
     authors = models.ManyToManyField(Author, blank=True)
@@ -103,10 +118,20 @@ class Record(models.Model):
     type = models.CharField(choices=types, max_length=11)
     book = models.ForeignKey(Book)
     # openlibrary_url = models.URLField(blank=True, null=True)
-    # thumbnail = models.ImageField(blank=True, null=True, upload_to='ils/thumbnails/')
-    small_cover = models.ImageField(blank=True, null=True, upload_to='ils/covers/small/')
-    medium_cover = models.ImageField(blank=True, null=True, upload_to='ils/covers/medium/')
-    large_cover = models.ImageField(blank=True, null=True, upload_to='ils/covers/large/')
+    # thumbnail = models.ImageField(
+    # blank=True, null=True, upload_to='ils/thumbnails/')
+    small_cover = models.ImageField(
+        blank=True,
+        null=True,
+        upload_to='ils/covers/small/')
+    medium_cover = models.ImageField(
+        blank=True,
+        null=True,
+        upload_to='ils/covers/medium/')
+    large_cover = models.ImageField(
+        blank=True,
+        null=True,
+        upload_to='ils/covers/large/')
     publisher = models.ForeignKey(Publisher, blank=True, null=True)
     date_added = models.DateField()
     goodreads_id = models.PositiveIntegerField(null=True, blank=True)
@@ -195,10 +220,10 @@ class Transaction(models.Model):
     def new():
         transaction = Transaction()
         transaction.borrow_date = datetime.datetime.today()
-        from ils.models import LibrarySetting
+        from ils.models import library_setting as setting
 
-        setting = LibrarySetting.get()
-        transaction.due_date = transaction.borrow_date + datetime.timedelta(days=setting.borrow_days)
+        transaction.due_date = transaction.borrow_date + \
+            datetime.timedelta(days=setting.borrow_days)
         transaction.fine_per_day = setting.fine_per_day
         return transaction
 
@@ -206,21 +231,15 @@ class Transaction(models.Model):
         return unicode(self.record) + ' | ' + unicode(self.user)
 
 
-class LibrarySetting(models.Model):
-    fine_per_day = models.FloatField()
-    borrow_days = models.PositiveIntegerField()
-    types = (
-        ('Reference', 'Reference'),
-        ('Circulative', 'Circulative')
-    )
-    default_type = models.CharField(choices=types, unique=True, max_length=11, default='circulative')
+class LibrarySetting(dbsettings.Group):
+    fine_per_day = dbsettings.FloatValue(default=2)
+    borrow_days = dbsettings.PositiveIntegerValue(default=7)
+    default_type = dbsettings.StringValue(
+        choices=BOOK_TYPES,
+        default='circulative')
 
-    def __unicode__(self):
-        return 'Library Setting ' + str(self.id)
 
-    @staticmethod
-    def get():
-        return LibrarySetting.objects.all()[0]
+library_setting = LibrarySetting('Library Settings')
 
 
 def not_returned(self):
@@ -229,10 +248,12 @@ def not_returned(self):
 
 
 def past_due(self):
-    transactions = Transaction.objects.filter(user=self, return_date=None, due_date__lt=datetime.datetime.today())
+    transactions = Transaction.objects.filter(
+        user=self,
+        return_date=None,
+        due_date__lt=datetime.datetime.today())
     return transactions
 
 
 User.add_to_class('not_returned', not_returned)
 User.add_to_class('past_due', past_due)
-
