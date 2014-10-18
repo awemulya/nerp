@@ -285,3 +285,7 @@ class BSUtil:
     def today(self):
         (year, month, day) = self.ad2bs(datetime.date.today())
         return datetime.date(year, month, day)
+
+    def today_as_str(self):
+        (year, month, day) = self.ad2bs(datetime.date.today())
+        return unicode(year) + '-' + unicode(month) + '-' + unicode(day)
