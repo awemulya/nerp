@@ -14,7 +14,8 @@ from django.utils.translation import ugettext as _
 from app.libr import zero_for_none, none_for_zero, ne2en
 from users.models import User
 from core.models import FiscalYear, Party
-import nepdate
+from nepdate import BSDateField
+
 
 
 class Category(MPTTModel):
@@ -124,7 +125,7 @@ class Item(models.Model):
 
 
 class JournalEntry(models.Model):
-    date = nepdate.BSDateField()
+    date = BSDateField()
     content_type = models.ForeignKey(ContentType, related_name='inventory_journal_entries')
     model_id = models.PositiveIntegerField()
     creator = generic.GenericForeignKey('content_type', 'model_id')
@@ -292,7 +293,7 @@ class Demand(models.Model):
     release_no = models.IntegerField(blank=True, null=True)
     fiscal_year = models.ForeignKey(FiscalYear)
     demandee = models.ForeignKey(User)
-    date = nepdate.BSDateField()
+    date = BSDateField()
     purpose = models.CharField(max_length=254)
 
     def get_voucher_no(self):
@@ -361,7 +362,7 @@ class EntryReportRow(models.Model):
 class Handover(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     addressee = models.CharField(max_length=254)
-    date = nepdate.BSDateField()
+    date = BSDateField()
     office = models.CharField(max_length=254)
     designation = models.CharField(max_length=254)
     handed_to = models.CharField(max_length=254)
@@ -400,7 +401,7 @@ class HandoverRow(models.Model):
 class PurchaseOrder(models.Model):
     party = models.ForeignKey(Party)
     order_no = models.IntegerField(blank=True, null=True)
-    date = nepdate.BSDateField()
+    date = BSDateField()
     due_days = models.IntegerField(default=3)
     fiscal_year = models.ForeignKey(FiscalYear)
     entry_reports = generic.GenericRelation(EntryReport, content_type_field='source_content_type_id',
