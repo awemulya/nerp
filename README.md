@@ -14,6 +14,8 @@ pip install -r requirements/development.txt # install Python packages required f
 cp app/local_settings.sample.py app/local_settings.py # create local settings file from sample file
 vi app/local_settings.py # configure your settings here, database, static & media paths and urls
 ./manage.py migrate # synchronize database and run migrations
+./manage.py loaddata groups # install default groups
+./manage.py loaddata users # install admin user
 ./manage.py collectstatic # collect static files
 ```
 
