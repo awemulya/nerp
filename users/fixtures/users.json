@@ -1,0 +1,1 @@
+[{"fields": {"username": "admin", "groups": [1, 2, 3, 4, 5, 6, 7], "is_active": true, "is_superuser": true, "is_staff": true, "last_login": "2014-12-16T07:55:24.323Z", "full_name": "The Admin", "password": "pbkdf2_sha256$12000$bjKevp5Fkg8Z$CcWs/o71Q6MCgtqZRJlZN6MmZAKnYUy+enukeo2x5XQ=", "email": "admin@admin.com"}, "model": "users.user", "pk": 1}]
