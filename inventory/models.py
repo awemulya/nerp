@@ -11,7 +11,8 @@ from django.db.models import F
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import ugettext as _
 
-from app.libr import zero_for_none, none_for_zero, ne2en
+from app.utils.helpers import zero_for_none, none_for_zero
+from app.utils.translation import ne2en
 from users.models import User
 from core.models import FiscalYear, Party
 

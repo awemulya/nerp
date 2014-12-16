@@ -1,4 +1,5 @@
 from django.contrib import admin
+from app.utils.translation import TranslationAdmin
 from core.models import FiscalYear, Donor, Activity, BudgetHead, Employee, Party, Account, TaxScheme, BudgetBalance, \
     Language
 

@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from account.models import Receipt, ReceiptRow
 from account.serializers import ReceiptSerializer
-from app.libr import save_model, invalid
+from app.utils.helpers import save_model, invalid
 from inventory.models import delete_rows
 
 

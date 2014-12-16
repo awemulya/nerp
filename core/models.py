@@ -1,6 +1,6 @@
 from django.db import models
 
-from app.libr import MultiNameModel, transl
+from app.utils.translation import transl
 import dbsettings
 
 FISCAL_YEARS = (

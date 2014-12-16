@@ -1,6 +1,6 @@
 from django import forms
 
-from app.libr import KOModelForm, UserModelChoiceField
+from app.utils.forms import KOModelForm, UserModelChoiceField
 from models import Item, Category, Demand, PurchaseOrder, InventoryAccount, Handover, EntryReport
 from users.models import User
 from django.utils.translation import ugettext_lazy as _
