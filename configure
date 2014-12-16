@@ -1,4 +1,0 @@
-export DJANGO_SETTINGS_MODULE=app.settings
-pip install -r requirements/production.txt
-./manage.py collectstaic
-./manage.py migrate

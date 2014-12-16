@@ -1,31 +1,25 @@
-This is a boilerplate for new Django projects.
 
-Includes 'users' app with custom user model and user login/logout.
-
-Static files are on 'static' branch. The base template uses Foundation framework which is included in 'static'.
-
-Admin panel is enabled by default and is available from url `/admin`.
-
-
-##Installation:
+### 1. Install
 ```
-git clone git@github.com:xtranophilist/django-base.git your_project_name
-cd your_project_name
-pip install -r requirements.txt
-```
-
-Edit `app/settings_secret.py` to change static file paths, urls and database settings.
-
-
-```
-./manage.py syncdb
-./manage.py migrate
+wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.1.noarch.rpm # download elasticsearch
+sudo yum localinstall elasticsearch-*.rpm # install elasticsearch
+sudo service elasticsearch start # start elasticsearch service
+sudo chkconfig elasticsearch on # enable elasticsearch service on system startup
+virtualenv env # create a virtual environment
+source env/bin/activate # Enter the virtual environment
+git clone git@github.com:awecode/nerp.git app # git clone the repo
+cd app # cd to project dir
+export DJANGO_SETTINGS_MODULE=app.settings
+pip install -r requirements/development.txt # install Python packages required for development
+cp app/local_settings.sample.py app/local_settings.py # create local settings file from sample file
+vi app/local_settings.py # configure your settings here, database, static & media paths and urls
+./manage.py migrate # synchronize database and run migrations
+./manage.py collectstatic # collect static files
 ```
 
-For installing static files:
+### 2. Run
 ```
-git clone git@github.com:xtranophilist/django-base.git your_project_name
-git checkout static
-````
+./manage.py runserver
+```
 
-
+### 3. Rejoice!
