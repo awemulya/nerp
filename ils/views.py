@@ -1,10 +1,10 @@
-# from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from app.libr import title_case
 from core.models import Language
 from ils.forms import RecordForm, OutgoingForm, IncomingForm, PatronForm
 from ils.models import library_setting as setting
+
 from ils.serializers import RecordSerializer, AuthorSerializer, PublisherSerializer, SubjectSerializer, BookSerializer, \
     TransactionSerializer
 from . import isbn as isbnpy
@@ -12,8 +12,8 @@ import urllib2
 import urllib
 import json
 
-from .models import Record, Author, Publisher, Book, Subject, Place, BookFile, \
-    Transaction
+from .models import Record, Author, Publisher, Book, Subject, Place, BookFile, Transaction
+
 import os
 from django.core.files import File
 from datetime import datetime
@@ -27,28 +27,28 @@ from ils.forms import LibrarySearchForm
 @group_required('Librarian')
 def authors_as_json(request):
     items = Author.objects.all()
-    items_data = AuthorSerializer(items).data
+    items_data = AuthorSerializer(items, many=True).data
     return JsonResponse(items_data, safe=False)
 
 
 @group_required('Librarian')
 def publishers_as_json(request):
     items = Publisher.objects.all()
-    items_data = PublisherSerializer(items).data
+    items_data = PublisherSerializer(items, many=True).data
     return JsonResponse(items_data, safe=False)
 
 
 @group_required('Librarian')
 def subjects_as_json(request):
     items = Subject.objects.all()
-    items_data = SubjectSerializer(items).data
+    items_data = SubjectSerializer(items, many=True).data
     return JsonResponse(items_data, safe=False)
 
 
 @group_required('Librarian')
 def books_as_json(request):
     items = Book.objects.all()
-    items_data = BookSerializer(items).data
+    items_data = BookSerializer(items, many=True).data
     return JsonResponse(items_data, safe=False)
 
 
@@ -56,17 +56,17 @@ def books_as_json(request):
 def acquisition(request):
     record_data = {}
     record = None
-
     if request.GET.get('isbn'):
         isbn = request.GET.get('isbn')
         if isbnpy.isValid(isbn):
+            if isbnpy.isI10(isbn):
+                isbn = isbnpy.convert(isbn)
             url = 'http://openlibrary.org/api/volumes/brief/json/isbn:' + isbn
             response = urllib2.urlopen(url)
             # response = urllib2.urlopen('http://127.0.0.1/json/3.json')
             data = json.load(response)
-            if isbnpy.isI10(isbn):
-                isbn = isbnpy.convert(isbn)
             if data == {}:
+                print 123
                 record_data['isbn13'] = isbn
                 record_form = RecordForm(instance=record)
                 return render(
@@ -184,18 +184,15 @@ def acquisition(request):
                         book_lang = Language.objects.get(code=lang_key)
                     except Language.DoesNotExist:
                         try:
-                            book_lang = Language.objects.get(
-                                code=lang_key[
-                                    :-
-                                    1])
+                            book_lang = Language.objects.get(code=lang_key[:-1])
                         except Language.DoesNotExist:
                             raise Exception(
                                 "Please add a language with code " +
                                 lang_key +
                                 " or " +
                                 lang_key[
-                                    :-
-                                    1] +
+                                :-
+                                1] +
                                 " first!")
                     record.languages.add(book_lang)
 
@@ -309,17 +306,12 @@ def acquisition(request):
                         File(open(result[0]))
                     )
 
-            # thumbnail_url = data['details']['thumbnail_url']
-            # result = urllib.urlretrieve(thumbnail_url)
-            # record.thumbnail.save(
-            # os.path.basename(thumbnail_url),
-            #     File(open(result[0]))
-            # )
+                    # thumbnail_url = data['details']['thumbnail_url']
+                    # result = urllib.urlretrieve(thumbnail_url)
+                    # record.thumbnail.save(
+                    # os.path.basename(thumbnail_url),
 
-            # import pdb
-            #
-            # pdb.set_trace()
-            record_data = RecordSerializer(record).data
+                record_data = RecordSerializer(record).data
 
     record_form = RecordForm(instance=record)
 
@@ -637,6 +629,7 @@ def search(request, keyword=None):
     # results = SearchQuerySet().filter(content=keyword)
     if request.GET:
         form = LibrarySearchForm(data=request.GET)
+
     else:
         form = LibrarySearchForm()
     return render(request, 'library_search.html', {'form': form})
