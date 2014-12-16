@@ -1,7 +1,6 @@
 # Development only
 pyinotify
 git-pylint-commit-hook
--e git+git@github.com:xtranophilist/django-dbsettings.git@master#egg=django-dbsettings
 django-debug-toolbar
 
 # Development and Production
@@ -16,3 +15,5 @@ Pillow
 django-haystack
 pyelasticsearch
 django-froala-editor
+-e git+git@github.com:xtranophilist/django-dbsettings.git@master#egg=django-dbsettings
+django-modeltranslation
