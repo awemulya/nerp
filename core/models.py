@@ -35,6 +35,9 @@ class Language(models.Model):
 class Account(models.Model):
     name = models.CharField(max_length=254)
 
+    def __unicode__(self):
+        return self.name
+
 
 class Party(models.Model):
     name = models.CharField(max_length=254)
@@ -50,6 +53,9 @@ class Party(models.Model):
             self.account = account
         super(Party, self).save(*args, **kwargs)
 
+    def __unicode__(self):
+        return self.name
+
     class Meta:
         verbose_name_plural = 'Parties'
 
@@ -57,12 +63,15 @@ class Party(models.Model):
 class FiscalYear(models.Model):
     year = models.IntegerField(choices=FISCAL_YEARS, unique=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return str(self.year) + '/' + str(self.year - 1999)
 
 
 class Employee(models.Model):
     name = models.CharField(max_length=254)
+
+    def __unicode__(self):
+        return self.name
 
     def save(self, *args, **kwargs):
         if self.pk is None:
@@ -75,12 +84,15 @@ class Employee(models.Model):
 class Donor(models.Model):
     name = models.CharField(max_length=254)
 
+    def __unicode__(self):
+        return self.name
+
 
 class Activity(models.Model):
     name = models.CharField(max_length=254)
     no = models.PositiveIntegerField()
 
-    def __str__(self):
+    def __unicode__(self):
         return str(self.no) + ' - ' + self.name
 
     class Meta:
@@ -96,7 +108,7 @@ class BudgetHead(models.Model):
 
     current_balance = property(get_current_balance)
 
-    def __str__(self):
+    def __unicode__(self):
         return transl(self.no) + ' - ' + self.name
 
 
@@ -119,7 +131,7 @@ class BudgetBalance(models.Model):
     def total(self):
         return self.nepal_government + self.foreign_cash_grant + self.foreign_compensating_grant + self.foreign_cash_loan + self.foreign_compensating_loan + self.foreign_substantial_aid
 
-    def __str__(self):
+    def __unicode__(self):
         return self.budget_head.name + ' - ' + str(self.fiscal_year)
 
     def save(self, *args, **kwargs):
@@ -145,5 +157,5 @@ class TaxScheme(models.Model):
 
     multiplier = property(get_multiplier)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name + ' (' + str(self.percent) + '%)'
