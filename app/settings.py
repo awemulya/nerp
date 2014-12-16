@@ -113,7 +113,7 @@ INSTALLED_APPS = (
     'froala_editor',
     'haystack',
     'dbsettings',
-    'modeltranslation'
+    'modeltranslation',
 
     'users',
     'inventory',

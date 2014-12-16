@@ -1,6 +1,6 @@
 from django.db import models
 
-from app.libr import MultiNameModel, transl
+from app.libr import transl
 import dbsettings
 
 FISCAL_YEARS = (
@@ -32,12 +32,12 @@ class Language(models.Model):
         return self.name + ' (' + self.code + ')'
 
 
-class Account(MultiNameModel):
-    # account_page_no = models.IntegerField()
-    pass
+class Account(models.Model):
+    name = models.CharField(max_length=254)
 
 
-class Party(MultiNameModel):
+class Party(models.Model):
+    name = models.CharField(max_length=254)
     address = models.CharField(max_length=254, blank=True, null=True)
     phone_no = models.CharField(max_length=100, blank=True, null=True)
     pan_no = models.CharField(max_length=50, blank=True, null=True)
@@ -61,8 +61,8 @@ class FiscalYear(models.Model):
         return str(self.year) + '/' + str(self.year - 1999)
 
 
-class Employee(MultiNameModel):
-    pass
+class Employee(models.Model):
+    name = models.CharField(max_length=254)
 
     def save(self, *args, **kwargs):
         if self.pk is None:
@@ -72,11 +72,12 @@ class Employee(MultiNameModel):
         super(Employee, self).save(*args, **kwargs)
 
 
-class Donor(MultiNameModel):
-    pass
+class Donor(models.Model):
+    name = models.CharField(max_length=254)
 
 
-class Activity(MultiNameModel):
+class Activity(models.Model):
+    name = models.CharField(max_length=254)
     no = models.PositiveIntegerField()
 
     def __str__(self):
@@ -86,7 +87,8 @@ class Activity(MultiNameModel):
         verbose_name_plural = 'Activities'
 
 
-class BudgetHead(MultiNameModel):
+class BudgetHead(models.Model):
+    name = models.CharField(max_length=254)
     no = models.PositiveIntegerField()
 
     def get_current_balance(self):
@@ -96,9 +98,6 @@ class BudgetHead(MultiNameModel):
 
     def __str__(self):
         return transl(self.no) + ' - ' + self.name
-
-    class Meta:
-        verbose_name = 'Budget Head'
 
 
 class BudgetBalance(models.Model):
@@ -137,7 +136,8 @@ class BudgetBalance(models.Model):
         unique_together = ['budget_head', 'fiscal_year']
 
 
-class TaxScheme(MultiNameModel):
+class TaxScheme(models.Model):
+    name = models.CharField(max_length=254)
     percent = models.FloatField()
 
     def get_multiplier(self):
