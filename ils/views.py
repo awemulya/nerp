@@ -1,23 +1,26 @@
-from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from app.libr import title_case
 from core.models import Language
 from ils.forms import RecordForm, OutgoingForm, IncomingForm, PatronForm
-from ils.models import LibrarySetting
-from ils.serializers import RecordSerializer, AuthorSerializer, PublisherSerializer, SubjectSerializer, BookSerializer, TransactionSerializer
-import isbn as isbnpy
-import urllib2, urllib
+from ils.models import library_setting as setting
+from ils.serializers import RecordSerializer, AuthorSerializer, PublisherSerializer, SubjectSerializer, BookSerializer, \
+    TransactionSerializer
+from . import isbn as isbnpy
+import urllib2
+import urllib
 import json
 
-from models import Record, Author, Publisher, Book, Subject, Place, BookFile, Transaction
+from .models import Record, Author, Publisher, Book, Subject, Place, BookFile, \
+    Transaction
 import os
 from django.core.files import File
 from datetime import datetime
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
 from users.models import User, group_required
-from haystack.query import SearchQuerySet
+# from haystack.query import SearchQuerySet
 from ils.forms import LibrarySearchForm
 
 
@@ -49,7 +52,7 @@ def books_as_json(request):
     return JsonResponse(items_data, safe=False)
 
 
-@group_required('Librarian')
+@group_required('Librarian')  # noqa
 def acquisition(request):
     record_data = {}
     record = None
@@ -66,7 +69,9 @@ def acquisition(request):
             if data == {}:
                 record_data['isbn13'] = isbn
                 record_form = RecordForm(instance=record)
-                return render(request, 'acquisition.html', {'data': record_data, 'form': record_form})
+                return render(
+                    request, 'acquisition.html', {
+                        'data': record_data, 'form': record_form})
             data = data.itervalues().next()['records'].itervalues().next()
 
             try:
@@ -82,82 +87,96 @@ def acquisition(request):
                 book = Book()
 
             book.title = data['data']['title']
-            if data['details']['details'].has_key('subtitle'):
+            if 'subtitle' in data['details']['details']:
                 book.subtitle = data['details']['details']['subtitle']
             book.save()
 
-            if data['details']['details'].has_key('pagination'):
+            if 'pagination' in data['details']['details']:
                 record.pagination = data['data']['pagination']
-            elif data['details']['details'].has_key('number_of_pages'):
-                record.pagination = str(data['data']['number_of_pages']) + ' p.'
+            elif 'number_of_pages' in data['details']['details']:
+                record.pagination = str(
+                    data['data']['number_of_pages']) + ' p.'
 
-            if data['details']['details'].has_key('physical_format'):
+            if 'physical_format' in data['details']['details']:
                 record.format = data['details']['details']['physical_format']
                 if record.format.startswith('electronic'):
                     record.format = 'eBook'
                     # record.openlibrary_url = data['data']['url']
 
-            if data['details']['details'].has_key('weight'):
+            if 'weight' in data['details']['details']:
                 record.weight = data['details']['details'].get('weight')
-            if data['details']['details'].has_key('physical_dimensions'):
-                record.dimensions = data['details']['details'].get('physical_dimensions')
+            if 'physical_dimensions' in data['details']['details']:
+                record.dimensions = data['details'][
+                    'details'].get('physical_dimensions')
 
-            if data['data'].has_key('classifications'):
-                if data['data']['classifications'].has_key('dewey_decimal_class'):
-                    record.ddc = data['data']['classifications'].get('dewey_decimal_class')[0]
-                if data['data']['classifications'].has_key('lc_classifications'):
-                    record.lcc = data['data']['classifications'].get('lc_classifications')[0]
+            if 'classifications' in data['data']:
+                if 'dewey_decimal_class' in data['data']['classifications']:
+                    record.ddc = data['data']['classifications'].get(
+                        'dewey_decimal_class')[0]
+                if 'lc_classifications' in data['data']['classifications']:
+                    record.lcc = data['data']['classifications'].get(
+                        'lc_classifications')[0]
 
             try:
-                record.date_of_publication = datetime.strptime(data['data']['publish_date'], '%B %d, %Y').date()
+                record.date_of_publication = datetime.strptime(
+                    data['data']['publish_date'],
+                    '%B %d, %Y').date()
                 record.publication_has_month = True
                 record.publication_has_day = True
             except ValueError:
                 try:
-                    record.date_of_publication = datetime.strptime(data['data']['publish_date'], '%Y').date()
+                    record.date_of_publication = datetime.strptime(
+                        data['data']['publish_date'],
+                        '%Y').date()
                     record.publication_has_month = False
                     record.publication_has_day = False
                 except ValueError:
                     try:
-                        record.date_of_publication = datetime.strptime(data['data']['publish_date'], '%B %Y').date()
+                        record.date_of_publication = datetime.strptime(
+                            data['data']['publish_date'],
+                            '%B %Y').date()
                         record.publication_has_day = False
                         record.publication_has_month = True
                     except ValueError:
-                        record.date_of_publication = datetime.strptime(data['data']['publish_date'], '%m/%d/%Y').date()
+                        record.date_of_publication = datetime.strptime(
+                            data['data']['publish_date'],
+                            '%m/%d/%Y').date()
                         record.publication_has_day = True
                         record.publication_has_month = True
 
-            if data['data'].has_key('identifiers'):
-                if data['data']['identifiers'].has_key('openlibrary'):
-                    record.openlibrary_id = data['data']['identifiers']['openlibrary'][0]
-                if data['data']['identifiers'].has_key('goodreads'):
-                    record.goodreads_id = data['data']['identifiers']['goodreads'][0]
-                if data['data']['identifiers'].has_key('librarything'):
-                    record.librarything_id = data['data']['identifiers']['librarything'][0]
-                if data['data']['identifiers'].has_key('oclc'):
+            if 'identifiers' in data['data']:
+                if 'openlibrary' in data['data']['identifiers']:
+                    record.openlibrary_id = data['data'][
+                        'identifiers']['openlibrary'][0]
+                if 'goodreads' in data['data']['identifiers']:
+                    record.goodreads_id = data['data'][
+                        'identifiers']['goodreads'][0]
+                if 'librarything' in data['data']['identifiers']:
+                    record.librarything_id = data['data'][
+                        'identifiers']['librarything'][0]
+                if 'oclc' in data['data']['identifiers']:
                     record.oclc_id = data['data']['identifiers']['oclc'][0]
-                if data['data']['identifiers'].has_key('lccn'):
+                if 'lccn' in data['data']['identifiers']:
                     record.lccn_id = data['data']['identifiers']['lccn'][0]
 
-            if data['data'].has_key('by_statement'):
+            if 'by_statement' in data['data']:
                 record.by_statement = data['data'].get('by_statement')
 
-            if data['data'].has_key('notes'):
+            if 'notes' in data['data']:
                 record.notes = data['data'].get('notes')
 
-            if data['data'].has_key('excerpts'):
+            if 'excerpts' in data['data']:
                 record.excerpt = data['data'].get('excerpts')[0].get('text')
 
             record.book = book
 
-            setting = LibrarySetting.get()
             record.type = setting.default_type
 
             if new_record:
                 record.date_added = datetime.today()
             record.save()
 
-            if data['details']['details'].has_key('languages'):
+            if 'languages' in data['details']['details']:
                 record.languages.clear()
                 for lang in data['details']['details']['languages']:
                     lang_key = lang['key'].replace('/languages/', '')
@@ -165,13 +184,22 @@ def acquisition(request):
                         book_lang = Language.objects.get(code=lang_key)
                     except Language.DoesNotExist:
                         try:
-                            book_lang = Language.objects.get(code=lang_key[:-1])
+                            book_lang = Language.objects.get(
+                                code=lang_key[
+                                    :-
+                                    1])
                         except Language.DoesNotExist:
                             raise Exception(
-                                "Please add a language with code " + lang_key + " or " + lang_key[:-1] + " first!")
+                                "Please add a language with code " +
+                                lang_key +
+                                " or " +
+                                lang_key[
+                                    :-
+                                    1] +
+                                " first!")
                     record.languages.add(book_lang)
 
-            if data['data'].has_key('publish_places'):
+            if 'publish_places' in data['data']:
                 record.published_places.clear()
                 for place in data['data']['publish_places']:
                     try:
@@ -182,7 +210,7 @@ def acquisition(request):
                     record.published_places.add(published_place)
 
             record.authors.clear()
-            if data['details']['details'].has_key('authors'):
+            if 'authors' in data['details']['details']:
                 for author in data['details']['details']['authors']:
                     author_key = author['key'].replace('/authors/', '')
                     try:
@@ -192,9 +220,11 @@ def acquisition(request):
                     book_author.name = author['name']
                     book_author.save()
                     record.authors.add(book_author)
-            elif data['data'].has_key('authors'):
+            elif 'authors' in data['data']:
                 for author in data['data']['authors']:
-                    author_key = author['url'].replace('http://openlibrary.org/authors/', '')
+                    author_key = author['url'].replace(
+                        'http://openlibrary.org/authors/',
+                        '')
                     try:
                         book_author = Author.objects.get(identifier=author_key)
                     except Author.DoesNotExist:
@@ -203,14 +233,14 @@ def acquisition(request):
                     book_author.save()
                     record.authors.add(book_author)
 
-            if data['data'].has_key('ebooks'):
-                if data['data']['ebooks'][0].has_key('formats'):
+            if 'ebooks' in data['data']:
+                if 'formats' in data['data']['ebooks'][0]:
                     formats = data['data']['ebooks'][0]['formats']
                     for book_format in formats:
                         ebooks = record.ebooks(book_format)
                         for ebook in ebooks:
                             ebook.delete()
-                        if formats[book_format].has_key('url'):
+                        if 'url' in formats[book_format]:
                             url = formats[book_format].get('url')
                             result = urllib.urlretrieve(url)
                             book_file = BookFile(record=record)
@@ -221,14 +251,14 @@ def acquisition(request):
                             book_file.save()
 
             subjects = None
-            if data['details']['details'].has_key('subjects'):
+            if 'subjects' in data['details']['details']:
                 subjects = data['details']['details']['subjects']
-            elif data['data'].has_key('subjects'):
+            elif 'subjects' in data['data']:
                 subjects = data['data']['subjects']
             if subjects:
                 record.book.subjects.clear()
                 for subject in subjects:
-                    if type(subject) == dict:
+                    if isinstance(subject, dict):
                         subject = title_case(subject['name'])
                     try:
                         book_subject = Subject.objects.get(name=subject)
@@ -239,29 +269,31 @@ def acquisition(request):
 
             # record.publishers.clear()
             # for publisher in data['details']['details']['publishers']:
-            #     try:
-            #         book_publisher = Publisher.objects.get(name=publisher['name'])
-            #     except Publisher.DoesNotExist:
-            #         book_publisher = Publisher(name=publisher['name'])
-            #         book_publisher.save()
-            #     record.publishers.add(book_publisher)
+            # try:
+            # book_publisher = Publisher.objects.get(name=publisher['name'])
+            # except Publisher.DoesNotExist:
+            # book_publisher = Publisher(name=publisher['name'])
+            # book_publisher.save()
+            # record.publishers.add(book_publisher)
             try:
-                book_publisher = Publisher.objects.get(name=data['details']['details']['publishers'][0])
+                book_publisher = Publisher.objects.get(
+                    name=data['details']['details']['publishers'][0])
             except Publisher.DoesNotExist:
-                book_publisher = Publisher(name=data['details']['details']['publishers'][0])
+                book_publisher = Publisher(
+                    name=data['details']['details']['publishers'][0])
                 book_publisher.save()
             record.publisher = book_publisher
 
-            if data['data'].has_key('cover'):
+            if 'cover' in data['data']:
 
-                if data['data']['cover'].has_key('large'):
+                if 'large' in data['data']['cover']:
                     cover_url = data['data']['cover']['large']
                     result = urllib.urlretrieve(cover_url)
                     record.large_cover.save(
                         os.path.basename(cover_url),
                         File(open(result[0]))
                     )
-                if data['data']['cover'].has_key('medium'):
+                if 'medium' in data['data']['cover']:
                     cover_url = data['data']['cover']['medium']
                     result = urllib.urlretrieve(cover_url)
                     record.medium_cover.save(
@@ -269,7 +301,7 @@ def acquisition(request):
                         File(open(result[0]))
                     )
 
-                if data['data']['cover'].has_key('small'):
+                if 'small' in data['data']['cover']:
                     cover_url = data['data']['cover']['small']
                     result = urllib.urlretrieve(cover_url)
                     record.small_cover.save(
@@ -280,7 +312,7 @@ def acquisition(request):
             # thumbnail_url = data['details']['thumbnail_url']
             # result = urllib.urlretrieve(thumbnail_url)
             # record.thumbnail.save(
-            #     os.path.basename(thumbnail_url),
+            # os.path.basename(thumbnail_url),
             #     File(open(result[0]))
             # )
 
@@ -291,10 +323,12 @@ def acquisition(request):
 
     record_form = RecordForm(instance=record)
 
-    return render(request, 'acquisition.html', {'data': record_data, 'form': record_form})
+    return render(
+        request, 'acquisition.html', {
+            'data': record_data, 'form': record_form})
 
 
-@group_required('Librarian')
+@group_required('Librarian')  # noqa
 def save_acquisition(request):
     if request.POST.get('book').isnumeric():
         book = Book.objects.get(id=request.POST.get('book'))
@@ -319,7 +353,9 @@ def save_acquisition(request):
     else:
         if not new_book:
             try:
-                record = Record.objects.get(book=book, edition=request.POST.get('book'))
+                record = Record.objects.get(
+                    book=book,
+                    edition=request.POST.get('book'))
                 new_record = False
             except Record.DoesNotExist:
                 record = Record(book=book)
@@ -450,7 +486,11 @@ def save_outgoing(request):
             raise Exception(error)
     transaction.save()
     messages.success(request, 'Checked Out!')
-    return redirect(reverse_lazy('view_record', kwargs={'pk': transaction.record_id}))
+    return redirect(
+        reverse_lazy(
+            'view_record',
+            kwargs={
+                'pk': transaction.record_id}))
 
 
 @group_required('Librarian')
@@ -464,7 +504,11 @@ def incoming(request, transaction_pk):
             transaction.return_date = datetime.today()
         transaction.save()
         messages.success(request, 'Book Returned!')
-        return redirect(reverse_lazy('view_record', kwargs={'pk': transaction.record_id}))
+        return redirect(
+            reverse_lazy(
+                'view_record',
+                kwargs={
+                    'pk': transaction.record_id}))
 
     form = IncomingForm(instance=transaction)
     data = TransactionSerializer(transaction).data
@@ -474,7 +518,9 @@ def incoming(request, transaction_pk):
 def view_record(request, pk=None):
     record = get_object_or_404(Record, pk=pk)
     transactions = Transaction.objects.filter(record=record)
-    return render(request, 'view_record.html', {'record': record, 'transactions': transactions})
+    return render(
+        request, 'view_record.html', {
+            'record': record, 'transactions': transactions})
 
 
 @group_required('Librarian')
@@ -482,18 +528,23 @@ def list_patrons(request):
     patrons = User.objects.by_group('Patron')
     return render(request, 'list_patrons.html', {'patrons': patrons})
 
-#TODO allow self
+
+# TODO allow self
 @group_required('Librarian')
 def view_patron(request, pk):
     patron = get_object_or_404(User, pk=pk)
     transactions = Transaction.objects.filter(user=patron)
-    return render(request, 'view_patron.html', {'patron': patron, 'transactions': transactions})
+    return render(
+        request, 'view_patron.html', {
+            'patron': patron, 'transactions': transactions})
 
 
 @group_required('Librarian')
 def list_transactions(request):
     transactions = Transaction.objects.all()
-    return render(request, 'list_transactions.html', {'transactions': transactions})
+    return render(
+        request, 'list_transactions.html', {
+            'transactions': transactions})
 
 
 def list_records(request):
@@ -565,14 +616,15 @@ def patron_form(request, pk=None):
             if not item.add_to_group('Patron'):
                 raise Exception('Add group Patron first!')
                 # if request.is_ajax():
-            #     return render(request, 'callback.html', {'obj': ItemSerializer(item).data})
+            # return render(request, 'callback.html', {'obj':
+            # ItemSerializer(item).data})
             return redirect('list_patrons')
     else:
         form = PatronForm(instance=item)
         # if request.is_ajax():
-    #     base_template = 'modal.html'
+    # base_template = 'modal.html'
     # else:
-    #     base_template = 'base.html'
+    # base_template = 'base.html'
     return render(request, 'patron_form.html', {
         'scenario': scenario,
         'form': form,
@@ -582,11 +634,9 @@ def patron_form(request, pk=None):
 
 def search(request, keyword=None):
     # if keyword:
-    #     results = SearchQuerySet().filter(content=keyword)
+    # results = SearchQuerySet().filter(content=keyword)
     if request.GET:
         form = LibrarySearchForm(data=request.GET)
-        import pdb
-        # pdb.set_trace()
     else:
         form = LibrarySearchForm()
     return render(request, 'library_search.html', {'form': form})

@@ -1,9 +1,9 @@
 from django.core.urlresolvers import reverse
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from training.forms import TrainingForm, CategoryForm, TargetGroupForm, ResourcePersonForm, ParticipantForm, OrganizationForm
+from training.forms import TrainingForm, CategoryForm, TargetGroupForm, ResourcePersonForm, ParticipantForm, \
+    OrganizationForm
 from training.models import Training, Category, ResourcePerson, TargetGroup, Participant, Organization, File
-import json
 from training.serializers import ParticipantSerializer, OrganizationSerializer, FileSerializer
 from users.models import group_required
 
@@ -15,7 +15,7 @@ def index(request):
 @group_required('Trainer')
 def participants_as_json(request):
     items = Participant.objects.all()
-    items_data = ParticipantSerializer(items).data
+    items_data = ParticipantSerializer(items, many=True).data
     return JsonResponse(items_data, safe=False)
 
 
@@ -25,7 +25,7 @@ def print_training(request, pk):
     return render(request, 'print_training.html', {'obj': item})
 
 
-@group_required('Trainer')
+@group_required('Trainer')  # noqa
 def training_form(request, pk=None):
     if pk:
         item = get_object_or_404(Training, pk=pk)
@@ -76,12 +76,12 @@ def training_form(request, pk=None):
             the_file.save()
         for deleted_file_id in deleted_files:
             # if deleted_file_id == '':
-            #     continue
+            # continue
             # try:
             the_file = File.objects.get(id=deleted_file_id)
             the_file.delete()
             # except File.DoesNotExist:
-            #     pass
+            # pass
         return redirect(reverse('update_training', kwargs={'pk': item.id}))
 
     else:
@@ -92,7 +92,7 @@ def training_form(request, pk=None):
     else:
         participants = []
         training_files = []
-    files = FileSerializer(training_files).data
+    files = FileSerializer(training_files, many=True).data
     return render(request, 'training_form.html', {
         'scenario': scenario,
         'form': form,
@@ -178,6 +178,7 @@ def target_group_form(request, pk=None):
         'form': form,
         'base_template': 'training_base.html',
     })
+
 
 # @group_required('Trainer')
 def participant_form(request, pk=None):
@@ -316,7 +317,7 @@ def delete_resource_person(request, pk):
     return redirect(reverse('list_resource_persons'))
 
 
-@group_required('Trainer')
+@group_required('Trainer')  # noqa
 def training_report(request):
     items = Training.objects.all()
     if request.GET.get('from'):
@@ -333,11 +334,11 @@ def training_report(request):
             days += item.days
         for participant in item.participants.all():
             participations += 1
-            if not participant in participants:
+            if participant not in participants:
                 participants.append(participant)
         for resource_person in item.resource_persons.all():
             total_resource_person_employments += 1
-            if not resource_person in resource_persons:
+            if resource_person not in resource_persons:
                 resource_persons.append(resource_person)
     context = {
         'objects': items,

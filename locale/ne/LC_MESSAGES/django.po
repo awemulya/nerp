@@ -833,8 +833,6 @@ msgid "Demandee"
 msgstr "माग गर्ने"
 
 #: inventory/templates/list_entry_reports.html:22
-#, fuzzy
-#| msgid "Entry Report"
 msgid "Entry Report No."
 msgstr "दाखिला प्रतिवेदन न."
 

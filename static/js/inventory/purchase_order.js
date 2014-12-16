@@ -1,6 +1,7 @@
 $(document).ready(function () {
     vm = new PurchaseOrderViewModel(ko_data);
     ko.applyBindings(vm);
+    $('.change-on-ready').trigger('change');
 });
 
 function PurchaseOrderViewModel(data) {
