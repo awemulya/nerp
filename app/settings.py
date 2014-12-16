@@ -1,12 +1,10 @@
 import os
 
-
 # calculated paths for django and the site
 # used as starting points for various other paths
 APP_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -26,11 +24,12 @@ TIME_ZONE = 'Asia/Kathmandu'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'ne'
+LANGUAGE_CODE = 'en'
 
+gettext = lambda s: s
 LANGUAGES = (
-    ('ne', 'Nepali'),
-    ('en', 'English'),
+    ('en', gettext('English')),
+    ('ne', gettext('Nepali')),
 )
 
 LOCALE_PATHS = (os.path.join(APP_ROOT, '..', 'locale'),)
@@ -99,6 +98,7 @@ TEMPLATE_DIRS = (
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 INSTALLED_APPS = (
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -113,7 +113,7 @@ INSTALLED_APPS = (
     'froala_editor',
     'haystack',
     'dbsettings',
-    'modeltranslation',
+
 
     'users',
     'inventory',
@@ -213,3 +213,4 @@ HAYSTACK_CONNECTIONS = {
 }
 
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
