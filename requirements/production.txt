@@ -1,5 +1,8 @@
-django
+# Production Only
 gunicorn
+
+# Production and Development
+Django
 psycopg2
 django-mptt
 linaro-django-pagination
