@@ -1,40 +1,26 @@
-<< << << < HEAD
-# from django.contrib.auth.decorators import login_required
-== == == =
->> >> >> > ils_fixes
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from app.libr import title_case
 from core.models import Language
 from ils.forms import RecordForm, OutgoingForm, IncomingForm, PatronForm
-<< << << < HEAD
 from ils.models import library_setting as setting
-== == == =
-from ils.models import LibrarySetting
->> >> >> > ils_fixes
+
 from ils.serializers import RecordSerializer, AuthorSerializer, PublisherSerializer, SubjectSerializer, BookSerializer, \
     TransactionSerializer
 from . import isbn as isbnpy
 import urllib2
 import urllib
 import json
-<< << << < HEAD
 
-from .models import Record, Author, Publisher, Book, Subject, Place, BookFile, \
-    Transaction
-== == == =
 from .models import Record, Author, Publisher, Book, Subject, Place, BookFile, Transaction
->> >> >> > ils_fixes
+
 import os
 from django.core.files import File
 from datetime import datetime
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
 from users.models import User, group_required
-<< << << < HEAD
 # from haystack.query import SearchQuerySet
-== == == =
->> >> >> > ils_fixes
 from ils.forms import LibrarySearchForm
 
 
@@ -325,22 +311,13 @@ def acquisition(request):
                     # record.thumbnail.save(
                     # os.path.basename(thumbnail_url),
 
-<< << << < HEAD
-# File(open(result[0]))
-== == == =
-# File(open(result[0]))
->> >> >> > ils_fixes  # )
+                record_data = RecordSerializer(record).data
 
-# import pdb
-#
-# pdb.set_trace()
-record_data = RecordSerializer(record).data
+    record_form = RecordForm(instance=record)
 
-record_form = RecordForm(instance=record)
-
-return render(
-    request, 'acquisition.html', {
-        'data': record_data, 'form': record_form})
+    return render(
+        request, 'acquisition.html', {
+            'data': record_data, 'form': record_form})
 
 
 @group_required('Librarian')  # noqa
@@ -653,11 +630,6 @@ def search(request, keyword=None):
     if request.GET:
         form = LibrarySearchForm(data=request.GET)
 
-<< << << < HEAD
-== == == =
-# import pdb
-# pdb.set_trace()
->> >> >> > ils_fixes
-else:
-form = LibrarySearchForm()
-return render(request, 'library_search.html', {'form': form})
+    else:
+        form = LibrarySearchForm()
+    return render(request, 'library_search.html', {'form': form})
