@@ -103,7 +103,7 @@ class BudgetHead(models.Model):
     no = models.PositiveIntegerField()
 
     def get_current_balance(self):
-        return BudgetBalance.objects.get(fiscal_year=AppSetting.objects.first(), budget_head=self)
+        return BudgetBalance.objects.get(fiscal_year=app_setting.fiscal_year, budget_head=self)
 
     current_balance = property(get_current_balance)
 
