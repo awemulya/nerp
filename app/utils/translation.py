@@ -9,6 +9,7 @@ import re
 import datetime
 from nepdate import is_valid
 
+
 def ne2en(num, reverse=False):
     if num is None:
         return None
@@ -98,44 +99,49 @@ class TranslationAdmin(BaseTranslationAdmin):
                         field.widget = field.widget.widget
             field.widget.attrs['class'] = ' '.join(css_classes)
 
+
 from django.db.models.fields import DateField
-from django.utils.dateparse import parse_date
+from django.forms.fields import DateField as DateFormField
 from django.core import exceptions
+from django.db import models
+import nepdate
+
+
+class BSDateFormField(DateFormField):
+    def __init__(self, *args, **kwargs):
+        super(BSDateFormField, self).__init__(*args, **kwargs)
+
+    def to_python(self, value):
+        if nepdate.is_valid(value):
+            return value
+        else:
+            raise exceptions.ValidationError(
+                self.default_error_messages['invalid'],
+                code='invalid',
+                params={'value': value},
+            )
 
 
 class BSDateField(DateField):
-    def get_internal_type(self):
-        return "CharField"
+    __metaclass__ = models.SubfieldBase
 
-    def __init__(self, *args, **kwargs):
-        super(BSDateField, self).__init__(*args, **kwargs)
-        self.max_length = 255
+    def get_internal_type(self):
+        return "DateField"
 
     def to_python(self, value):
         if value is None:
             return value
         if isinstance(value, datetime.datetime):
             # TODO Timezone Awareness
-            return value.date()
+            return nepdate.string_from_tuple(nepdate.ad2bs(value.date()))
         if isinstance(value, datetime.date):
-            return value
+            return nepdate.string_from_tuple(nepdate.ad2bs(value))
+        return value
 
-        try:
-            parsed = parse_date(value)
-            if parsed is None:
-                raise exceptions.ValidationError(
-                    self.error_messages['invalid'],
-                    code='invalid',
-                    params={'value': value},
-                )
-            else:
-                return parsed
-        except ValueError:
-            if not is_valid(value):
-                raise exceptions.ValidationError(
-                    self.error_messages['invalid_date'],
-                    code='invalid_date',
-                    params={'value': value},
-                )
-            return value
+    def pre_save(self, model_instance, add):
+        return nepdate.bs2ad(getattr(model_instance, self.name))
 
+    def formfield(self, **kwargs):
+        defaults = {'form_class': BSDateFormField}
+        defaults.update(kwargs)
+        return super(DateField, self).formfield(**defaults)
