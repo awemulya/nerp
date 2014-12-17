@@ -14,9 +14,16 @@ SOURCES = [('nepal_government', 'Nepal Government'), ('foreign_cash_grant', 'For
            ('foreign_substantial_aid', 'Foreign Substantial Aid')]
 
 
+class FiscalYear(models.Model):
+    year = models.IntegerField(choices=FISCAL_YEARS, unique=True)
+
+    def __unicode__(self):
+        return str(self.year) + '/' + str(self.year - 1999)
+
+
 class AppSetting(dbsettings.Group):
     site_name = dbsettings.StringValue(default='NERP')
-    fiscal_year = dbsettings.StringValue(choices=FISCAL_YEARS)
+    fiscal_year = dbsettings.ForeignKeyValue(model=FiscalYear)
     header_for_forms = dbsettings.TextValue()
 
 
@@ -57,13 +64,6 @@ class Party(models.Model):
 
     class Meta:
         verbose_name_plural = 'Parties'
-
-
-class FiscalYear(models.Model):
-    year = models.IntegerField(choices=FISCAL_YEARS, unique=True)
-
-    def __unicode__(self):
-        return str(self.year) + '/' + str(self.year - 1999)
 
 
 class Employee(models.Model):
