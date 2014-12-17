@@ -9,14 +9,14 @@ from django.core.urlresolvers import reverse
 
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm
 from inventory.filters import InventoryItemFilter
-from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, \
-    InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
-    InventoryAccountRow
-from app.libr import invalid, save_model, empty_to_none
-from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, \
-    EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer
+
+from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow
+from app.utils.helpers import invalid, save_model, empty_to_none
+from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer
 import nepdate
+
 from users.models import group_required
+from core.models import app_setting
 
 
 @login_required
@@ -163,7 +163,7 @@ def save_demand(request):
     dct = {'rows': {}}
     if params.get('release_no') == '':
         params['release_no'] = None
-    object_values = {'release_no': params.get('release_no'), 'fiscal_year': request.setting.fiscal_year,
+    object_values = {'release_no': params.get('release_no'), 'fiscal_year': app_setting.fiscal_year,
                      'date': params.get('date'), 'purpose': params.get('purpose'), 'status': 'Requested'}
     if params.get('id'):
         obj = Demand.objects.get(id=params.get('id'))
@@ -222,7 +222,7 @@ def purchase_order(request, id=None):
 def save_purchase_order(request):
     params = json.loads(request.body)
     dct = {'rows': {}}
-    object_values = {'order_no': empty_to_none(params.get('order_no')), 'fiscal_year': request.setting.fiscal_year,
+    object_values = {'order_no': empty_to_none(params.get('order_no')), 'fiscal_year': app_setting.fiscal_year,
                      'date': params.get('date'), 'party_id': params.get('party'),
                      'due_days': params.get('due_days')}
     if params.get('id'):
@@ -334,7 +334,7 @@ def handover_outgoing(request, id=None):
 def save_handover(request):
     params = json.loads(request.body)
     dct = {'rows': {}}
-    object_values = {'addressee': params.get('addressee'), 'fiscal_year': request.setting.fiscal_year,
+    object_values = {'addressee': params.get('addressee'), 'fiscal_year': app_setting.fiscal_year,
                      'date': params.get('date'), 'office': params.get('office'), 'type': params.get('type'),
                      'designation': params.get('designation'), 'voucher_no': empty_to_none(params.get('voucher_no')),
                      'due_days': params.get('due_days'), 'handed_to': params.get('handed_to')}
@@ -452,7 +452,7 @@ def save_entry_report(request):
     else:
         source = PurchaseOrder.objects.get(id=params.get('source_id'))
     object_values = {'entry_report_no': empty_to_none(params.get('entry_report_no')),
-                     'fiscal_year': request.setting.fiscal_year,
+                     'fiscal_year': app_setting.fiscal_year,
                      'source': source}
     if params.get('id'):
         obj = EntryReport.objects.get(id=params.get('id'))

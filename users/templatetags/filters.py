@@ -2,7 +2,7 @@
 
 import json
 from datetime import date, timedelta
-from core.models import AppSetting
+import importlib
 from django.core import serializers
 from django.db.models.query import QuerySet
 from django.template import Library
@@ -20,7 +20,7 @@ def handler(obj):
     if hasattr(obj, 'isoformat'):
         return obj.isoformat()
     # elif isinstance(obj, ...):
-    #     return ...
+    # return ...
     else:
         raise TypeError, 'Object of type %s with value of %s is not JSON serializable' % (type(obj), repr(obj))
 
@@ -139,12 +139,15 @@ class GroupCheckNode(template.Node):
 
 
 @register.filter
-def setting(key):
-    try:
-        setting = AppSetting.objects.get()
-    except AppSetting.DoesNotExist:
-        return None
-    return getattr(setting, key)
+def setting(path):
+    to_import = '.'.join(path.split('.')[:-2])
+    imported = importlib.import_module(to_import)
+    group_name = path.split('.')[-2:-1][0]
+    group = getattr(imported, group_name)
+    attr_name = path.split('.')[-1]
+    val = getattr(group, attr_name)
+    return val
+
 
 
 @register.tag
@@ -253,6 +256,7 @@ def debug(value):
     import pdb
 
     pdb.set_trace()
+
 
 @register.filter
 def mailto(email, linktext=None):

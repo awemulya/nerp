@@ -4,28 +4,24 @@ from core.models import Party, Employee, Donor, Activity, BudgetHead, TaxScheme,
 
 
 class PartySerializer(serializers.ModelSerializer):
-    name = serializers.Field(source='name')
-
     class Meta:
         model = Party
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
-    name = serializers.Field(source='name')
-
     class Meta:
         model = Employee
 
 
 class DonorSerializer(serializers.ModelSerializer):
-    name = serializers.Field(source='name')
+    # name = serializers.Field(source='name')
 
     class Meta:
         model = Donor
 
 
 class ActivitySerializer(serializers.ModelSerializer):
-    name = serializers.Field(source='name')
+    name = serializers.ReadOnlyField(source='__unicode__')
 
     class Meta:
         model = Activity
@@ -39,7 +35,7 @@ class BudgetBalanceSerializer(serializers.ModelSerializer):
 
 
 class BudgetSerializer(serializers.ModelSerializer):
-    name = serializers.Field(source='__str__')
+    name = serializers.ReadOnlyField(source='__unicode__')
     current_balance = BudgetBalanceSerializer()
 
     class Meta:
@@ -47,12 +43,12 @@ class BudgetSerializer(serializers.ModelSerializer):
 
 
 class TaxSchemeSerializer(serializers.ModelSerializer):
-    name = serializers.Field(source='name')
+    name = serializers.ReadOnlyField(source='__unicode__')
 
     class Meta:
         model = TaxScheme
 
-class LanguageSerializer(serializers.ModelSerializer):
 
+class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
         model= Language

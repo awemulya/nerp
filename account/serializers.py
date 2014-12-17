@@ -4,8 +4,6 @@ from core.models import Account
 
 
 class AccountSerializer(serializers.ModelSerializer):
-    name = serializers.Field(source='name')
-
     class Meta:
         model = Account
 
@@ -22,7 +20,7 @@ class ReceiptRowSerializer(serializers.ModelSerializer):
 
 
 class ReceiptSerializer(serializers.ModelSerializer):
-    rows = ReceiptRowSerializer()
+    rows = ReceiptRowSerializer(many=True)
 
     class Meta:
         model = Receipt

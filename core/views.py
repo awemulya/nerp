@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from account.serializers import AccountSerializer
-from app.libr import form_view
+from app.utils.forms import form_view
 from core.forms import PartyForm, EmployeeForm
 from core.models import Party, Employee, BudgetHead, Donor, Activity, Account, TaxScheme, Language
 from core.serializers import PartySerializer, EmployeeSerializer, BudgetSerializer, ActivitySerializer, DonorSerializer, \
@@ -93,35 +93,35 @@ def employees_as_json(request):
 
 def budget_heads_as_json(request):
     objects = BudgetHead.objects.all()
-    objects_data = BudgetSerializer(objects).data
+    objects_data = BudgetSerializer(objects, many=True).data
     return JsonResponse(objects_data, safe=False)
 
 
 def donors_as_json(request):
     objects = Donor.objects.all()
-    objects_data = DonorSerializer(objects).data
+    objects_data = DonorSerializer(objects, many=True).data
     return JsonResponse(objects_data, safe=False)
 
 
 def activities_as_json(request):
     objects = Activity.objects.all()
-    objects_data = ActivitySerializer(objects).data
+    objects_data = ActivitySerializer(objects, many=True).data
     return JsonResponse(objects_data, safe=False)
 
 
 def accounts_as_json(request):
     objects = Account.objects.all()
-    objects_data = AccountSerializer(objects).data
+    objects_data = AccountSerializer(objects, many=True).data
     return JsonResponse(objects_data, safe=False)
 
 
 def tax_schemes_as_json(request):
     objects = TaxScheme.objects.all()
-    objects_data = TaxSchemeSerializer(objects).data
+    objects_data = TaxSchemeSerializer(objects, many=True).data
     return JsonResponse(objects_data, safe=False)
 
 
 def languages_as_json(request):
     objects = Language.objects.all()
-    objects_data = LanguageSerializer(objects).data
+    objects_data = LanguageSerializer(objects, many=True).data
     return JsonResponse(objects_data, safe=False)

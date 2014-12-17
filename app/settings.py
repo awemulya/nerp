@@ -1,15 +1,13 @@
 import os
 
-
 # calculated paths for django and the site
 # used as starting points for various other paths
 APP_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-# ('Your Name', 'your_email@example.com'),
+    # ('Your Name', 'your_email@example.com'),
 )
 
 MANAGERS = ADMINS
@@ -26,11 +24,12 @@ TIME_ZONE = 'Asia/Kathmandu'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'ne'
+LANGUAGE_CODE = 'en'
 
+gettext = lambda s: s
 LANGUAGES = (
-    ('ne', 'Nepali'),
-    ('en', 'English'),
+    ('en', gettext('English')),
+    ('ne', gettext('Nepali')),
 )
 
 LOCALE_PATHS = (os.path.join(APP_ROOT, '..', 'locale'),)
@@ -62,14 +61,14 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    #     'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -99,6 +98,7 @@ TEMPLATE_DIRS = (
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 INSTALLED_APPS = (
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -110,9 +110,10 @@ INSTALLED_APPS = (
     'linaro_django_pagination',
     'webstack_django_sorting',
     'rest_framework',
-    'debug_toolbar',
     'froala_editor',
     'haystack',
+    'dbsettings',
+
 
     'users',
     'inventory',
@@ -154,7 +155,7 @@ LOGGING = {
 }
 
 try:
-    from local_settings import *
+    from .local_settings import *  # noqa
 except ImportError:
     pass
 
@@ -169,12 +170,12 @@ CACHES = {
         # It is high recommended to configure a global cache for multiprocess
         # servers, because other processes would not be notified about new
         # values with LocMemCache. !!
-        # For debug server (manage.py runserver) is the default configuration safe.
-        #
-        #'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        #'LOCATION': '127.0.0.1:11211',
-        #'TIMEOUT': 300,
-        #'KEY_PREFIX': 'T',
+        # For debug server (manage.py runserver) is the default
+        # configuration safe.
+        # 'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        # 'LOCATION': '127.0.0.1:11211',
+        # 'TIMEOUT': 300,
+        # 'KEY_PREFIX': 'T',
     }
 }
 
@@ -197,14 +198,15 @@ MIDDLEWARE_CLASSES = (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
-    'core.middleware.SettingMiddleware',
+
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'ENGINE': 'haystack.backends.elasticsearch_backend.'
+                  'ElasticsearchSearchEngine',
         'URL': 'http://127.0.0.1:9200/',
         'INDEX_NAME': 'haystack',
     },
