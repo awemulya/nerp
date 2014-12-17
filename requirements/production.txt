@@ -13,5 +13,6 @@ Pillow
 django-haystack
 pyelasticsearch
 django-froala-editor
--e git+git@github.com:xtranophilist/django-dbsettings.git@master#egg=django-dbsettings
+-e git+https://github.com/xtranophilist/django-dbsettings.git@master#egg=django-dbsettings
 django-modeltranslation
+-e git+https://github.com/xtranophilist/nepdate.git@master#egg=nepdate
