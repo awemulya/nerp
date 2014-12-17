@@ -6,7 +6,8 @@ from modeltranslation.admin import TranslationAdmin as BaseTranslationAdmin, dee
     build_css_class
 from django import forms
 import re
-
+import datetime
+from nepdate import is_valid
 
 def ne2en(num, reverse=False):
     if num is None:
