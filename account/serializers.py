@@ -4,8 +4,6 @@ from core.models import Account
 
 
 class AccountSerializer(serializers.ModelSerializer):
-    name = serializers.Field(source='name')
-
     class Meta:
         model = Account
 
