@@ -139,7 +139,11 @@ class BSDateField(DateField):
         return value
 
     def pre_save(self, model_instance, add):
-        return nepdate.bs2ad(getattr(model_instance, self.name))
+        return nepdate.bs2ad(self._get_val_from_obj(model_instance))
+
+    def value_to_string(self, obj):
+        value = self._get_val_from_obj(obj)
+        return unicode(value)
 
     def formfield(self, **kwargs):
         defaults = {'form_class': BSDateFormField}
