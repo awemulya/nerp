@@ -22,7 +22,7 @@ class ReceiptRowSerializer(serializers.ModelSerializer):
 
 
 class ReceiptSerializer(serializers.ModelSerializer):
-    rows = ReceiptRowSerializer()
+    rows = ReceiptRowSerializer(many=True)
 
     class Meta:
         model = Receipt
