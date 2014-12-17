@@ -18,7 +18,8 @@ class DemandRowSerializer(serializers.ModelSerializer):
 
 
 class DemandSerializer(serializers.ModelSerializer):
-    rows = DemandRowSerializer()
+    rows = DemandRowSerializer(many=True)
+    date = serializers.ModelField(Demand()._meta.get_field('date'))
 
     class Meta:
         model = Demand
