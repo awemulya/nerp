@@ -28,79 +28,79 @@
             {% endif %}
             <br>
             {% if record.isbn13 %}
-                <strong class="book-detail">ISBN: </strong><span class="detail-info">{{ record.isbn13 }}</span>
+                <strong class="book-detail">ISBN </strong><span class="detail-info">{{ record.isbn13 }}</span>
                 <br>
             {% endif %}
 
             {% if record.pagination %}
-                <strong class="book-detail">Pagination: </strong><span class="detail-info">{{ record.pagination }}</span>
+                <strong class="book-detail">Pagination </strong><span class="detail-info">{{ record.pagination }}</span>
                 <br>
             {% endif %}
 
             {% if record.openlibrary_id %}
-                <strong class="book-detail">OpenLibrary: </strong><span class="detail-info">
+                <strong class="book-detail">OpenLibrary </strong><span class="detail-info">
                 <a target="_blank"
-                   href="https://openlibrary.org/books/{{ record.openlibrary_id }}/">{{ record.openlibrary_id }}</a></span>
+                   href="https//openlibrary.org/books/{{ record.openlibrary_id }}/">{{ record.openlibrary_id }}</a></span>
                 <br>
             {% endif %}
 
             {% if record.goodreads_id %}
-                <strong class="book-detail">Goodreads: </strong><span class="detail-info">
+                <strong class="book-detail">Goodreads </strong><span class="detail-info">
                 <a target="_blank"
-                   href="http://www.goodreads.com/book/show/{{ record.goodreads_id }}">{{ record.goodreads_id }}</a></span>
+                   href="http//www.goodreads.com/book/show/{{ record.goodreads_id }}">{{ record.goodreads_id }}</a></span>
                 <br>
             {% endif %}
 
             {% if record.lccn_id %}
-                <strong class="book-detail">Library of Congress Control Number: </strong><span class="detail-info">
+                <strong class="book-detail">Library of Congress Control Number </strong><span class="detail-info">
                 <a target="_blank"
-                   href="http://lccn.loc.gov/{{ record.lccn_id }}">{{ record.lccn_id }}</a></span>
+                   href="http//lccn.loc.gov/{{ record.lccn_id }}">{{ record.lccn_id }}</a></span>
                 <br>
             {% endif %}
 
             {% if record.oclc_id %}
-                <strong class="book-detail">OCLC WorldCat: </strong><span class="detail-info">
+                <strong class="book-detail">OCLC WorldCat </strong><span class="detail-info">
                 <a target="_blank"
-                   href="http://www.worldcat.org/oclc/{{ record.oclc_id }}?tab=details">{{ record.oclc_id }}</a></span>
+                   href="http//www.worldcat.org/oclc/{{ record.oclc_id }}?tab=details">{{ record.oclc_id }}</a></span>
                 <br>
             {% endif %}
 
             {% if record.librarything_id %}
-                <strong class="book-detail">LibraryThing: </strong><span class="detail-info">
+                <strong class="book-detail">LibraryThing </strong><span class="detail-info">
                 <a target="_blank"
-                   href="http://www.librarything.com/work/{{ record.librarything_id }}">{{ record.librarything_id }}</a></span>
+                   href="http//www.librarything.com/work/{{ record.librarything_id }}">{{ record.librarything_id }}</a></span>
                 <br>
             {% endif %}
 
             {% if record.format %}
-                <strong class="book-detail">Format: </strong><span class="detail-info">{{ record.format }}</span>
+                <strong class="book-detail">Format </strong><span class="detail-info">{{ record.format }}</span>
                 <br>
             {% endif %}
 
             {% if record.format != 'eBook' %}
                 {% if record.type %}
-                    <strong class="book-detail">Type: </strong><span class="detail-info">{{ record.type }}</span>
+                    <strong class="book-detail">Type </strong><span class="detail-info">{{ record.type }}</span>
                     <br>
                 {% endif %}
             {% endif %}
 
             {% if record.weight %}
-                <strong class="book-detail">Weight: </strong><span class="detail-info">{{ record.weight }}</span>
+                <strong class="book-detail">Weight </strong><span class="detail-info">{{ record.weight }}</span>
                 <br>
             {% endif %}
 
             {% if record.dimensions %}
-                <strong class="book-detail">Dimensions: </strong><span class="detail-info">{{ record.dimensions }}</span>
+                <strong class="book-detail">Dimensions </strong><span class="detail-info">{{ record.dimensions }}</span>
                 <br>
             {% endif %}
 
             {% if record.lcc %}
-                <strong class="book-detail">Library of Congress Classification: </strong><span class="detail-info">{{ record.lcc }}</span>
+                <strong class="book-detail">Library of Congress Classification </strong><span class="detail-info">{{ record.lcc }}</span>
                 <br>
             {% endif %}
 
             {% if record.ddc %}
-                <strong class="book-detail">Dewey Decimal Class: </strong><span class="detail-info">{{ record.ddc }}</span>
+                <strong class="book-detail">Dewey Decimal Class </strong><span class="detail-info">{{ record.ddc }}</span>
                 <br>
             {% endif %}
             
