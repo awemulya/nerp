@@ -104,7 +104,7 @@
                 <br>
             {% endif %}
             
-
+    <br>
     </div>
 
     <div class="container-record">
@@ -150,8 +150,17 @@
         </div>
 
         <br>
-        <!--div class="row">
-           <div class="large-3 medium-3 column">
+    {% if record.ebooks %}
+        <h3>E-books</h3>
+        {% for ebook in record.ebooks %}
+            <a href="{{ MEDIA_URL }}{{ ebook.file }}">{{ ebook.format }}</a>
+            {% if not forloop.last %} | {% endif %}
+        {% endfor %}
+
+    {% endif %}
+    {% if record.format != 'eBook' %}
+        {% ifusergroup 'Librarian' %}
+            <h3>Transactions</h3>
                 {% if record.format != 'eBook' %}
                     {% ifusergroup 'Librarian' %}
                             <table>
@@ -173,8 +182,65 @@
                             </table>
                     {% endifusergroup %}
                 {% endif %}
-              </div>
-           </div--> 
+
+            <div class="transactions">
+                <table class="table-bordered">
+                    <thead>
+                    <tr>
+                        <th>{% anchor user_id 'Patron' %}</th>
+                        <th>{% anchor borrow_date 'Borrow Date' %}</th>
+                        <th>{% anchor due_date 'Due Date' %}</th>
+                        <th>{% anchor return_date 'Return Date' %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% autosort transactions as sorted_objects %}
+                    {% autopaginate sorted_objects 20 as paginated_objects %}
+                    {% for transaction in paginated_objects %}
+                        <tr>
+                            <td><a href="{% url 'view_patron' pk=transaction.user.id %}">{{ transaction.user }}</a></td>
+                            <td>{{ transaction.borrow_date }}</td>
+                            <td>{{ transaction.due_date }}</td>
+                            <td> {% if transaction.return_date %}
+                                {{ transaction.return_date }}
+                            {% else %}
+
+                                <a href="{% url 'incoming' transaction_pk=transaction.id %}">Return</a>
+                            {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% paginate %}
+            </div>
+        {% endifusergroup %}
+    {% endif %}
+
+
+        
+                {% if record.format != 'eBook' %}
+                    {% ifusergroup 'Librarian' %}
+                            <!--table>
+                                <tr>
+                                    <th>Total</th>
+                                    <td>{{ record.quantity }}</td>
+                                    <th>In Circulation</th>
+                                    <td>{{ record.in_circulation.count }}</td>
+                                    <th>Available</th>
+                                    <td>{{ record.quantity|subtract:record.in_circulation.count }}</td>
+                                {% if record.type == 'Circulative' %}
+                                    {% if record.quantity|subtract:record.in_circulation.count > 0 %}
+                                            <th colspan="2">
+                                                <a href="{% url 'outgoing' pk=record.id %}">Checkout</a>
+                                            </th>
+                                    {% endif %}
+                                {% endif %}
+                                </tr>
+                            </table-->
+                    {% endifusergroup %}
+                {% endif %}
+      
     </div>
 <br>
     <!--div class="row">
@@ -339,7 +405,7 @@
                 </div>
             {% endifusergroup %}
         {% endif %}
-    </div-->
+    </div>
 
 
     {% if record.ebooks %}
@@ -353,7 +419,7 @@
     {% if record.format != 'eBook' %}
         {% ifusergroup 'Librarian' %}
             <h3>Transactions</h3>
-                            {% if record.format != 'eBook' %}
+                {% if record.format != 'eBook' %}
                     {% ifusergroup 'Librarian' %}
                             <table>
                                 <tr>
@@ -408,6 +474,6 @@
             </div>
         {% endifusergroup %}
     {% endif %}
-
+-->
 
 {% endblock %}
