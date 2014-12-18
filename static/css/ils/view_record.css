@@ -22,7 +22,8 @@
 
 #book-title {
 	font-family: 'Comic Sans', 'Comic Sans MS', 'cursive';
-	
+	line-height: 0;
+	margin-top: .5em;
 }
 
 .book-detail {
