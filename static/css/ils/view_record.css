@@ -1,0 +1,46 @@
+/*h1 {
+	color: #a55;
+	line-height: 0em;
+	margin-bottom: 0em;
+	padding-bottom: 0em;
+	margin-top: .5em;
+}
+
+*/
+
+.container-record {
+	width: 70%;
+}
+
+.container-img {
+	width: 30%;
+	float: right;
+}
+
+#book-title {
+	font-family: 'Comic Sans', 'Comic Sans MS', 'cursive';
+	
+}
+
+.book-detail {
+	float: left;
+}
+
+.detail-info {
+	/*margin-left: 2em;*/
+	float: right;
+}
+
+
+table tr:nth-of-type(even) {
+    background-color: transparent !important;
+}
+
+table {
+	border: none;
+	background-color: none;
+}
+
+#text-by {
+	padding-left: 2em;
+}
