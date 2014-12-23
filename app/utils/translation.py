@@ -7,6 +7,7 @@ from modeltranslation.admin import TranslationAdmin as BaseTranslationAdmin, dee
 from django import forms
 import re
 import datetime
+from django.db import models
 
 
 def ne2en(num, reverse=False):
@@ -47,6 +48,28 @@ def transl(s):
         return ne2en(s)
     elif lang == 'ne':
         return en2ne(s)
+
+
+class TranslatableNumberModel(models.Model):
+    #TODO override form validation
+    def clean(self):
+        for field in self.__class__._translatable_number_fields:
+            setattr(self, field, ne2en(getattr(self, field)))
+        super(TranslatableNumberModel, self).clean()
+
+    def __getattribute__(self, name):
+        def get(x):
+            return super(TranslatableNumberModel, self).__getattribute__(x)
+
+        if name.startswith('_'):
+            return get(name)
+        if hasattr(self.__class__,
+                   '_translatable_number_fields') and name in self.__class__._translatable_number_fields:
+            return transl(get(name))
+        return get(name)
+
+    class Meta:
+        abstract = True
 
 
 class NameTranslationOptions(TranslationOptions):
