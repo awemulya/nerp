@@ -1,5 +1,5 @@
 from django.db import models
-from app.utils.translation import transl
+from app.utils.translation import TranslatableNumberModel
 import dbsettings
 
 FISCAL_YEARS = (
@@ -98,9 +98,10 @@ class Activity(models.Model):
         verbose_name_plural = 'Activities'
 
 
-class BudgetHead(models.Model):
+class BudgetHead(TranslatableNumberModel):
     name = models.CharField(max_length=254)
     no = models.PositiveIntegerField()
+    _translatable_number_fields = ('no',)
 
     def get_current_balance(self):
         return BudgetBalance.objects.get(fiscal_year=app_setting.fiscal_year, budget_head=self)
@@ -108,7 +109,7 @@ class BudgetHead(models.Model):
     current_balance = property(get_current_balance)
 
     def __unicode__(self):
-        return transl(self.no) + ' - ' + self.name
+        return self.no + ' - ' + self.name
 
 
 class BudgetBalance(models.Model):
