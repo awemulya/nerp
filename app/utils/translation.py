@@ -51,6 +51,12 @@ def transl(s):
 
 
 class TranslatableNumberModel(models.Model):
+    #TODO override form validation
+    def clean(self):
+        for field in self.__class__._translatable_number_fields:
+            setattr(self, field, ne2en(getattr(self, field)))
+        super(TranslatableNumberModel, self).clean()
+
     def __getattribute__(self, name):
         def get(x):
             return super(TranslatableNumberModel, self).__getattribute__(x)
@@ -64,7 +70,6 @@ class TranslatableNumberModel(models.Model):
 
     class Meta:
         abstract = True
-
 
 
 class NameTranslationOptions(TranslationOptions):
