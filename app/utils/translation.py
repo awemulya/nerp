@@ -7,33 +7,32 @@ from modeltranslation.admin import TranslationAdmin as BaseTranslationAdmin, dee
 from django import forms
 import re
 import datetime
-from nepdate import is_valid
 
 
 def ne2en(num, reverse=False):
     if num is None:
         return None
     dct = {
-        '०': '0',
-        '१': '1',
-        '२': '2',
-        '३': '3',
-        '४': '4',
-        '५': '5',
-        '६': '6',
-        '७': '7',
-        '८': '8',
-        '९': '9'
+        u'०': '0',
+        u'१': '1',
+        u'२': '2',
+        u'३': '3',
+        u'४': '4',
+        u'५': '5',
+        u'६': '6',
+        u'७': '7',
+        u'८': '8',
+        u'९': '9'
     }
     if reverse:
         dct = dict((v, k) for k, v in dct.iteritems())
     pattern = re.compile('|'.join(dct.keys()))
     grouper = lambda x: dct[x.group()]
-    num = unicode(num).encode()
+    num = unicode(num)
     result = pattern.sub(grouper, num)
     return result
 
-    # devanagari_nums = ('०','१','२','३','४','५','६','७','८','९')
+    # devanagari_nums = (u'०', u'१', u'२', u'३', u'४', u'५', u'६', u'७', u'८', u'९')
     # return ''.join(devanagari_nums[int(digit)] for digit in str(n))
 
 
