@@ -183,6 +183,15 @@ class Record(models.Model):
     def in_circulation(self):
         return Transaction.objects.filter(record=self, return_date=None)
 
+    def get_small_cover(self):
+        return self.small_cover or self.medium_cover or self.large_cover
+
+    def get_medium_cover(self):
+        return self.medium_cover or self.small_cover or self.large_cover
+
+    def get_large_cover(self):
+        return self.large_cover or self.medium_cover or self.small_cover
+
 
 class BookFile(models.Model):
     file = models.FileField(upload_to='ils/books/')
@@ -223,7 +232,7 @@ class Transaction(models.Model):
         from ils.models import library_setting as setting
 
         transaction.due_date = transaction.borrow_date + \
-            datetime.timedelta(days=setting.borrow_days)
+                               datetime.timedelta(days=setting.borrow_days)
         transaction.fine_per_day = setting.fine_per_day
         return transaction
 

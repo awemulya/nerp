@@ -4,6 +4,7 @@
 {% load pagination_tags %}
 {% load sorting_tags %}
 {% load staticfiles %}
+{% load thumbnail %}
 
 {% block title %} {{ record }}{% endblock %}
 
@@ -23,9 +24,13 @@
     <div class="row">
 
         <div class="column large-4 medium-6 small-12">
-            {% if record.medium_cover %}
-                <a href="{{ MEDIA_URL }}{{ record.large_cover }}" target="_blank" class='th'><img
-                        src="{{ MEDIA_URL }}{{ record.medium_cover }}"></a>
+            {% if record.get_medium_cover %}
+                <a href="{{ MEDIA_URL }}{{ record.get_large_cover }}" target="_blank" class='th'>
+{#                    <img src="{{ MEDIA_URL }}{{ record.medium_cover }}">#}
+                    {% thumbnail record.get_medium_cover "180x280" as im %}
+                        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                    {% endthumbnail %}
+                </a>
             {% endif %}
         </div>
 
