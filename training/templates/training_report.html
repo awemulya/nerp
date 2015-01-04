@@ -1,7 +1,7 @@
 {% extends "training_base.html" %}
 {% load i18n %}
 {% load sorting_tags %}
-
+{% load staticfiles %}
 
 {% block title %}Training Report{% endblock %}
 
@@ -11,8 +11,8 @@
 {% endblock %}
 
 {% block head_end %}
-    <script src="{{ STATIC_URL }}js/vendors/foundation-datepicker.js"></script>
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/vendors/foundation-datepicker.css">
+    <script src="{% static 'js/vendors/foundation-datepicker.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/vendors/foundation-datepicker.css' %}">
     <script>
         $(document).ready(function () {
             $('#from').fdatepicker();

@@ -3,7 +3,7 @@
 {% load filters %}
 {% load pagination_tags %}
 {% load sorting_tags %}
-
+{% load staticfiles %}
 
 {% block title %} {{ record }}{% endblock %}
 
@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block head_end %}
-    {#    <script src="{{ STATIC_URL }}js/ils/view_record.js"></script>#}
+    {#    <script src="{% static 'js/ils/view_record.js' %}"></script>#}
 
 {% endblock %}
 

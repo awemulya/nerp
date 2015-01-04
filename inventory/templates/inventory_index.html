@@ -1,6 +1,7 @@
 {% extends "inventory_base.html" %}
 {% load i18n %}
 {% load filters %}
+{#{% load staticfiles %}#}
 
 {% block title %} {% trans 'Inventory' %}{% endblock %}
 
@@ -59,7 +60,7 @@
 
 {#        <div>#}
 {#            <a href="{% url 'outgoing' %}">#}
-{#                <img src="{{ STATIC_URL }}img/icons/export.png">#}
+{#                <img src="{% static 'img/icons/export.png' %}">#}
 {#                Checkout</a>#}
 {#        </div>#}
     </div>
