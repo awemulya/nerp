@@ -113,6 +113,7 @@ INSTALLED_APPS = (
     'froala_editor',
     'haystack',
     'dbsettings',
+    'sorl.thumbnail',
 
 
     'users',
