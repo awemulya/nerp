@@ -1,6 +1,7 @@
 {% extends 'training_base.html' %}
 {% load i18n %}
 {% load filters %}
+{% load staticfiles %}
 
 {% block title %} {{ obj.title }}{% endblock %}
 
@@ -11,7 +12,7 @@
 {% endblock %}
 {% block head_end %}
 
-    <script src="{{ STATIC_URL }}js/training/print.js"></script>
+    <script src="{% static 'js/training/print.js' %}"></script>
 
 {% endblock %}
 

@@ -1,6 +1,7 @@
 {% extends "library_base.html" %}
 {% load i18n %}
 {% load filters %}
+{% load staticfiles %}
 
 
 {% block title %} {% trans 'Incoming' %}{% endblock %}
@@ -16,69 +17,146 @@
     <script>
         ko_data = {{data|jsonify}};
     </script>
-    <script src="{{ STATIC_URL }}js/ils/incoming.js"></script>
+    <script src="{% static 'js/ils/incoming.js' %}"></script>
 {% endblock %}
 
 {% block content %}
 
     <form method="post">
-        {% csrf_token %}
+    {% csrf_token %}
 
 
-        <div class="row">
-            <div class="column large-6 small-6 medium-6">
-                <label for="id_user">Patron:</label>
-                {{ form.user }}
+    <div class="row">
+        <
+        div
+        class
+        = "column large-6 small-6 medium-6" >
+                < label
+        for= "id_user" > Patron:
+        </
+        label >
+        {{ form.user }}
 
-            </div>
+        <
+        /
+        div >
 
-            <div class="column large-6 small-6 medium-6">
-                <label for="id_record">Item:</label>
-                {{ form.record }}
+        < div
+        class
+        = "column large-6 small-6 medium-6" >
+                < label
+        for= "id_record" > Item:
+        </
+        label >
+        {{ form.record }}
 
-            </div>
+        <
+        /
+        div >
 
-        </div>
+        <
+        /
+        div >
 
-        <div class="row">
-            <div class="column large-4 small-4 medium-4">
-                <label for="borrow_date">Borrow Date</label>
-                {{ form.borrow_date }}
-            </div>
+        < div
+        class
+        = "row" >
+                < div
+        class
+        = "column large-4 small-4 medium-4" >
+                < label
+        for= "borrow_date" > Borrow Date <
+        /
+        label >
+        {{ form.borrow_date }}
+        <
+        /
+        div >
 
-            <div class="column large-4 small-4 medium-4">
-                <label for="due_date">Due Date</label>
-                {{ form.due_date }}
-            </div>
+        < div
+        class
+        = "column large-4 small-4 medium-4" >
+                < label
+        for= "due_date" > Due Date <
+        /
+        label >
+        {{ form.due_date }}
+        <
+        /
+        div >
 
-            <div class="column large-4 small-4 medium-4">
-                <label for="return_date">Return Date</label>
-                {{ form.return_date }}
-            </div>
+        < div
+        class
+        = "column large-4 small-4 medium-4" >
+                < label
+        for= "return_date" > Return Date <
+        /
+        label >
+        {{ form.return_date }}
+        <
+        /
+        div >
 
-        </div>
+        <
+        /
+        div >
 
-        <div class="row">
-            <div class="column large-4 small-4 medium-4">
-                <label for="fine_per_day">Fine per Day</label>
-                {{ form.fine_per_day }}
-            </div>
+        < div
+        class
+        = "row" >
+                < div
+        class
+        = "column large-4 small-4 medium-4" >
+                < label
+        for= "fine_per_day" > Fine per
+        Day <
+        /
+        label >
+        {{ form.fine_per_day }}
+        <
+        /
+        div >
 
-            <div class="column large-4 small-4 medium-4">
-                <label for="total_fine">Total Fine</label>
-                <input type="text" disabled data-bind="value: total_fine()">
-            </div>
+        < div
+        class
+        = "column large-4 small-4 medium-4" >
+                < label
+        for= "total_fine" > Total Fine <
+        /
+        label >
+        < input
+        type = "text"
+        disabled
+        data - bind = "value: total_fine()" >
+                <
+        /
+        div >
 
-            <div class="column large-4 small-4 medium-4">
-                <label for="fine_paid">Fine Paid</label>
-                {{ form.fine_paid }}
-            </div>
+        < div
+        class
+        = "column large-4 small-4 medium-4" >
+                < label
+        for= "fine_paid" > Fine Paid <
+        /
+        label >
+        {{ form.fine_paid }}
+        <
+        /
+        div >
 
-        </div>
+        <
+        /
+        div >
 
 
-        <input type="submit" value="Return!" class="button">
+        < input
+        type = "submit"
+        value = "Return!"
+        class
+        = "button" >
 
-    </form>
+                <
+        /
+        form >
 
 {% endblock %}

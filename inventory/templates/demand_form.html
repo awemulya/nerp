@@ -1,7 +1,7 @@
 {% extends "inventory_base.html" %}
 {% load i18n %}
 {% load filters %}
-
+{% load staticfiles %}
 
 {% block title %}{% trans scenario %} {% trans 'Demand Form' %}{% endblock %}
 
@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block head_end %}
-    <script src="{{ STATIC_URL }}js/inventory/demand_form.js"></script>
+    <script src="{% static 'js/inventory/demand_form.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};
     </script>

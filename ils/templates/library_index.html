@@ -1,14 +1,9 @@
 {% extends "library_base.html" %}
 {% load i18n %}
 {% load filters %}
+{% load staticfiles %}
 
 {% block title %} {% trans 'Integrated Library System' %}{% endblock %}
-
-
-{% block head_end %}
-    {#    <script src="{{ STATIC_URL }}js/ils/outgoing.js"></script>#}
-
-{% endblock %}
 
 {% block content %}
 
@@ -16,48 +11,48 @@
 
         <div>
             <a href="{% url 'list_records' %}">
-                <img src="{{ STATIC_URL }}img/icons/book.png">
+                <img src="{% static 'img/icons/book.png' %}">
                 Books</a>
         </div>
         {% ifusergroup 'Librarian' %}
             <div>
                 <a href="{% url 'list_patrons' %}">
-                    <img src="{{ STATIC_URL }}img/icons/user.png">
+                    <img src="{% static 'img/icons/user.png' %}">
                     Patrons</a>
             </div>
         {% endifusergroup %}
         <div>
             <a href="{% url 'list_authors' %}">
-                <img src="{{ STATIC_URL }}img/icons/write.png">
+                <img src="{% static 'img/icons/write.png' %}">
                 Authors</a>
         </div>
         <div>
             <a href="{% url 'list_publishers' %}">
-                <img src="{{ STATIC_URL }}img/icons/print.png">
+                <img src="{% static 'img/icons/print.png' %}">
                 Publishers</a>
         </div>
 
         <div>
             <a href="{% url 'list_ebooks' %}">
-                <img src="{{ STATIC_URL }}img/icons/ebook.png">
+                <img src="{% static 'img/icons/ebook.png' %}">
                 Ebooks</a>
         </div>
 
         {% ifusergroup 'Librarian' %}
             <div>
                 <a href="{% url 'list_transactions' %}">
-                    <img src="{{ STATIC_URL }}img/icons/import.png">
+                    <img src="{% static 'img/icons/import.png' %}">
                     Transactions</a>
             </div>
 
             <div>
                 <a href="{% url 'acquisition' %}">
-                    <img src="{{ STATIC_URL }}img/icons/download.png">
+                    <img src="{% static 'img/icons/download.png' %}">
                     Acquisition</a>
             </div>
             <div>
                 <a href="{% url 'outgoing' %}">
-                    <img src="{{ STATIC_URL }}img/icons/export.png">
+                    <img src="{% static 'img/icons/export.png' %}">
                     Checkout</a>
             </div>
         {% endifusergroup %}

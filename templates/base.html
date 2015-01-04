@@ -15,30 +15,30 @@
 
     <title>{% block title %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/normalize.css">
+    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
 
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/foundation.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/vendors/selectize.default.css">
+    <link rel="stylesheet" href="{% static 'css/foundation.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendors/selectize.default.css' %}">
 
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/base.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/print.css" media="print">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/print.css' %}" media="print">
 
-    <!--<link rel="stylesheet" href="{{ STATIC_URL }}css/print.css" media="screen">-->
+{#    <link rel="stylesheet" href="{% static 'css/print.css' %}" media="screen"> #}
 
-    <script src="{{ STATIC_URL }}js/vendors/jquery.js"></script>
+    <script src="{% static 'js/vendors/jquery.js' %}"></script>
 
-    {#    <script src="{{ STATIC_URL }}js/vendors/select2.js"></script>#}
-    <script src="{{ STATIC_URL }}js/vendors/selectize.js"></script>
+    {#    <script src="{% static 'js/vendors/select2.js' %}"></script>#}
+    <script src="{% static 'js/vendors/selectize.js' %}"></script>
 
-    <script src="{{ STATIC_URL }}js/base.js"></script>
-    <script src="{{ STATIC_URL }}js/vendors/knockout.js"></script>
-    <script src="{{ STATIC_URL }}js/ko_lib.js"></script>
+    <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/vendors/knockout.js' %}"></script>
+    <script src="{% static 'js/ko_lib.js' %}"></script>
 
 
     {% block head_end %}{% endblock %}
 
-    <script src="{{ STATIC_URL }}js/vendors/custom.modernizr.js"></script>
-    <script src="{{ STATIC_URL }}js/vendors/jquery.autosize.input.js"></script>
+    <script src="{% static 'js/vendors/custom.modernizr.js' %}"></script>
+    <script src="{% static 'js/vendors/jquery.autosize.input.js' %}"></script>
     {% get_current_language as LANGUAGE_CODE %}
     <script>
         window.lang = '{{ LANGUAGE_CODE }}';
@@ -133,8 +133,8 @@
 </footer>
 
 <!-- End Footer -->
-<script src="{{ STATIC_URL }}js/foundation/foundation.min.js"></script>
-<script src="{{ STATIC_URL }}js/foundation/foundation.dropdown.js"></script>
+<script src="{% static 'js/foundation/foundation.min.js' %}"></script>
+<script src="{% static 'js/foundation/foundation.dropdown.js' %}"></script>
 <script>
     $(document).foundation();
 </script>

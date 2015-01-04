@@ -1,7 +1,7 @@
 {% extends "inventory_base.html" %}
 {% load i18n %}
 {% load filters %}
-
+{% load staticfiles %}
 
 {% block title %}{% trans scenario %} {% trans 'Handover' %} {% trans 'Form' %}{% endblock %}
 
@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block head_end %}
-    <script src="{{ STATIC_URL }}js/inventory/handover.js"></script>
+    <script src="{% static 'js/inventory/handover.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};
     </script>
