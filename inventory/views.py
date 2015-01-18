@@ -172,6 +172,29 @@ def save_demand(request):
         object_values['demandee_id'] = params.get('demandee')
     try:
         obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = DemandRow
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['item_id', 'quantity', 'unit']):
+                continue
+            # if row.get('release_quantity') == '':
+            # row['release_quantity'] = 1
+
+            values = {'sn': index + 1, 'item_id': row.get('item_id'),
+                      'specification': row.get('specification'),
+                      'quantity': row.get('quantity'), 'unit': row.get('unit'),
+                      'release_quantity': row.get('release_quantity'), 'remarks': row.get('remarks'),
+                      'demand': obj}
+
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            # set_transactions(submodel, request.POST.get('date'),
+            #                  ['dr', bank_account, row.get('amount')],
+            #                  ['cr', benefactor, row.get('amount')],
+            # )
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['rows'][index] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
@@ -179,28 +202,7 @@ def save_demand(request):
             dct['error_message'] = str(e)
         else:
             dct['error_message'] = 'Error in form data!'
-    dct['id'] = obj.id
-    model = DemandRow
-    for index, row in enumerate(params.get('table_view').get('rows')):
-        if invalid(row, ['item_id', 'quantity', 'unit']):
-            continue
-        # if row.get('release_quantity') == '':
-        # row['release_quantity'] = 1
 
-        values = {'sn': index + 1, 'item_id': row.get('item_id'),
-                  'specification': row.get('specification'),
-                  'quantity': row.get('quantity'), 'unit': row.get('unit'),
-                  'release_quantity': row.get('release_quantity'), 'remarks': row.get('remarks'),
-                  'demand': obj}
-        submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-        # set_transactions(submodel, request.POST.get('date'),
-        #                  ['dr', bank_account, row.get('amount')],
-        #                  ['cr', benefactor, row.get('amount')],
-        # )
-        if not created:
-            submodel = save_model(submodel, values)
-        dct['rows'][index] = submodel.id
-    delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
 
 
