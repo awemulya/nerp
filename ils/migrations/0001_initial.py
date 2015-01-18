@@ -2,15 +2,11 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import mptt.fields
-from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('core', '0001_initial'),
     ]
 
     operations = [
@@ -43,18 +39,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('file', models.FileField(upload_to=b'ils/books/')),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='LibrarySetting',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('fine_per_day', models.FloatField()),
-                ('borrow_days', models.PositiveIntegerField()),
-                ('default_type', models.CharField(default=b'circulative', unique=True, max_length=11, choices=[(b'Reference', b'Reference'), (b'Circulative', b'Circulative')])),
             ],
             options={
             },
@@ -112,11 +96,6 @@ class Migration(migrations.Migration):
                 ('by_statement', models.CharField(max_length=254, null=True, blank=True)),
                 ('notes', models.CharField(max_length=254, null=True, blank=True)),
                 ('excerpt', models.CharField(max_length=254, null=True, blank=True)),
-                ('authors', models.ManyToManyField(to='ils.Author', blank=True)),
-                ('book', models.ForeignKey(to='ils.Book')),
-                ('languages', models.ManyToManyField(to='core.Language', blank=True)),
-                ('published_places', models.ManyToManyField(to='ils.Place', blank=True)),
-                ('publisher', models.ForeignKey(blank=True, to='ils.Publisher', null=True)),
             ],
             options={
             },
@@ -133,7 +112,6 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
-                ('parent', mptt.fields.TreeForeignKey(related_name=b'children', blank=True, to='ils.Subject', null=True)),
             ],
             options={
                 'abstract': False,
@@ -151,22 +129,9 @@ class Migration(migrations.Migration):
                 ('fine_per_day', models.FloatField()),
                 ('fine_paid', models.FloatField(default=False)),
                 ('record', models.ForeignKey(to='ils.Record')),
-                ('user', models.ForeignKey(related_name=b'transactions', to=settings.AUTH_USER_MODEL)),
             ],
             options={
             },
             bases=(models.Model,),
-        ),
-        migrations.AddField(
-            model_name='bookfile',
-            name='record',
-            field=models.ForeignKey(related_name=b'files', to='ils.Record'),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='book',
-            name='subjects',
-            field=models.ManyToManyField(to='ils.Subject'),
-            preserve_default=True,
         ),
     ]

@@ -3,16 +3,13 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import app.utils.translation
-import mptt.fields
-from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('contenttypes', '0001_initial'),
-        ('core', '0002_auto_20141216_1532'),
+        ('core', '0001_initial'),
     ]
 
     operations = [
@@ -26,7 +23,6 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
-                ('parent', mptt.fields.TreeForeignKey(related_name=b'children', blank=True, to='inventory.Category', null=True)),
             ],
             options={
                 'verbose_name_plural': 'Inventory Categories',
@@ -40,8 +36,6 @@ class Migration(migrations.Migration):
                 ('release_no', models.IntegerField(null=True, blank=True)),
                 ('date', app.utils.translation.BSDateField()),
                 ('purpose', models.CharField(max_length=254)),
-                ('demandee', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
             ],
             options={
             },
