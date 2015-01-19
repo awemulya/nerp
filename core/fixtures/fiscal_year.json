@@ -1,0 +1,23 @@
+[
+{
+  "fields": {
+    "year": 2069
+  },
+  "model": "core.fiscalyear",
+  "pk": 1
+},
+{
+  "fields": {
+    "year": 2070
+  },
+  "model": "core.fiscalyear",
+  "pk": 2
+},
+{
+  "fields": {
+    "year": 2071
+  },
+  "model": "core.fiscalyear",
+  "pk": 3
+}
+]
