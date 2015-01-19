@@ -18,12 +18,13 @@ urlpatterns = patterns('',
                        (r'^library/', include('ils.urls')),
                        (r'^training/', include('training.urls')),
 
+                        (r'^admin/settings/', include('dbsettings.urls')),
                        url(r'^admin/', include(admin.site.urls)),
                        (r'^i18n/', include('django.conf.urls.i18n')),
 
                        url(r'^froala_editor/', include('froala_editor.urls')),
 
-                       (r'^settings/', include('dbsettings.urls')),
+
 
                        (r'', include('core.urls')),
 

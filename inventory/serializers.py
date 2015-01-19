@@ -3,14 +3,14 @@ from inventory.models import Demand, DemandRow, Item, Party, PurchaseOrder, Purc
 
 
 class ItemSerializer(serializers.ModelSerializer):
-    account_no = serializers.Field(source='account.account_no')
+    account_no = serializers.ReadOnlyField(source='account.account_no')
 
     class Meta:
         model = Item
 
 
 class DemandRowSerializer(serializers.ModelSerializer):
-    item_id = serializers.Field(source='item.id')
+    item_id = serializers.ReadOnlyField(source='item.id')
 
     class Meta:
         model = DemandRow
@@ -18,7 +18,8 @@ class DemandRowSerializer(serializers.ModelSerializer):
 
 
 class DemandSerializer(serializers.ModelSerializer):
-    rows = DemandRowSerializer()
+    rows = DemandRowSerializer(many=True)
+    date = serializers.ModelField(Demand()._meta.get_field('date'))
 
     class Meta:
         model = Demand

@@ -3,7 +3,7 @@
 {% load filters %}
 {% load pagination_tags %}
 {% load sorting_tags %}
-
+{% load staticfiles %}
 
 {% block title %} {{ record }}{% endblock %}
 
@@ -14,149 +14,169 @@
 {% endblock %}
 
 {% block head_end %}
-    {#    <script src="{{ STATIC_URL }}js/ils/view_record.js"></script>#}
-
+    {#    <script src="{% static 'js/ils/view_record.js' %}"></script>#}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/ils/view_record.css' %}">
 {% endblock %}
-
 {% block content %}
 
+
     <div class="row">
-        <div class="column large-1">
+
+        <div class="column large-4 medium-6 small-12">
             {% if record.medium_cover %}
-                <a href="{{ MEDIA_URL }}{{ record.large_cover }}" target="_blank"><img
+                <a href="{{ MEDIA_URL }}{{ record.large_cover }}" target="_blank" class='th'><img
                         src="{{ MEDIA_URL }}{{ record.medium_cover }}"></a>
             {% endif %}
         </div>
-        <div class="column large-8">
-            <h1>{{ record.book.title }}</h1>
-            {% if record.book.subtitle %}
-                <h4>{{ record.book.subtitle }}</h4>
-            {% endif %}
-            {% if record.authors.all %}
-                <h5>by {% for author in record.authors.all %}
+
+        <div class="column large-8 medium-6 small-12">
+            <h1 id="book-title">{{ record.book.title }}
+                <small>{% if record.book.subtitle %}
+                    {{ record.book.subtitle }}
+                {% endif %}
+                </small>
+            </h1>
+            <p id="text-by"><em>by</em>
+                {% for author in record.authors.all %}
                     {{ author|linkify }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
-                </h5>
-            {% endif %}
-            {% if record.publisher or record.published_date or record.published_places.all %}
-                Published
-                {% if record.published_date %}
-                    {{ record.published_date }}
-                {% endif %}
-                {% if record.publisher %}
-                    by {{ record.publisher|linkify }}
-                {% endif %}
-                {% if record.published_places.all %}
-                    in {{ record.published_places.all|join:', ' }}
-                {% endif %}
-            {% endif %}
+            </p>
 
+            <p>
+                {% if record.publisher or record.published_date or record.published_places.all %}
+                    <em>Published on</em>
+                    {% if record.published_date %}
+                        {{ record.published_date }}
+                    {% endif %}
+                    {% if record.publisher %}
+                        by {{ record.publisher|linkify }}
+                    {% endif %}
+                    {% if record.published_places.all %}
+                        in {{ record.published_places.all|join:', ' }}
+                    {% endif %}
+                {% endif %}
+
+            </p>
         </div>
-        <div class="column large-3">
-        </div>
 
-    </div>
-
-    <div class="rowz">
-        {% if record.excerpt %}
-            {{ record.excerpt }}
-            <br><br>
-        {% endif %}
-
-    </div>
-
-    <div class="rowz">
-        {% if record.notes %}
-            <strong>Notes: </strong>{{ record.notes }}
-            <br><br>
-        {% endif %}
     </div>
 
     <div class="row">
-        <div class="column large-6 medium-6">
-            {% if record.isbn13 %}
-                <strong>ISBN: </strong>{{ record.isbn13 }}
-                <br>
-            {% endif %}
+        <div class="column small-12">
 
-            {% if record.pagination %}
-                <strong>Pagination: </strong>{{ record.pagination }}
-                <br>
-            {% endif %}
+            <table id="book-detail">
+                <tbody>
 
-            {% if record.openlibrary_id %}
-                <strong>OpenLibrary: </strong>
-                <a target="_blank"
-                   href="https://openlibrary.org/books/{{ record.openlibrary_id }}/">{{ record.openlibrary_id }}</a>
-                <br>
-            {% endif %}
+                {% if record.isbn13 %}
+                    <tr>
+                        <th>ISBN</th>
+                        <td>{{ record.isbn13 }}</td>
+                    </tr>
+                {% endif %}
 
-            {% if record.goodreads_id %}
-                <strong>Goodreads: </strong>
-                <a target="_blank"
-                   href="http://www.goodreads.com/book/show/{{ record.goodreads_id }}">{{ record.goodreads_id }}</a>
-                <br>
-            {% endif %}
+                {% if record.pagination %}
+                    <tr>
+                        <th>Pagination</th>
+                        <td>{{ record.pagination }}</td>
+                    </tr>
+                {% endif %}
 
-            {% if record.lccn_id %}
-                <strong>Library of Congress Control Number: </strong>
-                <a target="_blank"
-                   href="http://lccn.loc.gov/{{ record.lccn_id }}">{{ record.lccn_id }}</a>
-                <br>
-            {% endif %}
+                {% if record.openlibrary_id %}
+                    <tr>
+                        <th>OpenLibrary</th>
+                        <td>
+                            <a target="_blank"
+                               href="https//openlibrary.org/books/{{ record.openlibrary_id }}/">{{ record.openlibrary_id }}</a>
+                        </td>
+                    </tr>
+                {% endif %}
 
-            {% if record.oclc_id %}
-                <strong>OCLC WorldCat: </strong>
-                <a target="_blank"
-                   href="http://www.worldcat.org/oclc/{{ record.oclc_id }}?tab=details">{{ record.oclc_id }}</a>
-                <br>
-            {% endif %}
+                {% if record.goodreads_id %}
+                    <tr>
+                        <th>Goodreads</th>
+                        <td><a target="_blank"
+                               href="http//www.goodreads.com/book/show/{{ record.goodreads_id }}">{{ record.goodreads_id }}</a>
+                        </td>
+                    </tr>
+                {% endif %}
 
-            {% if record.librarything_id %}
-                <strong>LibraryThing: </strong>
-                <a target="_blank"
-                   href="http://www.librarything.com/work/{{ record.librarything_id }}">{{ record.librarything_id }}</a>
-                <br>
-            {% endif %}
+                {% if record.lccn_id %}
+                    <tr>
+                        <th>Library of Congress Control Number</th>
+                        <td><a target="_blank"
+                               href="http//lccn.loc.gov/{{ record.lccn_id }}">{{ record.lccn_id }}</a></td>
+                    </tr>
+                {% endif %}
 
-            {% if record.format %}
-                <strong>Format: </strong>{{ record.format }}
-                <br>
-            {% endif %}
+                {% if record.oclc_id %}
+                    <tr>
+                        <th>OCLC WorldCat</th>
+                        <td><a target="_blank"
+                               href="http//www.worldcat.org/oclc/{{ record.oclc_id }}?tab=details">{{ record.oclc_id }}</a>
+                        </td>
+                    </tr>
+                {% endif %}
+
+                {% if record.librarything_id %}
+                    <tr>
+                        <th>LibraryThing</th>
+                        <td><a target="_blank"
+                               href="http//www.librarything.com/work/{{ record.librarything_id }}">{{ record.librarything_id }}</a>
+                        </td>
+                    </tr>
+                {% endif %}
+
+                {% if record.format %}
+                    <tr>
+                        <th>Format</th>
+                        <td>
+                            {{ record.format }}
+                        </td>
+                    </tr>
+                {% endif %}
+
+                {% if record.format != 'eBook' %}
+                    {% if record.type %}
+                        <tr>
+                            <th>Type</th>
+                            <td>{{ record.type }}</td>
+                        </tr>
+                    {% endif %}
+                {% endif %}
+
+                {% if record.weight %}
+                    <tr>
+                        <th>Weight</th>
+                        <td>{{ record.weight }}</td>
+                    </tr>
+                {% endif %}
+
+                {% if record.dimensions %}
+                    <tr>
+                        <th>Dimensions</th>
+                        <td>{{ record.dimensions }}</td>
+                    </tr>
+                {% endif %}
+
+                {% if record.lcc %}
+                    <tr>
+                        <th>Library of Congress Classification</th>
+                        <td>{{ record.lcc }}</td>
+                    </tr>
+                {% endif %}
+
+                {% if record.ddc %}
+                    <tr>
+                        <th>Dewey Decimal Class</th>
+                        <td>{{ record.ddc }}</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
 
             {% if record.format != 'eBook' %}
-                {% if record.type %}
-                    <strong>Type: </strong>{{ record.type }}
-                    <br>
-                {% endif %}
-            {% endif %}
-
-            {% if record.weight %}
-                <strong>Weight: </strong>{{ record.weight }}
-                <br>
-            {% endif %}
-
-            {% if record.dimensions %}
-                <strong>Dimensions: </strong>{{ record.dimensions }}
-                <br>
-            {% endif %}
-
-            {% if record.lcc %}
-                <strong>Library of Congress Classification: </strong>{{ record.lcc }}
-                <br>
-            {% endif %}
-
-            {% if record.ddc %}
-                <strong>Dewey Decimal Class: </strong>{{ record.ddc }}
-                <br>
-            {% endif %}
-
-        </div>
-
-        {% if record.format != 'eBook' %}
-            {% ifusergroup 'Librarian' %}
-                <div class="column large-6 medium-6">
-                    <table>
+                {% ifusergroup 'Librarian' %}
+                    <table id="circulation-detail">
                         <tr>
                             <th>Total</th>
                             <td>{{ record.quantity }}</td>
@@ -179,56 +199,96 @@
                             {% endif %}
                         {% endif %}
                     </table>
-                </div>
-            {% endifusergroup %}
-        {% endif %}
+                {% endifusergroup %}
+            {% endif %}
+
+            {% if record.ebooks %}
+                <table>
+                    <tbody>
+                    <tr>
+                        <th>E-books</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            {% for ebook in record.ebooks %}
+                                <a href="{{ MEDIA_URL }}{{ ebook.file }}">{{ ebook.format }}</a>
+                                {% if not forloop.last %} | {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column small-12">
+            {% if record.excerpt %}
+                <blockquote>
+                    {{ record.excerpt }}
+                </blockquote>
+            {% endif %}
+        </div>
     </div>
 
 
-    {% if record.ebooks %}
-        <h3>E-books</h3>
-        {% for ebook in record.ebooks %}
-            <a href="{{ MEDIA_URL }}{{ ebook.file }}">{{ ebook.format }}</a>
-            {% if not forloop.last %} | {% endif %}
-        {% endfor %}
+    <div class="row">
+        <div class="column small-12">
+            {% if record.notes %}
+                <strong>Notes: </strong><em>{{ record.notes }}</em>
+            {% endif %}
+        </div>
+    </div>
 
-    {% endif %}
-    {% if record.format != 'eBook' %}
-        {% ifusergroup 'Librarian' %}
-            <h3>Transactions</h3>
-            <div class="transactions">
-                <table class="table-bordered">
-                    <thead>
-                    <tr>
-                        <th>{% anchor user_id 'Patron' %}</th>
-                        <th>{% anchor borrow_date 'Borrow Date' %}</th>
-                        <th>{% anchor due_date 'Due Date' %}</th>
-                        <th>{% anchor return_date 'Return Date' %}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% autosort transactions as sorted_objects %}
-                    {% autopaginate sorted_objects 20 as paginated_objects %}
-                    {% for transaction in paginated_objects %}
+
+    <br>
+    <div class="row">
+        <div id="transactions" class="column small-12">
+
+
+            {% if record.format != 'eBook' %}
+                {% ifusergroup 'Librarian' %}
+                    <h3>Transactions</h3>
+
+
+                    <table class="table-bordered">
+                        <thead>
                         <tr>
-                            <td><a href="{% url 'view_patron' pk=transaction.user.id %}">{{ transaction.user }}</a></td>
-                            <td>{{ transaction.borrow_date }}</td>
-                            <td>{{ transaction.due_date }}</td>
-                            <td> {% if transaction.return_date %}
-                                {{ transaction.return_date }}
-                            {% else %}
-
-                                <a href="{% url 'incoming' transaction_pk=transaction.id %}">Return</a>
-                            {% endif %}
-                            </td>
+                            <th>{% anchor user_id 'Patron' %}</th>
+                            <th>{% anchor borrow_date 'Borrow Date' %}</th>
+                            <th>{% anchor due_date 'Due Date' %}</th>
+                            <th>{% anchor return_date 'Return Date' %}</th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                {% paginate %}
-            </div>
-        {% endifusergroup %}
-    {% endif %}
+                        </thead>
+                        <tbody>
+                        {% autosort transactions as sorted_objects %}
+                        {% autopaginate sorted_objects 20 as paginated_objects %}
+                        {% for transaction in paginated_objects %}
+                            <tr>
+                                <td><a href="{% url 'view_patron' pk=transaction.user.id %}">{{ transaction.user }}</a>
+                                </td>
+                                <td>{{ transaction.borrow_date }}</td>
+                                <td>{{ transaction.due_date }}</td>
+                                <td> {% if transaction.return_date %}
+                                    {{ transaction.return_date }}
+                                {% else %}
+
+                                    <a href="{% url 'incoming' transaction_pk=transaction.id %}">Return</a>
+                                {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% paginate %}
+
+                {% endifusergroup %}
+            {% endif %}
+
+        </div>
+    </div>
 
 
 {% endblock %}

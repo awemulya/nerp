@@ -1,12 +1,13 @@
 {% extends "training_base.html" %}
 {% load i18n %}
 {% load filters %}
+{% load staticfiles %}
 
 {% block title %} {% trans 'Training' %}{% endblock %}
 
 
 {% block head_end %}
-    {#    <script src="{{ STATIC_URL }}js/ils/outgoing.js"></script>#}
+    {#    <script src="{% static 'js/ils/outgoing.js' %}"></script>#}
 
 {% endblock %}
 
@@ -17,48 +18,48 @@
 
             <div>
                 <a href="{% url 'list_trainings' %}">
-                    <img src="{{ STATIC_URL }}img/icons/training.png">
+                    <img src="{% static 'img/icons/training.png' %}">
                     <b>Trainings</b></a>
             </div>
 
             <div>
                 <a href="{% url 'list_resource_persons' %}">
-                    <img src="{{ STATIC_URL }}img/icons/trainer.png">
+                    <img src="{% static 'img/icons/trainer.png' %}">
                     Resource Persons</a>
             </div>
 
             <div>
                 <a href="{% url 'list_participants' %}">
-                    <img src="{{ STATIC_URL }}img/icons/students.png">
+                    <img src="{% static 'img/icons/students.png' %}">
                     Participants</a>
             </div>
             <div>
                 <a href="{% url 'list_organizations' %}">
-                    <img src="{{ STATIC_URL }}img/icons/organization.png">
+                    <img src="{% static 'img/icons/organization.png' %}">
                     Organizations</a>
             </div>
 
 
             <div>
                 <a href="{% url 'list_files' %}">
-                    <img src="{{ STATIC_URL }}img/icons/file.png">
+                    <img src="{% static 'img/icons/file.png' %}">
                     Files</a>
             </div>
 
             <div>
                 <a href="{% url 'list_training_categories' %}">
-                    <img src="{{ STATIC_URL }}img/icons/category.png">
+                    <img src="{% static 'img/icons/category.png' %}">
                     Categories</a>
             </div>
             <div>
                 <a href="{% url 'list_target_groups' %}">
-                    <img src="{{ STATIC_URL }}img/icons/target.png">
+                    <img src="{% static 'img/icons/target.png' %}">
                     Target Groups</a>
             </div>
         {% else %}
             <div>
                 <a href="{% url 'add_participant' %}">
-                    <img src="{{ STATIC_URL }}img/icons/students.png">
+                    <img src="{% static 'img/icons/students.png' %}">
                     Register</a>
             </div>
         {% endifusergroup %}

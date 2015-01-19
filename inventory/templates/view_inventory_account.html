@@ -1,5 +1,6 @@
 {% extends "inventory_base.html" %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block title %}{{ obj.name }}{% endblock %}
 
@@ -12,7 +13,7 @@
 {% load filters %}
 
 {% block head_end %}
-    <script src="{{ STATIC_URL }}js/inventory/inventory_account.js"></script>
+    <script src="{% static 'js/inventory/inventory_account.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};
     </script>

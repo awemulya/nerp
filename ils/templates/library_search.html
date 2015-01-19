@@ -1,7 +1,7 @@
 {% extends "library_base.html" %}
 {% load i18n %}
 {% load filters %}
-
+{% load staticfiles %}
 
 {% block title %} Search{% endblock %}
 
@@ -42,7 +42,7 @@
                                             <img src="{{ MEDIA_URL }}{{ record.small_cover }}"></a>
                                     {% else %}
                                         <a href="{{ record.get_absolute_url }}">
-                                            <img src="{{ STATIC_URL }}img/no_cover-40x60.png"></a>
+                                            <img src="{% static 'img/no_cover-40x60.png' %}"></a>
                                     {% endif %}
                                 </div>
                                 <div class="column large-7 medium-7 small-7">

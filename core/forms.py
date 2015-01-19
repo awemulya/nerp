@@ -1,5 +1,5 @@
 from django import forms
-from app.libr import KOModelForm
+from app.utils.forms import KOModelForm
 from core.models import Party, Employee
 from django.utils.translation import ugettext_lazy as _
 

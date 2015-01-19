@@ -7,7 +7,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 import os
 
 from core.models import Language
-from app.libr import unique_slugify
+from app.utils.forms import unique_slugify
 from users.models import User
 
 BOOK_TYPES = (

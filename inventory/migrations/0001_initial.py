@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import app.utils.translation
 import mptt.fields
 from django.conf import settings
 
@@ -11,7 +12,7 @@ class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('contenttypes', '0001_initial'),
-        ('core', '0001_initial'),
+        ('core', '0002_auto_20141216_1532'),
     ]
 
     operations = [
@@ -37,7 +38,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('release_no', models.IntegerField(null=True, blank=True)),
-                ('date', models.DateField()),
+                ('date', app.utils.translation.BSDateField()),
                 ('purpose', models.CharField(max_length=254)),
                 ('demandee', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
                 ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
@@ -99,7 +100,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('voucher_no', models.PositiveIntegerField(null=True, blank=True)),
                 ('addressee', models.CharField(max_length=254)),
-                ('date', models.DateField()),
+                ('date', app.utils.translation.BSDateField()),
                 ('office', models.CharField(max_length=254)),
                 ('designation', models.CharField(max_length=254)),
                 ('handed_to', models.CharField(max_length=254)),
@@ -165,10 +166,10 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(max_length=10, null=True, blank=True)),
                 ('name', models.CharField(max_length=254)),
                 ('description', models.TextField(null=True, blank=True)),
-                ('type', models.CharField(default=b'consumable', max_length=15, choices=[(b'consumable', '\u0916\u092a\u0924 \u0939\u0941\u0928\u0947'), (b'non-consumable', '\u0916\u092a\u094d\u0928\u0947')])),
-                ('unit', models.CharField(default='\u0925\u093e\u0928', max_length=50)),
+                ('type', models.CharField(default=b'consumable', max_length=15, choices=[(b'consumable', 'Consumable'), (b'non-consumable', 'Non-Consumable')])),
+                ('unit', models.CharField(default='pieces', max_length=50)),
                 ('property_classification_reference_number', models.CharField(max_length=20, null=True, blank=True)),
-                ('account', models.OneToOneField(related_name=b'item', to='inventory.InventoryAccount')),
+                ('account', models.OneToOneField(related_name=b'item', null=True, to='inventory.InventoryAccount')),
                 ('category', models.ForeignKey(blank=True, to='inventory.Category', null=True)),
             ],
             options={
@@ -179,7 +180,7 @@ class Migration(migrations.Migration):
             name='JournalEntry',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date', models.DateField()),
+                ('date', app.utils.translation.BSDateField()),
                 ('model_id', models.PositiveIntegerField()),
                 ('content_type', models.ForeignKey(related_name=b'inventory_journal_entries', to='contenttypes.ContentType')),
             ],
@@ -193,7 +194,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('order_no', models.IntegerField(null=True, blank=True)),
-                ('date', models.DateField()),
+                ('date', app.utils.translation.BSDateField()),
                 ('due_days', models.IntegerField(default=3)),
                 ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
                 ('party', models.ForeignKey(to='core.Party')),

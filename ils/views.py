@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from app.libr import title_case
+from app.utils.helpers import title_case
 from core.models import Language
 from ils.forms import RecordForm, OutgoingForm, IncomingForm, PatronForm
 from ils.models import library_setting as setting

@@ -11,9 +11,12 @@ from django.db.models import F
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import ugettext as _
 
-from app.libr import zero_for_none, none_for_zero, ne2en
+from app.utils.helpers import zero_for_none, none_for_zero
+from app.utils.translation import ne2en
 from users.models import User
 from core.models import FiscalYear, Party
+from app.utils.translation import BSDateField
+
 
 
 class Category(MPTTModel):
@@ -76,8 +79,8 @@ class InventoryAccount(models.Model):
     # transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
     # '-journal_entry__id', '-journal_entry__date')[:1]
     # if len(transactions) > 0:
-    #         return transactions[0].current_cr
-    #     return 0
+    # return transactions[0].current_cr
+    # return 0
     #
     # def get_dr_amount(self, day):
     #     #journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
@@ -123,7 +126,7 @@ class Item(models.Model):
 
 
 class JournalEntry(models.Model):
-    date = models.DateField()
+    date = BSDateField()
     content_type = models.ForeignKey(ContentType, related_name='inventory_journal_entries')
     model_id = models.PositiveIntegerField()
     creator = generic.GenericForeignKey('content_type', 'model_id')
@@ -201,8 +204,8 @@ def set_transactions(model, date, *args):
 # # [transaction.delete() for transaction in submodel.transactions.all()]
 # # args = [arg for arg in args if arg is not None]
 # journal_entry, created = JournalEntry.objects.get_or_create(
-#        content_type=ContentType.objects.get_for_model(submodel), model_id=submodel.id,
-#        defaults={
+# content_type=ContentType.objects.get_for_model(submodel), model_id=submodel.id,
+# defaults={
 #            'date': date
 #        })
 #    for arg in args:
@@ -291,7 +294,7 @@ class Demand(models.Model):
     release_no = models.IntegerField(blank=True, null=True)
     fiscal_year = models.ForeignKey(FiscalYear)
     demandee = models.ForeignKey(User)
-    date = models.DateField()
+    date = BSDateField()
     purpose = models.CharField(max_length=254)
 
     def get_voucher_no(self):
@@ -360,7 +363,7 @@ class EntryReportRow(models.Model):
 class Handover(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     addressee = models.CharField(max_length=254)
-    date = models.DateField()
+    date = BSDateField()
     office = models.CharField(max_length=254)
     designation = models.CharField(max_length=254)
     handed_to = models.CharField(max_length=254)
@@ -399,7 +402,7 @@ class HandoverRow(models.Model):
 class PurchaseOrder(models.Model):
     party = models.ForeignKey(Party)
     order_no = models.IntegerField(blank=True, null=True)
-    date = models.DateField()
+    date = BSDateField()
     due_days = models.IntegerField(default=3)
     fiscal_year = models.ForeignKey(FiscalYear)
     entry_reports = generic.GenericRelation(EntryReport, content_type_field='source_content_type_id',

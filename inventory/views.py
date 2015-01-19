@@ -9,10 +9,12 @@ from django.core.urlresolvers import reverse
 
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm
 from inventory.filters import InventoryItemFilter
+
 from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow
-from app.libr import invalid, save_model, empty_to_none
+from app.utils.helpers import invalid, save_model, empty_to_none
 from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer
-from app.nepdate import BSUtil
+import nepdate
+
 from users.models import group_required
 from core.models import app_setting
 
@@ -147,7 +149,7 @@ def demand_form(request, id=None):
         obj = get_object_or_404(Demand, id=id)
         scenario = 'Update'
     else:
-        obj = Demand(date=BSUtil().today(), demandee=request.user)
+        obj = Demand(date=nepdate.today_as_str(), demandee=request.user)
         scenario = 'Create'
     form = DemandForm(instance=obj)
     object_data = DemandSerializer(obj).data
@@ -183,7 +185,7 @@ def save_demand(request):
         if invalid(row, ['item_id', 'quantity', 'unit']):
             continue
         # if row.get('release_quantity') == '':
-        #     row['release_quantity'] = 1
+        # row['release_quantity'] = 1
 
         values = {'sn': index + 1, 'item_id': row.get('item_id'),
                   'specification': row.get('specification'),
@@ -208,7 +210,7 @@ def purchase_order(request, id=None):
         obj = get_object_or_404(PurchaseOrder, id=id)
         scenario = 'Update'
     else:
-        obj = PurchaseOrder(date=BSUtil().today())
+        obj = PurchaseOrder(date=nepdate.today_as_str())
         scenario = 'Create'
     form = PurchaseOrderForm(instance=obj)
     object_data = PurchaseOrderSerializer(obj).data
@@ -250,7 +252,7 @@ def save_purchase_order(request):
                   'purchase_order': obj}
         submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
         # set_transactions(submodel, request.POST.get('date'),
-        #                  ['dr', bank_account, row.get('amount')],
+        # ['dr', bank_account, row.get('amount')],
         #                  ['cr', benefactor, row.get('amount')],
         # )
         if not created:
@@ -306,7 +308,7 @@ def handover_incoming(request, id=None):
         obj = get_object_or_404(Handover, id=id)
         scenario = 'Update'
     else:
-        obj = Handover(date=BSUtil().today(), type='Incoming')
+        obj = Handover(date=nepdate.today_as_str(), type='Incoming')
         scenario = 'Create'
     form = HandoverForm(instance=obj)
     object_data = HandoverSerializer(obj).data
@@ -320,7 +322,7 @@ def handover_outgoing(request, id=None):
         obj = get_object_or_404(Handover, id=id)
         scenario = 'Update'
     else:
-        obj = Handover(date=BSUtil().today(), type='Outgoing')
+        obj = Handover(date=nepdate.today_as_str(), type='Outgoing')
         scenario = 'Create'
     form = HandoverForm(instance=obj)
     object_data = HandoverSerializer(obj).data
@@ -608,6 +610,7 @@ def save_account(request):
                   'remaining_total_cost_price': row.get('remaining_total_cost_price')}
         account_row = save_model(account_row, values)
     return JsonResponse(dct)
+
 
 def index(request):
     return render(request, 'inventory_index.html')

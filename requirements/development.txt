@@ -1,6 +1,11 @@
-django
-psycopg2
+# Development only
+pyinotify
+git-pylint-commit-hook
 django-debug-toolbar
+
+# Development and Production
+Django
+psycopg2
 django-mptt
 linaro-django-pagination
 django-filter
@@ -10,6 +15,6 @@ Pillow
 django-haystack
 pyelasticsearch
 django-froala-editor
-pyinotify
-git-pylint-commit-hook
--e git+git@github.com:xtranophilist/django-dbsettings.git@master#egg=django-dbsettings
+-e git+https://github.com/xtranophilist/django-dbsettings.git@master#egg=django-dbsettings
+django-modeltranslation
+-e git+https://github.com/xtranophilist/nepdate.git@master#egg=nepdate

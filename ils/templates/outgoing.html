@@ -1,7 +1,7 @@
 {% extends "library_base.html" %}
 {% load i18n %}
 {% load filters %}
-
+{% load staticfiles %}
 
 {% block title %} {% trans 'Outgoing' %}{% endblock %}
 
@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block head_end %}
-    <script src="{{ STATIC_URL }}js/ils/outgoing.js"></script>
+    <script src="{% static 'js/ils/outgoing.js' %}"></script>
 
 {% endblock %}
 
