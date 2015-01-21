@@ -1,3 +1,4 @@
+
 // Converts all starting letter of the string to Uppercase
 function ucFirstAllWords( str )
 {
@@ -45,8 +46,8 @@ ko.bindingHandlers.customSelectize = {
       					.attr('name')
       					.replace(/_/g, ' '));
       			var element_to_append = $(element)
-      					.parent()
-      					.find('.selectize-dropdown.multi.plugin-remove_button');
+      					.next()
+      					.find('.selectize-dropdown');
       			var html_to_append = '<div class="custom-selectize-add-button" data-reveal-id="' + 
       							$(element).attr('name') +
       							'">Add '+ 
@@ -58,12 +59,12 @@ ko.bindingHandlers.customSelectize = {
 				
 				// This event handler shows add option when all items are continiously selected
 				selectizeControl.on('dropdown_close', function() {
-					var parent = $(element)
-      					.parent();
-      				var ele = $(parent).find('.selectize-dropdown.multi.plugin-remove_button');
+					var next = $(element)
+      					.next();
+      				var ele = $(next).find('.selectize-dropdown');
 					var choice_ele = $(ele).find('.selectize-dropdown-content').find('.option');
 					var choice_length = choice_ele.length;
-					var is_focus = $(parent).find('.selectize-input.items').hasClass("focus");
+					var is_focus = $(next).find('.selectize-input.items').hasClass("focus");
 					if(choice_length == 0 & is_focus){
 						$(ele).css("display","block");
 						}
@@ -71,10 +72,11 @@ ko.bindingHandlers.customSelectize = {
 				);
 				
 				// This event handler shows Add option when item is full and select field is back in focus
-				$(element).on('click', function() {
-					var parent = $(element)
-      					.parent();
-      				var ele = $(parent).find('.selectize-dropdown.multi.plugin-remove_button');
+				$(element).next().find('.selectize-input.items').on('click', function() {
+					console.log('this seemed to be clicked');
+					var next = $(element)
+      					.next();
+      				var ele = $(next).find('.selectize-dropdown');
 					$(ele).css("display","block");
 					}
 				);

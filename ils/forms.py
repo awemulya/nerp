@@ -22,8 +22,12 @@ class RecordFormRelatedFields(forms.ModelForm):
                    'languages',
                    ]
         widgets = {
-            'book': forms.SelectMultiple(attrs={'cols': 80, 'rows': 20}),
-        }
+            'book': forms.Select(attrs={'data-bind': 'customSelectize: books, modelUrl:"/library/book/", choiceField:"title"'}),
+            'published_places': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: pub_places, modelUrl:"/library/place/", choiceField:"name"'}),
+            'authors': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: authors, modelUrl:"/library/author/", choiceField:"name"'}),
+            'publisher': forms.Select(attrs={'data-bind': 'customSelectize: publishers, modelUrl:"/library/publisher/", choiceField:"name"'}),
+            'languages': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: languages, modelUrl:"/library/language/", choiceField:"name"'}),
+            }
 
 
 class RecordFormUnrelatedFields(forms.ModelForm):
@@ -41,6 +45,9 @@ class BookForm(forms.ModelForm):
     class Meta:
         model = Book
         exclude = ['slug']
+        widgets = {
+            'subjects': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: subjects, modelUrl:"/library/subject/", choiceField:"name"'}),
+        }
 
 
 class AuthorForm(forms.ModelForm):
