@@ -54,7 +54,21 @@ function AcquisitionVM(data) {
     self.format = ko.observable();
     self.authors = ko.observableArray([]);
     self.languages = ko.observableArray([]);
+    self.get_by_isbn = function(formElement){
+        console.log('this is isbn'+ self.isbn13());
+        var url = 'https://www.googleapis.com/books/v1/volumes?q=search+isbn'+self.isbn13();
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            success: function (data){
+                console.log('this is result'+data);
+            }, 
+            error: function(data){
+                console.log('this is error'+data);
+            },
+        });
 
+    };
 
     for (var k in data) {
         self[k] = ko.observable(data[k]);

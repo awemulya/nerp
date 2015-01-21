@@ -19,10 +19,11 @@
 
 {% block content %}
 
-    <form class="acquisition-form">
+    <form class="acquisition-form" method="get" action="{% url 'acq' %}" >
         {% csrf_token %}
         <label for="isbn">ISBN</label>
         <input type="text" name="isbn" size="20" data-bind="value: isbn13" id="isbn">
+        <input type="submit" value="Get">
     </form>
 
     <form method="post" class="acquisition-form" action="{% url 'save_acquisition' %}" enctype="multipart/form-data">

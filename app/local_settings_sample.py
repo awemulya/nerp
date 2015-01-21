@@ -16,6 +16,8 @@ MEDIA_ROOT = '/var/www/html/static/goms/media'
 # Examples: "http://example.com/media/", "http://media.example.com/"
 MEDIA_URL = 'http://localhost/static/goms/media/'
 
+GOOGLE_BOOKS_API_KEY = ''
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

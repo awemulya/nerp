@@ -4,6 +4,7 @@ import views
 urlpatterns = patterns('',
                        url(r'^$', views.index, name='library_index'),
                        url(r'^acquisition/$', views.acquisition, name='acquisition'),
+                       url(r'^acq/$', views.RecordView.as_view(), name='acq'),
                        url(r'^authors.json$', views.authors_as_json, name='authors_as_json'),
                        url(r'^publishers.json$', views.publishers_as_json, name='publishers_as_json'),
                        url(r'^subjects.json$', views.subjects_as_json, name='subjects_as_json'),

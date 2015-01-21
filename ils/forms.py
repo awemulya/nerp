@@ -1,15 +1,61 @@
 from django import forms
 from app.utils.forms import KOModelForm
-from models import Record, Transaction
+from models import Record, Transaction, Book, Author, Place, Publisher
+from core.models import Language
 from users.models import User
 from django.utils.translation import ugettext_lazy as _
 from haystack.forms import SearchForm, ModelSearchForm
 
 
-class RecordForm(forms.ModelForm):
+class LanguageForm(forms.ModelForm):
+    class Meta:
+        model = Language
+
+
+class RecordFormRelatedFields(forms.ModelForm):
     class Meta:
         model = Record
-        exclude = ()
+        include = ['book',
+                   'published_places',
+                   'authors',
+                   'publisher',
+                   'languages',
+                   ]
+
+
+class RecordFormUnrelatedFields(forms.ModelForm):
+    class Meta:
+        model = Record
+        exclude = ['book',
+                   'published_places',
+                   'authors',
+                   'publisher',
+                   'languages',
+                   ]
+
+
+class BookForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        exclude = ['slug']
+
+
+class AuthorForm(forms.ModelForm):
+    class Meta:
+        model = Author
+        exclude = ['slug', 'identifier']
+
+
+class PlaceForm(forms.ModelForm):
+    class Meta:
+        model = Place
+        exclude = ['slug']
+
+
+class PublisherForm(forms.ModelForm):
+    class Meta:
+        model = Publisher
+        exclude = ['slug']
 
 
 class OutgoingForm(forms.ModelForm):

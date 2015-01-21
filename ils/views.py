@@ -1,8 +1,9 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import View
 from app.utils.helpers import title_case
 from core.models import Language
-from ils.forms import RecordForm, OutgoingForm, IncomingForm, PatronForm
+from ils.forms import RecordFormRelatedFields, RecordFormUnrelatedFields, BookForm, AuthorForm, PlaceForm, PublisherForm, LanguageForm, OutgoingForm, IncomingForm, PatronForm
 from ils.models import library_setting as setting
 
 from ils.serializers import RecordSerializer, AuthorSerializer, PublisherSerializer, SubjectSerializer, BookSerializer, \
@@ -11,6 +12,7 @@ from . import isbn as isbnpy
 import urllib2
 import urllib
 import json
+from django.http import HttpResponse
 
 from .models import Record, Author, Publisher, Book, Subject, Place, BookFile, Transaction
 
@@ -22,6 +24,7 @@ from django.core.urlresolvers import reverse_lazy
 from users.models import User, group_required
 # from haystack.query import SearchQuerySet
 from ils.forms import LibrarySearchForm
+import pdb
 
 
 @group_required('Librarian')
@@ -85,7 +88,7 @@ def acquisition(request):
                 book = record.book
             else:
                 book = Book()
-
+ 
             book.title = data['data']['title']
             if 'subtitle' in data['details']['details']:
                 book.subtitle = data['details']['details']['subtitle']
@@ -633,3 +636,56 @@ def search(request, keyword=None):
     else:
         form = LibrarySearchForm()
     return render(request, 'library_search.html', {'form': form})
+
+
+class RecordView(View):
+    record_form_related_fields = RecordFormRelatedFields
+    record_form_unrelated_fields = RecordFormUnrelatedFields
+    book_form = BookForm
+    author_form = AuthorForm
+    place_form = PlaceForm
+    publisher_form = PublisherForm
+    lan_form = LanguageForm
+
+    rr_initial = {'key': 'value'}
+    ru_initial = {'key': 'value'}
+    b_initial = {'key': 'value'}
+    a_initial = {'key': 'value'}
+    p_initial = {'key': 'value'}
+    pub_initial = {'key': 'value'}
+    l_initial = {'key': 'value'}
+
+    template_name = 'acquisition1.html'
+
+    def populate(self, isbn):
+        response = urllib2.urlopen('https://www.googleapis.com/books/v1/volumes?q=search+isbn157356107X')
+        data = json.load(response)
+        self.initial = {}
+        pdb.set_trace()
+        return HttpResponse('hahahah')
+
+    def get(self, request, *args, **kwargs):
+        if request.GET.get('isbn13'):
+            isbn = request.GET['isbn13']
+            if isbnpy.isValid(isbn):
+                if isbnpy.isI10(isbn):
+                    isbn = isbnpy.convert(isbn)
+                    self.populate(isbn)
+        rr_form = self.record_form_related_fields(initial=self.rr_initial)
+        ru_form = self.record_form_unrelated_fields(initial=self.ru_initial)
+        b_form = self.book_form(initial=self.b_initial)
+        a_form = self.author_form(initial=self.a_initial)
+        p_form = self.place_form(initial=self.p_initial)
+        pub_form = self.publisher_form(initial=self.pub_initial)
+        l_form = self.lan_form(initial=self.l_initial)
+        return render(request, self.template_name, {'rr_form': rr_form,
+                                                    'ru_form': ru_form,
+                                                    'b_form': b_form,
+                                                    'a_form': a_form,
+                                                    'p_form': p_form,
+                                                    'pub_form': pub_form,
+                                                    'l_form': l_form,
+                                                    })
+
+    def post(self, request, *args, **kwargs):
+        pass
