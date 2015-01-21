@@ -9,5 +9,6 @@ AcquisionVM = function(){
 	self.authors = ko.observableArray();
 	self.pub_places = ko.observableArray();
 	self.publishers = ko.observableArray();
+	self.languages = ko.observableArray();
 
 };
