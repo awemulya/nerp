@@ -29,4 +29,11 @@ urlpatterns = patterns('',
                        url(r'^search/(?P<keyword>.*)$', views.search, name='search'),
                        url(r'^search/$', views.search, name='search'),
 
+                       url(r'^subject/$', views.SubjectList.as_view(), name='json_subject'),
+                       url(r'^place/$', views.PlaceList.as_view(), name='json_place'),
+                       url(r'^publisher/$', views.PublisherList.as_view(), name='json_publicer'),
+                       url(r'^book/$', views.BookList.as_view(), name='json_book'),
+                       url(r'^language/$', views.LanguageList.as_view(), name='json_language'),
+                       url(r'^author/$', views.AuthorList.as_view(), name='json_author'),
+
 )

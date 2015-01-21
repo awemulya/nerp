@@ -1,6 +1,6 @@
 from django import forms
 from app.utils.forms import KOModelForm
-from models import Record, Transaction, Book, Author, Place, Publisher
+from models import Record, Transaction, Book, Author, Place, Publisher, Subject
 from core.models import Language
 from users.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -21,6 +21,9 @@ class RecordFormRelatedFields(forms.ModelForm):
                    'publisher',
                    'languages',
                    ]
+        widgets = {
+            'book': forms.SelectMultiple(attrs={'cols': 80, 'rows': 20}),
+        }
 
 
 class RecordFormUnrelatedFields(forms.ModelForm):
@@ -55,6 +58,12 @@ class PlaceForm(forms.ModelForm):
 class PublisherForm(forms.ModelForm):
     class Meta:
         model = Publisher
+        exclude = ['slug']
+
+
+class SubjectForm(forms.ModelForm):
+    class Meta:
+        model = Subject
         exclude = ['slug']
 
 

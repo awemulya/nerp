@@ -3,18 +3,24 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
 from app.utils.helpers import title_case
 from core.models import Language
-from ils.forms import RecordFormRelatedFields, RecordFormUnrelatedFields, BookForm, AuthorForm, PlaceForm, PublisherForm, LanguageForm, OutgoingForm, IncomingForm, PatronForm
+from ils.forms import RecordFormRelatedFields, RecordFormUnrelatedFields,\
+     BookForm, SubjectForm, AuthorForm, PlaceForm,\
+     PublisherForm, LanguageForm, OutgoingForm, IncomingForm, PatronForm
 from ils.models import library_setting as setting
 
-from ils.serializers import RecordSerializer, AuthorSerializer, PublisherSerializer, SubjectSerializer, BookSerializer, \
-    TransactionSerializer
+from ils.serializers import RecordSerializer, AuthorSerializer,\
+     PublisherSerializer, PlaceSerializer, SubjectSerializer, BookSerializer, \
+     TransactionSerializer
+from core.serializers import LanguageSerializer
 from . import isbn as isbnpy
 import urllib2
 import urllib
 import json
 from django.http import HttpResponse
+from rest_framework import generics
 
-from .models import Record, Author, Publisher, Book, Subject, Place, BookFile, Transaction
+from .models import Record, Author, Publisher, Book, Subject,\
+    Place, BookFile, Transaction
 
 import os
 from django.core.files import File
@@ -638,6 +644,36 @@ def search(request, keyword=None):
     return render(request, 'library_search.html', {'form': form})
 
 
+class PlaceList(generics.ListCreateAPIView):
+    queryset = Place.objects.all()
+    serializer_class = PlaceSerializer
+
+
+class SubjectList(generics.ListCreateAPIView):
+    queryset = Subject.objects.all()
+    serializer_class = SubjectSerializer
+
+
+class AuthorList(generics.ListCreateAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+
+
+class PublisherList(generics.ListCreateAPIView):
+    queryset = Publisher.objects.all()
+    serializer_class = PublisherSerializer
+
+
+class BookList(generics.ListCreateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+
+class LanguageList(generics.ListCreateAPIView):
+    queryset = Language.objects.all()
+    serializer_class = LanguageSerializer
+
+
 class RecordView(View):
     record_form_related_fields = RecordFormRelatedFields
     record_form_unrelated_fields = RecordFormUnrelatedFields
@@ -646,6 +682,7 @@ class RecordView(View):
     place_form = PlaceForm
     publisher_form = PublisherForm
     lan_form = LanguageForm
+    subject_form = SubjectForm
 
     rr_initial = {'key': 'value'}
     ru_initial = {'key': 'value'}
@@ -654,6 +691,7 @@ class RecordView(View):
     p_initial = {'key': 'value'}
     pub_initial = {'key': 'value'}
     l_initial = {'key': 'value'}
+    sub_initial = {'key': 'value'}
 
     template_name = 'acquisition1.html'
 
@@ -678,6 +716,7 @@ class RecordView(View):
         p_form = self.place_form(initial=self.p_initial)
         pub_form = self.publisher_form(initial=self.pub_initial)
         l_form = self.lan_form(initial=self.l_initial)
+        sub_form = self.subject_form(initial=self.sub_initial)
         return render(request, self.template_name, {'rr_form': rr_form,
                                                     'ru_form': ru_form,
                                                     'b_form': b_form,
@@ -685,6 +724,7 @@ class RecordView(View):
                                                     'p_form': p_form,
                                                     'pub_form': pub_form,
                                                     'l_form': l_form,
+                                                    'sub_form': sub_form,
                                                     })
 
     def post(self, request, *args, **kwargs):
