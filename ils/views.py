@@ -695,11 +695,66 @@ class RecordView(View):
 
     template_name = 'acquisition1.html'
 
+    def get_from_api_select(self, **kwargs):
+        data = kwargs['data']
+        lookup_field = kwargs['lookup_field']
+        lookup_path = kwargs['lookup_path']
+        value = []
+        dictionary = {}
+
+        for lp in lookup_path:
+            data = data[lp]
+
+        for i, field in enumerate(lookup_field):
+            value.append(data[field])
+
+        if kwargs['cls']:
+            cls = kwargs['cls']
+            for l_field, v in zip(lookup_field, value):
+                dictionary[l_field] = v
+            objs = cls.objects.filter(**dictionary)
+            if objs:
+                ll = []
+                for o in objs:
+                    ll.append(o.id)
+                # pdb.set_trace()
+                # if select then return number of mselect then return list
+                return ll[0]
+            else:
+                instance = kwargs['form_ins']
+                form_field = kwargs['form_field']
+                for f_field, va in zip(form_field, value):
+                    instance[f_field] = va
+
+                    pass
+
+
+
+
+        pass
+
+    def get_from_api_mselect(self, **kwargs):
+        pass
+
     def populate(self, isbn):
         response = urllib2.urlopen('https://www.googleapis.com/books/v1/volumes?q=search+isbn157356107X')
         data = json.load(response)
-        self.initial = {}
-        pdb.set_trace()
+        self.rr_initial = {'book': self.get_from_api_select(
+                           data=data['items'][0],
+                           lookup_path=['volumeInfo'],
+                           lookup_field=['title', 'subtitle'],
+                           # Specify only if this field is related
+                           cls=Book,
+                           multiselect=False,
+                           # In case we need to populate the field
+                           form_ins=self.b_initial,
+                           form_field=['title', 'subtitle']
+                           ),
+                           'published_place': [0],
+                           'authors': [0],
+                           'publisher': 0,
+                           'languages': [0],
+                           }
         return HttpResponse('hahahah')
 
     def get(self, request, *args, **kwargs):
