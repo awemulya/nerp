@@ -695,65 +695,113 @@ class RecordView(View):
 
     template_name = 'acquisition1.html'
 
-    def get_from_api_select(self, **kwargs):
+    def get_objects(self, cls, *dl, **kwargs):
+        if kwargs:
+            return cls.objects.filter(**kwargs)
+        if dl:
+            objs = []
+            for dic in dl:
+                objs.append(cls.objects.get_or_create(**dic))
+            # pdb.set_trace()
+            return objs
+
+    def get_from_api(self, **kwargs):
         data = kwargs['data']
-        lookup_field = kwargs['lookup_field']
+        lookup_fields = kwargs['lookup_fields']
         lookup_path = kwargs['lookup_path']
+        if kwargs['form_fields']:
+            form_fields = kwargs['form_fields']
         value = []
+        vl = []
+        # dictionary to filter
         dictionary = {}
+        lod = []
 
         for lp in lookup_path:
             data = data[lp]
 
-        for i, field in enumerate(lookup_field):
-            value.append(data[field])
-
         if kwargs['cls']:
             cls = kwargs['cls']
-            for l_field, v in zip(lookup_field, value):
-                dictionary[l_field] = v
-            objs = cls.objects.filter(**dictionary)
-            if objs:
-                ll = []
-                for o in objs:
-                    ll.append(o.id)
+
+            if kwargs['multiselect'] == True:
+
+                for field in lookup_fields:
+                    if type(data[field]) is list:
+                        for item in data[field]:
+                            lol = [item]
+                            vl.append(lol)
+                        for val in vl:
+                            for f_field, v in zip(form_fields, val):
+                                dictionary[f_field] = v
+                            lod.append(dictionary)
+                        objs = self.get_objects(cls, *lod)
+                        if objs:
+                            ll = []
+                            for o in objs:
+                                ll.append(o[0].id)
+                            return ll
+            else:
+                for field in lookup_fields:
+                    value.append(data[field])
+
+                for f_field, v in zip(form_fields, value):
+                    dictionary[f_field] = v
+                objs = self.get_objects(cls, **dictionary)
+                if objs:
+                    ll = []
+                    for o in objs:
+                        ll.append(o.id)
                 # pdb.set_trace()
                 # if select then return number of mselect then return list
-                return ll[0]
-            else:
-                instance = kwargs['form_ins']
-                form_field = kwargs['form_field']
-                for f_field, va in zip(form_field, value):
-                    instance[f_field] = va
-
-                    pass
-
-
-
-
-        pass
-
-    def get_from_api_mselect(self, **kwargs):
-        pass
+                    return ll[0]
+                else:
+                    instance = kwargs['form_ins']
+                    for f_field, va in zip(form_fields, value):
+                        instance[f_field] = va
+        else:
+            return data[field[0]]
+        #     for field in lookup_fields:
+        #         value.append(data[field])
+        #     instance = kwargs['form_ins']
+        #     for f_field, va in zip(form_fields, value):
+        #         instance[f_field] = va
+         
+        # pass
 
     def populate(self, isbn):
         response = urllib2.urlopen('https://www.googleapis.com/books/v1/volumes?q=search+isbn157356107X')
         data = json.load(response)
-        self.rr_initial = {'book': self.get_from_api_select(
+        self.rr_initial = {'book': self.get_from_api(
                            data=data['items'][0],
                            lookup_path=['volumeInfo'],
-                           lookup_field=['title', 'subtitle'],
+                           lookup_fields=['title', 'subtitle'],
                            # Specify only if this field is related
                            cls=Book,
                            multiselect=False,
                            # In case we need to populate the field
                            form_ins=self.b_initial,
-                           form_field=['title', 'subtitle']
+                           form_fields=['title', 'subtitle']
                            ),
-                           'published_place': [0],
-                           'authors': [0],
-                           'publisher': 0,
+
+                           'published_place': [],
+
+                           'authors': self.get_from_api(
+                            data=data['items'][0],
+                            lookup_path=['volumeInfo'],
+                            lookup_fields=['authors'],
+                            cls=Author,
+                            multiselect=True,
+                            form_fields=['name'],
+                            ),
+
+                           'publisher': self.get_from_api(
+                            data=data['items'][0],
+                            lookup_path=['volumeInfo'],
+                            lookup_fields=['publisher'],
+                            ),
+
                            'languages': [0],
+
                            }
         return HttpResponse('hahahah')
 
@@ -784,3 +832,36 @@ class RecordView(View):
 
     def post(self, request, *args, **kwargs):
         pass
+
+        # def get_from_api_select(self, **kwargs):
+        # data = kwargs['data']
+        # lookup_fields = kwargs['lookup_fields']
+        # lookup_path = kwargs['lookup_path']
+        # form_fields = kwargs['form_fields']
+        # value = []
+        # # dictionary to filter
+        # dictionary = {}
+
+        # for lp in lookup_path:
+        #     data = data[lp]
+
+        # for i, field in enumerate(lookup_fields):
+        #     value.append(data[field])
+
+        # if kwargs['cls']:
+        #     cls = kwargs['cls']
+        #     for f_field, v in zip(form_fields, value):
+        #         dictionary[f_field] = v
+        #     objs = cls.objects.filter(**dictionary)
+        #     if objs:
+        #         ll = []
+        #         for o in objs:
+        #             ll.append(o.id)
+        #         # pdb.set_trace()
+        #         # if select then return number of mselect then return list
+        #         return ll[0]
+        #     else:
+        #         instance = kwargs['form_ins']
+        #         for f_field, va in zip(form_fields, value):
+        #             instance[f_field] = va
+        # pass
