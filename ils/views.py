@@ -696,6 +696,7 @@ class RecordView(View):
     template_name = 'acquisition1.html'
 
     def get_objects(self, cls, *dl, **kwargs):
+        # pdb.set_trace()
         if kwargs:
             return cls.objects.filter(**kwargs)
         if dl:
@@ -709,8 +710,12 @@ class RecordView(View):
         data = kwargs['data']
         lookup_fields = kwargs['lookup_fields']
         lookup_path = kwargs['lookup_path']
-        if kwargs['form_fields']:
+        if 'form_fields' in kwargs:
             form_fields = kwargs['form_fields']
+        if 'multiselect' in kwargs:
+            multiselect = kwargs['multiselect']
+        else:
+            multiselect = False
         value = []
         vl = []
         # dictionary to filter
@@ -720,13 +725,14 @@ class RecordView(View):
         for lp in lookup_path:
             data = data[lp]
 
-        if kwargs['cls']:
+        if 'cls' in kwargs:
             cls = kwargs['cls']
 
-            if kwargs['multiselect'] == True:
+            if multiselect:
 
                 for field in lookup_fields:
-                    if type(data[field]) is list:
+                    if type(data[field]) is list and type(data[field][0]) is unicode:
+
                         for item in data[field]:
                             lol = [item]
                             vl.append(lol)
@@ -740,12 +746,28 @@ class RecordView(View):
                             for o in objs:
                                 ll.append(o[0].id)
                             return ll
+                    elif type(data[field]) is unicode:
+                        dictn = {}
+                        val = data[field]
+                        dictn[form_fields[0]] = val
+                        objs = self.get_objects(cls, **dictn)
+                        if objs:
+                            ll = []
+                            for o in objs:
+                                ll.append(o.id)
+                            return ll
+                        
+
             else:
                 for field in lookup_fields:
-                    value.append(data[field])
+                    if field in data:
+                        value.append(data[field])
+                    else:
+                        value.append(None)
 
                 for f_field, v in zip(form_fields, value):
-                    dictionary[f_field] = v
+                    if v is not None:
+                        dictionary[f_field] = v
                 objs = self.get_objects(cls, **dictionary)
                 if objs:
                     ll = []
@@ -759,17 +781,17 @@ class RecordView(View):
                     for f_field, va in zip(form_fields, value):
                         instance[f_field] = va
         else:
-            return data[field[0]]
-        #     for field in lookup_fields:
-        #         value.append(data[field])
-        #     instance = kwargs['form_ins']
-        #     for f_field, va in zip(form_fields, value):
-        #         instance[f_field] = va
+            for field in lookup_fields:
+                value.append(data[field])
+            instance = kwargs['form_ins']
+            for f_field, va in zip(form_fields, value):
+                instance[f_field] = va
          
-        # pass
+        pass
 
     def populate(self, isbn):
-        response = urllib2.urlopen('https://www.googleapis.com/books/v1/volumes?q=search+isbn157356107X')
+        response = urllib2.urlopen('https://www.googleapis.com' +
+                                   '/books/v1/volumes?q=search+isbn9780439023481')
         data = json.load(response)
         self.rr_initial = {'book': self.get_from_api(
                            data=data['items'][0],
@@ -798,9 +820,20 @@ class RecordView(View):
                             data=data['items'][0],
                             lookup_path=['volumeInfo'],
                             lookup_fields=['publisher'],
+                            cls=Publisher,
+                            form_ins=self.pub_initial,
+                            form_fields=['name']
                             ),
 
-                           'languages': [0],
+                           'languages': self.get_from_api(
+                            data=data['items'][0],
+                            lookup_path=['volumeInfo'],
+                            lookup_fields=['language'],
+                            cls=Language,
+                            multiselect=True,
+                            form_fields=['code'],
+
+                            ),
 
                            }
         return HttpResponse('hahahah')
