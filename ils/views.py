@@ -773,7 +773,6 @@ class RecordView(View):
                     ll = []
                     for o in objs:
                         ll.append(o.id)
-                # pdb.set_trace()
                 # if select then return number of mselect then return list
                     return ll[0]
                 else:
@@ -786,13 +785,13 @@ class RecordView(View):
             instance = kwargs['form_ins']
             for f_field, va in zip(form_fields, value):
                 instance[f_field] = va
-         
         pass
 
     def populate(self, isbn):
         response = urllib2.urlopen('https://www.googleapis.com' +
-                                   '/books/v1/volumes?q=search+isbn9780439023481')
+                                   '/books/v1/volumes?q=search+isbn'+isbn)
         data = json.load(response)
+        pdb.set_trace()
         self.rr_initial = {'book': self.get_from_api(
                            data=data['items'][0],
                            lookup_path=['volumeInfo'],
@@ -836,7 +835,7 @@ class RecordView(View):
                             ),
 
                            }
-        return HttpResponse('hahahah')
+        pass
 
     def get(self, request, *args, **kwargs):
         if request.GET.get('isbn13'):
@@ -844,7 +843,8 @@ class RecordView(View):
             if isbnpy.isValid(isbn):
                 if isbnpy.isI10(isbn):
                     isbn = isbnpy.convert(isbn)
-                    self.populate(isbn)
+                pdb.set_trace()
+                self.populate(isbn)
         rr_form = self.record_form_related_fields(initial=self.rr_initial)
         ru_form = self.record_form_unrelated_fields(initial=self.ru_initial)
         b_form = self.book_form(initial=self.b_initial)
