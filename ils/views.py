@@ -16,7 +16,7 @@ from . import isbn as isbnpy
 import urllib2
 import urllib
 import json
-from django.http import HttpResponse
+from django.utils import timezone
 from rest_framework import generics
 
 from .models import Record, Author, Publisher, Book, Subject,\
@@ -710,6 +710,7 @@ class RecordView(View):
         data = kwargs['data']
         lookup_fields = kwargs['lookup_fields']
         lookup_path = kwargs['lookup_path']
+        # pdb.set_trace()
         if 'form_fields' in kwargs:
             form_fields = kwargs['form_fields']
         if 'multiselect' in kwargs:
@@ -723,7 +724,9 @@ class RecordView(View):
         lod = []
 
         for lp in lookup_path:
-            data = data[lp]
+            if lp in data or type(lp) is int:
+                data = data[lp]
+        # pdb.set_trace()
 
         if 'cls' in kwargs:
             cls = kwargs['cls']
@@ -780,20 +783,29 @@ class RecordView(View):
                     for f_field, va in zip(form_fields, value):
                         instance[f_field] = va
         else:
-            for field in lookup_fields:
-                value.append(data[field])
-            instance = kwargs['form_ins']
-            for f_field, va in zip(form_fields, value):
-                instance[f_field] = va
+            if lookup_fields[0] in data:
+                if type(data[lookup_fields[0]]) is list and len(data[lookup_fields[0]]) is not 0:
+                    return data[lookup_fields[0]][0]
+                elif type(data[lookup_fields[0]]) is unicode:
+                    # pdb.set_trace()
+                    return data[lookup_fields[0]]
+            # for field in lookup_fields:
+            #     value.append(data[field])
+            # instance = kwargs['form_ins']
+            # for f_field, va in zip(form_fields, value):
+            #     instance[f_field] = va
         pass
 
     def populate(self, isbn):
         response = urllib2.urlopen('https://www.googleapis.com' +
                                    '/books/v1/volumes?q=search+isbn'+isbn)
-        data = json.load(response)
-        pdb.set_trace()
+        google_api_data = json.load(response)
+        openlibrary_data = json.load(urllib2.urlopen(
+            'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
+        od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
+        # pdb.set_trace()
         self.rr_initial = {'book': self.get_from_api(
-                           data=data['items'][0],
+                           data=google_api_data['items'][0],
                            lookup_path=['volumeInfo'],
                            lookup_fields=['title', 'subtitle'],
                            # Specify only if this field is related
@@ -807,7 +819,7 @@ class RecordView(View):
                            'published_place': [],
 
                            'authors': self.get_from_api(
-                            data=data['items'][0],
+                            data=google_api_data['items'][0],
                             lookup_path=['volumeInfo'],
                             lookup_fields=['authors'],
                             cls=Author,
@@ -816,7 +828,7 @@ class RecordView(View):
                             ),
 
                            'publisher': self.get_from_api(
-                            data=data['items'][0],
+                            data=google_api_data['items'][0],
                             lookup_path=['volumeInfo'],
                             lookup_fields=['publisher'],
                             cls=Publisher,
@@ -825,13 +837,82 @@ class RecordView(View):
                             ),
 
                            'languages': self.get_from_api(
-                            data=data['items'][0],
+                            data=google_api_data['items'][0],
                             lookup_path=['volumeInfo'],
                             lookup_fields=['language'],
                             cls=Language,
                             multiselect=True,
                             form_fields=['code'],
 
+                            ),
+
+                           }
+        self.ru_initial = {'pagination': str(self.get_from_api(
+                            data=od,
+                            lookup_path=['details','details'],
+                            lookup_fields=['pagination']
+                            )),
+                           'isbn13': isbn,
+                           'date_added': timezone.now(),
+                           'edition': self.get_from_api(
+                            data=google_api_data['items'][0],
+                            lookup_path=['volumeInfo'],
+                            lookup_fields=['contentVersion']
+                            ),
+                           'description': self.get_from_api(
+                            data=google_api_data['items'][0],
+                            lookup_path=['volumeInfo'],
+                            lookup_fields=['description']
+                            ),
+                           'goodreads_id': self.get_from_api(
+                            data=od,
+                            lookup_path=['details', 'details', 'identifiers'],
+                            lookup_fields=['goodreads']
+                            ),
+                           'librarything_id': self.get_from_api(
+                            data=od,
+                            lookup_path=['details', 'details', 'identifiers'],
+                            lookup_fields=['librarything']
+                            ),
+                           'openlibrary_id': self.get_from_api(
+                            data=od,
+                            lookup_path=['data', 'identifiers'],
+                            lookup_fields=['openlibrary']
+                            ),
+                           'lcc': self.get_from_api(
+                            data=od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['lc_classifications']
+                            ),
+                           'ddc': self.get_from_api(
+                            data=od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['dewey_decimal_class']
+                            ),
+                           'lccn_id': self.get_from_api(
+                            data=od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['lccn']
+                            ),
+                           'oclc_id': self.get_from_api(
+                            data=od,
+                            lookup_path=['data', 'identifiers'],
+                            lookup_fields=['oclc']
+                            ),
+                           'dimensions': self.get_from_api(
+                            data=od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['physical_dimensions']
+                            ),
+                           'by_statement': self.get_from_api(
+                            data=od,
+                            lookup_path=['data'],
+                            lookup_fields=['by_statement']
+                            ),
+                           'excerpt': self.get_from_api(
+                            data=od,
+                            lookup_path=['data', 'excerpts', 0],
+                            lookup_fields=['text']
                             ),
 
                            }
@@ -843,7 +924,7 @@ class RecordView(View):
             if isbnpy.isValid(isbn):
                 if isbnpy.isI10(isbn):
                     isbn = isbnpy.convert(isbn)
-                pdb.set_trace()
+                # pdb.set_trace()
                 self.populate(isbn)
         rr_form = self.record_form_related_fields(initial=self.rr_initial)
         ru_form = self.record_form_unrelated_fields(initial=self.ru_initial)

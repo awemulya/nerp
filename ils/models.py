@@ -147,6 +147,7 @@ class Record(models.Model):
     by_statement = models.CharField(max_length=254, null=True, blank=True)
     notes = models.CharField(max_length=254, null=True, blank=True)
     excerpt = models.CharField(max_length=254, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
         title = self.book.title
