@@ -690,18 +690,10 @@ class RecordView(View):
 
     rr_initial = {'key': 'value'}
     record_initial_files = {}
-    b_initial = {'key': 'value'}
-    a_initial = {'key': 'value'}
-    p_initial = {'key': 'value'}
-    pub_initial = {'key': 'value'}
-    l_initial = {'key': 'value'}
-    sub_initial = {'key': 'value'}
- 
     template_name = 'acquisition1.html'
     api_has_cover = False
 
     def get_objects(self, cls, multiple, *dl, **kwargs):
-        # pdb.set_trace()
         if multiple and kwargs:
             return cls.objects.filter(**kwargs)
         if kwargs:
@@ -710,14 +702,12 @@ class RecordView(View):
             objs = []
             for dic in dl:
                 objs.append(cls.objects.get_or_create(**dic))
-            # pdb.set_trace()
             return objs
 
     def get_from_api(self, **kwargs):
         data = kwargs['data']
         lookup_fields = kwargs['lookup_fields']
         lookup_path = kwargs['lookup_path']
-        # pdb.set_trace()
         if 'form_fields' in kwargs:
             form_fields = kwargs['form_fields']
         if 'multiselect' in kwargs:
@@ -735,7 +725,6 @@ class RecordView(View):
                 data = data[lp]
             elif type(data) is list and type(lp is int):
                 data = data[lp]
-        # pdb.set_trace()
 
         if 'cls' in kwargs:
             cls = kwargs['cls']
@@ -797,7 +786,6 @@ class RecordView(View):
                 if type(data[lookup_fields[0]]) is list and len(data[lookup_fields[0]]) is not 0:
                     return data[lookup_fields[0]][0]
                 elif type(data[lookup_fields[0]]) is unicode:
-                    # pdb.set_trace()
                     return data[lookup_fields[0]]
             # for field in lookup_fields:
             #     value.append(data[field])
@@ -813,7 +801,6 @@ class RecordView(View):
         openlibrary_data = json.load(urllib2.urlopen(
             'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
         od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
-        # pdb.set_trace()
         self.rr_initial = {'book': self.get_from_api(
                            data=google_api_data,
                            lookup_path=['items', 0, 'volumeInfo'],
@@ -971,14 +958,18 @@ class RecordView(View):
                     isbn = isbnpy.convert(isbn)
                 self.populate(isbn)
                 self.populate_cover(isbn)
-
-        rr_form = self.record_form(self.rr_initial)
-        b_form = self.book_form(initial=self.b_initial)
-        a_form = self.author_form(initial=self.a_initial)
-        p_form = self.place_form(initial=self.p_initial)
-        pub_form = self.publisher_form(initial=self.pub_initial)
-        l_form = self.lan_form(initial=self.l_initial)
-        sub_form = self.subject_form(initial=self.sub_initial)
+        if 'record_id' in self.kwargs:
+            rec_id = int(self.kwargs['record_id'])
+            instance = Record.objects.get(id=rec_id)
+            rr_form = self.record_form(instance=instance)
+        else:
+            rr_form = self.record_form(self.rr_initial)
+        b_form = self.book_form()
+        a_form = self.author_form()
+        p_form = self.place_form()
+        pub_form = self.publisher_form()
+        l_form = self.lan_form()
+        sub_form = self.subject_form()
         context = {'rr_form': rr_form,
                    'b_form': b_form,
                    'a_form': a_form,
@@ -987,31 +978,51 @@ class RecordView(View):
                    'l_form': l_form,
                    'sub_form': sub_form,
                    'api_has_cover': self.api_has_cover,
+                   'record_id': self.kwargs.get('record_id', None),
                    }
         # pdb.set_trace()
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        # files_from_api = {}
-        # files_from_request = request.FILES
-        # post_data = request.POST
-        # if 'isbn13' in post_data:
-        #     isbn = request.POST['isbn13']
-        #     if isbnpy.isValid(isbn):
-        #         if isbnpy.isI10(isbn):
-        #             isbn = isbnpy.convert(isbn)
-        #         self.populate_cover(isbn)
-        #         for key in self.record_initial_files:
-        #             if self.record_initial_files[key] is not None:
-        #                 files_from_api[key] = self.record_initial_files[key]
-
-        # files_combo = dict(files_from_api.items() + files_from_request.items())
-        # pdb.set_trace()
-        record = RecordForm(request.POST)
-        record.save()
-        
-
-
-
+        if 'record_id' in self.kwargs:
+            rec_id = int(self.kwargs['record_id'])
+            instance = Record.objects.get(id=rec_id)
+            record = RecordForm(request.POST, request.FILES, instance=instance)
+        else:
+            files_from_api = {}
+            files_from_request = request.FILES
+            post_data = request.POST
+            if 'isbn13' in post_data:
+                isbn = request.POST['isbn13']
+                if isbnpy.isValid(isbn):
+                    if isbnpy.isI10(isbn):
+                        isbn = isbnpy.convert(isbn)
+                    self.populate_cover(isbn)
+                    for key in self.record_initial_files:
+                        if self.record_initial_files[key] is not None:
+                            files_from_api[key] = self.record_initial_files[key]
+            # Later dictionary will be of high priority in conflict during merge.
+            files_combo = dict(files_from_api.items() + files_from_request.items())
+            record = RecordForm(request.POST, files_combo)
+        if record.is_valid():
+            record.save()
+        else:
+            rr_form = self.record_form(request.POST, request.FILES)
+            b_form = self.book_form()
+            a_form = self.author_form()
+            p_form = self.place_form()
+            pub_form = self.publisher_form()
+            l_form = self.lan_form()
+            sub_form = self.subject_form()
+            context = {'rr_form': rr_form,
+                       'b_form': b_form,
+                       'a_form': a_form,
+                       'p_form': p_form,
+                       'pub_form': pub_form,
+                       'l_form': l_form,
+                       'sub_form': sub_form,
+                       'api_has_cover': self.api_has_cover,
+                       'record_id': self.kwargs.get('record_id', None),
+                       }
+            return render(request, self.template_name, context)
         return HttpResponseRedirect('/')
-        pass

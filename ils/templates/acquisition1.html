@@ -23,11 +23,14 @@
     {{ rr_form.isbn13 }}
     <input type="submit" class="button" value="Get">
 </form>
-
-<form class="acquision-form" enctype="multipart/form-data" method="post" action="{% url 'acq' %}">
-    {% csrf_token %}
-    <!-- Either first or second -->
+{% if record_id %}
+    <form class="acquision-form" enctype="multipart/form-data" method="post" action="/library/acq/{{ record_id }}/">
+{% else %}
+    <form class="acquision-form" enctype="multipart/form-data" method="post" action="{% url 'acq' %}">
+{% endif %}
     
+    {% csrf_token %}
+        
     {{ rr_form }}
 
      <input type="submit" class="button" value="save">
