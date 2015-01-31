@@ -12,15 +12,15 @@ class LanguageForm(forms.ModelForm):
         model = Language
 
 
-class RecordFormRelatedFields(forms.ModelForm):
+class RecordForm(forms.ModelForm):
     class Meta:
         model = Record
-        include = ['book',
-                   'published_places',
-                   'authors',
-                   'publisher',
-                   'languages',
-                   ]
+        # include = ['book',
+        #            'published_places',
+        #            'authors',
+        #            'publisher',
+        #            'languages',
+        #            ]
         widgets = {
             'book': forms.Select(attrs={'data-bind': 'customSelectize: books, modelUrl:"/library/book/", choiceField:"title"'}),
             'published_places': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: pub_places, modelUrl:"/library/place/", choiceField:"name"'}),
@@ -30,21 +30,29 @@ class RecordFormRelatedFields(forms.ModelForm):
             }
 
 
-class RecordFormUnrelatedFields(forms.ModelForm):
-    class Meta:
-        model = Record
-        exclude = ['book',
-                   'published_places',
-                   'authors',
-                   'publisher',
-                   'languages',
-                   ]
+# class RecordFormUnrelatedFields(forms.ModelForm):
+#     class Meta:
+#         model = Record
+#         exclude = ['book',
+#                    'published_places',
+#                    'authors',
+#                    'publisher',
+#                    'languages',
+#                    ]
 
 
 class BookForm(forms.ModelForm):
     class Meta:
         model = Book
         exclude = ['slug']
+        labels = {
+            'title': _('Book Title'),
+            'subtitle': _('Book Subtitle'),
+            'subjects': _('Book Subjects')
+        }
+        help_texts = {
+            'subjects': ('')
+        }
         widgets = {
             'subjects': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: subjects, modelUrl:"/library/subject/", choiceField:"name"'}),
         }
@@ -66,6 +74,9 @@ class PublisherForm(forms.ModelForm):
     class Meta:
         model = Publisher
         exclude = ['slug']
+        labels = {
+            'name': _('Publisher Name')
+        }
 
 
 class SubjectForm(forms.ModelForm):

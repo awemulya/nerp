@@ -3,8 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
 from app.utils.helpers import title_case
 from core.models import Language
-from ils.forms import RecordFormRelatedFields, RecordFormUnrelatedFields,\
-     BookForm, SubjectForm, AuthorForm, PlaceForm,\
+from ils.forms import RecordForm, BookForm, SubjectForm, AuthorForm, PlaceForm,\
      PublisherForm, LanguageForm, OutgoingForm, IncomingForm, PatronForm
 from ils.models import library_setting as setting
 
@@ -17,6 +16,7 @@ import urllib2
 import urllib
 import json
 from django.utils import timezone
+from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import generics
 
 from .models import Record, Author, Publisher, Book, Subject,\
@@ -31,6 +31,9 @@ from users.models import User, group_required
 # from haystack.query import SearchQuerySet
 from ils.forms import LibrarySearchForm
 import pdb
+
+
+from django.http import HttpResponseRedirect
 
 
 @group_required('Librarian')
@@ -675,8 +678,9 @@ class LanguageList(generics.ListCreateAPIView):
 
 
 class RecordView(View):
-    record_form_related_fields = RecordFormRelatedFields
-    record_form_unrelated_fields = RecordFormUnrelatedFields
+    # record_form_related_fields = RecordFormRelatedFields
+    # record_form_unrelated_fields = RecordFormUnrelatedFields
+    record_form = RecordForm
     book_form = BookForm
     author_form = AuthorForm
     place_form = PlaceForm
@@ -685,21 +689,24 @@ class RecordView(View):
     subject_form = SubjectForm
 
     rr_initial = {'key': 'value'}
-    ru_initial = {'key': 'value'}
+    record_initial_files = {}
     b_initial = {'key': 'value'}
     a_initial = {'key': 'value'}
     p_initial = {'key': 'value'}
     pub_initial = {'key': 'value'}
     l_initial = {'key': 'value'}
     sub_initial = {'key': 'value'}
-
+ 
     template_name = 'acquisition1.html'
+    api_has_cover = False
 
-    def get_objects(self, cls, *dl, **kwargs):
+    def get_objects(self, cls, multiple, *dl, **kwargs):
         # pdb.set_trace()
-        if kwargs:
+        if multiple and kwargs:
             return cls.objects.filter(**kwargs)
-        if dl:
+        if kwargs:
+            return cls.objects.get_or_create(**kwargs)
+        if multiple and dl:
             objs = []
             for dic in dl:
                 objs.append(cls.objects.get_or_create(**dic))
@@ -724,7 +731,9 @@ class RecordView(View):
         lod = []
 
         for lp in lookup_path:
-            if lp in data or type(lp) is int:
+            if lp in data:
+                data = data[lp]
+            elif type(data) is list and type(lp is int):
                 data = data[lp]
         # pdb.set_trace()
 
@@ -734,32 +743,32 @@ class RecordView(View):
             if multiselect:
 
                 for field in lookup_fields:
-                    if type(data[field]) is list and type(data[field][0]) is unicode:
+                    if field in data:
+                        if type(data[field]) is list and type(data[field][0]) is unicode:
 
-                        for item in data[field]:
-                            lol = [item]
-                            vl.append(lol)
-                        for val in vl:
-                            for f_field, v in zip(form_fields, val):
-                                dictionary[f_field] = v
-                            lod.append(dictionary)
-                        objs = self.get_objects(cls, *lod)
-                        if objs:
-                            ll = []
-                            for o in objs:
-                                ll.append(o[0].id)
-                            return ll
-                    elif type(data[field]) is unicode:
-                        dictn = {}
-                        val = data[field]
-                        dictn[form_fields[0]] = val
-                        objs = self.get_objects(cls, **dictn)
-                        if objs:
-                            ll = []
-                            for o in objs:
-                                ll.append(o.id)
-                            return ll
-                        
+                            for item in data[field]:
+                                lol = [item]
+                                vl.append(lol)
+                            for val in vl:
+                                for f_field, v in zip(form_fields, val):
+                                    dictionary[f_field] = v
+                                lod.append(dictionary)
+                            objs = self.get_objects(cls, True, *lod)
+                            if objs:
+                                ll = []
+                                for o in objs:
+                                    ll.append(o[0].id)
+                                return ll
+                        elif type(data[field]) is unicode:
+                            dictn = {}
+                            val = data[field]
+                            dictn[form_fields[0]] = val
+                            objs = self.get_objects(cls, multiple=True, **dictn)
+                            if objs:
+                                ll = []
+                                for o in objs:
+                                    ll.append(o.id)
+                                return ll
 
             else:
                 for field in lookup_fields:
@@ -771,17 +780,18 @@ class RecordView(View):
                 for f_field, v in zip(form_fields, value):
                     if v is not None:
                         dictionary[f_field] = v
-                objs = self.get_objects(cls, **dictionary)
+                objs = self.get_objects(cls, multiple=False, **dictionary)
                 if objs:
-                    ll = []
-                    for o in objs:
-                        ll.append(o.id)
-                # if select then return number of mselect then return list
-                    return ll[0]
-                else:
-                    instance = kwargs['form_ins']
-                    for f_field, va in zip(form_fields, value):
-                        instance[f_field] = va
+                    return objs[0].id
+                #     ll = []
+                #     for o in objs:
+                #         ll.append(o.id)
+                # # if select then return number of mselect then return list
+                #     return ll[0]
+                # else:
+                #     instance = kwargs['form_ins']
+                #     for f_field, va in zip(form_fields, value):
+                #         instance[f_field] = va
         else:
             if lookup_fields[0] in data:
                 if type(data[lookup_fields[0]]) is list and len(data[lookup_fields[0]]) is not 0:
@@ -798,29 +808,29 @@ class RecordView(View):
 
     def populate(self, isbn):
         response = urllib2.urlopen('https://www.googleapis.com' +
-                                   '/books/v1/volumes?q=search+isbn'+isbn)
+                                   '/books/v1/volumes?q=search+isbn:'+isbn)
         google_api_data = json.load(response)
         openlibrary_data = json.load(urllib2.urlopen(
             'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
         od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
         # pdb.set_trace()
         self.rr_initial = {'book': self.get_from_api(
-                           data=google_api_data['items'][0],
-                           lookup_path=['volumeInfo'],
+                           data=google_api_data,
+                           lookup_path=['items', 0, 'volumeInfo'],
                            lookup_fields=['title', 'subtitle'],
                            # Specify only if this field is related
                            cls=Book,
                            multiselect=False,
                            # In case we need to populate the field
-                           form_ins=self.b_initial,
+                           # form_ins=self.b_initial,
                            form_fields=['title', 'subtitle']
                            ),
 
                            'published_place': [],
 
                            'authors': self.get_from_api(
-                            data=google_api_data['items'][0],
-                            lookup_path=['volumeInfo'],
+                            data=google_api_data,
+                            lookup_path=['items', 0, 'volumeInfo'],
                             lookup_fields=['authors'],
                             cls=Author,
                             multiselect=True,
@@ -828,17 +838,17 @@ class RecordView(View):
                             ),
 
                            'publisher': self.get_from_api(
-                            data=google_api_data['items'][0],
-                            lookup_path=['volumeInfo'],
+                            data=google_api_data,
+                            lookup_path=['items', 0, 'volumeInfo'],
                             lookup_fields=['publisher'],
                             cls=Publisher,
-                            form_ins=self.pub_initial,
+                            # form_ins=self.pub_initial,
                             form_fields=['name']
                             ),
 
                            'languages': self.get_from_api(
-                            data=google_api_data['items'][0],
-                            lookup_path=['volumeInfo'],
+                            data=google_api_data,
+                            lookup_path=['items', 0, 'volumeInfo'],
                             lookup_fields=['language'],
                             cls=Language,
                             multiselect=True,
@@ -846,22 +856,21 @@ class RecordView(View):
 
                             ),
 
-                           }
-        self.ru_initial = {'pagination': str(self.get_from_api(
+                           'pagination': str(self.get_from_api(
                             data=od,
-                            lookup_path=['details','details'],
+                            lookup_path=['details', 'details'],
                             lookup_fields=['pagination']
                             )),
                            'isbn13': isbn,
                            'date_added': timezone.now(),
                            'edition': self.get_from_api(
-                            data=google_api_data['items'][0],
-                            lookup_path=['volumeInfo'],
+                            data=google_api_data,
+                            lookup_path=['items', 0, 'volumeInfo'],
                             lookup_fields=['contentVersion']
                             ),
                            'description': self.get_from_api(
-                            data=google_api_data['items'][0],
-                            lookup_path=['volumeInfo'],
+                            data=google_api_data,
+                            lookup_path=['items', 0, 'volumeInfo'],
                             lookup_fields=['description']
                             ),
                            'goodreads_id': self.get_from_api(
@@ -914,8 +923,44 @@ class RecordView(View):
                             lookup_path=['data', 'excerpts', 0],
                             lookup_fields=['text']
                             ),
-
                            }
+        pass
+
+    def populate_cover(self, isbn):
+        openlibrary_data = json.load(urllib2.urlopen(
+            'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
+        od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
+        self.record_initial_files = {
+                                 'small_cover': self.get_file(
+                                     self.get_from_api(
+                                      data=od,
+                                      lookup_path=['data', 'cover'],
+                                      lookup_fields=['small']
+                                     )),
+                                 'medium_cover': self.get_file(
+                                     self.get_from_api(
+                                      data=od,
+                                      lookup_path=['data', 'cover'],
+                                      lookup_fields=['medium']
+                                     )),
+                                 'large_cover': self.get_file(
+                                     self.get_from_api(
+                                      data=od,
+                                      lookup_path=['data', 'cover'],
+                                      lookup_fields=['large']
+                                     )),
+                                }
+        for key in self.record_initial_files:
+            if self.record_initial_files[key] is not None:
+                self.api_has_cover = True
+        pass
+
+    def get_file(self, url):
+        if url:
+            result = urllib.urlopen(url)
+            fi_name = os.path.basename(url)
+            suf = SimpleUploadedFile(fi_name, result.read())
+            return suf
         pass
 
     def get(self, request, *args, **kwargs):
@@ -924,58 +969,49 @@ class RecordView(View):
             if isbnpy.isValid(isbn):
                 if isbnpy.isI10(isbn):
                     isbn = isbnpy.convert(isbn)
-                # pdb.set_trace()
                 self.populate(isbn)
-        rr_form = self.record_form_related_fields(initial=self.rr_initial)
-        ru_form = self.record_form_unrelated_fields(initial=self.ru_initial)
+                self.populate_cover(isbn)
+
+        rr_form = self.record_form(self.rr_initial)
         b_form = self.book_form(initial=self.b_initial)
         a_form = self.author_form(initial=self.a_initial)
         p_form = self.place_form(initial=self.p_initial)
         pub_form = self.publisher_form(initial=self.pub_initial)
         l_form = self.lan_form(initial=self.l_initial)
         sub_form = self.subject_form(initial=self.sub_initial)
-        return render(request, self.template_name, {'rr_form': rr_form,
-                                                    'ru_form': ru_form,
-                                                    'b_form': b_form,
-                                                    'a_form': a_form,
-                                                    'p_form': p_form,
-                                                    'pub_form': pub_form,
-                                                    'l_form': l_form,
-                                                    'sub_form': sub_form,
-                                                    })
+        context = {'rr_form': rr_form,
+                   'b_form': b_form,
+                   'a_form': a_form,
+                   'p_form': p_form,
+                   'pub_form': pub_form,
+                   'l_form': l_form,
+                   'sub_form': sub_form,
+                   'api_has_cover': self.api_has_cover,
+                   }
+        # pdb.set_trace()
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
+        # files_from_api = {}
+        # files_from_request = request.FILES
+        # post_data = request.POST
+        # if 'isbn13' in post_data:
+        #     isbn = request.POST['isbn13']
+        #     if isbnpy.isValid(isbn):
+        #         if isbnpy.isI10(isbn):
+        #             isbn = isbnpy.convert(isbn)
+        #         self.populate_cover(isbn)
+        #         for key in self.record_initial_files:
+        #             if self.record_initial_files[key] is not None:
+        #                 files_from_api[key] = self.record_initial_files[key]
+
+        # files_combo = dict(files_from_api.items() + files_from_request.items())
+        # pdb.set_trace()
+        record = RecordForm(request.POST)
+        record.save()
+        
+
+
+
+        return HttpResponseRedirect('/')
         pass
-
-        # def get_from_api_select(self, **kwargs):
-        # data = kwargs['data']
-        # lookup_fields = kwargs['lookup_fields']
-        # lookup_path = kwargs['lookup_path']
-        # form_fields = kwargs['form_fields']
-        # value = []
-        # # dictionary to filter
-        # dictionary = {}
-
-        # for lp in lookup_path:
-        #     data = data[lp]
-
-        # for i, field in enumerate(lookup_fields):
-        #     value.append(data[field])
-
-        # if kwargs['cls']:
-        #     cls = kwargs['cls']
-        #     for f_field, v in zip(form_fields, value):
-        #         dictionary[f_field] = v
-        #     objs = cls.objects.filter(**dictionary)
-        #     if objs:
-        #         ll = []
-        #         for o in objs:
-        #             ll.append(o.id)
-        #         # pdb.set_trace()
-        #         # if select then return number of mselect then return list
-        #         return ll[0]
-        #     else:
-        #         instance = kwargs['form_ins']
-        #         for f_field, va in zip(form_fields, value):
-        #             instance[f_field] = va
-        # pass

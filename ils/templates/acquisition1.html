@@ -20,77 +20,19 @@
 {% block content %}
 <form class="isbn-form" method="get" action="{% url 'acq' %}">
      <label id="id_isbn13" class="record-isbn13">ISBN13</label>
-    {{ ru_form.isbn13 }}
+    {{ rr_form.isbn13 }}
     <input type="submit" class="button" value="Get">
 </form>
 
-<form class="acquision-form" method="post" action="{% url 'acq' %}">
+<form class="acquision-form" enctype="multipart/form-data" method="post" action="{% url 'acq' %}">
     {% csrf_token %}
     <!-- Either first or second -->
-    <label id="id_book" class="record-book">Book</label>
-    {{ rr_form.book }}
-
-    <label id="id_title" class="book-title">Book Title</label>
-    {{ b_form.title }}
-    <label id="id_subtitle" class="book-subtitle">Book SubTitle</label>
-    {{ b_form.subtitle }}
-    <label id="id_subjects" class="book-subjects">Subjects</label>
-    {{ b_form.subjects }}
-    <div id="#" class="reveal-modal [small]" data-reveal>
-        <label>Subject Form</label>
-        {{ sub_form }}
-    </div>
-    <!-- Either first or second -->
-
-    <!-- Either first or second -->
-    <label id="id_authors" class="record-authors">Authors</label>
-    {{ rr_form.authors }}
-      
-        <!-- This can be many -->
-    <div id="#" class="reveal-modal [small]" data-reveal>
-    <!-- id= name of selectize applied element and data-reveal-id on botton -->
-        <!-- <label id="id_name" class="author-name">Author Name</label> -->
-        {{ a_form }}
-    </div>
-    <!-- Either first or second -->
-
-    <!-- Either first or second -->
-    <label id="id_published_places" class="record-published_places">Publication Places</label>
-    {{ rr_form.published_places }}
-      
-        <!-- This can be many -->
-    <div id="#" class="reveal-modal [small]" data-reveal>
-        <!-- <label id="id_name" class="place-name">Publication Place Name</label> -->
-        {{ p_form }}
-    </div>
-    <!-- Either first or second -->
-
-    <!-- Either first or second -->
-    <label id="id_publisher" class="record-publisher">Publishers</label>
-    {{ rr_form.publisher }}
-
-        <!-- This can be many -->
-    <!-- <div id="#" class="reveal-modal [small]" data-reveal> -->
-        <!-- <label id="id_name" class="publisher-name">Publishers</label> -->
-        {{ pub_form }}
-    <!-- </div> -->
-    <!-- Either first or second -->
     
-    <!-- Either first or second -->
-    <label id="id_languages" class="record-languages">Languages</label>
-    {{ rr_form.languages }}
-
-        <!-- This can be many -->
-    <div id="#" class="reveal-modal [small]" data-reveal>
-        <!-- <label id="id_name" class="language-name">Language Name</label> -->
-        <!-- {{ l_form.name }} -->
-        <!-- <label id="id_code" class="language-code">Language Code</label> -->
-        {{ l_form }}
-    </div>
-    <!-- Either first or second -->
-
-    {{ ru_form }}
+    {{ rr_form }}
 
      <input type="submit" class="button" value="save">
 </form>
 {% endblock %}
+
+
+
