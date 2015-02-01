@@ -49,18 +49,6 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='LibrarySetting',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('fine_per_day', models.FloatField()),
-                ('borrow_days', models.PositiveIntegerField()),
-                ('default_type', models.CharField(default=b'circulative', unique=True, max_length=11, choices=[(b'Reference', b'Reference'), (b'Circulative', b'Circulative')])),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
             name='Place',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
