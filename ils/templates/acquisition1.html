@@ -19,7 +19,7 @@
     
     <label id="id_isbn13" class="record-isbn13">ISBN13</label>
     {{ rr_form.isbn13 }}
-    <input type="submit" class="button" value="Get">
+    <input type="submit" class="tiny button" value="Get">
     
     
 </form>
@@ -197,16 +197,14 @@
         </div>
     </div>
     <div class="row">
-        <div class="column large-4">
-            {{ rr_form.notes.label }}</br>
-            {{ rr_form.notes.errors }}
-            {{ rr_form.notes}}
-        </div>
-        <div class="column large-8">
-            {{ rr_form.excerpt.label }}</br>
-            {{ rr_form.excerpt.errors }}
-            {{ rr_form.excerpt}}
-        </div>
+        {{ rr_form.notes.label }}</br>
+        {{ rr_form.notes.errors }}
+        {{ rr_form.notes}}
+    </div>
+    <div class="row">
+        {{ rr_form.excerpt.label }}</br>
+        {{ rr_form.excerpt.errors }}
+        {{ rr_form.excerpt}}
     </div>
     <div class="row">
         {{ rr_form.description.label }}</br>
