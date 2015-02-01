@@ -12,7 +12,7 @@ AcquisionVM = function(){
 	self.languages = ko.observableArray();
 
 	self.ajaxPost = function(url, optionField, oble, selectize_element, formElement){
-			var x = $('formElement, input').serialize();
+			var x = $('input, select').serialize();
 			$.post(url,x
 				).success(function(data){
 					console.log(data);

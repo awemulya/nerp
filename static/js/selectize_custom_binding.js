@@ -48,7 +48,7 @@ ko.bindingHandlers.customSelectize = {
       			var element_to_append = $(element)
       					.next()
       					.find('.selectize-dropdown');
-      			var html_to_append = '<div class="custom-selectize-add-button" data-reveal-id="' + 
+      			var html_to_append = '<div style="text-align:center;font-weight:bold;background-color:#0082bd;font-size:1em;padding:0.5em" data-reveal-id="' + 
       							$(element).attr('name') +
       							'">Add '+ 
       						z +
