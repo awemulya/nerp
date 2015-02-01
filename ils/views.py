@@ -963,7 +963,7 @@ class RecordView(View):
             instance = Record.objects.get(id=rec_id)
             rr_form = self.record_form(instance=instance)
         else:
-            rr_form = self.record_form(self.rr_initial)
+            rr_form = self.record_form(initial=self.rr_initial)
         b_form = self.book_form()
         a_form = self.author_form()
         p_form = self.place_form()
