@@ -13,15 +13,15 @@
 {% block head_end %}
     <script src="{% static 'js/ils/acquisition1.js' %}"></script>
     <script src="{% static 'js/selectize_custom_binding.js' %}"></script>
-    <script>
-        ko_data = {{data|jsonify}};
-    </script>
 {% endblock %}
 {% block content %}
 <form class="isbn-form" method="get" action="{% url 'acq' %}">
-     <label id="id_isbn13" class="record-isbn13">ISBN13</label>
+    
+    <label id="id_isbn13" class="record-isbn13">ISBN13</label>
     {{ rr_form.isbn13 }}
     <input type="submit" class="button" value="Get">
+    
+    
 </form>
 {% if record_id %}
     <form class="acquision-form" enctype="multipart/form-data" method="post" action="/library/acq/{{ record_id }}/">
@@ -30,11 +30,273 @@
 {% endif %}
     
     {% csrf_token %}
-        
-    {{ rr_form }}
+    <div id="main-error-area" class="row">
+    </div>
+    <div class="row">
+        <div class="column large-4">
+            {{ rr_form.book.label }}
+            {{ rr_form.book.errors }}
+            {{ rr_form.book}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.publisher.label }}
+            {{ rr_form.publisher.errors }}
+            {{ rr_form.publisher}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.languages.label }}
+            {{ rr_form.languages.errors }}
+            {{ rr_form.languages}}
+        </div>
+    </div>
+    </br>
+    <div class="row">
+        <div class="column large-4">
+            {{ rr_form.authors.label }}
+            {{ rr_form.authors.errors }}
+            {{ rr_form.authors}}
+        </div>
+        <div class="column large-8">
+            {{ rr_form.published_places.label }}
+            {{ rr_form.published_places.errors }}
+            {{ rr_form.published_places}}
+        </div>
+    </div>
+    </br></br>
+    <div class="row">
+        <div class="column large-4">
+            {{ rr_form.edition.label }}</br>
+            {{ rr_form.edition.errors }}
+            {{ rr_form.edition}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.format.label }}</br>
+            {{ rr_form.format.errors }}
+            {{ rr_form.format}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.type.label }}</br>
+            {{ rr_form.type.errors }}
+            {{ rr_form.type}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="column large-4">
+            {{ rr_form.pagination.label }}</br>
+            {{ rr_form.pagination.errors }}
+            {{ rr_form.pagination}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.price.label }}
+            {{ rr_form.price.errors }}
+            {{ rr_form.price}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.quantity.label }}
+            {{ rr_form.quantity.errors }}
+            {{ rr_form.quantity}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="column large-4">
+            {{ rr_form.date_of_publication.label }}</br>
+            {{ rr_form.date_of_publication.errors }}
+            {{ rr_form.date_of_publication}}
+        </div>
+        <div class="column large-8">
+            {{ rr_form.date_added.label }}</br>
+            {{ rr_form.date_added.errors }}
+            {{ rr_form.date_added}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="column large-4">
+            {{ rr_form.lcc.label }}</br>
+            {{ rr_form.lcc.errors }}
+            {{ rr_form.lcc}}
+        </div>
+        <div class="column large-8">
+            {{ rr_form.ddc.label }}</br>
+            {{ rr_form.ddc.errors }}
+            {{ rr_form.ddc}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="column large-4">
+            {{ rr_form.lccn_id.label }}</br>
+            {{ rr_form.lccn_id.errors }}
+            {{ rr_form.lccn_id}}
+        </div>
+        <div class="column large-8">
+            {{ rr_form.oclc_id.label }}</br>
+            {{ rr_form.oclc_id.errors }}
+            {{ rr_form.oclc_id }}
+        </div>
+    </div>
+    </br></br>
+    <div class="row">
+        <div class="column large-4">
+            {{ rr_form.goodreads_id.label }}
+            {{ rr_form.goodreads_id.errors }}
+            {{ rr_form.goodreads_id}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.librarything_id.label }}
+            {{ rr_form.librarything_id.errors }}
+            {{ rr_form.librarything_id}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.openlibrary_id.label }}</br>
+            {{ rr_form.openlibrary_id.errors }}
+            {{ rr_form.openlibrary_id}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="column large-4">
+            {{ rr_form.weight.label }}</br>
+            {{ rr_form.weight.errors }}
+            {{ rr_form.weight}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.dimensions.label }}</br>
+            {{ rr_form.dimensions.errors }}
+            {{ rr_form.dimensions}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.by_statement.label }}</br>
+            {{ rr_form.by_statement.errors }}
+            {{ rr_form.by_statement}}
+        </div>
+    </div>
+    </br>
 
-     <input type="submit" class="button" value="save">
+    {% if api_has_cover%}
+    <div class="row">
+        <div data-alert class="alert-box success">
+            <label>Note: API has cover. If you specify your own cover, covers from the api will be replaced</label> 
+            <a href="#" class="close">&times;</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="column large-4">
+            {{ rr_form.small_cover.label }}</br>
+            {{ rr_form.small_cover.errors }}
+            {{ rr_form.small_cover}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.medium_cover.label }}</br>
+            {{ rr_form.medium_cover.errors }}
+            {{ rr_form.medium_cover}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.large_cover.label }}</br>
+            {{ rr_form.large_cover.errors }}
+            {{ rr_form.large_cover}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="column large-4">
+            {{ rr_form.notes.label }}</br>
+            {{ rr_form.notes.errors }}
+            {{ rr_form.notes}}
+        </div>
+        <div class="column large-8">
+            {{ rr_form.excerpt.label }}</br>
+            {{ rr_form.excerpt.errors }}
+            {{ rr_form.excerpt}}
+        </div>
+    </div>
+    <div class="row">
+        {{ rr_form.description.label }}</br>
+        {{ rr_form.description.errors }}
+        {{ rr_form.description}}
+    </div>
+    <!-- {{ rr_form }} -->
+
+     <input type="submit" class="button" value="Save">
 </form>
+
+<!-- id= name of selectize applied element and data-reveal-id on botton -->
+<div id="authors" class="reveal-modal [small]" data-reveal>
+    <form data-bind="submit: function(data){
+        var url = '/library/author/';
+        var optionField = 'name';
+        var oble = 'authors';
+        var selectize_element = '#id_authors';
+        ajaxPost(url, optionField, oble, selectize_element, data)
+        }">
+        {{ a_form }}
+        <input type="submit" class="button" value="Add Author">
+        <a class="close-reveal-modal">&#215;</a>
+    </form>
+</div>
+<div id="languages" class="reveal-modal [small]" data-reveal>
+    <form data-bind="submit: function(data){
+        var url = '/library/language/';
+        var optionField = 'name';
+        var oble = 'languages';
+        var selectize_element = '#id_languages';
+        ajaxPost(url, optionField, oble, selectize_element, data)
+        }">
+        {{ l_form }}
+        <input type="submit" class="button" value="Add Language">
+        <a class="close-reveal-modal">&#215;</a>
+    </form>
+</div>
+<div id="book" class="reveal-modal [small]" data-reveal>
+    <form data-bind="submit: function(data){
+        var url = '/library/book/';
+        var optionField = 'title';
+        var oble = 'books';
+        var selectize_element = '#id_book';
+        ajaxPost(url, optionField, oble, selectize_element, data)
+        }">
+        {{ b_form }}
+        <input type="submit" class="button" value="Add Book">
+        <a class="close-reveal-modal">&#215;</a>
+    </form>
+</div>
+<div id="publisher" class="reveal-modal [small]" data-reveal>
+    <form data-bind="submit: function(data){
+        var url = '/library/publisher/';
+        var optionField = 'name';
+        var oble = 'publishers';
+        var selectize_element = '#id_publisher';
+        ajaxPost(url, optionField, oble, selectize_element, data)
+        }">
+        {{ pub_form }}
+        <input type="submit" class="button" value="Add Publisher">
+        <a class="close-reveal-modal">&#215;</a>
+    </form>
+</div>
+<div id="published_places" class="reveal-modal [small]" data-reveal>
+    <form data-bind="submit: function(data){
+        var url = '/library/place/';
+        var optionField = 'name';
+        var oble = 'pub_places';
+        var selectize_element = '#id_published_places';
+        ajaxPost(url, optionField, oble, selectize_element, data)
+        }">
+        {{ p_form }}
+        <input type="submit" class="button" value="Add Published Place">
+        <a class="close-reveal-modal">&#215;</a>
+    </form>
+</div>
+<div id="subjects" class="reveal-modal [small]" data-reveal>
+    <form data-bind="submit: function(data){
+        var url = '/library/subject/';
+        var optionField = 'name';
+        var oble = 'subjects';
+        var selectize_element = '#id_subjects';
+        ajaxPost(url, optionField, oble, selectize_element, data)
+        }">
+        {{ sub_form }}
+        <input type="submit" class="button" value="Add Subject">
+        <a class="close-reveal-modal">&#215;</a>
+    </form>
+</div>
 {% endblock %}
 
 
