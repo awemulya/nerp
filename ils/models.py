@@ -15,6 +15,13 @@ BOOK_TYPES = (
     ('Circulative', 'Circulative')
 )
 
+from ils.validate import FlexibleDateField
+
+class MyCustomDate(models.Model):
+    date = FlexibleDateField(max_length=250)
+
+    def __unicode__(self):
+        return unicode(self.date)
 
 class Subject(MPTTModel):
     name = models.CharField(max_length=255)

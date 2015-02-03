@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
             name='Account',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name_ne', models.CharField(max_length=254, null=True, verbose_name='Name in Nepali', blank=True)),
-                ('name_en', models.CharField(max_length=254, null=True, verbose_name='Name in English', blank=True)),
+                ('name', models.CharField(max_length=254)),
+                ('name_en', models.CharField(max_length=254, null=True)),
+                ('name_ne', models.CharField(max_length=254, null=True)),
             ],
             options={
-                'abstract': False,
             },
             bases=(models.Model,),
         ),
@@ -26,23 +26,13 @@ class Migration(migrations.Migration):
             name='Activity',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name_ne', models.CharField(max_length=254, null=True, verbose_name='Name in Nepali', blank=True)),
-                ('name_en', models.CharField(max_length=254, null=True, verbose_name='Name in English', blank=True)),
+                ('name', models.CharField(max_length=254)),
+                ('name_en', models.CharField(max_length=254, null=True)),
+                ('name_ne', models.CharField(max_length=254, null=True)),
                 ('no', models.PositiveIntegerField()),
             ],
             options={
                 'verbose_name_plural': 'Activities',
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='AppSetting',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('app_name', models.CharField(max_length=254)),
-                ('header_for_forms', models.TextField()),
-            ],
-            options={
             },
             bases=(models.Model,),
         ),
@@ -71,12 +61,13 @@ class Migration(migrations.Migration):
             name='BudgetHead',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name_ne', models.CharField(max_length=254, null=True, verbose_name='Name in Nepali', blank=True)),
-                ('name_en', models.CharField(max_length=254, null=True, verbose_name='Name in English', blank=True)),
+                ('name', models.CharField(max_length=254)),
+                ('name_en', models.CharField(max_length=254, null=True)),
+                ('name_ne', models.CharField(max_length=254, null=True)),
                 ('no', models.PositiveIntegerField()),
             ],
             options={
-                'verbose_name': 'Budget Head',
+                'abstract': False,
             },
             bases=(models.Model,),
         ),
@@ -84,11 +75,11 @@ class Migration(migrations.Migration):
             name='Donor',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name_ne', models.CharField(max_length=254, null=True, verbose_name='Name in Nepali', blank=True)),
-                ('name_en', models.CharField(max_length=254, null=True, verbose_name='Name in English', blank=True)),
+                ('name', models.CharField(max_length=254)),
+                ('name_en', models.CharField(max_length=254, null=True)),
+                ('name_ne', models.CharField(max_length=254, null=True)),
             ],
             options={
-                'abstract': False,
             },
             bases=(models.Model,),
         ),
@@ -96,11 +87,11 @@ class Migration(migrations.Migration):
             name='Employee',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name_ne', models.CharField(max_length=254, null=True, verbose_name='Name in Nepali', blank=True)),
-                ('name_en', models.CharField(max_length=254, null=True, verbose_name='Name in English', blank=True)),
+                ('name', models.CharField(max_length=254)),
+                ('name_en', models.CharField(max_length=254, null=True)),
+                ('name_ne', models.CharField(max_length=254, null=True)),
             ],
             options={
-                'abstract': False,
             },
             bases=(models.Model,),
         ),
@@ -129,8 +120,9 @@ class Migration(migrations.Migration):
             name='Party',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name_ne', models.CharField(max_length=254, null=True, verbose_name='Name in Nepali', blank=True)),
-                ('name_en', models.CharField(max_length=254, null=True, verbose_name='Name in English', blank=True)),
+                ('name', models.CharField(max_length=254)),
+                ('name_en', models.CharField(max_length=254, null=True)),
+                ('name_ne', models.CharField(max_length=254, null=True)),
                 ('address', models.CharField(max_length=254, null=True, blank=True)),
                 ('phone_no', models.CharField(max_length=100, null=True, blank=True)),
                 ('pan_no', models.CharField(max_length=50, null=True, blank=True)),
@@ -145,12 +137,12 @@ class Migration(migrations.Migration):
             name='TaxScheme',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name_ne', models.CharField(max_length=254, null=True, verbose_name='Name in Nepali', blank=True)),
-                ('name_en', models.CharField(max_length=254, null=True, verbose_name='Name in English', blank=True)),
+                ('name', models.CharField(max_length=254)),
+                ('name_en', models.CharField(max_length=254, null=True)),
+                ('name_ne', models.CharField(max_length=254, null=True)),
                 ('percent', models.FloatField()),
             ],
             options={
-                'abstract': False,
             },
             bases=(models.Model,),
         ),
@@ -169,11 +161,5 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='budgetbalance',
             unique_together=set([('budget_head', 'fiscal_year')]),
-        ),
-        migrations.AddField(
-            model_name='appsetting',
-            name='fiscal_year',
-            field=models.ForeignKey(to='core.FiscalYear'),
-            preserve_default=True,
         ),
     ]
