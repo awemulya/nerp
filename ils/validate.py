@@ -1,25 +1,13 @@
 from django.db import models
 from django.utils.six import with_metaclass
 import re, time
-from django.core import exceptions
+from django import forms
 
-class CustomField(with_metaclass(models.SubfieldBase, models.Field)):
-# class CustomField(models.Field):
-
-	description = "Custom date field"
-
+class CustomDateFormField(forms.Field):
 	def __init__(self, *args, **kwargs):
-		kwargs['max_length'] = 250
-		super(CustomField, self).__init__(self, *args, **kwargs)
+		super(CustomDateFormField, self).__init__(*args, **kwargs)
 
-	def deconstruct(self):
-		name, path, args, kwargs = super(CustomField, self).deconstruct()
-		if kwargs['verbose_name']:
-			del kwargs['verbose_name']
-		del kwargs['max_length']
-		return name, path, args, kwargs
-
-	def get_db_prep_value(self, value, connection, prepared=False):
+	def to_python(self, value):
 		date = re.compile('^[0-2]\d{3}([-])(0[1-9]|1[012]|[1-9])([-])(0[1-9]|[12][0-9]|3[01]|[0-9])$')
 		date_year = re.compile('^[0-2]\d{3}$')
 		date_year_month = re.compile('^[0-2]\d{3}([-])(0[1-9]|1[012]|[1-9])$')
@@ -29,34 +17,37 @@ class CustomField(with_metaclass(models.SubfieldBase, models.Field)):
 				timestamp = time.strptime(value, '%Y-%m-%d')
 				value = '{0}-{1}-{2:02}'.format(timestamp.tm_year, timestamp.tm_mon, timestamp.tm_mday % 100)
 				return value
-			except:
-				error_str = "Invalid Date"
-				raise Exception('%s' % error_str)
-				# raise exceptions.ValdationError("Date not in format YYYY-MM-DD")
+			except ValueError, e:
+				raise forms.ValidationError("%s" % e)
 		elif date_year_month.match(value):
 			try:
 				timestamp = time.strptime(value, '%Y-%m')
 				value = '{0}-{1}'.format(timestamp.tm_year, timestamp.tm_mon % 100)
 				return value
-			except ValueError:
-				return "Date not in format YYYY-MM"
+			except ValueError, e:
+				raise forms.ValidationError("%s" % e)
 		elif date_year.match(value):
 			try:
 				timestamp = time.strptime(value, '%Y')
 				return timestamp.tm_year
-			except ValueError:
-				return "Date not in format YYYY"
+			except ValueError, e:
+				raise forms.ValidationError("%s" % e)
 		else:
-			raise ValueError("Please Insert valid date")
-		
+			raise forms.ValidationError("Invalid Date Format")
+
+class CustomDateField(with_metaclass(models.SubfieldBase, models.Field)):
+
+	description = "Custom date field"
 
 	def to_python(self, value):
+		if value == None:
+			return None
 		return value
 
 	def get_internal_type(self):
 		return "CharField"
 
 	def formfield(self, **kwargs):
-		defaults = {'form_class': CustomField}
+		defaults = {'form_class': CustomDateFormField}
 		defaults.update(kwargs)
-		return super(CustomField, self).formfield(**defaults)
+		return super(CustomDateField, self).formfield(**defaults)
