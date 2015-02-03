@@ -1,15 +1,16 @@
-import dbsettings
 import datetime
+import os
 
+import dbsettings
 from django.core.urlresolvers import reverse
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
-import os
 
 from core.models import Language
 from app.utils.forms import unique_slugify
 from users.models import User
 from app.utils.flexible_date import FlexibleDateField
+
 
 BOOK_TYPES = (
     ('Reference', 'Reference'),
