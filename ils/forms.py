@@ -21,13 +21,13 @@ class RecordForm(forms.ModelForm):
         #            'publisher',
         #            'languages',
         #            ]
-        widgets = {
-            'book': forms.Select(attrs={'data-bind': 'customSelectize: books, modelUrl:"/library/book/", choiceField:"title"'}),
-            'published_places': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: pub_places, modelUrl:"/library/place/", choiceField:"name"'}),
-            'authors': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: authors, modelUrl:"/library/author/", choiceField:"name"'}),
-            'publisher': forms.Select(attrs={'data-bind': 'customSelectize: publishers, modelUrl:"/library/publisher/", choiceField:"name"'}),
-            'languages': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: languages, modelUrl:"/library/language/", choiceField:"name"'}),
-            }
+        # widgets = {
+        #     'book': forms.Select(attrs={'data-bind': 'customSelectize: books, modelUrl:"/library/book/", choiceField:"title"'}),
+        #     'published_places': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: pub_places, modelUrl:"/library/place/", choiceField:"name"'}),
+        #     'authors': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: authors, modelUrl:"/library/author/", choiceField:"name"'}),
+        #     'publisher': forms.Select(attrs={'data-bind': 'customSelectize: publishers, modelUrl:"/library/publisher/", choiceField:"name"'}),
+        #     'languages': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: languages, modelUrl:"/library/language/", choiceField:"name"'}),
+        #     }
 
 
 # class RecordFormUnrelatedFields(forms.ModelForm):
@@ -45,17 +45,17 @@ class BookForm(forms.ModelForm):
     class Meta:
         model = Book
         exclude = ['slug']
-        labels = {
-            'title': _('Book Title'),
-            'subtitle': _('Book Subtitle'),
-            'subjects': _('Book Subjects')
-        }
+        # labels = {
+        #     'title': _('Book Title'),
+        #     'subtitle': _('Book Subtitle'),
+        #     'subjects': _('Book Subjects')
+        # }
         help_texts = {
             'subjects': ('')
         }
-        widgets = {
-            'subjects': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: subjects, modelUrl:"/library/subject/", choiceField:"name"'}),
-        }
+        # widgets = {
+        #     'subjects': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: subjects, modelUrl:"/library/subject/", choiceField:"name"'}),
+        # }
 
 
 class AuthorForm(forms.ModelForm):

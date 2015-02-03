@@ -49,6 +49,27 @@
             {{ rr_form.languages}}
         </div>
     </div>
+    <div class="row">
+        {{b_form}}
+        <!-- <div class="column large-4">
+            {{ rr_form.book.label }}
+            {{ rr_form.book.errors }}
+            {{ rr_form.book}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.publisher.label }}
+            {{ rr_form.publisher.errors }}
+            {{ rr_form.publisher}}
+        </div>
+        <div class="column large-4">
+            {{ rr_form.languages.label }}
+            {{ rr_form.languages.errors }}
+            {{ rr_form.languages}}
+        </div> -->
+    </div>
+    <div class="row">
+        {{pub_form}}
+    </div>
     </br>
     <div class="row">
         <div class="column large-4">
@@ -217,7 +238,7 @@
 </form>
 
 <!-- id= name of selectize applied element and data-reveal-id on botton -->
-<div id="authors" class="reveal-modal [small]" data-reveal>
+<!-- <div id="authors" class="reveal-modal [small]" data-reveal>
     <form data-bind="submit: function(data){
         var url = '/library/author/';
         var optionField = 'name';
@@ -294,7 +315,7 @@
         <input type="submit" class="button" value="Add Subject">
         <a class="close-reveal-modal">&#215;</a>
     </form>
-</div>
+</div> -->
 {% endblock %}
 
 

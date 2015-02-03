@@ -1,4 +1,14 @@
 $(document).ready(function () {
+	$('#id_authors, #id_languages, #id_subjects, #id_published_places').selectize({
+    delimiter: ',',
+    persist: false,
+    create: function(input) {
+        return {
+            value: input,
+            text: input
+        }
+    }
+    });
     acq = new AcquisionVM();
 	    ko.applyBindings(acq);
 	    });
@@ -28,8 +38,8 @@ AcquisionVM = function(){
 					selectize.addOption(createdObj);
 					selectize.addItem(data.id);
 
-					var hh = $(formElement).find('.close-reveal-modal');
-					$(hh).trigger("click");
+					// var hh = $(formElement).find('.close-reveal-modal');
+					// $(hh).trigger("click");
 
 				}).done(function(){
 					var errorHtml = '<div data-alert class="alert-box success"><label> Option successfully ADDED and SELECTED!</label> <a href="#" class="close">&times;</a></div>';
