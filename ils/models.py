@@ -15,10 +15,10 @@ BOOK_TYPES = (
     ('Circulative', 'Circulative')
 )
 
-from ils.validate import CustomDateField
+from ils.validate import FlexibleDateField
 
 class MyCustomDate(models.Model):
-    date = CustomDateField(max_length=250)
+    date = FlexibleDateField(max_length=250)
 
     def __unicode__(self):
         return unicode(self.date)

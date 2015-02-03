@@ -3,9 +3,9 @@ from django.utils.six import with_metaclass
 import re, time
 from django import forms
 
-class CustomDateFormField(forms.Field):
+class FlexibleDateFormField(forms.Field):
 	def __init__(self, *args, **kwargs):
-		super(CustomDateFormField, self).__init__(*args, **kwargs)
+		super(FlexibleDateFormField, self).__init__(*args, **kwargs)
 
 	def to_python(self, value):
 		date = re.compile('^[0-2]\d{3}([-])(0[1-9]|1[012]|[1-9])([-])(0[1-9]|[12][0-9]|3[01]|[0-9])$')
@@ -35,9 +35,9 @@ class CustomDateFormField(forms.Field):
 		else:
 			raise forms.ValidationError("Invalid Date Format")
 
-class CustomDateField(with_metaclass(models.SubfieldBase, models.Field)):
+class FlexibleDateField(with_metaclass(models.SubfieldBase, models.Field)):
 
-	description = "Custom date field"
+	description = "Flexible date field"
 
 	def to_python(self, value):
 		if value == None:
@@ -48,6 +48,6 @@ class CustomDateField(with_metaclass(models.SubfieldBase, models.Field)):
 		return "CharField"
 
 	def formfield(self, **kwargs):
-		defaults = {'form_class': CustomDateFormField}
+		defaults = {'form_class': FlexibleDateFormField}
 		defaults.update(kwargs)
-		return super(CustomDateField, self).formfield(**defaults)
+		return super(FlexibleDateField, self).formfield(**defaults)
