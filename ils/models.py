@@ -9,19 +9,20 @@ import os
 from core.models import Language
 from app.utils.forms import unique_slugify
 from users.models import User
+from app.utils.flexible_date import FlexibleDateField
 
 BOOK_TYPES = (
     ('Reference', 'Reference'),
     ('Circulative', 'Circulative')
 )
 
-from ils.validate import FlexibleDateField
 
 class MyCustomDate(models.Model):
     date = FlexibleDateField(max_length=250)
 
     def __unicode__(self):
         return unicode(self.date)
+
 
 class Subject(MPTTModel):
     name = models.CharField(max_length=255)
