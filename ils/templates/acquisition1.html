@@ -43,40 +43,44 @@
             {{ rr_form.publisher.errors }}
             {{ rr_form.publisher}}
         </div>
-        <div class="column large-4">
-            {{ rr_form.languages.label }}
-            {{ rr_form.languages.errors }}
-            {{ rr_form.languages}}
+        
+    </div>
+    <div class="row">
+        <div class="column large-12">
+            {{ b_form.title.label }}
+            {{ b_form.title.errors }}
+            {{ b_form.title}}
+        </div>
+        <div class="column large-12">
+            {{ b_form.subtitle.label }}
+            {{ b_form.subtitle.errors }}
+            {{ b_form.subtitle}}
         </div>
     </div>
     <div class="row">
-        {{b_form}}
-        <!-- <div class="column large-4">
-            {{ rr_form.book.label }}
-            {{ rr_form.book.errors }}
-            {{ rr_form.book}}
-        </div>
         <div class="column large-4">
-            {{ rr_form.publisher.label }}
-            {{ rr_form.publisher.errors }}
-            {{ rr_form.publisher}}
+            {{ b_form.subjects.label }}
+            {{ b_form.subjects.errors }}
+            {{ b_form.subjects}}
         </div>
-        <div class="column large-4">
-            {{ rr_form.languages.label }}
-            {{ rr_form.languages.errors }}
-            {{ rr_form.languages}}
-        </div> -->
-    </div>
-    <div class="row">
-        {{pub_form}}
-    </div>
-    </br>
-    <div class="row">
         <div class="column large-4">
             {{ rr_form.authors.label }}
             {{ rr_form.authors.errors }}
             {{ rr_form.authors}}
         </div>
+        <div class="column large-4">
+            {{ rr_form.languages.label }}
+            {{ rr_form.languages.errors }}
+            {{ rr_form.languages}}
+        </div>    
+    </div>
+    <div class="row">
+        <div class="column large-4">
+            {{ pub_form.name.label }}</br>
+            {{ pub_form.name.errors }}
+            {{ pub_form.name}}
+        </div>
+        
         <div class="column large-8">
             {{ rr_form.published_places.label }}
             {{ rr_form.published_places.errors }}
@@ -155,6 +159,11 @@
         </div>
     </div>
     </br></br>
+    <div class="row">
+        {{ rr_form.isbn13.label }}
+        {{ rr_form.isbn13.errors }}
+        {{ rr_form.isbn13 }}
+    </div>
     <div class="row">
         <div class="column large-4">
             {{ rr_form.goodreads_id.label }}

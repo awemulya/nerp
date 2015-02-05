@@ -15,6 +15,7 @@ from . import isbn as isbnpy
 import urllib2
 import urllib
 import json
+import re
 from django.utils import timezone
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import generics
@@ -971,6 +972,7 @@ class RecordView(View):
                                       lookup_fields=['large']
                                      )),
                                 }
+        pdb.set_trace()
         for key in self.record_initial_files:
             if self.record_initial_files[key] is not None:
                 self.api_has_cover = True
@@ -994,15 +996,19 @@ class RecordView(View):
                 self.populate_cover(isbn)
         if 'record_id' in self.kwargs:
             rec_id = int(self.kwargs['record_id'])
-            instance = Record.objects.get(id=rec_id)
-            rr_form = self.record_form(instance=instance)
+            record_instance = Record.objects.get(id=rec_id)
+            rr_form = self.record_form(instance=record_instance)
+            book_instance = Book.objects.get(id=record_instance.book.id)
+            b_form = self.book_form(instance=book_instance)
+            publisher_instance = Publusher.objects.get(id=record_instance.publisher.id)
+            pub_form = self.publisher_form(instance=publisher_instance)
         else:
             rr_form = self.record_form(initial=self.rr_initial)
-        b_form = self.book_form(initial=self.b_initial)
+            b_form = self.book_form(initial=self.b_initial)
+            pub_form = self.publisher_form(initial=self.pub_initial)
         # pdb.set_trace()
         a_form = self.author_form()
         p_form = self.place_form()
-        pub_form = self.publisher_form(initial=self.pub_initial)
         l_form = self.lan_form()
         sub_form = self.subject_form()
         context = {'rr_form': rr_form,
@@ -1019,14 +1025,24 @@ class RecordView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
+        post_data = request.POST.copy()
+        mixd_selectize_fields = {'subjects': Subject, 'authors': Author, 'published_places':Place}
+        post_data = self.fix_mixds_data(post_data, mixd_selectize_fields)
+
+        book_fields = {'title': None, 'subtitle': None}
+        publisher_fields = {'name': None}
+        post_data = self.change_post_data(Book, book_fields, post_data, 'book')
+        post_data = self.change_post_data(Publisher, publisher_fields, post_data, 'publication_places')
+
         if 'record_id' in self.kwargs:
             rec_id = int(self.kwargs['record_id'])
             instance = Record.objects.get(id=rec_id)
-            record = RecordForm(request.POST, request.FILES, instance=instance)
+            record = RecordForm(post_data, request.FILES, instance=instance)
         else:
             files_from_api = {}
             files_from_request = request.FILES
-            post_data = request.POST
+            # post_data = request.POST
+            # pdb.set_trace()
             if 'isbn13' in post_data:
                 isbn = request.POST['isbn13']
                 if isbnpy.isValid(isbn):
@@ -1038,15 +1054,15 @@ class RecordView(View):
                             files_from_api[key] = self.record_initial_files[key]
             # Later dictionary will be of high priority in conflict during merge.
             files_combo = dict(files_from_api.items() + files_from_request.items())
-            record = RecordForm(request.POST, files_combo)
+            record = RecordForm(post_data, files_combo)
         if record.is_valid():
             record.save()
         else:
             rr_form = self.record_form(request.POST, request.FILES)
-            b_form = self.book_form()
+            b_form = self.book_form(request.POST)
             a_form = self.author_form()
             p_form = self.place_form()
-            pub_form = self.publisher_form()
+            pub_form = self.publisher_form(request.POST)
             l_form = self.lan_form()
             sub_form = self.subject_form()
             context = {'rr_form': rr_form,
@@ -1061,3 +1077,50 @@ class RecordView(View):
                        }
             return render(request, self.template_name, context)
         return HttpResponseRedirect('/')
+
+    def change_post_data(self, cls, fields, data, field_to_alter):
+        value = {}
+        dictionary = {}
+        for field in fields:
+            value[field] = data.getlist(field, None)
+            # if field in data:
+            #     value.append(data[field])
+            # else:
+            #     value.append(None)
+
+        for f_field, v in zip(fields, value):
+            if value[f_field] is not None:
+                if fields[f_field] is not None:
+                    for i, val in enumerate(value[f_field]):
+                        value[f_field][i] = fields[f_field].objects.get(id=int(value[f_field][i]))
+                    dictionary[f_field] = value[f_field]
+                else:
+                    dictionary[f_field] = value[f_field][0]
+        # pdb.set_trace()
+        obj = cls.objects.get_or_create(**dictionary)
+        data.__setitem__(field_to_alter, unicode(obj[0].id))
+        return data
+   
+    def fix_mixds_data(self, data, mxdfields):
+        ripped_dict = {}
+        for key in mxdfields:
+            if key in data:
+                ripped_dict[key] = data.getlist(key, None)
+        for key in ripped_dict:
+            value = ripped_dict[key]
+            for i, val in enumerate(value):
+                if not re.match(r'^[0-9]+$', val):
+                    obj = mxdfields[key].objects.create(name=val)
+                    value[i] = unicode(obj.id)
+            ripped_dict[key] = value
+        # pdb.set_trace()
+        for key in ripped_dict:
+            data.setlist(key, ripped_dict[key])
+        return data
+
+
+
+
+
+
+
