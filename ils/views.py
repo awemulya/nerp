@@ -1000,7 +1000,8 @@ class RecordView(View):
             rr_form = self.record_form(instance=record_instance)
             book_instance = Book.objects.get(id=record_instance.book.id)
             b_form = self.book_form(instance=book_instance)
-            publisher_instance = Publusher.objects.get(id=record_instance.publisher.id)
+            publisher_instance = Publisher.objects.get(id=record_instance.publisher.id)
+            # bug here
             pub_form = self.publisher_form(instance=publisher_instance)
         else:
             rr_form = self.record_form(initial=self.rr_initial)
@@ -1029,10 +1030,10 @@ class RecordView(View):
         mixd_selectize_fields = {'subjects': Subject, 'authors': Author, 'published_places':Place}
         post_data = self.fix_mixds_data(post_data, mixd_selectize_fields)
 
-        book_fields = {'title': None, 'subtitle': None}
-        publisher_fields = {'name': None}
+        book_fields = {'title': False, 'subtitle': False, 'subjects': True}
+        publisher_fields = {'name': False}
         post_data = self.change_post_data(Book, book_fields, post_data, 'book')
-        post_data = self.change_post_data(Publisher, publisher_fields, post_data, 'publication_places')
+        post_data = self.change_post_data(Publisher, publisher_fields, post_data, 'publisher')
 
         if 'record_id' in self.kwargs:
             rec_id = int(self.kwargs['record_id'])
@@ -1090,17 +1091,59 @@ class RecordView(View):
 
         for f_field, v in zip(fields, value):
             if value[f_field] is not None:
-                if fields[f_field] is not None:
+                if fields[f_field]:
                     for i, val in enumerate(value[f_field]):
-                        value[f_field][i] = fields[f_field].objects.get(id=int(value[f_field][i]))
+                        value[f_field][i] = int(value[f_field][i])
                     dictionary[f_field] = value[f_field]
                 else:
                     dictionary[f_field] = value[f_field][0]
-        # pdb.set_trace()
-        obj = cls.objects.get_or_create(**dictionary)
-        data.__setitem__(field_to_alter, unicode(obj[0].id))
+        pdb.set_trace()
+        obj = self.m2m_filter(cls, dictionary)
+        pdb.set_trace()
+        if len(obj) is not 0:
+            alter_value = unicode(obj[0].id)
+        else:
+            obj = self.m2m_create(cls, dictionary)
+            pdb.set_trace()
+            alter_value = unicode(obj.id)
+        data.__setitem__(field_to_alter, alter_value)
         return data
-   
+        pass
+
+    def m2m_filter(self, cls, data):
+        filtrd = cls.objects.filter()
+        for key in data:
+            if type(data[key]) is not list:
+                df = {}
+                df[key] = data[key]
+                filtrd = filtrd.filter(**df)
+            else:
+                for item in data[key]:
+                    df = {}
+                    u_key = key + '__id'
+                    df[u_key] = item
+                    filtrd = filtrd.filter(**df)
+        return filtrd
+
+    def m2m_create(self, klass, dictionary):
+        obj = klass()
+
+        # set regular fields
+        for field, value in dictionary.iteritems():
+            if not isinstance(value, list):
+                setattr(obj, field, value)
+
+        obj.save()
+
+        # set M2M fields
+        for field, value in dictionary.iteritems():
+            if isinstance(value, list):
+                setattr(obj, field, value)
+
+        return obj
+
+
+
     def fix_mixds_data(self, data, mxdfields):
         ripped_dict = {}
         for key in mxdfields:
