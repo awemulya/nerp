@@ -1000,9 +1000,11 @@ class RecordView(View):
             rr_form = self.record_form(instance=record_instance)
             book_instance = Book.objects.get(id=record_instance.book.id)
             b_form = self.book_form(instance=book_instance)
-            publisher_instance = Publisher.objects.get(id=record_instance.publisher.id)
-            # bug here
-            pub_form = self.publisher_form(instance=publisher_instance)
+            if record_instance.publisher:
+                publisher_instance = Publisher.objects.get(id=record_instance.publisher.id)
+                pub_form = self.publisher_form(instance=publisher_instance)
+            else:
+                pub_form = self.publisher_form()   
         else:
             rr_form = self.record_form(initial=self.rr_initial)
             b_form = self.book_form(initial=self.b_initial)
