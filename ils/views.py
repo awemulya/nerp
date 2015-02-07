@@ -715,7 +715,6 @@ class RecordView(View):
             multiselect = kwargs['multiselect']
         else:
             multiselect = False
-        value = []
         vl = []
         # dictionary to filter
         dictionary = {}
@@ -724,7 +723,7 @@ class RecordView(View):
         for lp in lookup_path:
             if lp in data:
                 data = data[lp]
-            elif type(data) is list and type(lp is int):
+            elif type(data) is list and type(lp) is int:
                 data = data[lp]
 
         if 'cls' in kwargs:
@@ -760,39 +759,12 @@ class RecordView(View):
                                     ll.append(o.id)
                                 return ll
 
-            # else:
-            #     for field in lookup_fields:
-            #         if field in data:
-            #             value.append(data[field])
-            #         else:
-            #             value.append(None)
-
-            #     for f_field, v in zip(form_fields, value):
-            #         if v is not None:
-            #             dictionary[f_field] = v
-            #     objs = self.get_objects(cls, **dictionary)
-            #     if objs:
-            #         # return objs[0].id
-            #         ll = []
-            #         for o in objs:
-            #             ll.append(o.id)
-            #     # if select then return number of mselect then return list
-            #         return ll[0]
-            #     else:
-            #         instance = kwargs['form_ins']
-            #         for f_field, va in zip(form_fields, value):
-            #             instance[f_field] = va
         else:
             if lookup_fields[0] in data:
                 if type(data[lookup_fields[0]]) is list and len(data[lookup_fields[0]]) is not 0:
                     return data[lookup_fields[0]][0]
                 elif type(data[lookup_fields[0]]) is unicode:
                     return data[lookup_fields[0]]
-            # for field in lookup_fields:
-            #     value.append(data[field])
-            # instance = kwargs['form_ins']
-            # for f_field, va in zip(form_fields, value):
-            #     instance[f_field] = va
         pass
 
     def populate(self, isbn):
@@ -801,22 +773,12 @@ class RecordView(View):
         google_api_data = json.load(response)
         openlibrary_data = json.load(urllib2.urlopen(
             'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
-        od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
+        od = {}
+        if len(openlibrary_data.keys()) is not 0:
+            if 'records' in openlibrary_data[openlibrary_data.keys()[0]]:
+                if len(openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()) is not 0:
+                    od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
         self.rr_initial = {
-                        # 'book': self.get_from_api(
-                        #    data=google_api_data,
-                        #    lookup_path=['items', 0, 'volumeInfo'],
-                        #    lookup_fields=['title', 'subtitle'],
-                        #    # Specify only if this field is related
-                        #    cls=Book,
-                        #    multiselect=False,
-                        #    # In case we need to populate the field
-                        #    form_ins=self.b_initial,
-                        #    form_fields=['title', 'subtitle']
-                        #    ),
-
-                           'published_place': [],
-
                            'authors': self.get_from_api(
                             data=google_api_data,
                             lookup_path=['items', 0, 'volumeInfo'],
@@ -825,16 +787,6 @@ class RecordView(View):
                             multiselect=True,
                             form_fields=['name'],
                             ),
-
-                           # 'publisher': self.get_from_api(
-                           #  data=google_api_data,
-                           #  lookup_path=['items', 0, 'volumeInfo'],
-                           #  lookup_fields=['publisher'],
-                           #  cls=Publisher,
-                           #  form_ins=self.pub_initial,
-                           #  form_fields=['name']
-                           #  ),
-
                            'languages': self.get_from_api(
                             data=google_api_data,
                             lookup_path=['items', 0, 'volumeInfo'],
@@ -842,9 +794,7 @@ class RecordView(View):
                             cls=Language,
                             multiselect=True,
                             form_fields=['code'],
-
                             ),
-
                            'pagination': str(self.get_from_api(
                             data=od,
                             lookup_path=['details', 'details'],
@@ -922,8 +872,8 @@ class RecordView(View):
                             ),
                            }
         self.b_initial = {'title': self.get_from_api(
-                           data=od,
-                           lookup_path=['details', 'details'],
+                           data=google_api_data,
+                           lookup_path=['items', 0, 'volumeInfo'],
                            lookup_fields=['title']
                            ),
                           'subtitle': self.get_from_api(
@@ -951,7 +901,11 @@ class RecordView(View):
     def populate_cover(self, isbn):
         openlibrary_data = json.load(urllib2.urlopen(
             'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
-        od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
+        od = {}
+        if len(openlibrary_data.keys()) is not 0:
+            if 'records' in openlibrary_data[openlibrary_data.keys()[0]]:
+                if len(openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()) is not 0:
+                    od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
         self.record_initial_files = {
                                  'small_cover': self.get_file(
                                      self.get_from_api(
@@ -972,7 +926,7 @@ class RecordView(View):
                                       lookup_fields=['large']
                                      )),
                                 }
-        pdb.set_trace()
+
         for key in self.record_initial_files:
             if self.record_initial_files[key] is not None:
                 self.api_has_cover = True
@@ -1044,8 +998,6 @@ class RecordView(View):
         else:
             files_from_api = {}
             files_from_request = request.FILES
-            # post_data = request.POST
-            # pdb.set_trace()
             if 'isbn13' in post_data:
                 isbn = request.POST['isbn13']
                 if isbnpy.isValid(isbn):
@@ -1086,11 +1038,6 @@ class RecordView(View):
         dictionary = {}
         for field in fields:
             value[field] = data.getlist(field, None)
-            # if field in data:
-            #     value.append(data[field])
-            # else:
-            #     value.append(None)
-
         for f_field, v in zip(fields, value):
             if value[f_field] is not None:
                 if fields[f_field]:
@@ -1099,14 +1046,11 @@ class RecordView(View):
                     dictionary[f_field] = value[f_field]
                 else:
                     dictionary[f_field] = value[f_field][0]
-        pdb.set_trace()
         obj = self.m2m_filter(cls, dictionary)
-        pdb.set_trace()
         if len(obj) is not 0:
             alter_value = unicode(obj[0].id)
         else:
             obj = self.m2m_create(cls, dictionary)
-            pdb.set_trace()
             alter_value = unicode(obj.id)
         data.__setitem__(field_to_alter, alter_value)
         return data
@@ -1144,8 +1088,6 @@ class RecordView(View):
 
         return obj
 
-
-
     def fix_mixds_data(self, data, mxdfields):
         ripped_dict = {}
         for key in mxdfields:
@@ -1158,14 +1100,6 @@ class RecordView(View):
                     obj = mxdfields[key].objects.create(name=val)
                     value[i] = unicode(obj.id)
             ripped_dict[key] = value
-        # pdb.set_trace()
         for key in ripped_dict:
             data.setlist(key, ripped_dict[key])
         return data
-
-
-
-
-
-
-

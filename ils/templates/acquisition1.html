@@ -33,26 +33,13 @@
     <div id="main-error-area" class="row">
     </div>
     <div class="row">
-        <div class="column large-4">
-            {{ rr_form.book.label }}
-            {{ rr_form.book.errors }}
-            {{ rr_form.book}}
-        </div>
-        <div class="column large-4">
-            {{ rr_form.publisher.label }}
-            {{ rr_form.publisher.errors }}
-            {{ rr_form.publisher}}
-        </div>
-        
-    </div>
-    <div class="row">
         <div class="column large-12">
-            {{ b_form.title.label }}
+            {{ b_form.title.label }}</br>
             {{ b_form.title.errors }}
             {{ b_form.title}}
         </div>
         <div class="column large-12">
-            {{ b_form.subtitle.label }}
+            {{ b_form.subtitle.label }}</br>
             {{ b_form.subtitle.errors }}
             {{ b_form.subtitle}}
         </div>
@@ -73,7 +60,7 @@
             {{ rr_form.languages.errors }}
             {{ rr_form.languages}}
         </div>    
-    </div>
+    </div></br>
     <div class="row">
         <div class="column large-4">
             {{ pub_form.name.label }}</br>
@@ -160,9 +147,11 @@
     </div>
     </br></br>
     <div class="row">
-        {{ rr_form.isbn13.label }}
-        {{ rr_form.isbn13.errors }}
-        {{ rr_form.isbn13 }}
+        <div class="column large-12">
+            {{ rr_form.isbn13.label }}</br>
+            {{ rr_form.isbn13.errors }}
+            {{ rr_form.isbn13 }}
+        </div>
     </div>
     <div class="row">
         <div class="column large-4">
