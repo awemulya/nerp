@@ -41,6 +41,15 @@ class FlexibleDateFormField(forms.Field):
 class FlexibleDateField(with_metaclass(models.SubfieldBase, models.Field)):
     description = "Flexible date field"
 
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 250
+        super(FlexibleDateField, self).__init__(*args, **kwargs)
+
+    def decontruct(self):
+        name, path, args, kwargs = super(FlexibleDateField, self).decontruct()
+        del kwargs['max_length']
+        return name, path, args, kwargs
+
     def to_python(self, value):
         if value is None:
             return None

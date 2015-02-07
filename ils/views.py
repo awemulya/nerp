@@ -870,6 +870,11 @@ class RecordView(View):
                             cls=Place,
                             form_fields=['name']
                             ),
+                           'date_of_publication': self.get_from_api(
+                            data=google_api_data,
+                            lookup_path=['items', 0, 'volumeInfo'],
+                            lookup_fields=['publishedDate'],
+                            ),
                            }
         self.b_initial = {'title': self.get_from_api(
                            data=google_api_data,
@@ -983,7 +988,10 @@ class RecordView(View):
 
     def post(self, request, *args, **kwargs):
         post_data = request.POST.copy()
-        mixd_selectize_fields = {'subjects': Subject, 'authors': Author, 'published_places':Place}
+        mixd_selectize_fields = {'subjects': [Subject, 'name'],
+                                 'authors': [Author, 'name'],
+                                 'published_places': [Place, 'name']
+                                 }
         post_data = self.fix_mixds_data(post_data, mixd_selectize_fields)
 
         book_fields = {'title': False, 'subtitle': False, 'subjects': True}
@@ -1097,7 +1105,9 @@ class RecordView(View):
             value = ripped_dict[key]
             for i, val in enumerate(value):
                 if not re.match(r'^[0-9]+$', val):
-                    obj = mxdfields[key].objects.create(name=val)
+                    d = {}
+                    d[mxdfields[key][1]] = val
+                    obj = mxdfields[key][0].objects.create(**d)
                     value[i] = unicode(obj.id)
             ripped_dict[key] = value
         for key in ripped_dict:

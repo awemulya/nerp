@@ -1,6 +1,7 @@
 from django.db import models
 from app.utils.translation import TranslatableNumberModel
 import dbsettings
+import pdb
 
 FISCAL_YEARS = (
     (2069, "2069/70"),
@@ -36,6 +37,13 @@ class Language(models.Model):
 
     def __unicode__(self):
         return self.name + ' (' + self.code + ')'
+
+    # def save(self, *args, **kwargs):
+    #     if len(self.code) is not 0 and len(self.name) is 0:
+    #         self.name = 'default'
+    #     elif len(self.code) is 0 and len(self.name) is not 0:
+    #         self.code = 'default'
+    #     super(Language, self).save(*args, **kwargs)
 
 
 class Account(models.Model):
