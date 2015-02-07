@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load filters %}
 {% load staticfiles %}
+{% load thumbnail %}
 
 {% block title %} Search{% endblock %}
 
@@ -37,9 +38,13 @@
                         {% with item.object as  record %}
                             <div class="row">
                                 <div class="column large-1 medium-1 small-1">
-                                    {% if record.small_cover %}
+                                    {% if record.get_small_cover %}
                                         <a href="{{ record.get_absolute_url }}">
-                                            <img src="{{ MEDIA_URL }}{{ record.small_cover }}"></a>
+                                            {#                                            <img src="{{ MEDIA_URL }}{{ record.small_cover }}"></a>#}
+                                            {% thumbnail record.get_small_cover "40x60" as im %}
+                                                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                                            {% endthumbnail %}
+                                        </a>
                                     {% else %}
                                         <a href="{{ record.get_absolute_url }}">
                                             <img src="{% static 'img/no_cover-40x60.png' %}"></a>

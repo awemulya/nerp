@@ -1,19 +1,28 @@
-import dbsettings
 import datetime
+import os
 
+import dbsettings
 from django.core.urlresolvers import reverse
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
-import os
 
 from core.models import Language
 from app.utils.forms import unique_slugify
 from users.models import User
+from app.utils.flexible_date import FlexibleDateField
+
 
 BOOK_TYPES = (
     ('Reference', 'Reference'),
     ('Circulative', 'Circulative')
 )
+
+
+class MyCustomDate(models.Model):
+    date = FlexibleDateField(max_length=250)
+
+    def __unicode__(self):
+        return unicode(self.date)
 
 
 class Subject(MPTTModel):
@@ -184,6 +193,15 @@ class Record(models.Model):
     def in_circulation(self):
         return Transaction.objects.filter(record=self, return_date=None)
 
+    def get_small_cover(self):
+        return self.small_cover or self.medium_cover or self.large_cover
+
+    def get_medium_cover(self):
+        return self.medium_cover or self.small_cover or self.large_cover
+
+    def get_large_cover(self):
+        return self.large_cover or self.medium_cover or self.small_cover
+
 
 class BookFile(models.Model):
     file = models.FileField(upload_to='ils/books/')
@@ -224,7 +242,7 @@ class Transaction(models.Model):
         from ils.models import library_setting as setting
 
         transaction.due_date = transaction.borrow_date + \
-            datetime.timedelta(days=setting.borrow_days)
+                               datetime.timedelta(days=setting.borrow_days)
         transaction.fine_per_day = setting.fine_per_day
         return transaction
 

@@ -25,7 +25,7 @@ from .models import Record, Author, Publisher, Book, Subject,\
 
 import os
 from django.core.files import File
-from datetime import datetime
+# from datetime import datetime
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
 from users.models import User, group_required
