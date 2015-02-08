@@ -17,7 +17,7 @@
 {% block content %}
 <form class="isbn-form" method="get" action="{% url 'acq' %}">
     
-    <label id="id_isbn13" class="record-isbn13">ISBN13</label>
+    <label id="id_isbn13" class="record-isbn13">ISBN</label>
     {{ rr_form.isbn13 }}
     <input type="submit" class="tiny button" value="Get">
     
@@ -93,20 +93,10 @@
         </div>
     </div>
     <div class="row">
-        <div class="column large-4">
+        <div class="column large-12">
             {{ rr_form.pagination.label }}</br>
             {{ rr_form.pagination.errors }}
             {{ rr_form.pagination}}
-        </div>
-        <div class="column large-4">
-            {{ rr_form.price.label }}
-            {{ rr_form.price.errors }}
-            {{ rr_form.price}}
-        </div>
-        <div class="column large-4">
-            {{ rr_form.quantity.label }}
-            {{ rr_form.quantity.errors }}
-            {{ rr_form.quantity}}
         </div>
     </div>
     <div class="row">
@@ -123,12 +113,12 @@
     </div>
     <div class="row">
         <div class="column large-4">
-            {{ rr_form.lcc.label }}</br>
+            <label>LCC</label>
             {{ rr_form.lcc.errors }}
             {{ rr_form.lcc}}
         </div>
         <div class="column large-8">
-            {{ rr_form.ddc.label }}</br>
+            <label>DDC</label>
             {{ rr_form.ddc.errors }}
             {{ rr_form.ddc}}
         </div>
@@ -148,7 +138,7 @@
     </br></br>
     <div class="row">
         <div class="column large-12">
-            {{ rr_form.isbn13.label }}</br>
+            <label>ISBN</label>
             {{ rr_form.isbn13.errors }}
             {{ rr_form.isbn13 }}
         </div>
@@ -185,6 +175,18 @@
             {{ rr_form.by_statement.label }}</br>
             {{ rr_form.by_statement.errors }}
             {{ rr_form.by_statement}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="column large-4">
+            {{ rr_form.quantity.label }}
+            {{ rr_form.quantity.errors }}
+            {{ rr_form.quantity}}
+        </div>
+        <div class="column large-8">
+            {{ rr_form.price.label }}
+            {{ rr_form.price.errors }}
+            {{ rr_form.price}}
         </div>
     </div>
     </br>

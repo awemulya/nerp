@@ -1076,6 +1076,11 @@ class RecordView(View):
                             lookup_path=['details', 'details'],
                             lookup_fields=['publish_date']
                             ),
+                           'notes': self.get_from_api(
+                            data=od,
+                            lookup_path=['data'],
+                            lookup_fields=['notes']
+                            ),
                            }
         b_initial_gapi = {'title': self.get_from_api(
                            data=google_api_data,
