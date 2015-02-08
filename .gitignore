@@ -2,6 +2,7 @@
 *.json
 *~
 .idea
+media
 
 gunicorn.log
 gunicorn-error.log
