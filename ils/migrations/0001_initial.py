@@ -2,11 +2,16 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import mptt.fields
+import app.utils.flexible_date
+from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('core', '0001_initial'),
     ]
 
     operations = [
@@ -45,6 +50,16 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
+            name='MyCustomDate',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('date', app.utils.flexible_date.FlexibleDateField(max_length=250)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
             name='Place',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -74,9 +89,7 @@ class Migration(migrations.Migration):
                 ('format', models.CharField(default=b'Paperback', max_length=10, choices=[(b'Paperback', b'Paperback'), (b'Hardcover', b'Hardcover'), (b'eBook', b'eBook')])),
                 ('pagination', models.CharField(max_length=254, null=True, blank=True)),
                 ('isbn13', models.CharField(max_length=254, null=True, blank=True)),
-                ('date_of_publication', models.DateField(null=True, blank=True)),
-                ('publication_has_month', models.BooleanField(default=True)),
-                ('publication_has_day', models.BooleanField(default=True)),
+                ('date_of_publication', app.utils.flexible_date.FlexibleDateField(max_length=250, null=True, blank=True)),
                 ('price', models.FloatField(null=True, blank=True)),
                 ('quantity', models.PositiveIntegerField(default=1, null=True, blank=True)),
                 ('type', models.CharField(max_length=11, choices=[(b'Reference', b'Reference'), (b'Circulative', b'Circulative')])),
@@ -94,8 +107,14 @@ class Migration(migrations.Migration):
                 ('weight', models.CharField(max_length=254, null=True, blank=True)),
                 ('dimensions', models.CharField(max_length=254, null=True, blank=True)),
                 ('by_statement', models.CharField(max_length=254, null=True, blank=True)),
-                ('notes', models.CharField(max_length=254, null=True, blank=True)),
-                ('excerpt', models.CharField(max_length=254, null=True, blank=True)),
+                ('notes', models.TextField(null=True, blank=True)),
+                ('excerpt', models.TextField(null=True, blank=True)),
+                ('description', models.TextField(null=True, blank=True)),
+                ('authors', models.ManyToManyField(to='ils.Author', blank=True)),
+                ('book', models.ForeignKey(to='ils.Book', blank=True)),
+                ('languages', models.ManyToManyField(to='core.Language', blank=True)),
+                ('published_places', models.ManyToManyField(to='ils.Place', blank=True)),
+                ('publisher', models.ForeignKey(blank=True, to='ils.Publisher', null=True)),
             ],
             options={
             },
@@ -112,6 +131,7 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
+                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='ils.Subject', null=True)),
             ],
             options={
                 'abstract': False,
@@ -129,9 +149,22 @@ class Migration(migrations.Migration):
                 ('fine_per_day', models.FloatField()),
                 ('fine_paid', models.FloatField(default=False)),
                 ('record', models.ForeignKey(to='ils.Record')),
+                ('user', models.ForeignKey(related_name='transactions', to=settings.AUTH_USER_MODEL)),
             ],
             options={
             },
             bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='bookfile',
+            name='record',
+            field=models.ForeignKey(related_name='files', to='ils.Record'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='book',
+            name='subjects',
+            field=models.ManyToManyField(to='ils.Subject'),
+            preserve_default=True,
         ),
     ]
