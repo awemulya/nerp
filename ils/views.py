@@ -646,6 +646,8 @@ class RecordView(View):
             multiselect = kwargs['multiselect']
         else:
             multiselect = False
+        if 'dic_key' in kwargs:
+            dic_key = kwargs['dic_key']
         vl = []
         # dictionary to filter
         dictionary = {}
@@ -679,6 +681,21 @@ class RecordView(View):
                                 for o in objs:
                                     ll.append(o[0].id)
                                 return ll
+                        elif type(data[field]) is list and type(data[field][0]) is dict:
+                            for item in data[field]:
+                                lol = [item[dic_key]]
+                                vl.append(lol)
+                            for val in vl:
+                                for f_field, v in zip(form_fields, val):
+                                    dictionary[f_field] = v
+                                lod.append(dictionary)
+                            objs = self.get_objects(cls, *lod)
+                            if objs:
+                                ll = []
+                                for o in objs:
+                                    ll.append(o[0].id)
+                                return ll
+
                         elif type(data[field]) is unicode:
                             dictn = {}
                             val = data[field]
@@ -768,18 +785,10 @@ class RecordView(View):
         else:
             rr_form = self.record_form(request.POST, request.FILES)
             b_form = self.book_form(request.POST)
-            a_form = self.author_form()
-            p_form = self.place_form()
             pub_form = self.publisher_form(request.POST)
-            l_form = self.lan_form()
-            sub_form = self.subject_form()
             context = {'rr_form': rr_form,
                        'b_form': b_form,
-                       'a_form': a_form,
-                       'p_form': p_form,
                        'pub_form': pub_form,
-                       'l_form': l_form,
-                       'sub_form': sub_form,
                        'api_has_cover': self.api_has_cover,
                        'record_id': self.kwargs.get('record_id', None),
                        }
@@ -969,14 +978,16 @@ class RecordView(View):
                             ),
                            }
         rr_initial_olapi = {
-                           # 'authors': self.get_from_api(
-                           #  data=google_api_data,
-                           #  lookup_path=['items', 0, 'volumeInfo'],
-                           #  lookup_fields=['authors'],
-                           #  cls=Author,
-                           #  multiselect=True,
-                           #  form_fields=['name'],
-                           #  ),
+                           'authors': self.get_from_api(
+                            data=od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['authors'],
+                             # This should be assigned when list has dict
+                            dic_key='name',
+                            cls=Author,
+                            multiselect=True,
+                            form_fields=['name'],
+                            ),
                            # 'languages': self.get_from_api(
                            #  data=google_api_data,
                            #  lookup_path=['items', 0, 'volumeInfo'],
