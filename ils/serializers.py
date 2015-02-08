@@ -1,29 +1,5 @@
 from rest_framework import serializers
-from models import Book, Record, Author, Publisher, Subject, Transaction, Place
-
-
-class PlaceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Place
-        exclude = ['slug']
-
-
-class SubjectSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Subject
-        exclude = ['slug']
-
-
-class AuthorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Author
-        exclude = ['slug']
-
-
-class PublisherSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Publisher
-        exclude = ['slug']
+from models import Book, Record, Transaction
 
 
 class BookSerializer(serializers.ModelSerializer):

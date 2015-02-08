@@ -1,24 +1,20 @@
-from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View
 from app.utils.helpers import title_case
 from core.models import Language
-from ils.forms import RecordForm, BookForm, SubjectForm, AuthorForm, PlaceForm,\
-     PublisherForm, LanguageForm, OutgoingForm, IncomingForm, PatronForm
+from ils.forms import RecordForm, BookForm,\
+     PublisherForm, OutgoingForm, IncomingForm, PatronForm
+from ils.serializers import TransactionSerializer
 from ils.models import library_setting as setting
 
-from ils.serializers import RecordSerializer, AuthorSerializer,\
-     PublisherSerializer, PlaceSerializer, SubjectSerializer, BookSerializer, \
-     TransactionSerializer
-from core.serializers import LanguageSerializer
 from . import isbn as isbnpy
 import urllib2
 import urllib
 import json
 import re
 from django.utils import timezone
+import datetime
 from django.core.files.uploadedfile import SimpleUploadedFile
-from rest_framework import generics
 
 from .models import Record, Author, Publisher, Book, Subject,\
     Place, BookFile, Transaction
@@ -31,38 +27,9 @@ from django.core.urlresolvers import reverse_lazy
 from users.models import User, group_required
 # from haystack.query import SearchQuerySet
 from ils.forms import LibrarySearchForm
-import pdb
 
 
 from django.http import HttpResponseRedirect
-
-
-@group_required('Librarian')
-def authors_as_json(request):
-    items = Author.objects.all()
-    items_data = AuthorSerializer(items, many=True).data
-    return JsonResponse(items_data, safe=False)
-
-
-@group_required('Librarian')
-def publishers_as_json(request):
-    items = Publisher.objects.all()
-    items_data = PublisherSerializer(items, many=True).data
-    return JsonResponse(items_data, safe=False)
-
-
-@group_required('Librarian')
-def subjects_as_json(request):
-    items = Subject.objects.all()
-    items_data = SubjectSerializer(items, many=True).data
-    return JsonResponse(items_data, safe=False)
-
-
-@group_required('Librarian')
-def books_as_json(request):
-    items = Book.objects.all()
-    items_data = BookSerializer(items, many=True).data
-    return JsonResponse(items_data, safe=False)
 
 
 @group_required('Librarian')  # noqa
@@ -648,46 +615,10 @@ def search(request, keyword=None):
     return render(request, 'library_search.html', {'form': form})
 
 
-class PlaceList(generics.ListCreateAPIView):
-    queryset = Place.objects.all()
-    serializer_class = PlaceSerializer
-
-
-class SubjectList(generics.ListCreateAPIView):
-    queryset = Subject.objects.all()
-    serializer_class = SubjectSerializer
-
-
-class AuthorList(generics.ListCreateAPIView):
-    queryset = Author.objects.all()
-    serializer_class = AuthorSerializer
-
-
-class PublisherList(generics.ListCreateAPIView):
-    queryset = Publisher.objects.all()
-    serializer_class = PublisherSerializer
-
-
-class BookList(generics.ListCreateAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-
-
-class LanguageList(generics.ListCreateAPIView):
-    queryset = Language.objects.all()
-    serializer_class = LanguageSerializer
-
-
 class RecordView(View):
-    # record_form_related_fields = RecordFormRelatedFields
-    # record_form_unrelated_fields = RecordFormUnrelatedFields
     record_form = RecordForm
     book_form = BookForm
-    author_form = AuthorForm
-    place_form = PlaceForm
     publisher_form = PublisherForm
-    lan_form = LanguageForm
-    subject_form = SubjectForm
 
     rr_initial = {'key': 'value'}
     b_initial = {}
@@ -963,23 +894,15 @@ class RecordView(View):
                 publisher_instance = Publisher.objects.get(id=record_instance.publisher.id)
                 pub_form = self.publisher_form(instance=publisher_instance)
             else:
-                pub_form = self.publisher_form()   
+                pub_form = self.publisher_form()
         else:
             rr_form = self.record_form(initial=self.rr_initial)
             b_form = self.book_form(initial=self.b_initial)
             pub_form = self.publisher_form(initial=self.pub_initial)
         # pdb.set_trace()
-        a_form = self.author_form()
-        p_form = self.place_form()
-        l_form = self.lan_form()
-        sub_form = self.subject_form()
         context = {'rr_form': rr_form,
                    'b_form': b_form,
-                   'a_form': a_form,
-                   'p_form': p_form,
                    'pub_form': pub_form,
-                   'l_form': l_form,
-                   'sub_form': sub_form,
                    'api_has_cover': self.api_has_cover,
                    'record_id': self.kwargs.get('record_id', None),
                    }
