@@ -626,6 +626,26 @@ class RecordView(View):
     record_initial_files = {}
     template_name = 'acquisition1.html'
     api_has_cover = False
+    od = {}
+
+    def dispatch(self, request, *args, **kwargs):
+        isbn = None
+        if request.GET.get('isbn13'):
+            isbn = request.GET.get('isbn13')
+        elif request.POST.get('isbn13'):
+            isbn = request.POST.get('isbn13')
+        if isbn is not None:
+            if isbnpy.isValid(isbn):
+                if isbnpy.isI10(isbn):
+                    isbn = isbnpy.convert(isbn)
+                    openlibrary_data = json.load(urllib2.urlopen(
+                        'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
+                    if len(openlibrary_data.keys()) is not 0:
+                        if 'records' in openlibrary_data[openlibrary_data.keys()[0]]:
+                            if len(openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()) is not 0:
+                                self.od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
+
+        super(RecordView, self).dispatch(request, *args, **kwargs)
 
     def get_objects(self, cls, *dl, **kwargs):
         if kwargs:
@@ -702,13 +722,6 @@ class RecordView(View):
         response = urllib2.urlopen('https://www.googleapis.com' +
                                    '/books/v1/volumes?q=search+isbn:'+isbn)
         google_api_data = json.load(response)
-        openlibrary_data = json.load(urllib2.urlopen(
-            'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
-        od = {}
-        if len(openlibrary_data.keys()) is not 0:
-            if 'records' in openlibrary_data[openlibrary_data.keys()[0]]:
-                if len(openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()) is not 0:
-                    od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
         self.rr_initial = {
                            'authors': self.get_from_api(
                             data=google_api_data,
@@ -727,7 +740,7 @@ class RecordView(View):
                             form_fields=['code'],
                             ),
                            'pagination': str(self.get_from_api(
-                            data=od,
+                            data=self.od,
                             lookup_path=['details', 'details'],
                             lookup_fields=['pagination']
                             )),
@@ -744,57 +757,57 @@ class RecordView(View):
                             lookup_fields=['description']
                             ),
                            'goodreads_id': self.get_from_api(
-                            data=od,
+                            data=self.od,
                             lookup_path=['details', 'details', 'identifiers'],
                             lookup_fields=['goodreads']
                             ),
                            'librarything_id': self.get_from_api(
-                            data=od,
+                            data=self.od,
                             lookup_path=['details', 'details', 'identifiers'],
                             lookup_fields=['librarything']
                             ),
                            'openlibrary_id': self.get_from_api(
-                            data=od,
+                            data=self.od,
                             lookup_path=['data', 'identifiers'],
                             lookup_fields=['openlibrary']
                             ),
                            'lcc': self.get_from_api(
-                            data=od,
+                            data=self.od,
                             lookup_path=['details', 'details'],
                             lookup_fields=['lc_classifications']
                             ),
                            'ddc': self.get_from_api(
-                            data=od,
+                            data=self.od,
                             lookup_path=['details', 'details'],
                             lookup_fields=['dewey_decimal_class']
                             ),
                            'lccn_id': self.get_from_api(
-                            data=od,
+                            data=self.od,
                             lookup_path=['details', 'details'],
                             lookup_fields=['lccn']
                             ),
                            'oclc_id': self.get_from_api(
-                            data=od,
+                            data=self.od,
                             lookup_path=['data', 'identifiers'],
                             lookup_fields=['oclc']
                             ),
                            'dimensions': self.get_from_api(
-                            data=od,
+                            data=self.od,
                             lookup_path=['details', 'details'],
                             lookup_fields=['physical_dimensions']
                             ),
                            'by_statement': self.get_from_api(
-                            data=od,
+                            data=self.od,
                             lookup_path=['data'],
                             lookup_fields=['by_statement']
                             ),
                            'excerpt': self.get_from_api(
-                            data=od,
+                            data=self.od,
                             lookup_path=['data', 'excerpts', 0],
                             lookup_fields=['text']
                             ),
                            'published_places': self.get_from_api(
-                            data=od,
+                            data=self.od,
                             lookup_path=['details', 'details'],
                             lookup_fields=['publish_places'],
                             multiselect=True,
@@ -813,12 +826,12 @@ class RecordView(View):
                            lookup_fields=['title']
                            ),
                           'subtitle': self.get_from_api(
-                           data=od,
+                           data=self.od,
                            lookup_path=['details', 'details'],
                            lookup_fields=['subtitle']
                            ),
                           'subjects': self.get_from_api(
-                           data=od,
+                           data=self.od,
                            lookup_path=['details', 'details'],
                            lookup_fields=['subjects'],
                            multiselect=True,
@@ -834,34 +847,49 @@ class RecordView(View):
                             }
         pass
 
-    def populate_cover(self, isbn):
-        openlibrary_data = json.load(urllib2.urlopen(
-            'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
-        od = {}
-        if len(openlibrary_data.keys()) is not 0:
-            if 'records' in openlibrary_data[openlibrary_data.keys()[0]]:
-                if len(openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()) is not 0:
-                    od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
-        self.record_initial_files = {
-                                 'small_cover': self.get_file(
-                                     self.get_from_api(
-                                      data=od,
-                                      lookup_path=['data', 'cover'],
-                                      lookup_fields=['small']
-                                     )),
-                                 'medium_cover': self.get_file(
-                                     self.get_from_api(
-                                      data=od,
-                                      lookup_path=['data', 'cover'],
-                                      lookup_fields=['medium']
-                                     )),
-                                 'large_cover': self.get_file(
-                                     self.get_from_api(
-                                      data=od,
-                                      lookup_path=['data', 'cover'],
-                                      lookup_fields=['large']
-                                     )),
-                                }
+    def populate_cover(self, cover_check):
+        if cover_check:
+            cover_url = {
+                     'small_cover': self.get_from_api(
+                          data=self.od,
+                          lookup_path=['data', 'cover'],
+                          lookup_fields=['small']
+                         ),
+                     'medium_cover': self.get_from_api(
+                          data=self.od,
+                          lookup_path=['data', 'cover'],
+                          lookup_fields=['medium']
+                         ),
+                     'large_cover': self.get_from_api(
+                          data=self.od,
+                          lookup_path=['data', 'cover'],
+                          lookup_fields=['large']
+                         ),
+                    }
+            for key in cover_url:
+                if cover_url[key] is not None:
+                    self.api_has_cover = True
+        else:
+            self.record_initial_files = {
+                                     'small_cover': self.get_file(
+                                         self.get_from_api(
+                                          data=self.od,
+                                          lookup_path=['data', 'cover'],
+                                          lookup_fields=['small']
+                                         )),
+                                     'medium_cover': self.get_file(
+                                         self.get_from_api(
+                                          data=self.od,
+                                          lookup_path=['data', 'cover'],
+                                          lookup_fields=['medium']
+                                         )),
+                                     'large_cover': self.get_file(
+                                         self.get_from_api(
+                                          data=self.od,
+                                          lookup_path=['data', 'cover'],
+                                          lookup_fields=['large']
+                                         )),
+                                    }
 
         for key in self.record_initial_files:
             if self.record_initial_files[key] is not None:
@@ -883,7 +911,7 @@ class RecordView(View):
                 if isbnpy.isI10(isbn):
                     isbn = isbnpy.convert(isbn)
                 self.populate(isbn)
-                self.populate_cover(isbn)
+                self.populate_cover(True)
         if 'record_id' in self.kwargs:
             rec_id = int(self.kwargs['record_id'])
             record_instance = Record.objects.get(id=rec_id)
@@ -929,15 +957,10 @@ class RecordView(View):
         else:
             files_from_api = {}
             files_from_request = request.FILES
-            if 'isbn13' in post_data:
-                isbn = request.POST['isbn13']
-                if isbnpy.isValid(isbn):
-                    if isbnpy.isI10(isbn):
-                        isbn = isbnpy.convert(isbn)
-                    self.populate_cover(isbn)
-                    for key in self.record_initial_files:
-                        if self.record_initial_files[key] is not None:
-                            files_from_api[key] = self.record_initial_files[key]
+            self.populate_cover(False)
+            for key in self.record_initial_files:
+                if self.record_initial_files[key] is not None:
+                    files_from_api[key] = self.record_initial_files[key]
             # Later dictionary will be of high priority in conflict during merge.
             files_combo = dict(files_from_api.items() + files_from_request.items())
             record = RecordForm(post_data, files_combo)
