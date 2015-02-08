@@ -890,10 +890,6 @@ class RecordView(View):
                                           lookup_fields=['large']
                                          )),
                                     }
-
-        for key in self.record_initial_files:
-            if self.record_initial_files[key] is not None:
-                self.api_has_cover = True
         pass
 
     def get_file(self, url):
