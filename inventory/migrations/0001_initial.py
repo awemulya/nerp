@@ -3,11 +3,14 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import app.utils.translation
+import mptt.fields
+from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('contenttypes', '0001_initial'),
         ('core', '0001_initial'),
     ]
@@ -23,6 +26,7 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
+                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='inventory.Category', null=True)),
             ],
             options={
                 'verbose_name_plural': 'Inventory Categories',
@@ -36,6 +40,8 @@ class Migration(migrations.Migration):
                 ('release_no', models.IntegerField(null=True, blank=True)),
                 ('date', app.utils.translation.BSDateField()),
                 ('purpose', models.CharField(max_length=254)),
+                ('demandee', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
             ],
             options={
             },
@@ -52,7 +58,7 @@ class Migration(migrations.Migration):
                 ('release_quantity', models.FloatField(null=True, blank=True)),
                 ('remarks', models.CharField(max_length=254, null=True, blank=True)),
                 ('status', models.CharField(default=b'Requested', max_length=9, choices=[(b'Requested', b'Requested'), (b'Approved', b'Approved'), (b'Fulfilled', b'Fulfilled')])),
-                ('demand', models.ForeignKey(related_name=b'rows', to='inventory.Demand')),
+                ('demand', models.ForeignKey(related_name='rows', to='inventory.Demand')),
             ],
             options={
             },
@@ -82,7 +88,7 @@ class Migration(migrations.Migration):
                 ('rate', models.FloatField()),
                 ('other_expenses', models.FloatField(default=0)),
                 ('remarks', models.CharField(max_length=254, null=True, blank=True)),
-                ('entry_report', models.ForeignKey(related_name=b'rows', to='inventory.EntryReport')),
+                ('entry_report', models.ForeignKey(related_name='rows', to='inventory.EntryReport')),
             ],
             options={
             },
@@ -117,7 +123,7 @@ class Migration(migrations.Migration):
                 ('total_amount', models.FloatField()),
                 ('received_date', models.DateField(null=True, blank=True)),
                 ('condition', models.TextField(null=True, blank=True)),
-                ('handover', models.ForeignKey(related_name=b'rows', to='inventory.Handover')),
+                ('handover', models.ForeignKey(related_name='rows', to='inventory.Handover')),
             ],
             options={
             },
@@ -163,7 +169,7 @@ class Migration(migrations.Migration):
                 ('type', models.CharField(default=b'consumable', max_length=15, choices=[(b'consumable', 'Consumable'), (b'non-consumable', 'Non-Consumable')])),
                 ('unit', models.CharField(default='pieces', max_length=50)),
                 ('property_classification_reference_number', models.CharField(max_length=20, null=True, blank=True)),
-                ('account', models.OneToOneField(related_name=b'item', null=True, to='inventory.InventoryAccount')),
+                ('account', models.OneToOneField(related_name='item', null=True, to='inventory.InventoryAccount')),
                 ('category', models.ForeignKey(blank=True, to='inventory.Category', null=True)),
             ],
             options={
@@ -176,7 +182,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('date', app.utils.translation.BSDateField()),
                 ('model_id', models.PositiveIntegerField()),
-                ('content_type', models.ForeignKey(related_name=b'inventory_journal_entries', to='contenttypes.ContentType')),
+                ('content_type', models.ForeignKey(related_name='inventory_journal_entries', to='contenttypes.ContentType')),
             ],
             options={
                 'verbose_name_plural': 'InventoryJournal Entries',
@@ -210,7 +216,7 @@ class Migration(migrations.Migration):
                 ('vattable', models.BooleanField(default=True)),
                 ('remarks', models.CharField(max_length=254, null=True, blank=True)),
                 ('item', models.ForeignKey(to='inventory.Item')),
-                ('purchase_order', models.ForeignKey(related_name=b'rows', to='inventory.PurchaseOrder')),
+                ('purchase_order', models.ForeignKey(related_name='rows', to='inventory.PurchaseOrder')),
             ],
             options={
             },
@@ -224,7 +230,7 @@ class Migration(migrations.Migration):
                 ('cr_amount', models.FloatField(null=True, blank=True)),
                 ('current_balance', models.FloatField(null=True, blank=True)),
                 ('account', models.ForeignKey(to='inventory.InventoryAccount')),
-                ('journal_entry', models.ForeignKey(related_name=b'transactions', to='inventory.JournalEntry')),
+                ('journal_entry', models.ForeignKey(related_name='transactions', to='inventory.JournalEntry')),
             ],
             options={
             },
@@ -233,7 +239,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='inventoryaccountrow',
             name='journal_entry',
-            field=models.OneToOneField(related_name=b'account_row', to='inventory.JournalEntry'),
+            field=models.OneToOneField(related_name='account_row', to='inventory.JournalEntry'),
             preserve_default=True,
         ),
         migrations.AddField(
