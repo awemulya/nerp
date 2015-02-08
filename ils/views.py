@@ -645,7 +645,7 @@ class RecordView(View):
                             if len(openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()) is not 0:
                                 self.od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
 
-        super(RecordView, self).dispatch(request, *args, **kwargs)
+        return super(RecordView, self).dispatch(request, *args, **kwargs)
 
     def get_objects(self, cls, *dl, **kwargs):
         if kwargs:
