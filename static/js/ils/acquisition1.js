@@ -1,14 +1,30 @@
 $(document).ready(function () {
-	$('#id_authors, #id_subjects, #id_published_places').selectize({
-    delimiter: ',',
-    persist: false,
-    create: function(input) {
-        return {
-            value: input,
-            text: input
+	var $select = $('#id_authors, #id_subjects, #id_published_places').selectize({
+        delimiter: ',',
+        persist: false,
+        create: function(input) {
+            console.log(input);
+            var re = /^[0-9]+$/;
+            if (input.search(re) == -1){
+                return {
+                    value: input,
+                    text: input
+                }
+            } else {
+                return {
+                    value: null,
+                    text: null
+                }
+            };
         }
-    }
     });
+
+    // var selectize = $select[0].selectize;
+    // selectize.on('item_add', function(value, $item){
+    //     console.log(value);
+    //     // console.log(data);
+
+    // });
     $('#id_languages').selectize({
     });
 //     acq = new AcquisionVM();
