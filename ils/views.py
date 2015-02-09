@@ -30,6 +30,7 @@ from ils.forms import LibrarySearchForm
 
 
 from django.http import HttpResponseRedirect
+import pdb
 
 
 @group_required('Librarian')  # noqa
@@ -648,10 +649,6 @@ class RecordView(View):
             multiselect = False
         if 'dic_key' in kwargs:
             dic_key = kwargs['dic_key']
-        vl = []
-        # dictionary to filter
-        dictionary = {}
-        lod = []
 
         for lp in lookup_path:
             if lp in data:
@@ -666,15 +663,24 @@ class RecordView(View):
 
                 for field in lookup_fields:
                     if field in data:
+                        lod = {}
                         if type(data[field]) is list and type(data[field][0]) is unicode:
-
-                            for item in data[field]:
-                                lol = [item]
-                                vl.append(lol)
-                            for val in vl:
-                                for f_field, v in zip(form_fields, val):
-                                    dictionary[f_field] = v
-                                lod.append(dictionary)
+                            values = data[field]
+                            for value in values:
+                                d = {}
+                                d[form_fields[0]] = value
+                                lod.append(d)
+                            # for item in data[field]:
+                            #     # list of values respective cmp to model
+                            #     lov = [item]
+                            #     # vl is list of lists
+                            #     vl.append(lov)
+                            # for val in vl:
+                            #     d={}
+                            #     for v in val:
+                            #         d[form_fields[0]] = v
+                            #     lod.append(d)
+                            pdb.set_trace()
                             objs = self.get_objects(cls, *lod)
                             if objs:
                                 ll = []
@@ -682,13 +688,18 @@ class RecordView(View):
                                     ll.append(o[0].id)
                                 return ll
                         elif type(data[field]) is list and type(data[field][0]) is dict:
-                            for item in data[field]:
-                                lol = [item[dic_key]]
-                                vl.append(lol)
-                            for val in vl:
-                                for f_field, v in zip(form_fields, val):
-                                    dictionary[f_field] = v
-                                lod.append(dictionary)
+                            values = data[field]
+                            for value in values:
+                                d = {}
+                                d[form_fields[0]] = value[dic_key]
+                                lod.append(d)
+                            # for item in data[field]:
+                            #     lol = [item[dic_key]]
+                            #     vl.append(lol)
+                            # for val in vl:
+                            #     for f_field, v in zip(form_fields, val):
+                            #         dictionary[f_field] = v
+                            #     lod.append(dictionary)
                             objs = self.get_objects(cls, *lod)
                             if objs:
                                 ll = []
@@ -1120,6 +1131,7 @@ class RecordView(View):
                            form_fields=['name'],
                            ),
                            }
+        # pdb.set_trace()
         pub_initial_gapi = {'name': self.get_from_api(
                              data=google_api_data,
                              lookup_path=['items', 0, 'volumeInfo'],
