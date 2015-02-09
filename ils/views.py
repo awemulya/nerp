@@ -663,7 +663,7 @@ class RecordView(View):
 
                 for field in lookup_fields:
                     if field in data:
-                        lod = {}
+                        lod = []
                         if type(data[field]) is list and type(data[field][0]) is unicode:
                             values = data[field]
                             for value in values:
@@ -791,6 +791,7 @@ class RecordView(View):
             # Later dictionary will be of high priority in conflict during merge.
             files_combo = dict(files_from_api.items() + files_from_request.items())
             record = RecordForm(post_data, files_combo)
+            pdb.set_trace()
         if record.is_valid():
             record.save()
         else:
