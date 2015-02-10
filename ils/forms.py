@@ -53,9 +53,10 @@ class BookForm(forms.ModelForm):
         help_texts = {
             'subjects': ('')
         }
-        # widgets = {
-        #     'subjects': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: subjects, modelUrl:"/library/subject/", choiceField:"name"'}),
-        # }
+        widgets = {
+            'title': forms.TextInput(attrs={'required':'true', 'cols': -3, 'rows': 0}),
+            'subjects': forms.SelectMultiple(attrs={'required':'true'}),
+        }
 
 
 class AuthorForm(forms.ModelForm):

@@ -1093,54 +1093,61 @@ class RecordView(View):
         for field in fields:
             value[field] = data.getlist(field, None)
         for f_field, v in zip(fields, value):
-            if value[f_field] is not None:
+            if value[f_field] is not None and len(value[f_field][0]) is not 0:
                 if fields[f_field]:
                     for i, val in enumerate(value[f_field]):
                         value[f_field][i] = int(value[f_field][i])
                     dictionary[f_field] = value[f_field]
                 else:
                     dictionary[f_field] = value[f_field][0]
+        pdb.set_trace()
         obj = self.m2m_filter(cls, dictionary)
         if len(obj) is not 0:
             alter_value = unicode(obj[0].id)
         else:
-            obj = self.m2m_create(cls, dictionary)
-            alter_value = unicode(obj.id)
+            alter_value = self.m2m_create(cls, dictionary)
+            # alter_value = unicode(obj.id)
         data.__setitem__(field_to_alter, alter_value)
         return data
         pass
 
     def m2m_filter(self, cls, data):
-        filtrd = cls.objects.filter()
-        for key in data:
-            if type(data[key]) is not list:
-                df = {}
-                df[key] = data[key]
-                filtrd = filtrd.filter(**df)
-            else:
-                for item in data[key]:
+        if len(data) is not 0:
+            filtrd = cls.objects.filter()
+            for key in data:
+                if type(data[key]) is not list:
                     df = {}
-                    u_key = key + '__id'
-                    df[u_key] = item
+                    df[key] = data[key]
                     filtrd = filtrd.filter(**df)
-        return filtrd
+                else:
+                    # for item in data[key]:
+                    df = {}
+                    u_key = key + '__in'
+                    df[u_key] = data[key]
+                    filtrd = filtrd.filter(**df).distinct()
+            return filtrd
+        else:
+            return []
 
     def m2m_create(self, klass, dictionary):
-        obj = klass()
+        if len(dictionary) is not 0:
+            obj = klass()
 
-        # set regular fields
-        for field, value in dictionary.iteritems():
-            if not isinstance(value, list):
-                setattr(obj, field, value)
+            # set regular fields
+            for field, value in dictionary.iteritems():
+                if not isinstance(value, list):
+                    setattr(obj, field, value)
 
-        obj.save()
+            obj.save()
 
-        # set M2M fields
-        for field, value in dictionary.iteritems():
-            if isinstance(value, list):
-                setattr(obj, field, value)
+            # set M2M fields
+            for field, value in dictionary.iteritems():
+                if isinstance(value, list):
+                    setattr(obj, field, value)
 
-        return obj
+            return obj.id
+        else:
+            return u''
 
     def fix_mixds_data(self, data, mxdfields):
         ripped_dict = {}
