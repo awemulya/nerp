@@ -802,11 +802,17 @@ class RecordView(View):
                             lookup_path=['details', 'details'],
                             lookup_fields=['edition_name']
                             ),
-                           # 'description': self.get_from_api(
-                           #  data=google_api_data,
-                           #  lookup_path=['items', 0, 'volumeInfo'],
-                           #  lookup_fields=['description']
-                           #  ),
+                           'description': self.get_from_api(
+                             data=self.od,
+                             lookup_path=['details', 'details'],
+                             lookup_fields=['description']
+                             ),
+                           'format': self.get_from_api(
+                             data=self.od,
+                             lookup_path=['details', 'details'],
+                             lookup_fields=['physical_format']
+                             ),
+                           'type': setting.default_type,
                            'goodreads_id': self.get_from_api(
                             data=self.od,
                             lookup_path=['details', 'details', 'identifiers'],
@@ -1150,7 +1156,6 @@ class RecordView(View):
                     obj = mxdfields[key][0].objects.create(**d)
                     value[i] = unicode(obj.id)
             ripped_dict[key] = value
-        pdb.set_trace()
         for key in ripped_dict:
             data.setlist(key, ripped_dict[key])
         return data

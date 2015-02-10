@@ -256,7 +256,7 @@ class LibrarySetting(dbsettings.Group):
     borrow_days = dbsettings.PositiveIntegerValue(default=7)
     default_type = dbsettings.StringValue(
         choices=BOOK_TYPES,
-        default='circulative')
+        default='Circulative')
 
 
 library_setting = LibrarySetting('Library Settings')
