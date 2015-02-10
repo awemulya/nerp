@@ -748,11 +748,11 @@ class RecordView(View):
                             multiselect=True,
                             form_fields=['code'],
                             ),
-                           'pagination': str(self.get_from_api(
+                           'pagination': self.get_from_api(
                             data=google_api_data,
                             lookup_path=['items', 0, 'volumeInfo'],
                             lookup_fields=['pageCount'],
-                            )),
+                            ),
                            'isbn13': isbn,
                            'date_added': timezone.now(),
                            'edition': self.get_from_api(
@@ -1006,7 +1006,7 @@ class RecordView(View):
                 if dict1[key] is None and dict2[key] is not None:
                     merged_dict[key] = dict2[key]
                 elif dict1[key] is not None and dict2[key] is None:
-                    merged_dict[key] = dict1[key]
+                    merged_dict[key] = dict2[key]
                 elif dict1[key] is not None and dict2[key] is not None:
                     merged_dict[key] = dict1[key]
         return merged_dict
