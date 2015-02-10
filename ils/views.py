@@ -30,7 +30,7 @@ from ils.forms import LibrarySearchForm
 
 
 from django.http import HttpResponseRedirect
-
+import pdb
 
 @group_required('Librarian')  # noqa
 def acquisition(request):
@@ -629,22 +629,22 @@ class RecordView(View):
     od = {}
 
     def dispatch(self, request, *args, **kwargs):
+        # pdb.set_trace()
         isbn = None
-        if request.GET.get('isbn13'):
+        if request.method == 'GET':
             isbn = request.GET.get('isbn13')
-        elif request.POST.get('isbn13'):
+        elif request.method == 'POST':
             isbn = request.POST.get('isbn13')
         if isbn is not None:
             if isbnpy.isValid(isbn):
                 if isbnpy.isI10(isbn):
                     isbn = isbnpy.convert(isbn)
-                    openlibrary_data = json.load(urllib2.urlopen(
-                        'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
-                    if len(openlibrary_data.keys()) is not 0:
-                        if 'records' in openlibrary_data[openlibrary_data.keys()[0]]:
-                            if len(openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()) is not 0:
-                                self.od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
-
+                openlibrary_data = json.load(urllib2.urlopen(
+                    'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
+                if len(openlibrary_data.keys()) is not 0:
+                    if 'records' in openlibrary_data[openlibrary_data.keys()[0]]:
+                        if len(openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()) is not 0:
+                            self.od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
         return super(RecordView, self).dispatch(request, *args, **kwargs)
 
     def get_objects(self, cls, *dl, **kwargs):
@@ -960,23 +960,18 @@ class RecordView(View):
             # Later dictionary will be of high priority in conflict during merge.
             files_combo = dict(files_from_api.items() + files_from_request.items())
             record = RecordForm(post_data, files_combo)
+        # pdb.set_trace()
         if record.is_valid():
             record.save()
         else:
-            rr_form = self.record_form(request.POST, request.FILES)
-            b_form = self.book_form(request.POST)
-            a_form = self.author_form()
-            p_form = self.place_form()
-            pub_form = self.publisher_form(request.POST)
-            l_form = self.lan_form()
-            sub_form = self.subject_form()
+            rr_form = self.record_form(post_data, request.FILES)
+            b_form = self.book_form(post_data)
+            pub_form = self.publisher_form(post_data)
             context = {'rr_form': rr_form,
                        'b_form': b_form,
-                       'a_form': a_form,
-                       'p_form': p_form,
+                       
                        'pub_form': pub_form,
-                       'l_form': l_form,
-                       'sub_form': sub_form,
+                       
                        'api_has_cover': self.api_has_cover,
                        'record_id': self.kwargs.get('record_id', None),
                        }
