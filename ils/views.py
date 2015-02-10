@@ -32,7 +32,6 @@ from ils.forms import LibrarySearchForm
 from django.http import HttpResponseRedirect
 import pdb
 
-
 @group_required('Librarian')  # noqa
 def acquisition(request):
     record_data = {}
@@ -627,6 +626,26 @@ class RecordView(View):
     record_initial_files = {}
     template_name = 'acquisition1.html'
     api_has_cover = False
+    od = {}
+
+    def dispatch(self, request, *args, **kwargs):
+        # pdb.set_trace()
+        isbn = None
+        if request.method == 'GET':
+            isbn = request.GET.get('isbn13')
+        elif request.method == 'POST':
+            isbn = request.POST.get('isbn13')
+        if isbn is not None:
+            if isbnpy.isValid(isbn):
+                if isbnpy.isI10(isbn):
+                    isbn = isbnpy.convert(isbn)
+                openlibrary_data = json.load(urllib2.urlopen(
+                    'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
+                if len(openlibrary_data.keys()) is not 0:
+                    if 'records' in openlibrary_data[openlibrary_data.keys()[0]]:
+                        if len(openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()) is not 0:
+                            self.od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
+        return super(RecordView, self).dispatch(request, *args, **kwargs)
 
     def get_objects(self, cls, *dl, **kwargs):
         if kwargs:
@@ -670,17 +689,6 @@ class RecordView(View):
                                 d = {}
                                 d[form_fields[0]] = value
                                 lod.append(d)
-                            # for item in data[field]:
-                            #     # list of values respective cmp to model
-                            #     lov = [item]
-                            #     # vl is list of lists
-                            #     vl.append(lov)
-                            # for val in vl:
-                            #     d={}
-                            #     for v in val:
-                            #         d[form_fields[0]] = v
-                            #     lod.append(d)
-                            pdb.set_trace()
                             objs = self.get_objects(cls, *lod)
                             if objs:
                                 ll = []
@@ -693,13 +701,6 @@ class RecordView(View):
                                 d = {}
                                 d[form_fields[0]] = value[dic_key]
                                 lod.append(d)
-                            # for item in data[field]:
-                            #     lol = [item[dic_key]]
-                            #     vl.append(lol)
-                            # for val in vl:
-                            #     for f_field, v in zip(form_fields, val):
-                            #         dictionary[f_field] = v
-                            #     lod.append(dictionary)
                             objs = self.get_objects(cls, *lod)
                             if objs:
                                 ll = []
@@ -726,6 +727,284 @@ class RecordView(View):
                     return data[lookup_fields[0]]
         pass
 
+    def populate(self, isbn):
+        response = urllib2.urlopen('https://www.googleapis.com' +
+                                   '/books/v1/volumes?q=search+isbn:'+isbn)
+        google_api_data = json.load(response)
+        rr_initial_gapi = {
+                           'authors': self.get_from_api(
+                            data=google_api_data,
+                            lookup_path=['items', 0, 'volumeInfo'],
+                            lookup_fields=['authors'],
+                            cls=Author,
+                            multiselect=True,
+                            form_fields=['name'],
+                            ),
+                           'languages': self.get_from_api(
+                            data=google_api_data,
+                            lookup_path=['items', 0, 'volumeInfo'],
+                            lookup_fields=['language'],
+                            cls=Language,
+                            multiselect=True,
+                            form_fields=['code'],
+                            ),
+                           'pagination': str(self.get_from_api(
+                            data=google_api_data,
+                            lookup_path=['items', 0, 'volumeInfo'],
+                            lookup_fields=['pageCount'],
+                            )),
+                           'isbn13': isbn,
+                           'date_added': timezone.now(),
+                           'edition': self.get_from_api(
+                            data=google_api_data,
+                            lookup_path=['items', 0, 'volumeInfo'],
+                            lookup_fields=['contentVersion']
+                            ),
+                           'description': self.get_from_api(
+                            data=google_api_data,
+                            lookup_path=['items', 0, 'volumeInfo'],
+                            lookup_fields=['description']
+                            ),
+                           'date_of_publication': self.get_from_api(
+                            data=google_api_data,
+                            lookup_path=['items', 0, 'volumeInfo'],
+                            lookup_fields=['publishedDate'],
+                            ),
+                           }
+        rr_initial_olapi = {
+                           'authors': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['authors'],
+                            # This should be assigned when list has dict
+                            dic_key='name',
+                            cls=Author,
+                            multiselect=True,
+                            form_fields=['name'],
+                            ),
+                           # 'languages': self.get_from_api(
+                           #  data=google_api_data,
+                           #  lookup_path=['items', 0, 'volumeInfo'],
+                           #  lookup_fields=['language'],
+                           #  cls=Language,
+                           #  multiselect=True,
+                           #  form_fields=['code'],
+                           #  ),
+                           'pagination': str(self.get_from_api(
+                            data=self.od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['pagination']
+                            )),
+                           'isbn13': isbn,
+                           'date_added': timezone.now(),
+                           'edition': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['edition_name']
+                            ),
+                           # 'description': self.get_from_api(
+                           #  data=google_api_data,
+                           #  lookup_path=['items', 0, 'volumeInfo'],
+                           #  lookup_fields=['description']
+                           #  ),
+                           'goodreads_id': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['details', 'details', 'identifiers'],
+                            lookup_fields=['goodreads']
+                            ),
+                           'librarything_id': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['details', 'details', 'identifiers'],
+                            lookup_fields=['librarything']
+                            ),
+                           'openlibrary_id': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['data', 'identifiers'],
+                            lookup_fields=['openlibrary']
+                            ),
+                           'lcc': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['lc_classifications']
+                            ),
+                           'ddc': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['dewey_decimal_class']
+                            ),
+                           'lccn_id': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['lccn']
+                            ),
+                           'oclc_id': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['data', 'identifiers'],
+                            lookup_fields=['oclc']
+                            ),
+                           'dimensions': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['physical_dimensions']
+                            ),
+                           'by_statement': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['data'],
+                            lookup_fields=['by_statement']
+                            ),
+                           'excerpt': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['data', 'excerpts', 0],
+                            lookup_fields=['text']
+                            ),
+                           'published_places': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['publish_places'],
+                            multiselect=True,
+                            cls=Place,
+                            form_fields=['name']
+                            ),
+                           'date_of_publication': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['details', 'details'],
+                            lookup_fields=['publish_date']
+                            ),
+                           'notes': self.get_from_api(
+                            data=self.od,
+                            lookup_path=['data'],
+                            lookup_fields=['notes']
+                            ),
+                           }
+        b_initial_gapi = {'title': self.get_from_api(
+                           data=google_api_data,
+                           lookup_path=['items', 0, 'volumeInfo'],
+                           lookup_fields=['title']
+                           ),
+                          'subtitle': self.get_from_api(
+                           data=google_api_data,
+                           lookup_path=['items', 0, 'volumeInfo'],
+                           lookup_fields=['subtitle']
+                           ),
+                          # 'subjects': self.get_from_api(
+                          #  data=od,
+                          #  lookup_path=['details', 'details'],
+                          #  lookup_fields=['subjects'],
+                          #  multiselect=True,
+                          #  cls=Subject,
+                          #  form_fields=['name'],
+                          #  ),
+                          }
+        b_initial_olapi = {'title': self.get_from_api(
+                           data=self.od,
+                           lookup_path=['details', 'details'],
+                           lookup_fields=['title']
+                           ),
+                           'subtitle': self.get_from_api(
+                           data=self.od,
+                           lookup_path=['details', 'details'],
+                           lookup_fields=['subtitle']
+                           ),
+                           'subjects': self.get_from_api(
+                           data=self.od,
+                           lookup_path=['details', 'details'],
+                           lookup_fields=['subjects'],
+                           multiselect=True,
+                           cls=Subject,
+                           form_fields=['name'],
+                           ),
+                           }
+        # pdb.set_trace()
+        pub_initial_gapi = {'name': self.get_from_api(
+                             data=google_api_data,
+                             lookup_path=['items', 0, 'volumeInfo'],
+                             lookup_fields=['publisher'],
+                             ),
+                            }
+        pub_initial_olapi = {'name': self.get_from_api(
+                             data=self.od,
+                             lookup_path=['details', 'details'],
+                             lookup_fields=['publishers']
+                             ),
+                             }
+        self.rr_initial = self.get_dict_union(rr_initial_gapi, rr_initial_olapi)
+        self.b_initial = self.get_dict_union(b_initial_gapi, b_initial_olapi)
+        self.pub_initial = self.get_dict_union(pub_initial_gapi, pub_initial_olapi)
+        pass
+
+    def populate_cover(self, cover_check):
+        if cover_check:
+            cover_url = {
+                     'small_cover': self.get_from_api(
+                          data=self.od,
+                          lookup_path=['data', 'cover'],
+                          lookup_fields=['small']
+                         ),
+                     'medium_cover': self.get_from_api(
+                          data=self.od,
+                          lookup_path=['data', 'cover'],
+                          lookup_fields=['medium']
+                         ),
+                     'large_cover': self.get_from_api(
+                          data=self.od,
+                          lookup_path=['data', 'cover'],
+                          lookup_fields=['large']
+                         ),
+                    }
+            for key in cover_url:
+                if cover_url[key] is not None:
+                    self.api_has_cover = True
+        else:
+            self.record_initial_files = {
+                                     'small_cover': self.get_file(
+                                         self.get_from_api(
+                                          data=self.od,
+                                          lookup_path=['data', 'cover'],
+                                          lookup_fields=['small']
+                                         )),
+                                     'medium_cover': self.get_file(
+                                         self.get_from_api(
+                                          data=self.od,
+                                          lookup_path=['data', 'cover'],
+                                          lookup_fields=['medium']
+                                         )),
+                                     'large_cover': self.get_file(
+                                         self.get_from_api(
+                                          data=self.od,
+                                          lookup_path=['data', 'cover'],
+                                          lookup_fields=['large']
+                                         )),
+                                    }
+        pass
+
+    def get_file(self, url):
+        if url:
+            result = urllib.urlopen(url)
+            fi_name = os.path.basename(url)
+            suf = SimpleUploadedFile(fi_name, result.read())
+            return suf
+        pass
+
+    def get_dict_union(self, dict1, dict2):
+        merged_dict = {}
+        dict1_keys = dict1.keys()
+        dict2_keys = dict2.keys()
+        keys_union = list(set(dict1_keys + dict2_keys))
+
+        for key in keys_union:
+            if key in dict1 and key not in dict2:
+                merged_dict[key] = dict1[key]
+            elif key in dict2 and key not in dict1:
+                merged_dict[key] = dict2[key]
+            elif key in dict1 and key in dict2:
+                if dict1[key] is None and dict2[key] is not None:
+                    merged_dict[key] = dict2[key]
+                elif dict1[key] is not None and dict2[key] is None:
+                    merged_dict[key] = dict1[key]
+                elif dict1[key] is not None and dict2[key] is not None:
+                    merged_dict[key] = dict1[key]
+        return merged_dict
+
     def get(self, request, *args, **kwargs):
         if request.GET.get('isbn13'):
             isbn = request.GET['isbn13']
@@ -733,7 +1012,7 @@ class RecordView(View):
                 if isbnpy.isI10(isbn):
                     isbn = isbnpy.convert(isbn)
                 self.populate(isbn)
-                self.populate_cover(isbn)
+                self.populate_cover(True)
         if 'record_id' in self.kwargs:
             rec_id = int(self.kwargs['record_id'])
             record_instance = Record.objects.get(id=rec_id)
@@ -779,25 +1058,20 @@ class RecordView(View):
         else:
             files_from_api = {}
             files_from_request = request.FILES
-            if 'isbn13' in post_data:
-                isbn = request.POST['isbn13']
-                if isbnpy.isValid(isbn):
-                    if isbnpy.isI10(isbn):
-                        isbn = isbnpy.convert(isbn)
-                    self.populate_cover(isbn)
-                    for key in self.record_initial_files:
-                        if self.record_initial_files[key] is not None:
-                            files_from_api[key] = self.record_initial_files[key]
+            self.populate_cover(False)
+            for key in self.record_initial_files:
+                if self.record_initial_files[key] is not None:
+                    files_from_api[key] = self.record_initial_files[key]
             # Later dictionary will be of high priority in conflict during merge.
             files_combo = dict(files_from_api.items() + files_from_request.items())
             record = RecordForm(post_data, files_combo)
-            pdb.set_trace()
+        # pdb.set_trace()
         if record.is_valid():
             record.save()
         else:
-            rr_form = self.record_form(request.POST, request.FILES)
-            b_form = self.book_form(request.POST)
-            pub_form = self.publisher_form(request.POST)
+            rr_form = self.record_form(post_data, request.FILES)
+            b_form = self.book_form(post_data)
+            pub_form = self.publisher_form(post_data)
             context = {'rr_form': rr_form,
                        'b_form': b_form,
                        'pub_form': pub_form,
@@ -876,339 +1150,8 @@ class RecordView(View):
                     obj = mxdfields[key][0].objects.create(**d)
                     value[i] = unicode(obj.id)
             ripped_dict[key] = value
+        pdb.set_trace()
         for key in ripped_dict:
             data.setlist(key, ripped_dict[key])
         return data
-
-    def populate(self, isbn):
-        response = urllib2.urlopen('https://www.googleapis.com' +
-                                   '/books/v1/volumes?q=search+isbn:'+isbn)
-        google_api_data = json.load(response)
-        openlibrary_data = json.load(urllib2.urlopen(
-            'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
-        od = {}
-        if len(openlibrary_data.keys()) is not 0:
-            if 'records' in openlibrary_data[openlibrary_data.keys()[0]]:
-                if len(openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()) is not 0:
-                    od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
-        rr_initial_gapi = {
-                           'authors': self.get_from_api(
-                            data=google_api_data,
-                            lookup_path=['items', 0, 'volumeInfo'],
-                            lookup_fields=['authors'],
-                            cls=Author,
-                            multiselect=True,
-                            form_fields=['name'],
-                            ),
-                           'languages': self.get_from_api(
-                            data=google_api_data,
-                            lookup_path=['items', 0, 'volumeInfo'],
-                            lookup_fields=['language'],
-                            cls=Language,
-                            multiselect=True,
-                            form_fields=['code'],
-                            ),
-                           'pagination': str(self.get_from_api(
-                            data=google_api_data,
-                            lookup_path=['items', 0, 'volumeInfo'],
-                            lookup_fields=['pageCount'],
-                            )),
-                           'isbn13': isbn,
-                           'date_added': timezone.now(),
-                           'edition': self.get_from_api(
-                            data=google_api_data,
-                            lookup_path=['items', 0, 'volumeInfo'],
-                            lookup_fields=['contentVersion']
-                            ),
-                           'description': self.get_from_api(
-                            data=google_api_data,
-                            lookup_path=['items', 0, 'volumeInfo'],
-                            lookup_fields=['description']
-                            ),
-                           # 'goodreads_id': self.get_from_api(
-                           #  data=od,
-                           #  lookup_path=['details', 'details', 'identifiers'],
-                           #  lookup_fields=['goodreads']
-                           #  ),
-                           # 'librarything_id': self.get_from_api(
-                           #  data=od,
-                           #  lookup_path=['details', 'details', 'identifiers'],
-                           #  lookup_fields=['librarything']
-                           #  ),
-                           # 'openlibrary_id': self.get_from_api(
-                           #  data=od,
-                           #  lookup_path=['data', 'identifiers'],
-                           #  lookup_fields=['openlibrary']
-                           #  ),
-                           # 'lcc': self.get_from_api(
-                           #  data=od,
-                           #  lookup_path=['details', 'details'],
-                           #  lookup_fields=['lc_classifications']
-                           #  ),
-                           # 'ddc': self.get_from_api(
-                           #  data=od,
-                           #  lookup_path=['details', 'details'],
-                           #  lookup_fields=['dewey_decimal_class']
-                           #  ),
-                           # 'lccn_id': self.get_from_api(
-                           #  data=od,
-                           #  lookup_path=['details', 'details'],
-                           #  lookup_fields=['lccn']
-                           #  ),
-                           # 'oclc_id': self.get_from_api(
-                           #  data=od,
-                           #  lookup_path=['data', 'identifiers'],
-                           #  lookup_fields=['oclc']
-                           #  ),
-                           # 'dimensions': self.get_from_api(
-                           #  data=od,
-                           #  lookup_path=['details', 'details'],
-                           #  lookup_fields=['physical_dimensions']
-                           #  ),
-                           # 'by_statement': self.get_from_api(
-                           #  data=od,
-                           #  lookup_path=['data'],
-                           #  lookup_fields=['by_statement']
-                           #  ),
-                           # 'excerpt': self.get_from_api(
-                           #  data=od,
-                           #  lookup_path=['data', 'excerpts', 0],
-                           #  lookup_fields=['text']
-                           #  ),
-                           # 'published_places': self.get_from_api(
-                           #  data=od,
-                           #  lookup_path=['details', 'details'],
-                           #  lookup_fields=['publish_places'],
-                           #  multiselect=True,
-                           #  cls=Place,
-                           #  form_fields=['name']
-                           #  ),
-                           'date_of_publication': self.get_from_api(
-                            data=google_api_data,
-                            lookup_path=['items', 0, 'volumeInfo'],
-                            lookup_fields=['publishedDate'],
-                            ),
-                           }
-        rr_initial_olapi = {
-                           'authors': self.get_from_api(
-                            data=od,
-                            lookup_path=['details', 'details'],
-                            lookup_fields=['authors'],
-                             # This should be assigned when list has dict
-                            dic_key='name',
-                            cls=Author,
-                            multiselect=True,
-                            form_fields=['name'],
-                            ),
-                           # 'languages': self.get_from_api(
-                           #  data=google_api_data,
-                           #  lookup_path=['items', 0, 'volumeInfo'],
-                           #  lookup_fields=['language'],
-                           #  cls=Language,
-                           #  multiselect=True,
-                           #  form_fields=['code'],
-                           #  ),
-                           'pagination': str(self.get_from_api(
-                            data=od,
-                            lookup_path=['details', 'details'],
-                            lookup_fields=['pagination']
-                            )),
-                           'isbn13': isbn,
-                           'date_added': timezone.now(),
-                           'edition': self.get_from_api(
-                            data=od,
-                            lookup_path=['details', 'details'],
-                            lookup_fields=['edition_name']
-                            ),
-                           # 'description': self.get_from_api(
-                           #  data=google_api_data,
-                           #  lookup_path=['items', 0, 'volumeInfo'],
-                           #  lookup_fields=['description']
-                           #  ),
-                           'goodreads_id': self.get_from_api(
-                            data=od,
-                            lookup_path=['details', 'details', 'identifiers'],
-                            lookup_fields=['goodreads']
-                            ),
-                           'librarything_id': self.get_from_api(
-                            data=od,
-                            lookup_path=['details', 'details', 'identifiers'],
-                            lookup_fields=['librarything']
-                            ),
-                           'openlibrary_id': self.get_from_api(
-                            data=od,
-                            lookup_path=['data', 'identifiers'],
-                            lookup_fields=['openlibrary']
-                            ),
-                           'lcc': self.get_from_api(
-                            data=od,
-                            lookup_path=['details', 'details'],
-                            lookup_fields=['lc_classifications']
-                            ),
-                           'ddc': self.get_from_api(
-                            data=od,
-                            lookup_path=['details', 'details'],
-                            lookup_fields=['dewey_decimal_class']
-                            ),
-                           'lccn_id': self.get_from_api(
-                            data=od,
-                            lookup_path=['details', 'details'],
-                            lookup_fields=['lccn']
-                            ),
-                           'oclc_id': self.get_from_api(
-                            data=od,
-                            lookup_path=['data', 'identifiers'],
-                            lookup_fields=['oclc']
-                            ),
-                           'dimensions': self.get_from_api(
-                            data=od,
-                            lookup_path=['details', 'details'],
-                            lookup_fields=['physical_dimensions']
-                            ),
-                           'by_statement': self.get_from_api(
-                            data=od,
-                            lookup_path=['data'],
-                            lookup_fields=['by_statement']
-                            ),
-                           'excerpt': self.get_from_api(
-                            data=od,
-                            lookup_path=['data', 'excerpts', 0],
-                            lookup_fields=['text']
-                            ),
-                           'published_places': self.get_from_api(
-                            data=od,
-                            lookup_path=['details', 'details'],
-                            lookup_fields=['publish_places'],
-                            multiselect=True,
-                            cls=Place,
-                            form_fields=['name']
-                            ),
-                           'date_of_publication': self.get_from_api(
-                            data=od,
-                            lookup_path=['details', 'details'],
-                            lookup_fields=['publish_date']
-                            ),
-                           'notes': self.get_from_api(
-                            data=od,
-                            lookup_path=['data'],
-                            lookup_fields=['notes']
-                            ),
-                           }
-        b_initial_gapi = {'title': self.get_from_api(
-                           data=google_api_data,
-                           lookup_path=['items', 0, 'volumeInfo'],
-                           lookup_fields=['title']
-                           ),
-                          'subtitle': self.get_from_api(
-                           data=google_api_data,
-                           lookup_path=['items', 0, 'volumeInfo'],
-                           lookup_fields=['subtitle']
-                           ),
-                          # 'subjects': self.get_from_api(
-                          #  data=od,
-                          #  lookup_path=['details', 'details'],
-                          #  lookup_fields=['subjects'],
-                          #  multiselect=True,
-                          #  cls=Subject,
-                          #  form_fields=['name'],
-                          #  ),
-                          }
-        b_initial_olapi = {'title': self.get_from_api(
-                           data=od,
-                           lookup_path=['details', 'details'],
-                           lookup_fields=['title']
-                           ),
-                           'subtitle': self.get_from_api(
-                           data=od,
-                           lookup_path=['details', 'details'],
-                           lookup_fields=['subtitle']
-                           ),
-                           'subjects': self.get_from_api(
-                           data=od,
-                           lookup_path=['details', 'details'],
-                           lookup_fields=['subjects'],
-                           multiselect=True,
-                           cls=Subject,
-                           form_fields=['name'],
-                           ),
-                           }
-        # pdb.set_trace()
-        pub_initial_gapi = {'name': self.get_from_api(
-                             data=google_api_data,
-                             lookup_path=['items', 0, 'volumeInfo'],
-                             lookup_fields=['publisher'],
-                             ),
-                            }
-        pub_initial_olapi = {'name': self.get_from_api(
-                             data=od,
-                             lookup_path=['details', 'details'],
-                             lookup_fields=['publishers']
-                             ),
-                             }
-        self.rr_initial = self.get_dict_union(rr_initial_gapi, rr_initial_olapi)
-        self.b_initial = self.get_dict_union(b_initial_gapi, b_initial_olapi)
-        self.pub_initial = self.get_dict_union(pub_initial_gapi, pub_initial_olapi)
-        pass
-
-    def populate_cover(self, isbn):
-        openlibrary_data = json.load(urllib2.urlopen(
-            'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
-        od = {}
-        if len(openlibrary_data.keys()) is not 0:
-            if 'records' in openlibrary_data[openlibrary_data.keys()[0]]:
-                if len(openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()) is not 0:
-                    od = openlibrary_data[openlibrary_data.keys()[0]]['records'][openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()[0]]
-        self.record_initial_files = {
-                                 'small_cover': self.get_file(
-                                     self.get_from_api(
-                                      data=od,
-                                      lookup_path=['data', 'cover'],
-                                      lookup_fields=['small']
-                                     )),
-                                 'medium_cover': self.get_file(
-                                     self.get_from_api(
-                                      data=od,
-                                      lookup_path=['data', 'cover'],
-                                      lookup_fields=['medium']
-                                     )),
-                                 'large_cover': self.get_file(
-                                     self.get_from_api(
-                                      data=od,
-                                      lookup_path=['data', 'cover'],
-                                      lookup_fields=['large']
-                                     )),
-                                }
-                                
-        for key in self.record_initial_files:
-            if self.record_initial_files[key] is not None:
-                self.api_has_cover = True
-        pass
-
-    def get_file(self, url):
-        if url:
-            result = urllib.urlopen(url)
-            fi_name = os.path.basename(url)
-            suf = SimpleUploadedFile(fi_name, result.read())
-            return suf
-        pass
-
-    def get_dict_union(self, dict1, dict2):
-        merged_dict = {}
-        dict1_keys = dict1.keys()
-        dict2_keys = dict2.keys()
-        keys_union = list(set(dict1_keys + dict2_keys))
-
-        for key in keys_union:
-            if key in dict1 and key not in dict2:
-                merged_dict[key] = dict1[key]
-            elif key in dict2 and key not in dict1:
-                merged_dict[key] = dict2[key]
-            elif key in dict1 and key in dict2:
-                if dict1[key] is None and dict2[key] is not None:
-                    merged_dict[key] = dict2[key]
-                elif dict1[key] is not None and dict2[key] is None:
-                    merged_dict[key] = dict1[key]
-                elif dict1[key] is not None and dict2[key] is not None:
-                    merged_dict[key] = dict1[key]
-        return merged_dict
 
