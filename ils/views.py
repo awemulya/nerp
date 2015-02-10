@@ -934,6 +934,7 @@ class RecordView(View):
                              ),
                              }
         self.rr_initial = self.get_dict_union(rr_initial_gapi, rr_initial_olapi)
+        pdb.set_trace()
         self.b_initial = self.get_dict_union(b_initial_gapi, b_initial_olapi)
         self.pub_initial = self.get_dict_union(pub_initial_gapi, pub_initial_olapi)
         pass
@@ -1006,9 +1007,9 @@ class RecordView(View):
                 if dict1[key] is None and dict2[key] is not None:
                     merged_dict[key] = dict2[key]
                 elif dict1[key] is not None and dict2[key] is None:
-                    merged_dict[key] = dict2[key]
-                elif dict1[key] is not None and dict2[key] is not None:
                     merged_dict[key] = dict1[key]
+                elif dict1[key] is not None and dict2[key] is not None:
+                    merged_dict[key] = dict2[key]
         return merged_dict
 
     def get(self, request, *args, **kwargs):
