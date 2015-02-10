@@ -1100,7 +1100,7 @@ class RecordView(View):
                     dictionary[f_field] = value[f_field]
                 else:
                     dictionary[f_field] = value[f_field][0]
-        pdb.set_trace()
+
         obj = self.m2m_filter(cls, dictionary)
         if len(obj) is not 0:
             alter_value = unicode(obj[0].id)
