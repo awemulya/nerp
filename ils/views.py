@@ -627,20 +627,27 @@ class RecordView(View):
     template_name = 'acquisition1.html'
     api_has_cover = False
     od = {}
+    google_api_data = {}
+    isbn = None
 
     def dispatch(self, request, *args, **kwargs):
         # pdb.set_trace()
-        isbn = None
         if request.method == 'GET':
-            isbn = request.GET.get('isbn13')
+            self.isbn = request.GET.get('isbn13')
         elif request.method == 'POST':
-            isbn = request.POST.get('isbn13')
-        if isbn is not None:
-            if isbnpy.isValid(isbn):
-                if isbnpy.isI10(isbn):
-                    isbn = isbnpy.convert(isbn)
+            self.isbn = request.POST.get('isbn13')
+        if self.isbn is not None:
+            if isbnpy.isValid(self.isbn):
+                if isbnpy.isI10(self.isbn):
+                    self.isbn = isbnpy.convert(self.isbn)
+                response = urllib2.urlopen('https://www.googleapis.com' +
+                                           '/books/v1/volumes?q=search+isbn:'
+                                           +
+                                           self.isbn)
+                self.google_api_data = json.load(response)
                 openlibrary_data = json.load(urllib2.urlopen(
-                    'http://openlibrary.org/api/volumes/brief/json/isbn:'+isbn))
+                    'http://openlibrary.org/api/volumes/brief/json/isbn:'
+                    + self.isbn))
                 if len(openlibrary_data.keys()) is not 0:
                     if 'records' in openlibrary_data[openlibrary_data.keys()[0]]:
                         if len(openlibrary_data[openlibrary_data.keys()[0]]['records'].keys()) is not 0:
@@ -723,17 +730,14 @@ class RecordView(View):
             if lookup_fields[0] in data:
                 if type(data[lookup_fields[0]]) is list and len(data[lookup_fields[0]]) is not 0:
                     return data[lookup_fields[0]][0]
-                elif type(data[lookup_fields[0]]) is unicode:
+                elif type(data[lookup_fields[0]]) is unicode or type(data[lookup_fields[0]]) is int:
                     return data[lookup_fields[0]]
         pass
 
-    def populate(self, isbn):
-        response = urllib2.urlopen('https://www.googleapis.com' +
-                                   '/books/v1/volumes?q=search+isbn:'+isbn)
-        google_api_data = json.load(response)
+    def populate(self):
         rr_initial_gapi = {
                            'authors': self.get_from_api(
-                            data=google_api_data,
+                            data=self.google_api_data,
                             lookup_path=['items', 0, 'volumeInfo'],
                             lookup_fields=['authors'],
                             cls=Author,
@@ -741,32 +745,32 @@ class RecordView(View):
                             form_fields=['name'],
                             ),
                            'languages': self.get_from_api(
-                            data=google_api_data,
+                            data=self.google_api_data,
                             lookup_path=['items', 0, 'volumeInfo'],
                             lookup_fields=['language'],
                             cls=Language,
                             multiselect=True,
                             form_fields=['code'],
                             ),
-                           'pagination': self.get_from_api(
-                            data=google_api_data,
+                           'pagination': str(self.get_from_api(
+                            data=self.google_api_data,
                             lookup_path=['items', 0, 'volumeInfo'],
                             lookup_fields=['pageCount'],
-                            ),
-                           'isbn13': isbn,
+                            )),
+                           'isbn13': self.isbn,
                            'date_added': timezone.now(),
                            'edition': self.get_from_api(
-                            data=google_api_data,
+                            data=self.google_api_data,
                             lookup_path=['items', 0, 'volumeInfo'],
                             lookup_fields=['contentVersion']
                             ),
                            'description': self.get_from_api(
-                            data=google_api_data,
+                            data=self.google_api_data,
                             lookup_path=['items', 0, 'volumeInfo'],
                             lookup_fields=['description']
                             ),
                            'date_of_publication': self.get_from_api(
-                            data=google_api_data,
+                            data=self.google_api_data,
                             lookup_path=['items', 0, 'volumeInfo'],
                             lookup_fields=['publishedDate'],
                             ),
@@ -783,19 +787,19 @@ class RecordView(View):
                             form_fields=['name'],
                             ),
                            # 'languages': self.get_from_api(
-                           #  data=google_api_data,
+                           #  data=self.google_api_data,
                            #  lookup_path=['items', 0, 'volumeInfo'],
                            #  lookup_fields=['language'],
                            #  cls=Language,
                            #  multiselect=True,
                            #  form_fields=['code'],
                            #  ),
-                           'pagination': str(self.get_from_api(
+                           'pagination': self.get_from_api(
                             data=self.od,
                             lookup_path=['details', 'details'],
                             lookup_fields=['pagination']
-                            )),
-                           'isbn13': isbn,
+                            ),
+                           'isbn13': self.isbn,
                            'date_added': timezone.now(),
                            'edition': self.get_from_api(
                             data=self.od,
@@ -883,12 +887,12 @@ class RecordView(View):
                             ),
                            }
         b_initial_gapi = {'title': self.get_from_api(
-                           data=google_api_data,
+                           data=self.google_api_data,
                            lookup_path=['items', 0, 'volumeInfo'],
                            lookup_fields=['title']
                            ),
                           'subtitle': self.get_from_api(
-                           data=google_api_data,
+                           data=self.google_api_data,
                            lookup_path=['items', 0, 'volumeInfo'],
                            lookup_fields=['subtitle']
                            ),
@@ -922,7 +926,7 @@ class RecordView(View):
                            }
         # pdb.set_trace()
         pub_initial_gapi = {'name': self.get_from_api(
-                             data=google_api_data,
+                             data=self.google_api_data,
                              lookup_path=['items', 0, 'volumeInfo'],
                              lookup_fields=['publisher'],
                              ),
@@ -933,15 +937,16 @@ class RecordView(View):
                              lookup_fields=['publishers']
                              ),
                              }
+
         self.rr_initial = self.get_dict_union(rr_initial_gapi, rr_initial_olapi)
-        pdb.set_trace()
         self.b_initial = self.get_dict_union(b_initial_gapi, b_initial_olapi)
         self.pub_initial = self.get_dict_union(pub_initial_gapi, pub_initial_olapi)
+        # pdb.set_trace()
         pass
 
     def populate_cover(self, cover_check):
         if cover_check:
-            cover_url = {
+            cover_url_olapi = {
                      'small_cover': self.get_from_api(
                           data=self.od,
                           lookup_path=['data', 'cover'],
@@ -958,11 +963,24 @@ class RecordView(View):
                           lookup_fields=['large']
                          ),
                     }
+            cover_url_gapi = {
+                              'small_cover': self.get_from_api(
+                               data=self.google_api_data,
+                               lookup_path=['items', 0, 'volumeInfo', 'imageLinks'],
+                               lookup_fields=['smallThumbnail']
+                               ),
+                              'large_cover': self.get_from_api(
+                               data=self.google_api_data,
+                               lookup_path=['items', 0, 'volumeInfo', 'imageLinks'],
+                               lookup_fields=['thumbnail']
+                               )
+                             }
+            cover_url = self.get_dict_union(cover_url_gapi, cover_url_olapi)
             for key in cover_url:
                 if cover_url[key] is not None:
                     self.api_has_cover = True
         else:
-            self.record_initial_files = {
+            record_initial_files_olapi = {
                                      'small_cover': self.get_file(
                                          self.get_from_api(
                                           data=self.od,
@@ -982,6 +1000,24 @@ class RecordView(View):
                                           lookup_fields=['large']
                                          )),
                                     }
+            record_initial_files_gapi = {
+                                     'small_cover': self.get_file(
+                                         self.get_from_api(
+                                          data=self.google_api_data,
+                                          lookup_path=['items', 0, 'volumeInfo', 'imageLinks'],
+                                          lookup_fields=['smallThumbnail']
+                                         )),
+                                     'large_cover': self.get_file(
+                                         self.get_from_api(
+                                          data=self.google_api_data,
+                                          lookup_path=['items', 0, 'volumeInfo', 'imageLinks'],
+                                          lookup_fields=['thumbnail']
+                                         )),
+                                    }
+            self.record_initial_files = self.get_dict_union(
+                                        record_initial_files_gapi,
+                                        record_initial_files_olapi
+                                        )
         pass
 
     def get_file(self, url):
@@ -1014,12 +1050,14 @@ class RecordView(View):
 
     def get(self, request, *args, **kwargs):
         if request.GET.get('isbn13'):
-            isbn = request.GET['isbn13']
-            if isbnpy.isValid(isbn):
-                if isbnpy.isI10(isbn):
-                    isbn = isbnpy.convert(isbn)
-                self.populate(isbn)
-                self.populate_cover(True)
+            self.populate()
+            self.populate_cover(True)
+            # isbn = request.GET['isbn13']
+            # if isbnpy.isValid(isbn):
+            #     if isbnpy.isI10(isbn):
+            #         isbn = isbnpy.convert(isbn)
+            #     self.populate(isbn)
+            #     self.populate_cover(True)
         if 'record_id' in self.kwargs:
             rec_id = int(self.kwargs['record_id'])
             record_instance = Record.objects.get(id=rec_id)
