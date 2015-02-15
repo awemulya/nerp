@@ -1124,6 +1124,7 @@ class RecordView(View):
                        'record_id': self.kwargs.get('record_id', None),
                        }
             return render(request, self.template_name, context)
+        request.session.clear()
         return HttpResponseRedirect('/')
 
     def change_post_data(self, cls, fields, data, field_to_alter):
