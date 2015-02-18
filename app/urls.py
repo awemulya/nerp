@@ -3,6 +3,7 @@ from django.conf.urls import patterns, include, url
 from django.conf import settings
 from django.contrib import admin
 from users import views as users_views
+from django.conf.urls.static import static
 
 # admin.site = admin_site
 admin.autodiscover()
@@ -30,6 +31,7 @@ urlpatterns = patterns('',
 
 
                        )
+ # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     urlpatterns += patterns('',
