@@ -19,7 +19,7 @@ class DemandRowSerializer(serializers.ModelSerializer):
 
 class DemandSerializer(serializers.ModelSerializer):
     rows = DemandRowSerializer(many=True)
-    date = serializers.ModelField(Demand()._meta.get_field('date'))
+    date = serializers.DateField(format=None)
 
     class Meta:
         model = Demand
@@ -33,7 +33,8 @@ class PurchaseOrderRowSerializer(serializers.ModelSerializer):
 
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):
-    rows = PurchaseOrderRowSerializer()
+    rows = PurchaseOrderRowSerializer(many=True)
+    date = serializers.DateField(format=None)
 
     class Meta:
         model = PurchaseOrder
@@ -48,6 +49,7 @@ class HandoverRowSerializer(serializers.ModelSerializer):
 
 class HandoverSerializer(serializers.ModelSerializer):
     rows = HandoverRowSerializer()
+    date = serializers.DateField(format=None)
 
     class Meta:
         model = Handover
@@ -84,6 +86,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
     remaining_total_cost_price = serializers.SerializerMethodField('get_remaining_total_cost_price')
     remarks = serializers.SerializerMethodField('get_remarks')
     current_balance = serializers.SerializerMethodField('get_current_balance')
+    date = serializers.DateField(format=None)
 
     class Meta:
         model = JournalEntry
