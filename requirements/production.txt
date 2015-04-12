@@ -2,7 +2,7 @@
 gunicorn
 
 # Production and Development
-Django
+Django==1.7
 psycopg2
 django-mptt
 linaro-django-pagination
