@@ -1,0 +1,65 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles %}
+
+{% block title %}{% trans 'Entry' %} {% trans 'Reports' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url "list_entry_reports" %}">{% trans 'Entry' %} {% trans 'Reports' %}</a>
+{% endblock %}
+
+{% block head_end %}
+{% endblock %}
+
+{% block content %}
+
+    <h1>Inspection Report</h1>
+    <table class="table table-bordered"> 
+    <thead>
+        <tr>
+            <th rowspan='2'>{% trans 'SN' %}</th>
+            <th rowspan='2'>{% trans 'Inventory Account Page No.' %}</th>
+            <th rowspan="2">{% trans 'Inventory Classification Reference No.' %}</th>
+            <th rowspan="2">{% trans "Item's Name" %}</th>
+            <th colspan='3'>{% trans "Inventory account according to Journal" %}</th>
+            <th colspan='2'>{% trans "Specification" %}</th>
+            <th colspan='3'>{% trans "Reviewed physical state" %}</th>
+            <th colspan='2'>{% trans "Physical condition" %}</th>
+            <th rowspan='2'>{% trans "Remark" %}</th>
+        </tr>
+        <tr>
+            <th>{% trans "Unit" %}</th>
+            <th>{% trans "Quantity" %}</th>
+            <th>{% trans "Price" %}</th>
+            <th>{% trans "Matched number" %}</th>
+            <th>{% trans "Unmatched number" %}</th>
+            <th>{% trans "Decrement" %}</th>
+            <th>{% trans "Increment" %}</th>
+            <th>{% trans "Decrement" %}/{% trans "Increment" %} {% trans "Price" %}</th>
+            <th>{% trans "Good" %}</th>
+            <th>{% trans "Bad" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for o in obj %}
+        <tr>
+            <td>{{ o.account.sn }}</td>
+            <td>{{ o.account.account_no }}</td>
+            <td></td>
+            <td>{{ o.account.item.name }}</td>
+            <td>{{ o.account.item.unit }}</td>
+            <td>{{ o.dr_amount }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>            
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+{% endblock %}
