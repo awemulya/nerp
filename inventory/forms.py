@@ -1,7 +1,7 @@
 from django import forms
 
 from app.utils.forms import KOModelForm, UserModelChoiceField
-from models import Item, Category, Demand, PurchaseOrder, InventoryAccount, Handover, EntryReport
+from models import Item, Category, Demand, PurchaseOrder, InventoryAccount, Handover, EntryReport, ItemLocation
 from users.models import User
 from django.utils.translation import ugettext_lazy as _
 
@@ -94,3 +94,7 @@ class EntryReportForm(KOModelForm):
     class Meta:
         model = EntryReport
         exclude = ()
+
+class ItemLocationForm(KOModelForm):
+    class Meta:
+        model = ItemLocation

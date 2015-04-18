@@ -1,5 +1,10 @@
 from rest_framework import serializers
-from inventory.models import Demand, DemandRow, Item, Party, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, EntryReport, EntryReportRow, JournalEntry
+from inventory.models import Demand, DemandRow, Item, Party, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, EntryReport, EntryReportRow, JournalEntry, ItemLocation
+
+
+class ItemLocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemLocation
 
 
 class ItemSerializer(serializers.ModelSerializer):
@@ -18,6 +23,9 @@ class DemandRowSerializer(serializers.ModelSerializer):
 
 
 class DemandSerializer(serializers.ModelSerializer):
+    # rows = serializers.PrimaryKeyRelatedField(
+    #     queryset=DemandRow.objects.all(),
+    #     many=True)
     rows = DemandRowSerializer(many=True)
     date = serializers.DateField(format=None)
 

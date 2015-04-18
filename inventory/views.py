@@ -7,12 +7,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 
-from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm
+from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, ItemLocationForm
 from inventory.filters import InventoryItemFilter
 
-from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow
+from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, ItemLocation
 from app.utils.helpers import invalid, save_model, empty_to_none
-from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer
+from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, ItemLocationSerializer
 import nepdate
 import pdb
 
@@ -88,6 +88,44 @@ def items_as_json(request):
     items_data = ItemSerializer(items, many=True).data
     return JsonResponse(items_data, safe=False)
 
+@login_required
+def items_locations_as_json(request):
+    items_locations = ItemLocation.objects.all()
+    items_locations_data = ItemLocationSerializer(items_locations, many=True).data
+    return JsonResponse(items_locations_data, safe=False)
+
+
+# class ItemLocationAPI(generics.ListCreateAPIView):
+#     queryset = ItemLocation.objects.all()
+#     serializer_class = ItemLocationSerializer
+#     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+def create_item_location(request, id=None):
+    if id:
+        il = get_object_or_404(ItemLocation, id=id)
+        scenario = 'Edit'
+    else:
+        il = ItemLocation()
+        scenario = 'Create'
+    if request.POST:
+        form = ItemLocationForm(request.POST, instance=il)
+        if form.is_valid():
+            i_loc = form.save()
+        if request.is_ajax():
+            return render(request, 'callback.html', {'obj': ItemLocationSerializer(i_loc).data})
+        return redirect('/')
+    form = ItemLocationForm(instance=il)
+    if request.is_ajax():
+        base_template = 'modal.html'
+    else:
+        base_template = 'inventory_base.html'
+    return render(request, 'item_form.html', {
+        'scenario': scenario,
+        'form': form,
+        'base_template': base_template,
+    })
+
 
 @group_required('Store Keeper', 'Chief')
 def list_categories(request):
@@ -154,6 +192,7 @@ def demand_form(request, id=None):
         scenario = 'Create'
     form = DemandForm(instance=obj)
     object_data = DemandSerializer(obj).data
+    pdb.set_trace()
     return render(request, 'demand_form.html',
                   {'form': form, 'data': object_data, 'scenario': scenario})
 

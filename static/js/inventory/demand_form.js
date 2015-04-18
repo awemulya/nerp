@@ -16,10 +16,19 @@ function DemandViewModel(data) {
             self.items = ko.observableArray(data);
         }
     });
-
+    
+    $.ajax({
+        url: '/inventory/items_locations.json',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            self.items_locations = ko.observableArray(data);
+        }
+    });
+    
     self.msg = ko.observable('');
     self.status = ko.observable('standby');
-
+    
     self.item_changed = function (row) {
         var selected_item = $.grep(self.items(), function (i) {
             return i.id == row.item_id();
@@ -80,6 +89,7 @@ function DemandRow(row) {
     self.remarks = ko.observable();
     self.status = ko.observable('Requested');
     self.item = ko.observable();
+    
 
     for (var k in row) {
         if (row[k] != null)

@@ -73,6 +73,10 @@
                     <th class="span3">{% trans 'Unit' %}</th>
                     <th
                             {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>{% trans 'Released Item Quantity' %}</th>
+
+                    <th
+                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>{% trans 'Item Location' %}</th>
+
                     <th
                             {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>{% trans 'Inventory Account No.' %}</th>
                     <th
@@ -101,6 +105,15 @@
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}
                         data-bind="editableText: release_quantity, localize: true, disable_content_editable: status() != 'Requested'"></td>
+
+                    <td>
+                        <select {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}
+                        data-bind="selectize: $root.items_locations"
+                                data-url="{% url 'create_item_location' %}">
+                        </select>
+                    </td>
+
+
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}
                         data-bind="text: localize(inventory_account_id(), window.lang)">2
                     </td>

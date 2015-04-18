@@ -124,6 +124,23 @@ class Item(models.Model):
         return self.name
 
 
+class ItemLocation(models.Model):
+    name = models.CharField(max_length=100)
+    remarks = models.CharField(max_length=100, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class TrackItem(models.Model):
+    item = models.ForeignKey(Item, related_name='tracked_item')
+    location = models.ForeignKey(ItemLocation)
+    other_properties = models.CharField(max_length=200, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.item + self.location
+
+
 class JournalEntry(models.Model):
     date = BSDateField()
     content_type = models.ForeignKey(ContentType, related_name='inventory_journal_entries')

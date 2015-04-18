@@ -1,0 +1,27 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block title %}{{ scenario }} {% trans 'Item' %} {% trans 'Location' %} {% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url "list_inventory_items" %}">{% trans 'Inventory' %} {% trans 'Items' %}</a>
+    <span>{% trans scenario %} {% trans 'Item' %} {% trans 'Location' %}</span>
+{% endblock %}
+
+{% block content %}
+
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="row">
+            <div class="span12">
+                <button type="submit" value="Submit" class="small secondary button">
+                    {% trans 'Submit' %}</button>
+                
+            </div>
+        </div>
+    </form>
+{% endblock %}
