@@ -71,6 +71,7 @@
                     <th class="span2">{% trans 'Specification' %}</th>
                     <th class="span3">{% trans 'Item Quantity' %}</th>
                     <th class="span3">{% trans 'Unit' %}</th>
+                    <th class="span3">{% trans 'Purpose' %}</th>
                     <th
                             {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>{% trans 'Released Item Quantity' %}</th>
 
@@ -102,13 +103,14 @@
                     <td data-bind="editableText: specification, disable_content_editable: status() != 'Requested'"></td>
                     <td data-bind="editableText: quantity, localize: true, disable_content_editable: status() != 'Requested'"></td>
                     <td data-bind="editableText: unit, disable_content_editable: status() != 'Requested'"></td>
+                    <td data-bind="editableText: purpose, disable_content_editable: status() != 'Requested'"></td>
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}
                         data-bind="editableText: release_quantity, localize: true, disable_content_editable: status() != 'Requested'"></td>
 
                     <td>
                         <select {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}
-                        data-bind="selectize: $root.items_locations"
+                        data-bind="selectize: $root.items_locations, value: location"
                                 data-url="{% url 'create_item_location' %}">
                         </select>
                     </td>

@@ -89,6 +89,8 @@ function DemandRow(row) {
     self.remarks = ko.observable();
     self.status = ko.observable('Requested');
     self.item = ko.observable();
+    self.location = ko.observable();
+    self.purpose = ko.observable()
     
 
     for (var k in row) {

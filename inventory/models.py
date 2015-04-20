@@ -333,6 +333,8 @@ class DemandRow(models.Model):
     demand = models.ForeignKey(Demand, related_name='rows')
     statuses = [('Requested', 'Requested'), ('Approved', 'Approved'), ('Fulfilled', 'Fulfilled')]
     status = models.CharField(max_length=9, choices=statuses, default='Requested')
+    location = models.ForeignKey(ItemLocation, null=True, blank=True)
+    purpose = models.CharField(max_length=100, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.quantity = ne2en(self.quantity)

@@ -192,7 +192,6 @@ def demand_form(request, id=None):
         scenario = 'Create'
     form = DemandForm(instance=obj)
     object_data = DemandSerializer(obj).data
-    pdb.set_trace()
     return render(request, 'demand_form.html',
                   {'form': form, 'data': object_data, 'scenario': scenario})
 
@@ -216,18 +215,20 @@ def save_demand(request):
         dct['id'] = obj.id
         model = DemandRow
         for index, row in enumerate(params.get('table_view').get('rows')):
-            if invalid(row, ['item_id', 'quantity', 'unit']):
-                continue
+            invalid_check = invalid(row, ['item_id', 'quantity', 'unit', 'purpose'])
+            if invalid_check:
+                dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
+                return JsonResponse(dct)
+            else:
             # if row.get('release_quantity') == '':
             # row['release_quantity'] = 1
+                values = {'sn': index + 1, 'item_id': row.get('item_id'),
+                          'specification': row.get('specification'),
+                          'quantity': row.get('quantity'), 'unit': row.get('unit'),
+                          'release_quantity': row.get('release_quantity'), 'remarks': row.get('remarks'),
+                          'purpose': row.get('purpose'), 'demand': obj}
 
-            values = {'sn': index + 1, 'item_id': row.get('item_id'),
-                      'specification': row.get('specification'),
-                      'quantity': row.get('quantity'), 'unit': row.get('unit'),
-                      'release_quantity': row.get('release_quantity'), 'remarks': row.get('remarks'),
-                      'demand': obj}
-
-            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
             # set_transactions(submodel, request.POST.get('date'),
             #                  ['dr', bank_account, row.get('amount')],
             #                  ['cr', benefactor, row.get('amount')],
@@ -569,11 +570,17 @@ def approve_demand(request):
     else:
         dct['error_message'] = 'Row needs to be saved before being approved!'
         return JsonResponse(dct)
-    if not invalid(params, ['item_id', 'quantity', 'unit', 'release_quantity']):
+    invalid_check = invalid(params, ['item_id', 'quantity', 'unit', 'release_quantity', 'purpose', 'location'])
+    if invalid_check:
+        dct['error_message'] = 'Fill out following fields: ' + ', '.join(invalid_check)
+        return JsonResponse(dct)
+    else:
+        if row.item.account.current_balance < float(params.get('release_quantity')):
+            dct['error_message'] = 'We dont have this item in stock. Purchase Item'
         values = {'item_id': params.get('item_id'),
                   'specification': params.get('specification'),
                   'quantity': params.get('quantity'), 'unit': params.get('unit'),
-                  'release_quantity': params.get('release_quantity'), 'remarks': params.get('remarks')}
+                  'release_quantity': params.get('release_quantity'), 'remarks': params.get('remarks'), 'purpose': params.get('purpose'), 'location': ItemLocation.objects.get(id=params.get('location'))}
         row = save_model(row, values)
     row.status = 'Approved'
     row.save()
