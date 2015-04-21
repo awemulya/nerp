@@ -3,8 +3,10 @@ import views
 
 urlpatterns = patterns('',
                        url(r'^$', views.index, name='inventory_index'),
-
-                       url(r'^inspection/$', views.inspection_report, name='inspection_report'),
+                       url(r'^inspection/$', views.inspection_report_list, name='inspection_report_list'),
+                       url(r'^save/inspection/$', views.save_inspection_report, name='save_inspection_report'),
+                       url(r'^inspection/create$', views.inspection_report, name='inspection_report'),
+                       url(r'^inspection/(?P<id>[0-9]+)/$', views.inspection_report_detail, name='inspection_report_detail'),
                        url(r'^items/$', views.list_inventory_items, name='list_inventory_items'),
                        url(r'^create/$', views.item_form, name='create_inventory_item'),
                        url(r'^item/delete/(?P<id>[0-9]+)/$', views.delete_inventory_item, name='delete_inventory_item'),
