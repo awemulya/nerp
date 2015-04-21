@@ -27,7 +27,7 @@
         {% for inspection in paginated_objects %}
             <tr>
                 <td>
-                    <a href="{% url 'inspection_report_detail' inspection.pk %}">{{ inspection.pk }}</a>
+                    <a href="{% url 'inspection_report_detail' inspection.pk %}">{{ inspection.release_no }}</a>
                 </td>
                 <td>
                     {{ inspection.fiscal_year }}
