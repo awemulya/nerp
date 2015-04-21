@@ -2,7 +2,7 @@ import json
 # from datetime import date
 #
 # from django.utils.translation import ugettext as _
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -10,18 +10,62 @@ from django.core.urlresolvers import reverse
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm
 from inventory.filters import InventoryItemFilter
 
-from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, Transaction
+from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, Transaction, Inspection, InspectionRow
 from app.utils.helpers import invalid, save_model, empty_to_none
-from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer
+from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, TransactionSerializer
 import nepdate
 
 from users.models import group_required
 from core.models import app_setting
 
+def remove_transaction_duplicate(object):
+    compare_list = []
+    object_list = []
+    for o in object:
+        if o.account.name not in compare_list:
+            compare_list.append(o.account.name)
+            object_list.append(o)
+    compare_list = []
+    return object_list
+
+def inspection_report_list(request):
+    obj = Inspection.objects.all()
+    return render(request, 'inspection_list.html', {'obj':obj})
+
+def inspection_report_detail(request, id):
+    obj = Inspection.objects.get(pk=id)
+    rows = obj.rows.order_by("sn")
+    return render(request, 'inspection_detail.html', {'obj':obj, 'rows': rows})
+
 
 def inspection_report(request):
     obj = Transaction.objects.filter(cr_amount=None)
-    return render(request, 'inspection_report.html', {'obj': obj})
+    transaction_without_duplication = remove_transaction_duplicate(obj)
+    data = TransactionSerializer(transaction_without_duplication, many=True).data
+    return render(request, 'inspection_report.html', {'obj': transaction_without_duplication, 'data': data})
+
+
+def save_inspection_report(request):
+    if request.is_ajax():
+        param = json.loads(request.body)
+        data = param.get('table_view').get('rows')
+        release_no = param.get('release_no')
+        obj = Inspection(fiscal_year=app_setting.fiscal_year, release_no=release_no)
+        obj.save()
+        for index, row in enumerate(data):
+            object_values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
+                'item_name': row.get('item_name'), 'unit': row.get('unit'), 'quantity': row.get('total_dr_amount'), 'rate': row.get('rate'), 'price': row.get('price'),
+                'matched_number': empty_to_none(row.get('match_number')), 'unmatched_number': empty_to_none(row.get('unmatch_number')), 'decrement': empty_to_none(row.get('decrement')), 'increment': empty_to_none(row.get('increment')),
+                'decrement_increment_price': empty_to_none(row.get('decrement_increment_price')), 'good': empty_to_none(row.get('good')), 'bad': empty_to_none(row.get('bad')), 'remarks': row.get('remarks')}
+
+            inspection_row_obj = InspectionRow(**object_values)
+            inspection_row_obj.inspection = obj
+            inspection_row_obj.save()
+            # submodel, created = InspectionRow.objects.get_or_create(defaults=object_values)
+            # import pdb
+            # pdb.set_trace()
+
+        return HttpResponse("saved")
 
 @login_required
 def item_form(request, id=None):
