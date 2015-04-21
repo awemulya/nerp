@@ -7,6 +7,7 @@ $(document).ready(function () {
 function InspectionVM(data) {
 
     var self = this;
+    self.release_no = ko.observable()
 	self.table_view = new TableViewModel({rows: data}, InspectionRow);
 
 
