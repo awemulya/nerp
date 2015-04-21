@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from inventory.models import Demand, DemandRow, Item, Party, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, EntryReport, EntryReportRow, JournalEntry
+from inventory.models import Demand, DemandRow, Item, Party, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction
 
 
 class ItemSerializer(serializers.ModelSerializer):
@@ -26,7 +26,7 @@ class DemandSerializer(serializers.ModelSerializer):
 
 
 class PurchaseOrderRowSerializer(serializers.ModelSerializer):
-    item_id = serializers.Field(source='item.id')
+    item_id = serializers.ReadOnlyField(source='item.id')
 
     class Meta:
         model = PurchaseOrderRow
@@ -158,3 +158,33 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
 
     def get_current_balance(self, obj):
         return obj.transactions.filter(account=obj.creator.item.account)[0].current_balance
+
+
+class InspectionRowSerializer(serializers.ModelSerializer):
+    item_name = serializers.ReadOnlyField(source="transaction.account.item.name")
+    item_account_number = serializers.ReadOnlyField(source="transaction.account.account_no")
+    item_property_classification_reference_number = serializers.ReadOnlyField(source="transaction.account.item.property_classification_reference_number")
+    item_unit = serializers.ReadOnlyField(source="transaction.account.item.unit")
+    item_quantity = serializers.ReadOnlyField(source="transaction.dr_amount")
+
+    class Meta:
+        model = InspectionRow
+        exclude = ['transaction']
+
+class InspectionSerializer(serializers.ModelSerializer):
+    rows = InspectionRowSerializer(many=True)
+
+    class Meta:
+        model = Inspection
+
+class TransactionSerializer(serializers.ModelSerializer):
+    account_no = serializers.ReadOnlyField(source="account.account_no")
+    inventory_classification_reference_no = serializers.ReadOnlyField(source="account.item.property_classification_reference_number")
+    item_name = serializers.ReadOnlyField(source="account.item.name")
+    unit = serializers.ReadOnlyField(source="account.item.unit")
+    rate = serializers.ReadOnlyField(source="journal_entry.creator.rate")
+    total_dr_amount = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Transaction
+        exclude = ['dr_amount', 'cr_amount', 'current_balance', 'account', 'journal_entry']
