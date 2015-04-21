@@ -58,12 +58,12 @@ def save_inspection_report(request):
                 'matched_number': empty_to_none(row.get('match_number')), 'unmatched_number': empty_to_none(row.get('unmatch_number')), 'decrement': empty_to_none(row.get('decrement')), 'increment': empty_to_none(row.get('increment')),
                 'decrement_increment_price': empty_to_none(row.get('decrement_increment_price')), 'good': empty_to_none(row.get('good')), 'bad': empty_to_none(row.get('bad')), 'remarks': row.get('remarks')}
 
-            inspection_row_obj = InspectionRow(**object_values)
-            inspection_row_obj.inspection = obj
-            inspection_row_obj.save()
-            # submodel, created = InspectionRow.objects.get_or_create(defaults=object_values)
-            # import pdb
-            # pdb.set_trace()
+            try:
+                inspection_row_obj = InspectionRow(**object_values)
+                inspection_row_obj.inspection = obj
+                inspection_row_obj.save()
+            except ValueError, e:
+                obj.delete()
 
         return HttpResponse("saved")
 
