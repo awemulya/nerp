@@ -1,0 +1,45 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Inspections' %} {% trans 'Reports' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url 'inspection_report_list' %}">{% trans 'Inspection' %} {% trans 'Reports' %}</a>
+{% endblock %}
+
+
+
+{% block content %}
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+   
+    {% autosort obj as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+
+    <table class="table-bordered">
+        <thead>
+        <th>{% anchor release_no _('id') %}</th>
+        <th>{% anchor demandee _('Fiscal Year') %}</th>
+        </thead>
+        <tbody>
+        {% for inspection in paginated_objects %}
+            <tr>
+                <td>
+                    <a href="{% url 'inspection_report_detail' inspection.pk %}">{{ inspection.pk }}</a>
+                </td>
+                <td>
+                    {{ inspection.fiscal_year }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% paginate %}
+
+  <a class="small secondary button"
+       href="{% url 'inspection_report' %}">{% trans 'New' %} {% trans 'Inspection' %} {% trans 'Report' %}</a>
+{% endblock %}
+  
