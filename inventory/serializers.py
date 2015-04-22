@@ -179,6 +179,7 @@ class InspectionSerializer(serializers.ModelSerializer):
 
 class TransactionSerializer(serializers.ModelSerializer):
     account_no = serializers.ReadOnlyField(source="account.account_no")
+    current_balance = serializers.ReadOnlyField(source="account.current_balance")
     inventory_classification_reference_no = serializers.ReadOnlyField(source="account.item.property_classification_reference_number")
     item_name = serializers.ReadOnlyField(source="account.item.name")
     unit = serializers.ReadOnlyField(source="account.item.unit")
