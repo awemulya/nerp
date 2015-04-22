@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm
 from inventory.filters import InventoryItemFilter
 
-from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, Transaction, Inspection, InspectionRow
+from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow
 from app.utils.helpers import invalid, save_model, empty_to_none
 from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, TransactionSerializer
 import nepdate
@@ -27,6 +27,47 @@ def remove_transaction_duplicate(object):
             object_list.append(o)
     compare_list = []
     return object_list
+
+def yearly_report(request):
+    obj = Transaction.objects.filter(cr_amount=None)
+    transaction_without_duplication = remove_transaction_duplicate(obj)
+    data = TransactionSerializer(transaction_without_duplication, many=True).data
+    return render(request, 'yearly_report.html',{'data': data})
+
+def yearly_report_list(request):
+    obj = YearlyReport.objects.all()
+    return render(request, 'yearly_report_list.html', {'obj': obj})
+
+def yearly_report_detail(request, id):
+    obj = YearlyReport.objects.get(pk=id)
+    rows = obj.rows.order_by("sn")
+    return render(request, 'yearly_report_detail.html', {'obj':obj, 'rows': rows})
+
+
+
+def save_yearly_report(request):
+    if request.is_ajax():
+        param = json.loads(request.body)
+        data = param.get('table_view').get('rows')
+        release_no = param.get('release_no')
+        obj = YearlyReport(fiscal_year=app_setting.fiscal_year, release_no=release_no)
+        obj.save()
+        for index, row in enumerate(data):
+            object_values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
+                'item_name': row.get('item_name'), 'income': row.get('total_dr_amount'), 'expense': row.get('expense'), 'remaining': row.get('current_balance'),
+                'remarks': row.get('remarks')}
+
+            try:
+                yearly_report_row_obj = YearlyReportRow(**object_values)
+                yearly_report_row_obj.yearly_report = obj
+                yearly_report_row_obj.save()
+            except ValueError, e:
+                obj.delete()
+
+        return HttpResponse("saved")
+
+
+
 
 def inspection_report_list(request):
     obj = Inspection.objects.all()
