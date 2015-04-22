@@ -43,8 +43,6 @@ def yearly_report_detail(request, id):
     rows = obj.rows.order_by("sn")
     return render(request, 'yearly_report_detail.html', {'obj':obj, 'rows': rows})
 
-
-
 def save_yearly_report(request):
     if request.is_ajax():
         param = json.loads(request.body)
@@ -65,9 +63,6 @@ def save_yearly_report(request):
                 obj.delete()
 
         return HttpResponse("saved")
-
-
-
 
 def inspection_report_list(request):
     obj = Inspection.objects.all()
