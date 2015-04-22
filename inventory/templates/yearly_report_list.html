@@ -1,0 +1,19 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Yearly' %} {% trans 'Reports' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="">{% trans 'Yearly' %} {% trans 'Reports' %}</a>
+{% endblock %}
+
+
+
+{% block content %}
+ 
+  <a class="small secondary button"
+       href="{% url 'yearly_report' %}">{% trans 'New' %} {% trans 'Yearly' %} {% trans 'Report' %}</a>
+{% endblock %}
+  
