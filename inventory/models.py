@@ -514,7 +514,7 @@ class YearlyReport(models.Model):
     fiscal_year = models.ForeignKey(FiscalYear)
 
 
-class YearlyRow(models.Model):
+class YearlyReportRow(models.Model):
     sn = models.PositiveIntegerField()
     account_no = models.PositiveIntegerField()
     property_classification_reference_number = models.CharField(max_length=20, blank=True, null=True)
