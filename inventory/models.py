@@ -509,4 +509,21 @@ class InspectionRow(models.Model):
     inspection = models.ForeignKey(Inspection, related_name='rows')
 
 
+class YearlyReport(models.Model):
+    release_no = models.IntegerField(blank=True, null=True)
+    fiscal_year = models.ForeignKey(FiscalYear)
+
+
+class YearlyRow(models.Model):
+    sn = models.PositiveIntegerField()
+    account_no = models.PositiveIntegerField()
+    property_classification_reference_number = models.CharField(max_length=20, blank=True, null=True)
+    item_name = models.CharField(max_length=254)
+    income = models.FloatField()
+    expense = models.FloatField()
+    remaining = models.FloatField(blank=True, null=True)
+    remarks = models.CharField(max_length=254, blank=True, null=True)
+    yearly_report = models.ForeignKey(YearlyReport, related_name='rows')
+
+
     
