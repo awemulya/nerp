@@ -138,7 +138,7 @@ class TrackItem(models.Model):
     other_properties = models.CharField(max_length=200, null=True, blank=True)
 
     def __unicode__(self):
-        return self.item + self.location
+        return str(self.item) + str(self.location)
 
 
 class JournalEntry(models.Model):

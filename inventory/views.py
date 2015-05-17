@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, ItemLocationForm
 from inventory.filters import InventoryItemFilter
 
-from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, ItemLocation
+from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, ItemLocation, TrackItem
 from app.utils.helpers import invalid, save_model, empty_to_none
 from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, ItemLocationSerializer
 import nepdate
@@ -19,6 +19,7 @@ import pdb
 from users.models import group_required
 from core.models import app_setting
 
+STORE_LOCATION_ID = 2
 
 @login_required
 def item_form(request, id=None):
@@ -532,6 +533,11 @@ def save_entry_report(request):
         set_transactions(submodel, obj.source.date,
                          ['dr', submodel.item.account, submodel.quantity],
         )
+        for i in range(0, int(row.get('quantity'))):
+            t = TrackItem()
+            t.item = Item.objects.get(id=int(row.get('item_id')))
+            t.location = ItemLocation.objects.get(id=STORE_LOCATION_ID)
+            t.save()
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
 
@@ -615,7 +621,15 @@ def fulfill_demand(request):
         return JsonResponse(dct)
     set_transactions(row, row.demand.date,
                      ['cr', row.item.account, row.release_quantity],
-    )
+                     )
+
+    # Search items in the stock
+    items = TrackItem.objects.filter(item_id=row.item_id, location_id=STORE_LOCATION_ID)
+    release_quantity = int(row.release_quantity)
+    for item, i in zip(items, range(0, release_quantity)):
+        item.location = row.location
+        item.save()
+
     row.status = 'Fulfilled'
     row.save()
     return JsonResponse(dct)
@@ -635,6 +649,12 @@ def unfulfill_demand(request):
         return JsonResponse(dct)
     journal_entry = JournalEntry.get_for(row)
     journal_entry.delete()
+
+    items = TrackItem.objects.filter(item_id=row.item_id, location_id=int(params.get('location')))
+    for item in items:
+        item.location = ItemLocation.objects.get(id=STORE_LOCATION_ID)
+        item.save()
+    
     row.status = 'Approved'
     row.save()
     return JsonResponse(dct)

@@ -15,6 +15,7 @@
     <script src="{% static 'js/inventory/demand_form.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};
+        current_user = {{ user.id|jsonify }};
     </script>
 {% endblock %}
 
