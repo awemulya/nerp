@@ -5,7 +5,10 @@ gunicorn
 Django
 psycopg2
 django-mptt
-linaro-django-pagination
+
+# linaro-django-pagination
+-e git+https://github.com/Wrufesh/django-pagination.git@master#egg=linaro-django-pagination
+
 django-filter
 webstack-django-sorting
 djangorestframework
