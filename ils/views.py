@@ -30,7 +30,6 @@ from ils.forms import LibrarySearchForm
 
 
 from django.http import HttpResponseRedirect
-import pdb
 
 @group_required('Librarian')  # noqa
 def acquisition(request):
@@ -473,7 +472,7 @@ def incoming(request, transaction_pk):
         form = IncomingForm(data=request.POST, instance=transaction)
         transaction = form.save()
         if not request.POST.get('return_date'):
-            transaction.return_date = datetime.today()
+            transaction.return_date = datetime.datetime.now().today()
         transaction.save()
         messages.success(request, 'Book Returned!')
         return redirect(
