@@ -194,21 +194,38 @@
     {% endif %}
 
     <div class="row">
-        <div class="column large-4">
+        {% if medium_cover_url %}
+            <div class="column large-3">
+        {% else %}
+            <div class="column large-4">
+        {% endif %}
             {{ rr_form.small_cover.label }}</br>
             {{ rr_form.small_cover.errors }}
             {{ rr_form.small_cover}}
         </div>
-        <div class="column large-4">
+        {% if medium_cover_url %}
+            <div class="column large-3">
+        {% else %}
+            <div class="column large-4">
+        {% endif %}
             {{ rr_form.medium_cover.label }}</br>
             {{ rr_form.medium_cover.errors }}
             {{ rr_form.medium_cover}}
         </div>
-        <div class="column large-4">
+        {% if medium_cover_url %}
+            <div class="column large-3">
+        {% else %}
+            <div class="column large-4">
+        {% endif %}
             {{ rr_form.large_cover.label }}</br>
             {{ rr_form.large_cover.errors }}
             {{ rr_form.large_cover}}
         </div>
+        {% if medium_cover_url %}
+            <div class="column large-3">
+            <img src="{{ medium_cover_url }}">
+            </div>
+        {% endif %}
     </div>
     </br>
     <div class="row">

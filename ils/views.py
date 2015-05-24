@@ -558,7 +558,7 @@ def isbn_to_record(request):
             record = Record.objects.get(isbn13=isbn)
         except Record.DoesNotExist:
             messages.error(request, 'Book not added yet, add it first!')
-            return redirect(reverse_lazy('acquisition') + '?isbn=' + isbn)
+            return redirect(reverse_lazy('acq') + '?isbn13=' + isbn)
         return redirect(reverse_lazy('view_record', kwargs={'pk': record.id}))
     else:
         messages.error(request, 'Invalid ISBN!')
@@ -626,6 +626,7 @@ class RecordView(View):
     record_initial_files = {}
     template_name = 'acquisition1.html'
     api_has_cover = False
+    medium_cover_url = None
     isbn = None
 
     def dispatch(self, request, *args, **kwargs):
@@ -975,6 +976,8 @@ class RecordView(View):
             for key in cover_url:
                 if cover_url[key] is not None:
                     self.api_has_cover = True
+                    if key == 'medium_cover':
+                        self.medium_cover_url = cover_url[key]
         else:
             record_initial_files_olapi = {
                                      'small_cover': self.get_file(
@@ -1076,6 +1079,7 @@ class RecordView(View):
                    'b_form': b_form,
                    'pub_form': pub_form,
                    'api_has_cover': self.api_has_cover,
+                   'medium_cover_url': self.medium_cover_url,
                    'record_id': self.kwargs.get('record_id', None),
                    }
         # pdb.set_trace()
