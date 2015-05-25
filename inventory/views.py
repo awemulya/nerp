@@ -19,13 +19,18 @@ from users.models import group_required
 from core import app_setting
 
 def remove_transaction_duplicate(object):
-    compare_list = []
+    compare_name = []
+    compare_rate = []
     object_list = []
     for o in object:
-        if o.account.name not in compare_list:
-            compare_list.append(o.account.name)
+        if o.account.name not in compare_name:
+            compare_name.append(o.account.name)
+            compare_rate.append(o.journal_entry.creator.rate)
             object_list.append(o)
-    compare_list = []
+        if o.account.name in compare_name and o.journal_entry.creator.rate not in compare_rate:
+            compare_rate.append(o.journal_entry.creator.rate)
+            object_list.append(o)
+    compare_name = []
     return object_list
 
 def yearly_report(request):
