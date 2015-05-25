@@ -524,6 +524,3 @@ class YearlyReportRow(models.Model):
     remaining = models.FloatField(blank=True, null=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
     yearly_report = models.ForeignKey(YearlyReport, related_name='rows')
-
-
-    
