@@ -99,13 +99,14 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 INSTALLED_APPS = (
     'modeltranslation',
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'mptt',
     'linaro_django_pagination',
     'webstack_django_sorting',
@@ -114,7 +115,6 @@ INSTALLED_APPS = (
     'haystack',
     'dbsettings',
     'sorl.thumbnail',
-
 
     'users',
     'inventory',
