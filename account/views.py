@@ -1,6 +1,6 @@
 from datetime import date
 import json
-from core.models import app_setting
+from core import app_setting
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from account.models import Receipt, ReceiptRow
