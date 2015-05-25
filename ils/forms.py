@@ -10,35 +10,18 @@ from haystack.forms import SearchForm, ModelSearchForm
 class LanguageForm(forms.ModelForm):
     class Meta:
         model = Language
+        fields = '__all__'
 
 
 class RecordForm(forms.ModelForm):
     class Meta:
         model = Record
-        # include = ['book',
-        #            'published_places',
-        #            'authors',
-        #            'publisher',
-        #            'languages',
-        #            ]
-        # widgets = {
-        #     'book': forms.Select(attrs={'data-bind': 'customSelectize: books, modelUrl:"/library/book/", choiceField:"title"'}),
-        #     'published_places': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: pub_places, modelUrl:"/library/place/", choiceField:"name"'}),
-        #     'authors': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: authors, modelUrl:"/library/author/", choiceField:"name"'}),
-        #     'publisher': forms.Select(attrs={'data-bind': 'customSelectize: publishers, modelUrl:"/library/publisher/", choiceField:"name"'}),
-        #     'languages': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: languages, modelUrl:"/library/language/", choiceField:"name"'}),
-        #     }
-
-
-# class RecordFormUnrelatedFields(forms.ModelForm):
-#     class Meta:
-#         model = Record
-#         exclude = ['book',
-#                    'published_places',
-#                    'authors',
-#                    'publisher',
-#                    'languages',
-#                    ]
+        fields = '__all__'
+        widgets = {
+            'notes': forms.Textarea(attrs={'cols': 0, 'rows': 0}),
+            'excerpt': forms.Textarea(attrs={'cols': 0, 'rows': 0}),
+            'description': forms.Textarea(attrs={'cols': 0, 'rows': 0})
+        }
 
 
 class BookForm(forms.ModelForm):
@@ -53,9 +36,10 @@ class BookForm(forms.ModelForm):
         help_texts = {
             'subjects': ('')
         }
-        # widgets = {
-        #     'subjects': forms.SelectMultiple(attrs={'data-bind': 'customSelectize: subjects, modelUrl:"/library/subject/", choiceField:"name"'}),
-        # }
+        widgets = {
+            'title': forms.TextInput(attrs={'required': 'true'}),
+            'subjects': forms.SelectMultiple(attrs={'required': 'true'}),
+        }
 
 
 class AuthorForm(forms.ModelForm):

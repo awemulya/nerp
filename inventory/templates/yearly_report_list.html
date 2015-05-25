@@ -1,0 +1,45 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Yearly' %} {% trans 'Reports' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url 'yearly_report_list' %}">{% trans 'Yearly' %} {% trans 'Reports' %}</a>
+{% endblock %}
+
+
+
+{% block content %}
+ {% load pagination_tags %}
+    {% load sorting_tags %}
+   
+    {% autosort obj as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+
+    <table class="table-bordered">
+        <thead>
+        <th>{% anchor release_no _('id') %}</th>
+        <th>{% anchor demandee _('Fiscal Year') %}</th>
+        </thead>
+        <tbody>
+        {% for yearly_report in paginated_objects %}
+            <tr>
+                <td>
+                    <a href="{% url 'yearly_report_detail' yearly_report.pk %}">{{ yearly_report.release_no }}</a>
+                </td>
+                <td>
+                    {{ yearly_report.fiscal_year }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% paginate %}
+ 
+  <a class="small secondary button"
+       href="{% url 'yearly_report' %}">{% trans 'New' %} {% trans 'Yearly' %} {% trans 'Report' %}</a>
+{% endblock %}
+  

@@ -178,15 +178,15 @@ class Record(models.Model):
         else:
             return ebooks
 
-    def published_date(self):
-        if not self.date_of_publication:
-            return None
-        if self.publication_has_day:
-            return self.date_of_publication
-        elif self.publication_has_month:
-            return self.date_of_publication.strftime('%B %Y')
-        elif self.date_of_publication:
-            return self.date_of_publication
+    # def published_date(self):
+    #     if not self.date_of_publication:
+    #         return None
+    #     if self.publication_has_day:
+    #         return self.date_of_publication
+    #     elif self.publication_has_month:
+    #         return self.date_of_publication.strftime('%B %Y')
+    #     elif self.date_of_publication:
+    #         return self.date_of_publication
 
     def get_absolute_url(self):
         return reverse('view_record', kwargs={'pk': self.id})
@@ -256,7 +256,7 @@ class LibrarySetting(dbsettings.Group):
     borrow_days = dbsettings.PositiveIntegerValue(default=7)
     default_type = dbsettings.StringValue(
         choices=BOOK_TYPES,
-        default='circulative')
+        default='Circulative')
 
 
 library_setting = LibrarySetting('Library Settings')

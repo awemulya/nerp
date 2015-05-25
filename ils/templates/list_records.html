@@ -51,10 +51,10 @@
                                 {{ author|linkify }}{% if not forloop.last %}, {% endif %}
                             {% endfor %}
                             {% endif %}
-                            {% if record.publisher or record.published_date %}
+                            {% if record.publisher or record.date_of_publication %}
                                 Published
-                                {% if record.published_date %}
-                                    {{ record.published_date }}
+                                {% if record.date_of_publication %}
+                                    {{ record.date_of_publication }}
                                 {% endif %}
                                 {% if record.publisher %}
                                     by {{ record.publisher|linkify }}

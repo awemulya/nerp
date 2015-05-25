@@ -50,8 +50,8 @@
             <p>
                 {% if record.publisher or record.published_date or record.published_places.all %}
                     <em>Published on</em>
-                    {% if record.published_date %}
-                        {{ record.published_date }}
+                    {% if record.date_of_publication %}
+                        {{ record.date_of_publication }}
                     {% endif %}
                     {% if record.publisher %}
                         by {{ record.publisher|linkify }}
