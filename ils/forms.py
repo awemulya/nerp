@@ -10,11 +10,13 @@ from haystack.forms import SearchForm, ModelSearchForm
 class LanguageForm(forms.ModelForm):
     class Meta:
         model = Language
+        fields = '__all__'
 
 
 class RecordForm(forms.ModelForm):
     class Meta:
         model = Record
+        fields = '__all__'
         widgets = {
             'notes': forms.Textarea(attrs={'cols': 0, 'rows': 0}),
             'excerpt': forms.Textarea(attrs={'cols': 0, 'rows': 0}),

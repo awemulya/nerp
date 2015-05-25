@@ -159,6 +159,12 @@ class Transaction(models.Model):
     def __str__(self):
         return str(self.account) + ' [' + str(self.dr_amount) + ' / ' + str(self.cr_amount) + ']'
 
+    def total_dr_amount(self):
+        obj_transaction = Transaction.objects.filter(account__name=self.account.name, cr_amount=None)
+        total = 0
+        for o in obj_transaction:
+            total += o.dr_amount
+        return total
 
 def alter(account, date, diff):
     Transaction.objects.filter(journal_entry__date__gt=date, account=account).update(
@@ -477,3 +483,47 @@ def _transaction_delete(sender, instance, **kwargs):
     #       float(zero_for_none(transaction.cr_amount)) * -1)
 
     transaction.account.save()
+
+class Inspection(models.Model):
+    release_no = models.IntegerField(blank=True, null=True)
+    fiscal_year = models.ForeignKey(FiscalYear)
+
+
+class InspectionRow(models.Model):
+    sn = models.PositiveIntegerField()
+    account_no = models.PositiveIntegerField()
+    property_classification_reference_number = models.CharField(max_length=20, blank=True, null=True)
+    item_name = models.CharField(max_length=254)
+    unit = models.CharField(max_length=50, default=_('pieces'))
+    quantity = models.FloatField()
+    rate = models.FloatField()
+    price = models.FloatField(blank=True, null=True)
+    matched_number = models.PositiveIntegerField(blank=True, null=True)
+    unmatched_number = models.PositiveIntegerField(blank=True, null=True)
+    decrement = models.PositiveIntegerField(blank=True, null=True)
+    increment = models.PositiveIntegerField(blank=True, null=True)
+    decrement_increment_price = models.FloatField(blank=True, null=True)
+    good = models.PositiveIntegerField(blank=True, null=True)
+    bad = models.PositiveIntegerField(blank=True, null=True)
+    remarks = models.CharField(max_length=254, blank=True, null=True)
+    inspection = models.ForeignKey(Inspection, related_name='rows')
+
+
+class YearlyReport(models.Model):
+    release_no = models.IntegerField(blank=True, null=True)
+    fiscal_year = models.ForeignKey(FiscalYear)
+
+
+class YearlyReportRow(models.Model):
+    sn = models.PositiveIntegerField()
+    account_no = models.PositiveIntegerField()
+    property_classification_reference_number = models.CharField(max_length=20, blank=True, null=True)
+    item_name = models.CharField(max_length=254)
+    income = models.FloatField()
+    expense = models.FloatField()
+    remaining = models.FloatField(blank=True, null=True)
+    remarks = models.CharField(max_length=254, blank=True, null=True)
+    yearly_report = models.ForeignKey(YearlyReport, related_name='rows')
+
+
+    

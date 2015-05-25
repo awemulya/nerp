@@ -2,7 +2,7 @@ import json
 # from datetime import date
 #
 # from django.utils.translation import ugettext as _
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -10,14 +10,98 @@ from django.core.urlresolvers import reverse
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm
 from inventory.filters import InventoryItemFilter
 
-from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow
+from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow
 from app.utils.helpers import invalid, save_model, empty_to_none
-from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer
+from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, TransactionSerializer
 import nepdate
 
 from users.models import group_required
 from core.models import app_setting
 
+def remove_transaction_duplicate(object):
+    compare_list = []
+    object_list = []
+    for o in object:
+        if o.account.name not in compare_list:
+            compare_list.append(o.account.name)
+            object_list.append(o)
+    compare_list = []
+    return object_list
+
+def yearly_report(request):
+    obj = Transaction.objects.filter(cr_amount=None)
+    transaction_without_duplication = remove_transaction_duplicate(obj)
+    data = TransactionSerializer(transaction_without_duplication, many=True).data
+    return render(request, 'yearly_report.html',{'data': data})
+
+def yearly_report_list(request):
+    obj = YearlyReport.objects.all()
+    return render(request, 'yearly_report_list.html', {'obj': obj})
+
+def yearly_report_detail(request, id):
+    obj = YearlyReport.objects.get(pk=id)
+    rows = obj.rows.order_by("sn")
+    return render(request, 'yearly_report_detail.html', {'obj':obj, 'rows': rows})
+
+def save_yearly_report(request):
+    if request.is_ajax():
+        param = json.loads(request.body)
+        data = param.get('table_view').get('rows')
+        release_no = param.get('release_no')
+        obj = YearlyReport(fiscal_year=app_setting.fiscal_year, release_no=release_no)
+        obj.save()
+        for index, row in enumerate(data):
+            object_values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
+                'item_name': row.get('item_name'), 'income': row.get('total_dr_amount'), 'expense': row.get('expense'), 'remaining': row.get('current_balance'),
+                'remarks': row.get('remarks')}
+
+            try:
+                yearly_report_row_obj = YearlyReportRow(**object_values)
+                yearly_report_row_obj.yearly_report = obj
+                yearly_report_row_obj.save()
+            except ValueError, e:
+                obj.delete()
+
+        return HttpResponse("saved")
+
+def inspection_report_list(request):
+    obj = Inspection.objects.all()
+    return render(request, 'inspection_list.html', {'obj':obj})
+
+def inspection_report_detail(request, id):
+    obj = Inspection.objects.get(pk=id)
+    rows = obj.rows.order_by("sn")
+    return render(request, 'inspection_detail.html', {'obj':obj, 'rows': rows})
+
+
+def inspection_report(request):
+    obj = Transaction.objects.filter(cr_amount=None)
+    transaction_without_duplication = remove_transaction_duplicate(obj)
+    data = TransactionSerializer(transaction_without_duplication, many=True).data
+    return render(request, 'inspection_report.html', {'obj': transaction_without_duplication, 'data': data})
+
+
+def save_inspection_report(request):
+    if request.is_ajax():
+        param = json.loads(request.body)
+        data = param.get('table_view').get('rows')
+        release_no = param.get('release_no')
+        obj = Inspection(fiscal_year=app_setting.fiscal_year, release_no=release_no)
+        obj.save()
+        for index, row in enumerate(data):
+            object_values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
+                'item_name': row.get('item_name'), 'unit': row.get('unit'), 'quantity': row.get('total_dr_amount'), 'rate': row.get('rate'), 'price': row.get('price'),
+                'matched_number': empty_to_none(row.get('match_number')), 'unmatched_number': empty_to_none(row.get('unmatch_number')), 'decrement': empty_to_none(row.get('decrement')), 'increment': empty_to_none(row.get('increment')),
+                'decrement_increment_price': empty_to_none(row.get('decrement_increment_price')), 'good': empty_to_none(row.get('good')), 'bad': empty_to_none(row.get('bad')), 'remarks': row.get('remarks')}
+
+            try:
+                inspection_row_obj = InspectionRow(**object_values)
+                inspection_row_obj.inspection = obj
+                inspection_row_obj.save()
+            except ValueError, e:
+                obj.delete()
+
+        return HttpResponse("saved")
 
 @login_required
 def item_form(request, id=None):
@@ -300,7 +384,7 @@ def view_inventory_account(request, id):
     obj = get_object_or_404(InventoryAccount, id=id)
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-    data = InventoryAccountRowSerializer(journal_entries).data
+    data = InventoryAccountRowSerializer(journal_entries, many=True).data
     return render(request, 'view_inventory_account.html', {'obj': obj, 'entries': journal_entries, 'data': data})
 
 
