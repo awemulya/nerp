@@ -16,7 +16,7 @@ from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrde
 import nepdate
 
 from users.models import group_required
-from core import app_setting
+from core.models import app_setting
 
 def remove_transaction_duplicate(object):
     compare_list = []

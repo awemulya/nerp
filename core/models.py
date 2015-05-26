@@ -13,6 +13,18 @@ SOURCES = [('nepal_government', 'Nepal Government'), ('foreign_cash_grant', 'For
            ('foreign_compensating_loan', 'Foreign Compensating Loan'),
            ('foreign_substantial_aid', 'Foreign Substantial Aid')]
 
+import dbsettings
+
+class AppSetting(dbsettings.Group):
+    site_name = dbsettings.StringValue(default='NERP')
+    # fiscal_year = dbsettings.MultipleChoiceValue(choices=[('13+', '13-19'), ('19+', '19-25'), ('25+', '25-40')])
+    fiscal_year = dbsettings.StringValue(
+        choices=FISCAL_YEARS)
+    header_for_forms = dbsettings.TextValue()
+
+
+app_setting = AppSetting()
+
 
 class FiscalYear(models.Model):
     year = models.IntegerField(choices=FISCAL_YEARS, unique=True)
