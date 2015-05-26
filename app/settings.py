@@ -98,7 +98,7 @@ TEMPLATE_DIRS = (
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 INSTALLED_APPS = (
-    # 'modeltranslation',
+    'modeltranslation',
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',

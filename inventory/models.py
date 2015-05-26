@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.core.urlresolvers import reverse
 
 from django.db import models
@@ -129,7 +129,7 @@ class JournalEntry(models.Model):
     date = BSDateField()
     content_type = models.ForeignKey(ContentType, related_name='inventory_journal_entries')
     model_id = models.PositiveIntegerField()
-    creator = generic.GenericForeignKey('content_type', 'model_id')
+    creator = GenericForeignKey('content_type', 'model_id')
     # country_of_production = models.CharField(max_length=50, blank=True, null=True)
     # size = models.CharField(max_length=100, blank=True, null=True)
     # expected_life = models.CharField(max_length=100, blank=True, null=True)
@@ -338,7 +338,7 @@ class EntryReport(models.Model):
     fiscal_year = models.ForeignKey(FiscalYear)
     source_content_type = models.ForeignKey(ContentType)
     source_object_id = models.PositiveIntegerField()
-    source = generic.GenericForeignKey('source_content_type', 'source_object_id')
+    source = GenericForeignKey('source_content_type', 'source_object_id')
 
     def get_absolute_url(self):
         if self.source.__class__.__name__ == 'Handover':
@@ -377,7 +377,7 @@ class Handover(models.Model):
     fiscal_year = models.ForeignKey(FiscalYear)
     types = [('Incoming', 'Incoming'), ('Outgoing', 'Outgoing')]
     type = models.CharField(max_length=9, choices=types, default='Incoming')
-    entry_reports = generic.GenericRelation(EntryReport, content_type_field='source_content_type_id',
+    entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
                                             object_id_field='source_object_id')
 
     def get_entry_report(self):
@@ -411,7 +411,7 @@ class PurchaseOrder(models.Model):
     date = BSDateField()
     due_days = models.IntegerField(default=3)
     fiscal_year = models.ForeignKey(FiscalYear)
-    entry_reports = generic.GenericRelation(EntryReport, content_type_field='source_content_type_id',
+    entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
                                             object_id_field='source_object_id')
 
     def get_entry_report(self):
