@@ -1,6 +1,6 @@
 from datetime import date
 import json
-from core import app_setting
+from core.models import app_setting, FiscalYear
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from account.models import Receipt, ReceiptRow
@@ -23,7 +23,7 @@ def receipt(request, pk=None):
 def save_receipt(request):
     params = json.loads(request.body)
     dct = {'rows': {}}
-    object_values = {'no': params.get('no'), 'fiscal_year': app_setting.fiscal_year,
+    object_values = {'no': params.get('no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
                      'date': params.get('date')}
     if params.get('id'):
         obj = Receipt.objects.get(id=params.get('id'))
