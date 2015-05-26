@@ -62,11 +62,11 @@
                 <td data-bind="text: total_dr_amount"></td>
                 <td data-bind="text: rate"></td>
                 <td data-bind="text: price"></td>
-                <td data-bind="editableText: match_number"></td>
-                <td data-bind="editableText: unmatch_number"></td>
-                <td data-bind="editableText: decrement"></td>
-                <td data-bind="editableText: increment"></td>
-                <td data-bind="editableText: decrement_increment_price"></td>
+                <td data-bind="editableText: match_number, valueUpdate: 'afterkeydown'"></td>
+                <td data-bind="text: unmatch_number"></td>
+                <td data-bind="text: decrement"></td>
+                <td data-bind="text: increment"></td>
+                <td data-bind="text: decrement_increment_price"></td>
                 <td data-bind="editableText: good"></td>
                 <td data-bind="editableText: bad"></td>
                 <td data-bind="editableText: remarks"></td>            

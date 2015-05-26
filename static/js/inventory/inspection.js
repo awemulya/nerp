@@ -48,19 +48,55 @@ function InspectionRow(row) {
 
     var self = this;
     // self.sn = ko.observable();
-    self.match_number = ko.observable();
-    self.unmatch_number = ko.observable();
-    self.decrement = ko.observable();
-    self.increment = ko.observable();
-    self.decrement_increment_price = ko.observable();
-    self.good = ko.observable();
-    self.bad = ko.observable();
-    self.remarks = ko.observable();
-
     for (var k in row) {
         if (row[k] != null)
             self[k] = ko.observable(row[k]);
     }
+    self.match_number = ko.observable();
+    self.intialize = ko.observable(true);
+    self.unmatch_number = ko.computed(function(){
+        if ((self.total_dr_amount() - self.match_number()) != 0 && self.match_number() != ''){
+            var unmatched = self.total_dr_amount() - self.match_number();
+            if (unmatched < 0) {
+                return unmatched * -1;
+            }
+            if (unmatched){
+                return unmatched;
+            } else {
+                return '';
+            };
+        };
+    });
+    self.decrement = ko.computed(function(){
+        if ((self.total_dr_amount() - self.match_number()) != 0 && self.match_number() != ''){
+            var unmatched = self.total_dr_amount() - self.match_number();
+            if (unmatched > 0){
+                return unmatched;
+            }
+            return '';
+        }
+    });
+    self.increment = ko.computed(function(){
+        if ((self.total_dr_amount() - self.match_number()) != 0 && self.match_number() != ''){
+            var unmatched = self.total_dr_amount() - self.match_number();
+            if (unmatched < 0){
+                return unmatched * -1;
+            }
+            return '';
+        }
+    });
+    self.decrement_increment_price = ko.computed(function() {
+        if (self.increment()) {
+            return self.increment() * self.rate();
+        }
+        if (self.decrement()) {
+            return self.decrement() * self.rate()
+        }
+    });
+    self.good = ko.observable();
+    self.bad = ko.observable();
+    self.remarks = ko.observable();
+
     self.price = ko.computed(function() {
         return self.total_dr_amount() * self.rate()
     });
