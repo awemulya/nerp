@@ -52,7 +52,7 @@ function YearlyReportRow(row) {
             self[k] = ko.observable(row[k]);
     }
     self.expense = ko.computed(function() {
-        return self.total_dr_amount() - self.current_balance()
+        return self.total_dr_amount_without_rate() - self.current_balance()
     });
 
     self.remarks = ko.observable()

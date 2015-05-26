@@ -33,9 +33,19 @@ def remove_transaction_duplicate(object):
     compare_name = []
     return object_list
 
+def remove_transaction_duplicate_for_yearly_report(object):
+    compare_name = []
+    object_list = []
+    for o in object:
+        if o.account.name not in compare_name:
+            compare_name.append(o.account.name)
+            object_list.append(o)
+    compare_name = []
+    return object_list
+
 def yearly_report(request):
     obj = Transaction.objects.filter(cr_amount=None)
-    transaction_without_duplication = remove_transaction_duplicate(obj)
+    transaction_without_duplication = remove_transaction_duplicate_for_yearly_report(obj)
     data = TransactionSerializer(transaction_without_duplication, many=True).data
     return render(request, 'yearly_report.html',{'data': data})
 

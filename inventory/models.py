@@ -161,10 +161,17 @@ class Transaction(models.Model):
         return str(self.account) + ' [' + str(self.dr_amount) + ' / ' + str(self.cr_amount) + ']'
 
     def total_dr_amount(self):
-        obj_transaction = Transaction.objects.filter(account__name=self.account.name, cr_amount=None, journal_entry__journal__rate=self.journal_entry.creator.rate)
+        dr_transctions = Transaction.objects.filter(account__name=self.account.name, cr_amount=None, journal_entry__journal__rate=self.journal_entry.creator.rate)
         total = 0
-        for o in obj_transaction:
-            total += o.dr_amount
+        for transaction in dr_transctions:
+            total += transaction.dr_amount
+        return total
+
+    def total_dr_amount_without_rate(self):
+        dr_transctions = Transaction.objects.filter(account__name=self.account.name, cr_amount=None)
+        total = 0
+        for transaction in dr_transctions:
+            total += transaction.dr_amount
         return total
 
 def alter(account, date, diff):

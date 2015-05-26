@@ -185,6 +185,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     unit = serializers.ReadOnlyField(source="account.item.unit")
     rate = serializers.ReadOnlyField(source="journal_entry.creator.rate")
     total_dr_amount = serializers.ReadOnlyField()
+    total_dr_amount_without_rate = serializers.ReadOnlyField()
 
     class Meta:
         model = Transaction
