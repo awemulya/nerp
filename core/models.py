@@ -1,7 +1,6 @@
 from django.db import models
 from app.utils.translation import TranslatableNumberModel
-import dbsettings
-import pdb
+
 
 FISCAL_YEARS = (
     (2069, "2069/70"),
@@ -21,14 +20,6 @@ class FiscalYear(models.Model):
     def __unicode__(self):
         return str(self.year) + '/' + str(self.year - 1999)
 
-
-class AppSetting(dbsettings.Group):
-    site_name = dbsettings.StringValue(default='NERP')
-    fiscal_year = dbsettings.ForeignKeyValue(model=FiscalYear)
-    header_for_forms = dbsettings.TextValue()
-
-
-app_setting = AppSetting()
 
 
 class Language(models.Model):

@@ -16,16 +16,21 @@ from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrde
 import nepdate
 
 from users.models import group_required
-from core.models import app_setting
+from core import app_setting
 
 def remove_transaction_duplicate(object):
-    compare_list = []
+    compare_name = []
+    compare_rate = []
     object_list = []
     for o in object:
-        if o.account.name not in compare_list:
-            compare_list.append(o.account.name)
+        if o.account.name not in compare_name:
+            compare_name.append(o.account.name)
+            compare_rate.append(o.journal_entry.creator.rate)
             object_list.append(o)
-    compare_list = []
+        if o.account.name in compare_name and o.journal_entry.creator.rate not in compare_rate:
+            compare_rate.append(o.journal_entry.creator.rate)
+            object_list.append(o)
+    compare_name = []
     return object_list
 
 def yearly_report(request):
@@ -286,7 +291,6 @@ def save_demand(request):
             dct['error_message'] = str(e)
         else:
             dct['error_message'] = 'Error in form data!'
-
     return JsonResponse(dct)
 
 
@@ -317,6 +321,28 @@ def save_purchase_order(request):
         obj = PurchaseOrder()
     try:
         obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = PurchaseOrderRow
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['quantity', 'unit', 'rate', 'item_id']):
+                continue
+            if row.get('budget_title_no') == '':
+                row['budget_title_no'] = None
+            values = {'sn': index + 1, 'item_id': row.get('item_id'),
+                      'specification': row.get('specification'), 'rate': row.get('rate'),
+                      'quantity': row.get('quantity'), 'unit': row.get('unit'), 'vattable': row.get('vattable'),
+                      'budget_title_no': row.get('budget_title_no'), 'remarks': row.get('remarks'),
+                      'purchase_order': obj}
+
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            # set_transactions(submodel, request.POST.get('date'),
+            # ['dr', bank_account, row.get('amount')],
+            #                  ['cr', benefactor, row.get('amount')],
+            # )
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['rows'][index] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
@@ -324,27 +350,6 @@ def save_purchase_order(request):
             dct['error_message'] = str(e)
         else:
             dct['error_message'] = 'Error in form data!'
-    dct['id'] = obj.id
-    model = PurchaseOrderRow
-    for index, row in enumerate(params.get('table_view').get('rows')):
-        if invalid(row, ['quantity', 'unit', 'rate', 'item_id']):
-            continue
-        if row.get('budget_title_no') == '':
-            row['budget_title_no'] = None
-        values = {'sn': index + 1, 'item_id': row.get('item_id'),
-                  'specification': row.get('specification'), 'rate': row.get('rate'),
-                  'quantity': row.get('quantity'), 'unit': row.get('unit'), 'vattable': row.get('vattable'),
-                  'budget_title_no': row.get('budget_title_no'), 'remarks': row.get('remarks'),
-                  'purchase_order': obj}
-        submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-        # set_transactions(submodel, request.POST.get('date'),
-        # ['dr', bank_account, row.get('amount')],
-        #                  ['cr', benefactor, row.get('amount')],
-        # )
-        if not created:
-            submodel = save_model(submodel, values)
-        dct['rows'][index] = submodel.id
-    delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
 
 

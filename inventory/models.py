@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.generic import GenericRelation
 from django.core.urlresolvers import reverse
 
 from django.db import models
@@ -160,7 +161,7 @@ class Transaction(models.Model):
         return str(self.account) + ' [' + str(self.dr_amount) + ' / ' + str(self.cr_amount) + ']'
 
     def total_dr_amount(self):
-        obj_transaction = Transaction.objects.filter(account__name=self.account.name, cr_amount=None)
+        obj_transaction = Transaction.objects.filter(account__name=self.account.name, cr_amount=None, journal_entry__journal__rate=self.journal_entry.creator.rate)
         total = 0
         for o in obj_transaction:
             total += o.dr_amount
@@ -358,6 +359,7 @@ class EntryReportRow(models.Model):
     other_expenses = models.FloatField(default=0)
     remarks = models.CharField(max_length=254, blank=True, null=True)
     entry_report = models.ForeignKey(EntryReport, related_name='rows')
+    journal = GenericRelation(JournalEntry, related_query_name='journal', content_type_field="content_type", object_id_field='model_id')
 
     def total_entry_cost(self):
         return self.rate * self.quantity * 1.13 + self.other_expenses
@@ -404,6 +406,9 @@ class HandoverRow(models.Model):
     condition = models.TextField(null=True, blank=True)
     handover = models.ForeignKey(Handover, related_name='rows')
 
+class UnsavedForeignKey(models.ForeignKey):
+    # A ForeignKey which can point to an unsaved object
+    allow_unsaved_instance_assignment = True
 
 class PurchaseOrder(models.Model):
     party = models.ForeignKey(Party)
@@ -440,7 +445,7 @@ class PurchaseOrderRow(models.Model):
     rate = models.FloatField()
     vattable = models.BooleanField(default=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
-    purchase_order = models.ForeignKey(PurchaseOrder, related_name='rows')
+    purchase_order = UnsavedForeignKey(PurchaseOrder, related_name='rows')
 
 
 class InventoryAccountRow(models.Model):
