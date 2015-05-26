@@ -13,6 +13,18 @@ SOURCES = [('nepal_government', 'Nepal Government'), ('foreign_cash_grant', 'For
            ('foreign_compensating_loan', 'Foreign Compensating Loan'),
            ('foreign_substantial_aid', 'Foreign Substantial Aid')]
 
+
+class FiscalYear(models.Model):
+    year = models.IntegerField(choices=FISCAL_YEARS, unique=True)
+
+    @staticmethod
+    def get(year):
+        return FiscalYear.objects.get(year=year)
+
+    def __unicode__(self):
+        return str(self.year) + '/' + str(self.year - 1999)
+
+
 import dbsettings
 
 class AppSetting(dbsettings.Group):
@@ -22,16 +34,7 @@ class AppSetting(dbsettings.Group):
         choices=FISCAL_YEARS)
     header_for_forms = dbsettings.TextValue()
 
-
 app_setting = AppSetting()
-
-
-class FiscalYear(models.Model):
-    year = models.IntegerField(choices=FISCAL_YEARS, unique=True)
-
-    def __unicode__(self):
-        return str(self.year) + '/' + str(self.year - 1999)
-
 
 
 class Language(models.Model):
@@ -115,7 +118,7 @@ class BudgetHead(TranslatableNumberModel):
     _translatable_number_fields = ('no',)
 
     def get_current_balance(self):
-        return BudgetBalance.objects.get(fiscal_year=app_setting.fiscal_year, budget_head=self)
+        return BudgetBalance.objects.get(fiscal_year=FiscalYear.get(app_setting.fiscal_year), budget_head=self)
 
     current_balance = property(get_current_balance)
 
