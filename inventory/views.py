@@ -17,6 +17,81 @@ import nepdate
 
 from users.models import group_required
 from core.models import app_setting, FiscalYear
+from openpyxl import Workbook
+from django.utils.translation import ugettext as _
+from openpyxl.writer.excel import save_virtual_workbook
+from openpyxl.styles import Style, Font, Alignment
+from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
+from openpyxl.cell import get_column_letter
+
+def insert_row(ws, row, column, args):
+    for i, value in enumerate(args):
+        cell = ws.cell(row=row, column=i+1)
+        cell.value = value
+    return row + 1
+    
+def convert_demand(request, id):
+    demand = get_object_or_404(Demand, id=id)
+    wb = Workbook()
+    ws = wb.active
+    ws.merge_cells('A2:H2')
+    header = ws.cell('A2')
+    header.value = app_setting.header_for_forms 
+    header.style = Style(
+        font=Font(
+            bold=True,
+            size=24),
+        alignment=Alignment(
+            horizontal='center'),
+        )
+    ws.merge_cells('A4:H4')
+    report_name = ws.cell('A4')
+    report_name.value = _("Demand Form")
+    report_name.style = Style(
+        font=Font(
+            # bold=True,
+            size=18),
+        alignment=Alignment(
+            horizontal='center'),
+        )
+    release_no = ws.cell('F5')
+    release_no.value = _("Release No.") + _(str(demand.release_no))
+    release_no = ws.cell('H5')
+    release_no.value = _("Fiscal Year") + ":- " + _(str(demand.fiscal_year))
+
+    table_header = [_('SN'), _('Item Name'), _('Specification'), _('Item Quantity'),\
+        _('Unit'), _('Released Item Quantity'), _('Inventory Account No.'), _('Remarks')]
+    row_index = insert_row(ws, 7, 1, table_header)
+    for row in demand.rows.all():
+        data = [row.sn, row.item.name, row.specification, row.quantity, row.unit, row.release_quantity, row.item.property_classification_reference_number, row.remarks ]
+        row_index = insert_row(ws, row_index, 1, data)
+    ws.column_dimensions[get_column_letter(1)].width = 4
+    ws.column_dimensions[get_column_letter(2)].width = 40
+    ws.column_dimensions[get_column_letter(3)].width = 25
+    ws.column_dimensions[get_column_letter(4)].width = 15
+    ws.column_dimensions[get_column_letter(6)].width = 20
+    ws.column_dimensions[get_column_letter(7)].width = 20
+    ws.column_dimensions[get_column_letter(8)].width = 20
+
+    ColumnDimension(ws, index="B", width=200, customWidth=True)
+    RowDimension(ws,index=2, ht=300, customHeight=True)
+    footer_base = row_index + 1
+    ws.cell(row=footer_base, column=2).value = _("Demandee's Signature") + ":- " 
+    ws.cell(row=footer_base, column=6).value = _("(a)") + _("Buy from market")
+    ws.cell(row=footer_base+2, column=2).value = _("Name") + ":- " + _(demand.demandee.username)
+    ws.cell(row=footer_base+1, column=6).value = _("(b)") + _("Lend from store")
+    ws.cell(row=footer_base+3, column=2).value = _("Date") + ":- " + _(str(demand.date))
+    ws.cell(row=footer_base+3, column=6).value = _("Signature of the orderer") + ":- " 
+    ws.cell(row=footer_base+4, column=2).value = _("Purpose") + ":- " + demand.purpose
+    ws.cell(row=footer_base+4, column=6).value = _("Date") + ":- " 
+    ws.cell(row=footer_base+5, column=2).value = _("Signature of the one who enters in Inventory Account") + ":- " 
+    ws.cell(row=footer_base+5, column=6).value = _("Signature of the receiver") + ":- " 
+    ws.cell(row=footer_base+6, column=2).value = _("Date") + ":- " 
+    ws.cell(row=footer_base+6, column=6).value = _("Date") + ":- " 
+
+    response = HttpResponse(save_virtual_workbook(wb), content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="foo.xlsx"'
+    return response
 
 def remove_transaction_duplicate(object):
     compare_name = []

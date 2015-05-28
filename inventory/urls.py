@@ -41,6 +41,9 @@ urlpatterns = patterns('',
                        url(r'^unfulfill/demand_form/$', views.unfulfill_demand, name='unfulfill_demand_form'),
                        url(r'^demand/(?P<id>[0-9]+)/delete$', views.delete_demand,
                            name='delete_demand_form'),
+                       url(r'^demand/(?P<id>[0-9]+)/xls-demandform-converter$', views.convert_demand,
+                           name='convert_demand_form'),
+
                        url(r'^demand-forms/$', views.list_demand_forms, name='list_demand_forms'),
 
                        url(r'^handover/incoming/$', views.handover_incoming, name='create_incoming_handover'),
