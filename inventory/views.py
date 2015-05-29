@@ -25,13 +25,38 @@ from openpyxl.styles import Style, Font, Alignment
 from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 from openpyxl.cell import get_column_letter
 
-def insert_row(ws, row, column, args, extra_col_value1=None, extra_col_value2=None):
+def xlsx_formula(ws, start_row, start_column, end_row, end_column, value):
+    first_cell_column_id = str(ws.cell(row=start_row, column=start_column).column)
+    first_cell_row_id = str(ws.cell(row=start_row, column=start_column).row)
+    second_cell_column_id = str(ws.cell(row=end_row, column=end_column).column)
+    second_cell_row_id = str(ws.cell(row=end_row, column=end_column).row)
+    if value == "=SUM":
+        return "=SUM(" + first_cell_column_id + first_cell_row_id + ":" + second_cell_column_id + second_cell_row_id + ")"
+    if value == "=PRODUCT":
+        return "=PRODUCT(" + first_cell_column_id + first_cell_row_id + "," + second_cell_column_id + second_cell_row_id + ")"
+    return ''
+
+def insert_row(ws, row, column, args, extra_col_value1=None, extra_col_value2=None, extra_col_value3=None):
     for i, value in enumerate(args):
         cell = ws.cell(row=row, column=i+1)
         if value == "=PRODUCT":
             quantity = ws.cell(row=row, column=extra_col_value1).value
             rate = ws.cell(row=row, column=extra_col_value2).value
             cell.value = "=PRODUCT("+ str(quantity) + "," + str(rate) + ")"
+        elif value == "VAT":
+            rate = ws.cell(row=row, column=extra_col_value2).value
+            cell.value = "=PRODUCT("+ str(rate) + ", .13"
+        elif value == "UnitPrice":
+            cell.value = xlsx_formula(ws, row, extra_col_value2, row, extra_col_value2 +1, "=SUM")
+        elif value == "Total":
+            quantity = ws.cell(row=row, column=extra_col_value1).value
+            unit_rate = ws.cell(row=row, column=extra_col_value3)
+            # import pdb; pdb.set_trace()
+            # total = "=SUMPRODUCT"
+            # cell.value = xlsx_formula(ws, row, extra_col_value1, row, extra_col_value3, "=PRODUCT")
+            # return "=SUMPRODUCT(" + str(ws.cell(row=row, column=extra_col_value1).column) + str(ws.cell(row=row, column=extra_col_value1).row) + ':' + str(ws.cell(row=row, column=extra_col_value3).column) + str(ws.cell(row=row, column=extra_col_value3).row) + ":"\
+            #     + str(ws.cell(row=row, column=extra_col_value3+1).column) + str(ws.cell(row=row, column=extra_col_value3+1).row) + ")"
+
         else:
             cell.value = value
     return row + 1
@@ -47,16 +72,6 @@ def add_cell_value(ws, row, column, value):
     cell.value = value
     return cell
 
-def xlsx_formula(ws, start_row, start_column, end_row, end_column, value):
-    first_cell_column_id = str(ws.cell(row=start_row, column=start_column).column)
-    first_cell_row_id = str(ws.cell(row=start_row, column=start_column).row)
-    second_cell_column_id = str(ws.cell(row=end_row, column=end_column).column)
-    second_cell_row_id = str(ws.cell(row=end_row, column=end_column).row)
-    if value == "=SUM":
-        return "=SUM(" + first_cell_column_id + first_cell_row_id + ":" + second_cell_column_id + second_cell_row_id + ")"
-    # if value == "=PRODUCT":
-        # return
-    pass
 
     
 def convert_demand(request, id):
@@ -129,6 +144,8 @@ def convert_purchase_order(request, id):
     purchase_order = get_object_or_404(PurchaseOrder, id=id)
     wb = Workbook()
     ws = wb.active
+    
+    # Header
     header = merge_and_add(ws, 2, 1, 2, 9, app_setting.header_for_forms)
     header.style = Style(
         font=Font(
@@ -156,6 +173,8 @@ def convert_purchase_order(request, id):
     ws.merge_cells('A13:A14'); ws.merge_cells('B13:B14'); ws.merge_cells('C13:C14');  ws.merge_cells('D13:D14');
     ws.merge_cells('E13:E14'); ws.merge_cells('F13:F14'); ws.merge_cells('I13:I14');
     ws.merge_cells('G13:H13')
+    
+    # Table Head
     table_header = [_('SN'),_('Budget Title No.'), _('Particular'), _('Specification'), _('Item Quantity'),\
         _('Unit'), _("Price")]
     row_index = insert_row(ws, 13, 1, table_header)
@@ -164,6 +183,8 @@ def convert_purchase_order(request, id):
     ws.cell('G14').value = _("Rate")
     ws.cell('H14').value = _("Total Amount")
     row_index = row_index + 1
+    
+    # Table body
     for row in purchase_order.rows.all().order_by("sn"):
         data = [row.sn, row.budget_title_no, row.item.name, row.specification, row.quantity,\
             row.unit, row.rate, "=PRODUCT", row.remarks ]
@@ -175,6 +196,8 @@ def convert_purchase_order(request, id):
     ws.cell(row=row_index+1, column=8).value = "=PRODUCT(" + str(ws.cell(row=row_index, column=8).column)+str(ws.cell(row=row_index, column=8).row) + "," + ".13)"
     grand_total = merge_and_add(ws, row_index+2, 1, row_index+2, 6, _("Grand Total"))
     ws.cell(row=row_index+2, column=8).value = xlsx_formula(ws, row_index, 8, row_index+1, 8, "=SUM")
+    
+    # Footer
     add_cell_value(ws, row_index+4, 2, _("Faantwaala's") + _('Signature'))
     add_cell_value(ws, row_index+4, 7, _('Section') + _("Head's") + _('Signature'))    
     add_cell_value(ws, row_index+5, 2, _("Date"))
@@ -193,6 +216,76 @@ def convert_purchase_order(request, id):
     add_cell_value(ws, row_index+17, 8, _("Firm's Name"))
     response = HttpResponse(save_virtual_workbook(wb), content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename="purchase-order.xlsx"'
+    return response
+
+def convert_entry_report(request, id):
+    entry_report = get_object_or_404(EntryReport, id=id)
+    wb = Workbook()
+    ws = wb.active
+    row_index = 9
+    # Header
+    header = merge_and_add(ws, 2, 1, 2, 13, app_setting.header_for_forms)
+    header.style = Style(
+        font=Font(
+            bold=True,
+            size=24),
+        alignment=Alignment(
+            horizontal='center'),
+        )
+    report_name = merge_and_add(ws, 4, 1, 4, 13, _("Entry Report"))
+    report_name.style = Style(
+        font=Font(
+            # bold=True,
+            size=18),
+        alignment=Alignment(
+            horizontal='center'),
+        )
+    add_cell_value(ws, 6, 1, _("Entry Report") + ' ' +_("No." + ":- ") + _(str(entry_report.entry_report_no)))
+    
+    # Table Head
+    table_header = [_('SN'),_('Inventory Account Page No.'), _('Inventory Classification Reference No.'), _("Item's Name"), _('Specification'),\
+        _('Unit'), _('Quantity')]
+    for i, value in enumerate(table_header):
+        merge_and_add(ws, 7, i+1, 8, i+1, value)
+    merge_and_add(ws, 7, 8, 7, 12, _('Price') + "(" + _('As per Invoice') + ")")
+    table_sub_header = [_('Rate per Unit'), _('VAT') + ' ' + _("per") + ' ' +  _("Unit"), _("Unit") + ' ' +  _("Price"),\
+        _('Other') + ' ' +  _('Expenses'), _("Total")]
+    for i, value in enumerate(table_sub_header):
+        add_cell_value(ws, 8, i+8, value)
+    merge_and_add(ws, 7, 13, 8, 13, _("Remarks"))
+
+    # Table body
+    for row in entry_report.rows.all().order_by("sn"):
+        data = [row.sn, row.item.account.account_no, row.item.property_classification_reference_number, row.item.name, row.specification, row.unit,\
+            row.quantity, row.rate, "VAT", "UnitPrice", row.other_expenses, "Total", row.remarks ]
+        row_index = insert_row(ws, row_index, 1, data, 7, 8, 10)
+        # xlsx_formula(ws, row_index, 7 , row_index, 10, "=PRODUCT" )
+
+    #Footer
+    merge_and_add(ws, row_index+1, 1, row_index+1, 6, "माथि उल्लेखित सामानहरु खरिद आदेश नम्बर/हस्तान्तरण फारम नम्बर")
+    add_cell_value(ws, row_index+1, 7, _(str(entry_report.source.order_no)))
+    add_cell_value(ws, row_index+1, 8, "मिति")
+    add_cell_value(ws, row_index+1, 9, _(str(entry_report.source.date)))
+    add_cell_value(ws, row_index+1, 10, 'अनुसार श्री')
+    add_cell_value(ws, row_index+1, 11, _(str(entry_report.source.party)))
+    add_cell_value(ws, row_index+1, 12, "बाट प्राप्त हुन आएको हुँदा जाँची गन्ती गरी हेर्दा ठीक दुरुस्त भएकोले")
+    add_cell_value(ws, row_index+2, 1, "खातामा आम्दानी बाँधेको प्रमाणित गर्दछु ।")
+    add_cell_value(ws, row_index+4, 1, _("Faantwaala's") + _('Signature'))
+    add_cell_value(ws, row_index+5, 1, _("Name"))
+    add_cell_value(ws, row_index+6, 1, _("Designation"))
+    add_cell_value(ws, row_index+7, 1, _("Date"))
+    add_cell_value(ws, row_index+4, 6, _("Signature of Verifying Section Head") + ":- ")
+    add_cell_value(ws, row_index+5, 6, _("Name"))
+    add_cell_value(ws, row_index+6, 6, _("Designation"))
+    add_cell_value(ws, row_index+7, 6, _("Date"))
+    add_cell_value(ws, row_index+4, 10, _("Signature of Head of Office") + ":- ")
+    add_cell_value(ws, row_index+5, 10, _("Name"))
+    add_cell_value(ws, row_index+6, 10, _("Designation"))
+    add_cell_value(ws, row_index+7, 10, _("Date"))
+
+
+    response = HttpResponse(save_virtual_workbook(wb), content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="entry-report.xlsx"'
     return response
 
 def remove_transaction_duplicate(object):
