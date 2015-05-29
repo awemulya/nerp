@@ -58,6 +58,9 @@ urlpatterns = patterns('',
                        url(r'^save/purchase_order/$', views.save_purchase_order, name='save_purchase_order'),
                        url(r'^purchase-order/(?P<id>[0-9]+)/delete$', views.delete_purchase_order,
                            name='delete_purchase_order'),
+                       url(r'^purchase-order/(?P<id>[0-9]+)/xls-demandform-converter$', views.convert_purchase_order,
+                           name='convert_purchase_order'),
+
                        url(r'^purchase-orders/$', views.list_purchase_orders, name='list_purchase_orders'),
 
                        url(r'^entry-report/handover/(?P<id>[0-9]+)/$', views.handover_entry_report,
