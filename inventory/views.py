@@ -36,7 +36,7 @@ def xlsx_formula(ws, start_row, start_column, end_row, end_column, value):
         return "=PRODUCT(" + first_cell_column_id + first_cell_row_id + "," + second_cell_column_id + second_cell_row_id + ")"
     return ''
 
-def insert_row(ws, row, column, args, extra_col_value1=None, extra_col_value2=None, extra_col_value3=None):
+def insert_row(ws, row, column, args, extra_col_value1=None, extra_col_value2=None):
     for i, value in enumerate(args):
         cell = ws.cell(row=row, column=i+1)
         if value == "=PRODUCT":
@@ -45,18 +45,22 @@ def insert_row(ws, row, column, args, extra_col_value1=None, extra_col_value2=No
             cell.value = "=PRODUCT("+ str(quantity) + "," + str(rate) + ")"
         elif value == "VAT":
             rate = ws.cell(row=row, column=extra_col_value2).value
-            cell.value = "=PRODUCT("+ str(rate) + ", .13"
+            vat = rate * .13
+            cell.value = vat
         elif value == "UnitPrice":
-            cell.value = xlsx_formula(ws, row, extra_col_value2, row, extra_col_value2 +1, "=SUM")
+            rate = ws.cell(row=row, column=extra_col_value2).value
+            vat = rate * .13
+            unit_price = rate + vat
+            cell.value = unit_price
         elif value == "Total":
             quantity = ws.cell(row=row, column=extra_col_value1).value
-            unit_rate = ws.cell(row=row, column=extra_col_value3)
-            # import pdb; pdb.set_trace()
-            # total = "=SUMPRODUCT"
-            # cell.value = xlsx_formula(ws, row, extra_col_value1, row, extra_col_value3, "=PRODUCT")
-            # return "=SUMPRODUCT(" + str(ws.cell(row=row, column=extra_col_value1).column) + str(ws.cell(row=row, column=extra_col_value1).row) + ':' + str(ws.cell(row=row, column=extra_col_value3).column) + str(ws.cell(row=row, column=extra_col_value3).row) + ":"\
-            #     + str(ws.cell(row=row, column=extra_col_value3+1).column) + str(ws.cell(row=row, column=extra_col_value3+1).row) + ")"
-
+            rate = ws.cell(row=row, column=extra_col_value2).value
+            vat = rate * .13
+            unit_price = rate + vat
+            total = quantity * unit_price
+            other_expenses = ws.cell(row=row, column=extra_col_value2+3).value
+            grand_total = total + other_expenses
+            cell.value = grand_total
         else:
             cell.value = value
     return row + 1
@@ -258,8 +262,7 @@ def convert_entry_report(request, id):
     for row in entry_report.rows.all().order_by("sn"):
         data = [row.sn, row.item.account.account_no, row.item.property_classification_reference_number, row.item.name, row.specification, row.unit,\
             row.quantity, row.rate, "VAT", "UnitPrice", row.other_expenses, "Total", row.remarks ]
-        row_index = insert_row(ws, row_index, 1, data, 7, 8, 10)
-        # xlsx_formula(ws, row_index, 7 , row_index, 10, "=PRODUCT" )
+        row_index = insert_row(ws, row_index, 1, data, 7, 8)
 
     #Footer
     merge_and_add(ws, row_index+1, 1, row_index+1, 6, "माथि उल्लेखित सामानहरु खरिद आदेश नम्बर/हस्तान्तरण फारम नम्बर")
