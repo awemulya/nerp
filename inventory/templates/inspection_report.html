@@ -1,0 +1,82 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Inspections' %} {% trans 'Reports' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url 'inspection_report_list' %}">{% trans 'Inspection' %} {% trans 'Reports' %}</a>
+{% endblock %}
+
+{% block head_end %}
+    <script src="{% static 'js/inventory/inspection.js' %}"></script>
+    <script>
+        ko_data = {{ data| jsonify}};
+    </script>
+{% endblock %}
+
+{% block content %}
+
+    <h1 class='center'>Inspection Report</h1>
+    <h4>Release no:<input data-bind="value: release_no"></h4>
+    <form method="POST" data-bind="submit: save">
+    {% csrf_token %}
+        <div data-bind="with: table_view">
+        <table class="table table-bordered"> 
+        <thead>
+            <tr>
+                <th rowspan='2'>{% trans 'SN' %}</th>
+                <th rowspan='2'>{% trans 'Inventory Account Page No.' %}</th>
+                <th rowspan="2">{% trans 'Inventory Classification Reference No.' %}</th>
+                <th rowspan="2">{% trans "Item's Name" %}</th>
+                <th colspan='4'>{% trans "Inventory account according to Journal" %}</th>
+                <th colspan='2'>{% trans "Specification" %}</th>
+                <th colspan='3'>{% trans "Reviewed physical state" %}</th>
+                <th colspan='2'>{% trans "Physical condition" %}</th>
+                <th rowspan='2'>{% trans "Remark" %}</th>
+            </tr>
+            <tr>
+                <th>{% trans "Unit" %}</th>
+                <th>{% trans "Quantity" %}</th>
+                <th>{% trans "Rate" %}</th>
+                <th>{% trans "Price" %}</th>
+                <th>{% trans "Matched number" %}</th>
+                <th>{% trans "Unmatched number" %}</th>
+                <th>{% trans "Decrement" %}</th>
+                <th>{% trans "Increment" %}</th>
+                <th>{% trans "Decrement" %}/{% trans "Increment" %} {% trans "Price" %}</th>
+                <th>{% trans "Good" %}</th>
+                <th>{% trans "Bad" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+                <!-- ko foreach: rows -->
+            <tr>
+                <td data-bind="text: $index()+1, localize: true"></td>
+
+                <td data-bind="text: account_no"></td>
+                <td data-bind="text: inventory_classification_reference_no"></td>
+                <td data-bind="text: item_name" class="item_name"></td>
+                <td data-bind="text: unit"></td>
+                <td data-bind="text: total_dr_amount"></td>
+                <td data-bind="text: rate"></td>
+                <td data-bind="text: price"></td>
+                <td data-bind="editableText: match_number, valueUpdate: 'afterkeydown'"></td>
+                <td data-bind="text: unmatch_number"></td>
+                <td data-bind="text: decrement"></td>
+                <td data-bind="text: increment"></td>
+                <td data-bind="text: decrement_increment_price"></td>
+                <td data-bind="editableText: good"></td>
+                <td data-bind="editableText: bad"></td>
+                <td data-bind="editableText: remarks"></td>            
+            </tr>
+                <!-- /ko -->
+
+        </tbody>
+        </table>
+        </div>
+        <input class="button" type="submit" value="Save">
+    </form>
+{% endblock %}
+  

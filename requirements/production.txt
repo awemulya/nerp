@@ -2,10 +2,10 @@
 gunicorn
 
 # Production and Development
-Django==1.7
+Django
 psycopg2
 django-mptt
-linaro-django-pagination
+-e git+https://github.com/zyga/django-pagination.git@master#egg=linaro-django-pagination
 django-filter
 webstack-django-sorting
 djangorestframework
@@ -13,7 +13,7 @@ Pillow
 django-haystack
 pyelasticsearch
 django-froala-editor
--e git+https://github.com/xtranophilist/django-dbsettings.git@master#egg=django-dbsettings
+-e git+https://github.com/helber/django-dbsettings.git@master#egg=django-dbsettings
 django-modeltranslation
 -e git+https://github.com/xtranophilist/nepdate.git@master#egg=nepdate
 sorl-thumbnail==11.12.1b
