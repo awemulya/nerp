@@ -19,6 +19,7 @@ from core.models import FiscalYear, Party
 from app.utils.translation import BSDateField
 
 
+
 class Category(MPTTModel):
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=254, null=True, blank=True)

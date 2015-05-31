@@ -26,7 +26,7 @@ class DemandSerializer(serializers.ModelSerializer):
 
 
 class PurchaseOrderRowSerializer(serializers.ModelSerializer):
-    item_id = serializers.ReadOnlyField(source='item.id')
+    item_id = serializers.Field(source='item.id')
 
     class Meta:
         model = PurchaseOrderRow
@@ -41,7 +41,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
 
 
 class HandoverRowSerializer(serializers.ModelSerializer):
-    item_id = serializers.ReadOnlyField(source='item.id')
+    item_id = serializers.Field(source='item.id')
 
     class Meta:
         model = HandoverRow
@@ -56,7 +56,7 @@ class HandoverSerializer(serializers.ModelSerializer):
 
 
 class EntryReportRowSerializer(serializers.ModelSerializer):
-    item_id = serializers.ReadOnlyField(source='item.id')
+    item_id = serializers.Field(source='item.id')
 
     class Meta:
         model = EntryReportRow
@@ -64,28 +64,28 @@ class EntryReportRowSerializer(serializers.ModelSerializer):
 
 
 class EntryReportSerializer(serializers.ModelSerializer):
-    rows = EntryReportRowSerializer(many=True)
+    rows = EntryReportRowSerializer()
 
     class Meta:
         model = EntryReport
 
 
 class InventoryAccountRowSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField()
-    voucher_no = serializers.ReadOnlyField(source='creator.get_voucher_no')
-    specification = serializers.ReadOnlyField(source='creator.specification')
-    country_or_company = serializers.SerializerMethodField()
-    size = serializers.SerializerMethodField()
-    expected_life = serializers.SerializerMethodField()
-    source = serializers.SerializerMethodField()
-    income_quantity = serializers.SerializerMethodField()
-    income_rate = serializers.SerializerMethodField()
-    income_total = serializers.SerializerMethodField()
-    expense_quantity = serializers.SerializerMethodField()
-    expense_total_cost_price = serializers.SerializerMethodField()
-    remaining_total_cost_price = serializers.SerializerMethodField()
-    remarks = serializers.SerializerMethodField()
-    current_balance = serializers.SerializerMethodField()
+    id = serializers.Field(source='id')
+    voucher_no = serializers.Field(source='creator.get_voucher_no')
+    specification = serializers.Field(source='creator.specification')
+    country_or_company = serializers.SerializerMethodField('get_country_or_company')
+    size = serializers.SerializerMethodField('get_size')
+    expected_life = serializers.SerializerMethodField('get_expected_life')
+    source = serializers.SerializerMethodField('get_source')
+    income_quantity = serializers.SerializerMethodField('get_income_quantity')
+    income_rate = serializers.SerializerMethodField('get_income_rate')
+    income_total = serializers.SerializerMethodField('get_income_total')
+    expense_quantity = serializers.SerializerMethodField('get_expense_quantity')
+    expense_total_cost_price = serializers.SerializerMethodField('get_expense_total_cost_price')
+    remaining_total_cost_price = serializers.SerializerMethodField('get_remaining_total_cost_price')
+    remarks = serializers.SerializerMethodField('get_remarks')
+    current_balance = serializers.SerializerMethodField('get_current_balance')
     date = serializers.DateField(format=None)
 
     class Meta:

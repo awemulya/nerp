@@ -14,7 +14,6 @@ from inventory.models import Demand, DemandRow, delete_rows, Item, Category, Pur
 from app.utils.helpers import invalid, save_model, empty_to_none
 from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, TransactionSerializer
 import nepdate
-import pdb
 
 from users.models import group_required
 from core.models import app_setting, FiscalYear
@@ -271,7 +270,6 @@ def save_demand(request):
         obj = Demand()
         object_values['demandee_id'] = params.get('demandee')
     try:
-        # pdb.set_trace()
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = DemandRow
@@ -401,7 +399,7 @@ def view_inventory_account(request, id):
     obj = get_object_or_404(InventoryAccount, id=id)
     journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('id', 'date') \
         .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-    data = InventoryAccountRowSerializer(journal_entries, many=True).data
+    data = InventoryAccountRowSerializer(journal_entries).data
     return render(request, 'view_inventory_account.html', {'obj': obj, 'entries': journal_entries, 'data': data})
 
 
