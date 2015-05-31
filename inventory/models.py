@@ -499,6 +499,7 @@ def _transaction_delete(sender, instance, **kwargs):
 class Inspection(models.Model):
     release_no = models.IntegerField(blank=True, null=True)
     fiscal_year = models.ForeignKey(FiscalYear)
+    transaction = models.ForeignKey(Transaction, related_name='inspection')
 
 
 class InspectionRow(models.Model):
