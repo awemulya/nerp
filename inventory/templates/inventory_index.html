@@ -48,6 +48,10 @@
                         <a href="{% url 'list_consumable_inventory_accounts' %}">{% trans 'Consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}</a>
                         <br/>
                         <a href="{% url 'list_non_consumable_inventory_accounts' %}">{% trans 'Non-Consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}</a>
+                        <br/>
+                        <a href="{% url 'inspection_report_list' %}">{% trans 'Inspection Report' %}</a>
+                        <br>
+                        <a href="{% url 'yearly_report_list' %}">{% trans 'Yearly Report' %}</a>
                     {% else %}
                         <a href="{% url 'create_demand_form' %}">{% trans 'New Demand Form' %}</a>
                         <br/>

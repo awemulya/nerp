@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from django.contrib.contenttypes import generic
+
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.core.urlresolvers import reverse
 
 from django.db import models
@@ -128,7 +129,7 @@ class JournalEntry(models.Model):
     date = BSDateField()
     content_type = models.ForeignKey(ContentType, related_name='inventory_journal_entries')
     model_id = models.PositiveIntegerField()
-    creator = generic.GenericForeignKey('content_type', 'model_id')
+    creator = GenericForeignKey('content_type', 'model_id')
     # country_of_production = models.CharField(max_length=50, blank=True, null=True)
     # size = models.CharField(max_length=100, blank=True, null=True)
     # expected_life = models.CharField(max_length=100, blank=True, null=True)
@@ -158,6 +159,19 @@ class Transaction(models.Model):
     def __str__(self):
         return str(self.account) + ' [' + str(self.dr_amount) + ' / ' + str(self.cr_amount) + ']'
 
+    def total_dr_amount(self):
+        dr_transctions = Transaction.objects.filter(account__name=self.account.name, cr_amount=None, journal_entry__journal__rate=self.journal_entry.creator.rate)
+        total = 0
+        for transaction in dr_transctions:
+            total += transaction.dr_amount
+        return total
+
+    def total_dr_amount_without_rate(self):
+        dr_transctions = Transaction.objects.filter(account__name=self.account.name, cr_amount=None)
+        total = 0
+        for transaction in dr_transctions:
+            total += transaction.dr_amount
+        return total
 
 def alter(account, date, diff):
     Transaction.objects.filter(journal_entry__date__gt=date, account=account).update(
@@ -331,7 +345,7 @@ class EntryReport(models.Model):
     fiscal_year = models.ForeignKey(FiscalYear)
     source_content_type = models.ForeignKey(ContentType)
     source_object_id = models.PositiveIntegerField()
-    source = generic.GenericForeignKey('source_content_type', 'source_object_id')
+    source = GenericForeignKey('source_content_type', 'source_object_id')
 
     def get_absolute_url(self):
         if self.source.__class__.__name__ == 'Handover':
@@ -351,6 +365,7 @@ class EntryReportRow(models.Model):
     other_expenses = models.FloatField(default=0)
     remarks = models.CharField(max_length=254, blank=True, null=True)
     entry_report = models.ForeignKey(EntryReport, related_name='rows')
+    journal = GenericRelation(JournalEntry, related_query_name='journal', content_type_field="content_type", object_id_field='model_id')
 
     def total_entry_cost(self):
         return self.rate * self.quantity * 1.13 + self.other_expenses
@@ -370,7 +385,7 @@ class Handover(models.Model):
     fiscal_year = models.ForeignKey(FiscalYear)
     types = [('Incoming', 'Incoming'), ('Outgoing', 'Outgoing')]
     type = models.CharField(max_length=9, choices=types, default='Incoming')
-    entry_reports = generic.GenericRelation(EntryReport, content_type_field='source_content_type_id',
+    entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
                                             object_id_field='source_object_id')
 
     def get_entry_report(self):
@@ -397,6 +412,9 @@ class HandoverRow(models.Model):
     condition = models.TextField(null=True, blank=True)
     handover = models.ForeignKey(Handover, related_name='rows')
 
+class UnsavedForeignKey(models.ForeignKey):
+    # A ForeignKey which can point to an unsaved object
+    allow_unsaved_instance_assignment = True
 
 class PurchaseOrder(models.Model):
     party = models.ForeignKey(Party)
@@ -404,7 +422,7 @@ class PurchaseOrder(models.Model):
     date = BSDateField()
     due_days = models.IntegerField(default=3)
     fiscal_year = models.ForeignKey(FiscalYear)
-    entry_reports = generic.GenericRelation(EntryReport, content_type_field='source_content_type_id',
+    entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
                                             object_id_field='source_object_id')
 
     def get_entry_report(self):
@@ -433,7 +451,7 @@ class PurchaseOrderRow(models.Model):
     rate = models.FloatField()
     vattable = models.BooleanField(default=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
-    purchase_order = models.ForeignKey(PurchaseOrder, related_name='rows')
+    purchase_order = UnsavedForeignKey(PurchaseOrder, related_name='rows')
 
 
 class InventoryAccountRow(models.Model):
@@ -476,3 +494,44 @@ def _transaction_delete(sender, instance, **kwargs):
     #       float(zero_for_none(transaction.cr_amount)) * -1)
 
     transaction.account.save()
+
+class Inspection(models.Model):
+    release_no = models.IntegerField(blank=True, null=True)
+    fiscal_year = models.ForeignKey(FiscalYear)
+
+
+class InspectionRow(models.Model):
+    sn = models.PositiveIntegerField()
+    account_no = models.PositiveIntegerField()
+    property_classification_reference_number = models.CharField(max_length=20, blank=True, null=True)
+    item_name = models.CharField(max_length=254)
+    unit = models.CharField(max_length=50, default=_('pieces'))
+    quantity = models.FloatField()
+    rate = models.FloatField()
+    price = models.FloatField(blank=True, null=True)
+    matched_number = models.PositiveIntegerField(blank=True, null=True)
+    unmatched_number = models.PositiveIntegerField(blank=True, null=True)
+    decrement = models.PositiveIntegerField(blank=True, null=True)
+    increment = models.PositiveIntegerField(blank=True, null=True)
+    decrement_increment_price = models.FloatField(blank=True, null=True)
+    good = models.PositiveIntegerField(blank=True, null=True)
+    bad = models.PositiveIntegerField(blank=True, null=True)
+    remarks = models.CharField(max_length=254, blank=True, null=True)
+    inspection = models.ForeignKey(Inspection, related_name='rows')
+
+
+class YearlyReport(models.Model):
+    release_no = models.IntegerField(blank=True, null=True)
+    fiscal_year = models.ForeignKey(FiscalYear)
+
+
+class YearlyReportRow(models.Model):
+    sn = models.PositiveIntegerField()
+    account_no = models.PositiveIntegerField()
+    property_classification_reference_number = models.CharField(max_length=20, blank=True, null=True)
+    item_name = models.CharField(max_length=254)
+    income = models.FloatField()
+    expense = models.FloatField()
+    remaining = models.FloatField(blank=True, null=True)
+    remarks = models.CharField(max_length=254, blank=True, null=True)
+    yearly_report = models.ForeignKey(YearlyReport, related_name='rows')

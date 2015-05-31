@@ -2,7 +2,7 @@ import json
 # from datetime import date
 #
 # from django.utils.translation import ugettext as _
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -10,15 +10,114 @@ from django.core.urlresolvers import reverse
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm
 from inventory.filters import InventoryItemFilter
 
-from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow
+from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow
 from app.utils.helpers import invalid, save_model, empty_to_none
-from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer
+from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, TransactionSerializer
 import nepdate
 import pdb
 
 from users.models import group_required
-from core.models import app_setting
+from core.models import app_setting, FiscalYear
 
+def remove_transaction_duplicate(object):
+    compare_name = []
+    compare_rate = []
+    object_list = []
+    for o in object:
+        if o.account.name not in compare_name:
+            compare_name.append(o.account.name)
+            compare_rate.append(o.journal_entry.creator.rate)
+            object_list.append(o)
+        if o.account.name in compare_name and o.journal_entry.creator.rate not in compare_rate:
+            compare_rate.append(o.journal_entry.creator.rate)
+            object_list.append(o)
+    compare_name = []
+    return object_list
+
+def remove_transaction_duplicate_for_yearly_report(object):
+    compare_name = []
+    object_list = []
+    for o in object:
+        if o.account.name not in compare_name:
+            compare_name.append(o.account.name)
+            object_list.append(o)
+    compare_name = []
+    return object_list
+
+def yearly_report(request):
+    obj = Transaction.objects.filter(cr_amount=None)
+    transaction_without_duplication = remove_transaction_duplicate_for_yearly_report(obj)
+    data = TransactionSerializer(transaction_without_duplication, many=True).data
+    return render(request, 'yearly_report.html',{'data': data})
+
+def yearly_report_list(request):
+    obj = YearlyReport.objects.all()
+    return render(request, 'yearly_report_list.html', {'obj': obj})
+
+def yearly_report_detail(request, id):
+    obj = YearlyReport.objects.get(pk=id)
+    rows = obj.rows.order_by("sn")
+    return render(request, 'yearly_report_detail.html', {'obj':obj, 'rows': rows})
+
+def save_yearly_report(request):
+    if request.is_ajax():
+        param = json.loads(request.body)
+        data = param.get('table_view').get('rows')
+        release_no = param.get('release_no')
+        obj = YearlyReport(fiscal_year=FiscalYear.get(app_setting.fiscal_year), release_no=release_no)
+        obj.save()
+        for index, row in enumerate(data):
+            object_values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
+                'item_name': row.get('item_name'), 'income': row.get('total_dr_amount'), 'expense': row.get('expense'), 'remaining': row.get('current_balance'),
+                'remarks': row.get('remarks')}
+
+            try:
+                yearly_report_row_obj = YearlyReportRow(**object_values)
+                yearly_report_row_obj.yearly_report = obj
+                yearly_report_row_obj.save()
+            except ValueError, e:
+                obj.delete()
+
+        return HttpResponse("saved")
+
+def inspection_report_list(request):
+    obj = Inspection.objects.all()
+    return render(request, 'inspection_list.html', {'obj':obj})
+
+def inspection_report_detail(request, id):
+    obj = Inspection.objects.get(pk=id)
+    rows = obj.rows.order_by("sn")
+    return render(request, 'inspection_detail.html', {'obj':obj, 'rows': rows})
+
+
+def inspection_report(request):
+    obj = Transaction.objects.filter(cr_amount=None)
+    transaction_without_duplication = remove_transaction_duplicate(obj)
+    data = TransactionSerializer(transaction_without_duplication, many=True).data
+    return render(request, 'inspection_report.html', {'obj': transaction_without_duplication, 'data': data})
+
+
+def save_inspection_report(request):
+    if request.is_ajax():
+        param = json.loads(request.body)
+        data = param.get('table_view').get('rows')
+        release_no = param.get('release_no')
+        obj = Inspection(fiscal_year=FiscalYear.get(app_setting.fiscal_year), release_no=release_no)
+        obj.save()
+        for index, row in enumerate(data):
+            object_values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
+                'item_name': row.get('item_name'), 'unit': row.get('unit'), 'quantity': row.get('total_dr_amount'), 'rate': row.get('rate'), 'price': row.get('price'),
+                'matched_number': empty_to_none(row.get('match_number')), 'unmatched_number': empty_to_none(row.get('unmatch_number')), 'decrement': empty_to_none(row.get('decrement')), 'increment': empty_to_none(row.get('increment')),
+                'decrement_increment_price': empty_to_none(row.get('decrement_increment_price')), 'good': empty_to_none(row.get('good')), 'bad': empty_to_none(row.get('bad')), 'remarks': row.get('remarks')}
+
+            try:
+                inspection_row_obj = InspectionRow(**object_values)
+                inspection_row_obj.inspection = obj
+                inspection_row_obj.save()
+            except ValueError, e:
+                obj.delete()
+
+        return HttpResponse("saved")
 
 @login_required
 def item_form(request, id=None):
@@ -164,7 +263,7 @@ def save_demand(request):
     dct = {'rows': {}}
     if params.get('release_no') == '':
         params['release_no'] = None
-    object_values = {'release_no': params.get('release_no'), 'fiscal_year': app_setting.fiscal_year,
+    object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
                      'date': params.get('date'), 'purpose': params.get('purpose'), 'status': 'Requested'}
     if params.get('id'):
         obj = Demand.objects.get(id=params.get('id'))
@@ -204,7 +303,6 @@ def save_demand(request):
             dct['error_message'] = str(e)
         else:
             dct['error_message'] = 'Error in form data!'
-
     return JsonResponse(dct)
 
 
@@ -226,7 +324,7 @@ def purchase_order(request, id=None):
 def save_purchase_order(request):
     params = json.loads(request.body)
     dct = {'rows': {}}
-    object_values = {'order_no': empty_to_none(params.get('order_no')), 'fiscal_year': app_setting.fiscal_year,
+    object_values = {'order_no': empty_to_none(params.get('order_no')), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
                      'date': params.get('date'), 'party_id': params.get('party'),
                      'due_days': params.get('due_days')}
     if params.get('id'):
@@ -235,6 +333,28 @@ def save_purchase_order(request):
         obj = PurchaseOrder()
     try:
         obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = PurchaseOrderRow
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['quantity', 'unit', 'rate', 'item_id']):
+                continue
+            if row.get('budget_title_no') == '':
+                row['budget_title_no'] = None
+            values = {'sn': index + 1, 'item_id': row.get('item_id'),
+                      'specification': row.get('specification'), 'rate': row.get('rate'),
+                      'quantity': row.get('quantity'), 'unit': row.get('unit'), 'vattable': row.get('vattable'),
+                      'budget_title_no': row.get('budget_title_no'), 'remarks': row.get('remarks'),
+                      'purchase_order': obj}
+
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            # set_transactions(submodel, request.POST.get('date'),
+            # ['dr', bank_account, row.get('amount')],
+            #                  ['cr', benefactor, row.get('amount')],
+            # )
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['rows'][index] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
@@ -242,27 +362,6 @@ def save_purchase_order(request):
             dct['error_message'] = str(e)
         else:
             dct['error_message'] = 'Error in form data!'
-    dct['id'] = obj.id
-    model = PurchaseOrderRow
-    for index, row in enumerate(params.get('table_view').get('rows')):
-        if invalid(row, ['quantity', 'unit', 'rate', 'item_id']):
-            continue
-        if row.get('budget_title_no') == '':
-            row['budget_title_no'] = None
-        values = {'sn': index + 1, 'item_id': row.get('item_id'),
-                  'specification': row.get('specification'), 'rate': row.get('rate'),
-                  'quantity': row.get('quantity'), 'unit': row.get('unit'), 'vattable': row.get('vattable'),
-                  'budget_title_no': row.get('budget_title_no'), 'remarks': row.get('remarks'),
-                  'purchase_order': obj}
-        submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-        # set_transactions(submodel, request.POST.get('date'),
-        # ['dr', bank_account, row.get('amount')],
-        #                  ['cr', benefactor, row.get('amount')],
-        # )
-        if not created:
-            submodel = save_model(submodel, values)
-        dct['rows'][index] = submodel.id
-    delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
 
 
@@ -338,7 +437,7 @@ def handover_outgoing(request, id=None):
 def save_handover(request):
     params = json.loads(request.body)
     dct = {'rows': {}}
-    object_values = {'addressee': params.get('addressee'), 'fiscal_year': app_setting.fiscal_year,
+    object_values = {'addressee': params.get('addressee'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
                      'date': params.get('date'), 'office': params.get('office'), 'type': params.get('type'),
                      'designation': params.get('designation'), 'voucher_no': empty_to_none(params.get('voucher_no')),
                      'due_days': params.get('due_days'), 'handed_to': params.get('handed_to')}
@@ -456,7 +555,7 @@ def save_entry_report(request):
     else:
         source = PurchaseOrder.objects.get(id=params.get('source_id'))
     object_values = {'entry_report_no': empty_to_none(params.get('entry_report_no')),
-                     'fiscal_year': app_setting.fiscal_year,
+                     'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
                      'source': source}
     if params.get('id'):
         obj = EntryReport.objects.get(id=params.get('id'))
