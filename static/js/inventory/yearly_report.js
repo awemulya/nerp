@@ -8,6 +8,8 @@ function YearlyReportVM(data) {
 
     var self = this;
     self.release_no = ko.observable();
+    self.id = ko.observable()
+
     self.table_view = new TableViewModel({rows: data}, YearlyReportRow);
 
 
@@ -47,6 +49,8 @@ function YearlyReportVM(data) {
 function YearlyReportRow(row) {
 
     var self = this
+    self.id = ko.observable()
+
     for (var k in row) {
         if (row[k] != null)
             self[k] = ko.observable(row[k]);

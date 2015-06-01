@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 # from datetime import date
 #
@@ -17,6 +18,278 @@ import nepdate
 
 from users.models import group_required
 from core.models import app_setting, FiscalYear
+from openpyxl import Workbook
+from django.utils.translation import ugettext as _
+from openpyxl.writer.excel import save_virtual_workbook
+from openpyxl.styles import Style, Font, Alignment
+from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
+from openpyxl.cell import get_column_letter
+
+def xlsx_formula(ws, start_row, start_column, end_row, end_column, value):
+    first_cell_column_id = str(ws.cell(row=start_row, column=start_column).column)
+    first_cell_row_id = str(ws.cell(row=start_row, column=start_column).row)
+    second_cell_column_id = str(ws.cell(row=end_row, column=end_column).column)
+    second_cell_row_id = str(ws.cell(row=end_row, column=end_column).row)
+    if value == "=SUM":
+        return "=SUM(" + first_cell_column_id + first_cell_row_id + ":" + second_cell_column_id + second_cell_row_id + ")"
+    if value == "=PRODUCT":
+        return "=PRODUCT(" + first_cell_column_id + first_cell_row_id + "," + second_cell_column_id + second_cell_row_id + ")"
+    return ''
+
+def insert_row(ws, row, column, args, extra_col_value1=None, extra_col_value2=None):
+    for i, value in enumerate(args):
+        cell = ws.cell(row=row, column=i+1)
+        if value == "=PRODUCT":
+            quantity = ws.cell(row=row, column=extra_col_value1).value
+            rate = ws.cell(row=row, column=extra_col_value2).value
+            cell.value = "=PRODUCT("+ str(quantity) + "," + str(rate) + ")"
+        elif value == "VAT":
+            rate = ws.cell(row=row, column=extra_col_value2).value
+            vat = rate * .13
+            cell.value = vat
+        elif value == "UnitPrice":
+            rate = ws.cell(row=row, column=extra_col_value2).value
+            vat = rate * .13
+            unit_price = rate + vat
+            cell.value = unit_price
+        elif value == "Total":
+            quantity = ws.cell(row=row, column=extra_col_value1).value
+            rate = ws.cell(row=row, column=extra_col_value2).value
+            vat = rate * .13
+            unit_price = rate + vat
+            total = quantity * unit_price
+            other_expenses = ws.cell(row=row, column=extra_col_value2+3).value
+            grand_total = total + other_expenses
+            cell.value = grand_total
+        else:
+            cell.value = value
+    return row + 1
+
+def merge_and_add(ws, start_row, start_column, end_row, end_column, value):
+    ws.merge_cells(start_row=start_row, start_column=start_column, end_row=end_row, end_column=end_column)
+    cell = ws.cell(row=start_row, column=start_column)
+    cell.value = value
+    return cell
+
+def add_cell_value(ws, row, column, value):
+    cell = ws.cell(row=row, column=column)
+    cell.value = value
+    return cell
+
+
+    
+def convert_demand(request, id):
+    demand = get_object_or_404(Demand, id=id)
+    wb = Workbook()
+    ws = wb.active
+    ws.merge_cells('A2:H2')
+    header = ws.cell('A2')
+    header.value = app_setting.header_for_forms 
+    header.style = Style(
+        font=Font(
+            bold=True,
+            size=24),
+        alignment=Alignment(
+            horizontal='center'),
+        )
+    ws.merge_cells('A4:H4')
+    report_name = ws.cell('A4')
+    report_name.value = _("Demand Form")
+    report_name.style = Style(
+        font=Font(
+            # bold=True,
+            size=18),
+        alignment=Alignment(
+            horizontal='center'),
+        )
+    release_no = ws.cell('F5')
+    release_no.value = _("Release No.") + _(str(demand.release_no))
+    release_no = ws.cell('H5')
+    release_no.value = _("Fiscal Year") + ":- " + _(str(demand.fiscal_year))
+
+    ws['A5'] = "श्री प्रमुख,"
+    ws['A6'] = "भण्डार शाखा"
+
+    table_header = [_('SN'), _('Item Name'), _('Specification'), _('Item Quantity'),\
+        _('Unit'), _('Released Item Quantity'), _('Inventory Account No.'), _('Remarks')]
+    row_index = insert_row(ws, 7, 1, table_header)
+    for row in demand.rows.all():
+        data = [row.sn, row.item.name, row.specification, row.quantity, row.unit, row.release_quantity, row.item.property_classification_reference_number, row.remarks ]
+        row_index = insert_row(ws, row_index, 1, data)
+    ws.column_dimensions[get_column_letter(1)].width = 4
+    ws.column_dimensions[get_column_letter(2)].width = 40
+    ws.column_dimensions[get_column_letter(3)].width = 25
+    ws.column_dimensions[get_column_letter(4)].width = 15
+    ws.column_dimensions[get_column_letter(6)].width = 20
+    ws.column_dimensions[get_column_letter(7)].width = 20
+    ws.column_dimensions[get_column_letter(8)].width = 20
+
+    ColumnDimension(ws, index="B", width=200, customWidth=True)
+    RowDimension(ws,index=2, ht=300, customHeight=True)
+    footer_base = row_index + 1
+    ws.cell(row=footer_base, column=2).value = _("Demandee's Signature") + ":- " 
+    ws.cell(row=footer_base, column=6).value = _("(a)") + _("Buy from market")
+    ws.cell(row=footer_base+2, column=2).value = _("Name") + ":- " + _(demand.demandee.username)
+    ws.cell(row=footer_base+1, column=6).value = _("(b)") + _("Lend from store")
+    ws.cell(row=footer_base+3, column=2).value = _("Date") + ":- " + _(str(demand.date))
+    ws.cell(row=footer_base+3, column=6).value = _("Signature of the orderer") + ":- " 
+    ws.cell(row=footer_base+4, column=2).value = _("Purpose") + ":- " + demand.purpose
+    ws.cell(row=footer_base+4, column=6).value = _("Date") + ":- " 
+    ws.cell(row=footer_base+5, column=2).value = _("Signature of the one who enters in Inventory Account") + ":- " 
+    ws.cell(row=footer_base+5, column=6).value = _("Signature of the receiver") + ":- " 
+    ws.cell(row=footer_base+6, column=2).value = _("Date") + ":- " 
+    ws.cell(row=footer_base+6, column=6).value = _("Date") + ":- " 
+
+    response = HttpResponse(save_virtual_workbook(wb), content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="demand-report.xlsx"'
+    return response
+
+def convert_purchase_order(request, id):
+    purchase_order = get_object_or_404(PurchaseOrder, id=id)
+    wb = Workbook()
+    ws = wb.active
+    
+    # Header
+    header = merge_and_add(ws, 2, 1, 2, 9, app_setting.header_for_forms)
+    header.style = Style(
+        font=Font(
+            bold=True,
+            size=24),
+        alignment=Alignment(
+            horizontal='center'),
+        )
+    report_name = merge_and_add(ws, 4, 1, 4, 9, "Purchase Order")
+    report_name.style = Style(
+        font=Font(
+            # bold=True,
+            size=18),
+        alignment=Alignment(
+            horizontal='center'),
+        )
+    ws.cell('A7').value = _("Shree") + ":- " + _(purchase_order.party.name)
+    ws.cell('H7').value = _("Purchase Order") + _("No.") + ":- " + _(str(purchase_order.order_no))
+    ws.cell('A8').value = _("Address") + ":- " + _(purchase_order.party.address)
+    ws.cell('H8').value = _("Date") + ":- " + _(str(purchase_order.date))
+    ws.cell('A10').value = _("VAT/PAN") + ":- " + _(str(purchase_order.party.pan_no))
+    merge_and_add(ws, 10, 1, 10, 2, "देहाय बमोजिमका सामानहरु")
+    ws.cell(row=10, column=3).value = purchase_order.due_days
+    merge_and_add(ws, 10, 4, 10, 9, "दिन भित्र यस कार्यालयमा दाखिला गरि विल / इन्भ्वाईस प्रस्तुत गर्नु होला ।")
+    ws.merge_cells('A13:A14'); ws.merge_cells('B13:B14'); ws.merge_cells('C13:C14');  ws.merge_cells('D13:D14');
+    ws.merge_cells('E13:E14'); ws.merge_cells('F13:F14'); ws.merge_cells('I13:I14');
+    ws.merge_cells('G13:H13')
+    
+    # Table Head
+    table_header = [_('SN'),_('Budget Title No.'), _('Particular'), _('Specification'), _('Item Quantity'),\
+        _('Unit'), _("Price")]
+    row_index = insert_row(ws, 13, 1, table_header)
+    ws.cell('I13').value = _("Remarks")
+    table_sub_header = [_("Rate"), _("Total Amount")]
+    ws.cell('G14').value = _("Rate")
+    ws.cell('H14').value = _("Total Amount")
+    row_index = row_index + 1
+    
+    # Table body
+    for row in purchase_order.rows.all().order_by("sn"):
+        data = [row.sn, row.budget_title_no, row.item.name, row.specification, row.quantity,\
+            row.unit, row.rate, "=PRODUCT", row.remarks ]
+        row_index = insert_row(ws, row_index, 1, data, 5, 7)
+    last_row_number = row_index - 1
+    total = merge_and_add(ws, row_index, 1, row_index, 6, _("Total"))
+    ws.cell(row=row_index, column=8).value = xlsx_formula(ws, 15, 8, last_row_number, 8, "=SUM")
+    vat = merge_and_add(ws, row_index+1, 1, row_index+1, 6, _("13% VAT"))
+    ws.cell(row=row_index+1, column=8).value = "=PRODUCT(" + str(ws.cell(row=row_index, column=8).column)+str(ws.cell(row=row_index, column=8).row) + "," + ".13)"
+    grand_total = merge_and_add(ws, row_index+2, 1, row_index+2, 6, _("Grand Total"))
+    ws.cell(row=row_index+2, column=8).value = xlsx_formula(ws, row_index, 8, row_index+1, 8, "=SUM")
+    
+    # Footer
+    add_cell_value(ws, row_index+4, 2, _("Faantwaala's") + _('Signature'))
+    add_cell_value(ws, row_index+4, 7, _('Section') + _("Head's") + _('Signature'))    
+    add_cell_value(ws, row_index+5, 2, _("Date"))
+    add_cell_value(ws, row_index+5, 7, _("Date"))
+    add_cell_value(ws, row_index+5, 7, _("Date"))
+    fill_by_admin = add_cell_value(ws, row_index+7, 1, _("To be filled by financial administration section") + ":- ")
+    fill_by_admin.font = Font(bold=True)
+    add_cell_value(ws, row_index+9, 1, "माथि उल्लेखि सामानहरु बजट उपशिर्षक न. .............. को खर्च शिर्षक न. .......... बाट भुक्तानी दिन बजेट बाँकी देखिन्छ / देखिदैंन ।")
+    add_cell_value(ws, row_index+10, 7, _('Accounting') + _("Head's") + _('Signature') + ":- ")
+    add_cell_value(ws, row_index+11, 7, _("Date"))
+    add_cell_value(ws, row_index+13, 7, _("Signature of Head of Office") + ":- ")
+    add_cell_value(ws, row_index+14, 7, _("Date"))
+    add_cell_value(ws, row_index+15, 1, "माथि उल्लेखित सामानहरु मिति .......................... भित्र................................... कार्यालयमा बुझाउने छु भनी सहिछाप गर्ने ।")
+    add_cell_value(ws, row_index+17, 3, _("Firm's Name"))
+    merge_and_add(ws, row_index+17, 5, row_index+17, 6, _("Signature"))
+    add_cell_value(ws, row_index+17, 8, _("Firm's Name"))
+    response = HttpResponse(save_virtual_workbook(wb), content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="purchase-order.xlsx"'
+    return response
+
+def convert_entry_report(request, id):
+    entry_report = get_object_or_404(EntryReport, id=id)
+    wb = Workbook()
+    ws = wb.active
+    row_index = 9
+    # Header
+    header = merge_and_add(ws, 2, 1, 2, 13, app_setting.header_for_forms)
+    header.style = Style(
+        font=Font(
+            bold=True,
+            size=24),
+        alignment=Alignment(
+            horizontal='center'),
+        )
+    report_name = merge_and_add(ws, 4, 1, 4, 13, _("Entry Report"))
+    report_name.style = Style(
+        font=Font(
+            # bold=True,
+            size=18),
+        alignment=Alignment(
+            horizontal='center'),
+        )
+    add_cell_value(ws, 6, 1, _("Entry Report") + ' ' +_("No." + ":- ") + _(str(entry_report.entry_report_no)))
+    
+    # Table Head
+    table_header = [_('SN'),_('Inventory Account Page No.'), _('Inventory Classification Reference No.'), _("Item's Name"), _('Specification'),\
+        _('Unit'), _('Quantity')]
+    for i, value in enumerate(table_header):
+        merge_and_add(ws, 7, i+1, 8, i+1, value)
+    merge_and_add(ws, 7, 8, 7, 12, _('Price') + "(" + _('As per Invoice') + ")")
+    table_sub_header = [_('Rate per Unit'), _('VAT') + ' ' + _("per") + ' ' +  _("Unit"), _("Unit") + ' ' +  _("Price"),\
+        _('Other') + ' ' +  _('Expenses'), _("Total")]
+    for i, value in enumerate(table_sub_header):
+        add_cell_value(ws, 8, i+8, value)
+    merge_and_add(ws, 7, 13, 8, 13, _("Remarks"))
+
+    # Table body
+    for row in entry_report.rows.all().order_by("sn"):
+        data = [row.sn, row.item.account.account_no, row.item.property_classification_reference_number, row.item.name, row.specification, row.unit,\
+            row.quantity, row.rate, "VAT", "UnitPrice", row.other_expenses, "Total", row.remarks ]
+        row_index = insert_row(ws, row_index, 1, data, 7, 8)
+
+    #Footer
+    merge_and_add(ws, row_index+1, 1, row_index+1, 6, "माथि उल्लेखित सामानहरु खरिद आदेश नम्बर/हस्तान्तरण फारम नम्बर")
+    add_cell_value(ws, row_index+1, 7, _(str(entry_report.source.order_no)))
+    add_cell_value(ws, row_index+1, 8, "मिति")
+    add_cell_value(ws, row_index+1, 9, _(str(entry_report.source.date)))
+    add_cell_value(ws, row_index+1, 10, 'अनुसार श्री')
+    add_cell_value(ws, row_index+1, 11, _(str(entry_report.source.party)))
+    add_cell_value(ws, row_index+1, 12, "बाट प्राप्त हुन आएको हुँदा जाँची गन्ती गरी हेर्दा ठीक दुरुस्त भएकोले")
+    add_cell_value(ws, row_index+2, 1, "खातामा आम्दानी बाँधेको प्रमाणित गर्दछु ।")
+    add_cell_value(ws, row_index+4, 1, _("Faantwaala's") + _('Signature'))
+    add_cell_value(ws, row_index+5, 1, _("Name"))
+    add_cell_value(ws, row_index+6, 1, _("Designation"))
+    add_cell_value(ws, row_index+7, 1, _("Date"))
+    add_cell_value(ws, row_index+4, 6, _("Signature of Verifying Section Head") + ":- ")
+    add_cell_value(ws, row_index+5, 6, _("Name"))
+    add_cell_value(ws, row_index+6, 6, _("Designation"))
+    add_cell_value(ws, row_index+7, 6, _("Date"))
+    add_cell_value(ws, row_index+4, 10, _("Signature of Head of Office") + ":- ")
+    add_cell_value(ws, row_index+5, 10, _("Name"))
+    add_cell_value(ws, row_index+6, 10, _("Designation"))
+    add_cell_value(ws, row_index+7, 10, _("Date"))
+
+
+    response = HttpResponse(save_virtual_workbook(wb), content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="entry-report.xlsx"'
+    return response
 
 def remove_transaction_duplicate(object):
     compare_name = []
@@ -60,24 +333,36 @@ def yearly_report_detail(request, id):
 
 def save_yearly_report(request):
     if request.is_ajax():
-        param = json.loads(request.body)
-        data = param.get('table_view').get('rows')
-        release_no = param.get('release_no')
-        obj = YearlyReport(fiscal_year=FiscalYear.get(app_setting.fiscal_year), release_no=release_no)
-        obj.save()
-        for index, row in enumerate(data):
-            object_values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
+        params = json.loads(request.body)
+    dct = {'rows':{}}
+    if params.get('release_no') == '':
+        params['release_no'] = None
+    object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}                     
+    if params.get('id'):
+        obj = YearlyReport.objects.get(id=params.get('id'))
+    else:
+        obj = YearlyReport()
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = YearlyReportRow
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
                 'item_name': row.get('item_name'), 'income': row.get('total_dr_amount'), 'expense': row.get('expense'), 'remaining': row.get('current_balance'),
-                'remarks': row.get('remarks')}
-
-            try:
-                yearly_report_row_obj = YearlyReportRow(**object_values)
-                yearly_report_row_obj.yearly_report = obj
-                yearly_report_row_obj.save()
-            except ValueError, e:
-                obj.delete()
-
-        return HttpResponse("saved")
+                'remarks': row.get('remarks'), 'yearly_report': obj}
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['rows'][index] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+    return JsonResponse(dct)
 
 def inspection_report_list(request):
     obj = Inspection.objects.all()
@@ -98,25 +383,38 @@ def inspection_report(request):
 
 def save_inspection_report(request):
     if request.is_ajax():
-        param = json.loads(request.body)
-        data = param.get('table_view').get('rows')
-        release_no = param.get('release_no')
-        obj = Inspection(fiscal_year=FiscalYear.get(app_setting.fiscal_year), release_no=release_no)
-        obj.save()
-        for index, row in enumerate(data):
-            object_values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
+        params = json.loads(request.body)
+    dct = {'rows':{}}
+    if params.get('release_no') == '':
+        params['release_no'] = None
+    object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}                     
+    if params.get('id'):
+        obj = Inspection.objects.get(id=params.get('id'))
+    else:
+        obj = Inspection()
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = InspectionRow
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
                 'item_name': row.get('item_name'), 'unit': row.get('unit'), 'quantity': row.get('total_dr_amount'), 'rate': row.get('rate'), 'price': row.get('price'),
                 'matched_number': empty_to_none(row.get('match_number')), 'unmatched_number': empty_to_none(row.get('unmatch_number')), 'decrement': empty_to_none(row.get('decrement')), 'increment': empty_to_none(row.get('increment')),
-                'decrement_increment_price': empty_to_none(row.get('decrement_increment_price')), 'good': empty_to_none(row.get('good')), 'bad': empty_to_none(row.get('bad')), 'remarks': row.get('remarks')}
+                'decrement_increment_price': empty_to_none(row.get('decrement_increment_price')), 'good': empty_to_none(row.get('good')), 'bad': empty_to_none(row.get('bad')), 'remarks': row.get('remarks'), 'inspection': obj}
 
-            try:
-                inspection_row_obj = InspectionRow(**object_values)
-                inspection_row_obj.inspection = obj
-                inspection_row_obj.save()
-            except ValueError, e:
-                obj.delete()
-
-        return HttpResponse("saved")
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['rows'][index] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+    return JsonResponse(dct)
 
 @login_required
 def item_form(request, id=None):
