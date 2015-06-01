@@ -333,24 +333,36 @@ def yearly_report_detail(request, id):
 
 def save_yearly_report(request):
     if request.is_ajax():
-        param = json.loads(request.body)
-        data = param.get('table_view').get('rows')
-        release_no = param.get('release_no')
-        obj = YearlyReport(fiscal_year=FiscalYear.get(app_setting.fiscal_year), release_no=release_no)
-        obj.save()
-        for index, row in enumerate(data):
-            object_values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
+        params = json.loads(request.body)
+    dct = {'rows':{}}
+    if params.get('release_no') == '':
+        params['release_no'] = None
+    object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}                     
+    if params.get('id'):
+        obj = YearlyReport.objects.get(id=params.get('id'))
+    else:
+        obj = YearlyReport()
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = YearlyReportRow
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
                 'item_name': row.get('item_name'), 'income': row.get('total_dr_amount'), 'expense': row.get('expense'), 'remaining': row.get('current_balance'),
-                'remarks': row.get('remarks')}
-
-            try:
-                yearly_report_row_obj = YearlyReportRow(**object_values)
-                yearly_report_row_obj.yearly_report = obj
-                yearly_report_row_obj.save()
-            except ValueError, e:
-                obj.delete()
-
-        return HttpResponse("saved")
+                'remarks': row.get('remarks'), 'yearly_report': obj}
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['rows'][index] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+    return JsonResponse(dct)
 
 def inspection_report_list(request):
     obj = Inspection.objects.all()
@@ -371,25 +383,38 @@ def inspection_report(request):
 
 def save_inspection_report(request):
     if request.is_ajax():
-        param = json.loads(request.body)
-        data = param.get('table_view').get('rows')
-        release_no = param.get('release_no')
-        obj = Inspection(fiscal_year=FiscalYear.get(app_setting.fiscal_year), release_no=release_no)
-        obj.save()
-        for index, row in enumerate(data):
-            object_values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
+        params = json.loads(request.body)
+    dct = {'rows':{}}
+    if params.get('release_no') == '':
+        params['release_no'] = None
+    object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}                     
+    if params.get('id'):
+        obj = Inspection.objects.get(id=params.get('id'))
+    else:
+        obj = Inspection()
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = InspectionRow
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            values = {'sn': index+1, 'account_no': row.get('account_no'), 'property_classification_reference_number': row.get('inventory_classification_reference_no'),
                 'item_name': row.get('item_name'), 'unit': row.get('unit'), 'quantity': row.get('total_dr_amount'), 'rate': row.get('rate'), 'price': row.get('price'),
                 'matched_number': empty_to_none(row.get('match_number')), 'unmatched_number': empty_to_none(row.get('unmatch_number')), 'decrement': empty_to_none(row.get('decrement')), 'increment': empty_to_none(row.get('increment')),
-                'decrement_increment_price': empty_to_none(row.get('decrement_increment_price')), 'good': empty_to_none(row.get('good')), 'bad': empty_to_none(row.get('bad')), 'remarks': row.get('remarks')}
+                'decrement_increment_price': empty_to_none(row.get('decrement_increment_price')), 'good': empty_to_none(row.get('good')), 'bad': empty_to_none(row.get('bad')), 'remarks': row.get('remarks'), 'inspection': obj}
 
-            try:
-                inspection_row_obj = InspectionRow(**object_values)
-                inspection_row_obj.inspection = obj
-                inspection_row_obj.save()
-            except ValueError, e:
-                obj.delete()
-
-        return HttpResponse("saved")
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['rows'][index] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+    return JsonResponse(dct)
 
 @login_required
 def item_form(request, id=None):
