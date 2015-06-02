@@ -45,13 +45,16 @@ def insert_row(ws, row, column, args, extra_col_value1=None, extra_col_value2=No
             cell.value = "=PRODUCT("+ str(quantity) + "," + str(rate) + ")"
         elif value == "VAT":
             rate = ws.cell(row=row, column=extra_col_value2).value
-            vat = rate * .13
-            cell.value = vat
+            # vat = rate * .13
+            # cell.value = vat
+            cell.value = "=PRODUCT("+ str(rate) + ","+ ".13 )"
         elif value == "UnitPrice":
             rate = ws.cell(row=row, column=extra_col_value2).value
-            vat = rate * .13
-            unit_price = rate + vat
-            cell.value = unit_price
+            vat = ws.cell(row=row, column=extra_col_value2+1)
+            cell.value = xlsx_formula(ws, row, extra_col_value2, row, extra_col_value2+1, "=SUM")
+            # vat = rate * .13
+            # unit_price = rate + vat
+            # cell.value = unit_price
         elif value == "Total":
             quantity = ws.cell(row=row, column=extra_col_value1).value
             rate = ws.cell(row=row, column=extra_col_value2).value
