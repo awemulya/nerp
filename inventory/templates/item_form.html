@@ -16,6 +16,13 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
+        <p>
+            <label for="id_other_properties">Other properties</label>
+            <div id="id_other_properties">
+            <input type="text" id="id_property_name" name="property_name" placeholder="Property name"> 
+            <input type="text" id="id_property" name="property" placeholder="Property">
+            </div>
+        </p>
         <div class="row">
             <div class="span12">
                 <button type="submit" value="Submit" class="small secondary button">
