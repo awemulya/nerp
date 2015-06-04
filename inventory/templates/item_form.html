@@ -5,9 +5,6 @@
 {% block title %}{{ scenario }} {% trans 'Inventory' %} {% trans 'Item' %} {% endblock %}
 {% block head_end %}
     <script src="{% static 'js/inventory/item.js' %}"></script>
-    <script>
-        item_data = {{ item_data| jsonify}};
-    </script>
 {% endblock %}
 
 
@@ -25,7 +22,8 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <p id="other-properties">
+        <p>
+        <div id="other-properties">
             <label for="id_other_properties">{% trans "Other properties" %}</label>
             <div id="id_other_properties" data-bind="foreach: other_properties">
                 <p>
@@ -37,6 +35,7 @@
             <a class="small secondary button" data-bind="click: addOtherProperty">
                 {% trans 'Add New Row' %}
             </a>
+        </div>
         </p>
         <div class="row">
             <div class="span12">

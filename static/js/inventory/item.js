@@ -7,12 +7,10 @@ $(document).ready(function () {
     $('.change-on-ready').trigger('change');
 });
 
-function ItemVM(data) {
+function ItemVM() {
     var self = this;
-    // for (var k in data)
-    //     self[k] = ko.observable(data[k]);
-    self.opening_balance = ko.observable();
 
+    self.opening_balance = ko.observable();
 	self.other_properties = ko.observableArray([new OtherPropertiesVM()]);
 	
 	self.addOtherProperty = function () {
@@ -26,8 +24,6 @@ function ItemVM(data) {
 }
 
 function OtherPropertiesVM() {
-	// debugger;
-
     var self = this;
     self.property_name = ko.observable();
     self.property = ko.observable();
