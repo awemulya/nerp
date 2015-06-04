@@ -17,7 +17,7 @@ from app.utils.translation import ne2en
 from users.models import User
 from core.models import FiscalYear, Party
 from app.utils.translation import BSDateField
-
+from jsonfield import JSONField
 
 
 class Category(MPTTModel):
@@ -134,10 +134,11 @@ class ItemLocation(models.Model):
         return self.name
 
 
-class TrackItem(models.Model):
+class ItemInstance(models.Model):
     item = models.ForeignKey(Item, related_name='tracked_item')
+    item_rate = models.FloatField(null=True)
     location = models.ForeignKey(ItemLocation)
-    other_properties = models.CharField(max_length=200, null=True, blank=True)
+    other_properties = JSONField(null=True, blank=True)
 
     def __unicode__(self):
         return str(self.item) + str(self.location)
