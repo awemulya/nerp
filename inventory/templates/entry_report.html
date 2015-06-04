@@ -102,6 +102,7 @@
         <span data-bind="text: msg, css: status"></span>
 
         {% if form.instance.id %}
+            <a href="{% url 'convert_entry_report' form.instance.id %}" class="small secondary button">{% trans 'Converter to excel' %}</a>
             <a class="small secondary button alert"
                href="{% url 'delete_entry_report' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}

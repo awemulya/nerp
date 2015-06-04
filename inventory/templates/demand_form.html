@@ -177,6 +177,7 @@
                 {#               data-bind="visible: $root.status() == 'Requested'"#}
                 >
         {% if scenario == 'Update' %}
+            <a href="{% url 'convert_demand_form' form.instance.id %}" class="small secondary button">{% trans 'Converter to excel' %}</a>
             <a class="small secondary button alert"
                href="{% url 'delete_demand_form' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}

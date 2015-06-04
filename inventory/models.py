@@ -17,7 +17,7 @@ from app.utils.translation import ne2en
 from users.models import User
 from core.models import FiscalYear, Party
 from app.utils.translation import BSDateField
-
+from jsonfield import JSONField
 
 
 class Category(MPTTModel):
@@ -103,6 +103,7 @@ class Item(models.Model):
     unit = models.CharField(max_length=50, default=_('pieces'))
     # vattable = models.BooleanField(default=True)
     property_classification_reference_number = models.CharField(max_length=20, blank=True, null=True)
+    other_properties = JSONField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')
@@ -499,6 +500,7 @@ def _transaction_delete(sender, instance, **kwargs):
 class Inspection(models.Model):
     release_no = models.IntegerField(blank=True, null=True)
     fiscal_year = models.ForeignKey(FiscalYear)
+    # transaction = models.ForeignKey(Transaction, related_name='inspection')
 
 
 class InspectionRow(models.Model):
