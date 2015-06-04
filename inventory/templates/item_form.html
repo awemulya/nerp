@@ -5,6 +5,10 @@
 {% block title %}{{ scenario }} {% trans 'Inventory' %} {% trans 'Item' %} {% endblock %}
 {% block head_end %}
     <script src="{% static 'js/inventory/item.js' %}"></script>
+    <script>
+        item_data = {{ item_data| jsonify }};
+    </script>
+
 {% endblock %}
 
 
@@ -16,7 +20,6 @@
 
 
 {% block content %}
-
     {{ form.non_field_errors }}
     {{ form.errors }}
     <form method="post">

@@ -452,7 +452,7 @@ def item_form(request, id=None):
         'scenario': scenario,
         'form': form,
         'base_template': base_template,
-        'item_data' : ItemSerializer(item).data,
+        'item_data' : item.other_properties,
     })
 
 
