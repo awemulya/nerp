@@ -22,11 +22,11 @@
 
     {{ form.non_field_errors }}
     {{ form.errors }}
-    <form id="item_form" method="post">
+    <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <!--p>
-            <label for="id_other_properties">Other properties</label>
+        <p id="other-properties">
+            <label for="id_other_properties">{% trans Other properties %}</label>
             <div id="id_other_properties" data-bind="foreach: other_properties">
                 <p>
                     <input type="text" id="id_property_name" name="property_name" placeholder="Property name" data-bind="value: property_name"> 
@@ -37,7 +37,7 @@
             <a class="small secondary button" data-bind="click: addOtherProperty">
                 {% trans 'Add New Row' %}
             </a>
-        </p-->
+        </p>
         <div class="row">
             <div class="span12">
                 <button type="submit" value="Submit" class="small secondary button">

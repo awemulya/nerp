@@ -1,8 +1,7 @@
 $(document).ready(function () {
-    item = new ItemVM(item_data);
+    item = new ItemVM();
     // ko.applyBindings(item);
-    var item_form = document.getElementById("item_form");
-    debugger;
+    var item_form = document.getElementById("other-properties");
     // ko.cleanNode(item_form);
     ko.applyBindings(item, item_form);
     $('.change-on-ready').trigger('change');
@@ -10,8 +9,8 @@ $(document).ready(function () {
 
 function ItemVM(data) {
     var self = this;
-    for (var k in data)
-        self[k] = ko.observable(data[k]);
+    // for (var k in data)
+    //     self[k] = ko.observable(data[k]);
     self.opening_balance = ko.observable();
 
 	self.other_properties = ko.observableArray([new OtherPropertiesVM()]);
