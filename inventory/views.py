@@ -436,9 +436,8 @@ def item_form(request, id=None):
             other_properties = {}
             for key, value in zip(property_name, item_property):
                 other_properties[key] = value
-            other_properties_json = json.dumps(other_properties, separators=(',', ': '))
-            # import pdb; pdb.set_trace()
-            item.other_properties = other_properties_json
+            # other_properties_json = json.dumps(other_properties, sort_keys=True, indent=4)
+            item.other_properties = other_properties
             item.save(account_no=form.cleaned_data['account_no'], opening_balance=form.cleaned_data['opening_balance'])
             if request.is_ajax():
                 return render(request, 'callback.html', {'obj': ItemSerializer(item).data})
