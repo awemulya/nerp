@@ -73,6 +73,7 @@
                     <th class="span3">{% trans 'Item Quantity' %}</th>
                     <th class="span3">{% trans 'Unit' %}</th>
                     <th class="span3">{% trans 'Purpose' %}</th>
+
                     <th
                             {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>{% trans 'Released Item Quantity' %}</th>
 

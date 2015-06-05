@@ -98,3 +98,4 @@ class EntryReportForm(KOModelForm):
 class ItemLocationForm(KOModelForm):
     class Meta:
         model = ItemLocation
+        fields = '__all__'

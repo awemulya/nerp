@@ -11,7 +11,7 @@ from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderFor
 from inventory.filters import InventoryItemFilter
 
 
-from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, ItemInsatance
+from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, ItemInstance
 from app.utils.helpers import invalid, save_model, empty_to_none
 from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, TransactionSerializer, ItemLocationSerializer
 import nepdate
@@ -633,7 +633,7 @@ def save_entry_report(request):
                          ['dr', submodel.item.account, submodel.quantity],
         )
         for i in range(0, int(row.get('quantity'))):
-            t = ItemInsatance()
+            t = ItemInstance()
             t.item = Item.objects.get(id=int(row.get('item_id')))
             t.item_rate = row.get('rate')
             t.location = ItemLocation.objects.get(id=STORE_LOCATION_ID)
@@ -724,7 +724,7 @@ def fulfill_demand(request):
                      )
 
     # Search items in the stock
-    items = ItemInsatance.objects.filter(item_id=row.item_id, location_id=STORE_LOCATION_ID)
+    items = ItemInstance.objects.filter(item_id=row.item_id, location_id=STORE_LOCATION_ID)
     release_quantity = int(row.release_quantity)
     for item, i in zip(items, range(0, release_quantity)):
         item.location = row.location
@@ -750,7 +750,7 @@ def unfulfill_demand(request):
     journal_entry = JournalEntry.get_for(row)
     journal_entry.delete()
 
-    items = ItemInsatance.objects.filter(item_id=row.item_id, location_id=int(params.get('location')))
+    items = ItemInstance.objects.filter(item_id=row.item_id, location_id=int(params.get('location')))
     for item in items:
         item.location = ItemLocation.objects.get(id=STORE_LOCATION_ID)
         item.save()
