@@ -1,6 +1,6 @@
 $(document).ready(function () {
     item = new ItemVM(item_data);
-    var item_form = document.getElementById("other-properties");
+    var item_form = $("#other-properties").get(0);
     ko.applyBindings(item, item_form);
     $('.change-on-ready').trigger('change');
 });
