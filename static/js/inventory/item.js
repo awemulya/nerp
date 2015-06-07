@@ -13,7 +13,6 @@ $(document).ready(function () {
 
 function ItemVM(data) {
     var self = this;
-    self.opening_balance = ko.observable();
 	self.other_properties = ko.observableArray([]);
     
     if (data != null) {
