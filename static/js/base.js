@@ -97,9 +97,7 @@ appended_link_clicked = function (e) {
                 $(new_forms).each(function (form) {
                     apply_select2(new_forms[form]);
                 });
-                $.getScript( "/static/js/inventory/item.js", function(){
-                    console.log("testing")
-                });
+                $.getScript( "/static/js/inventory/item.js" );
             });
     }
     return false;
