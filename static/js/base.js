@@ -56,7 +56,8 @@ function init_selectize($select) {
             href: $select.$input.data('url'),
             title: 'Add New ' + name,
             text: 'Add New ' + name,
-            'data-toggle': 'modal'
+            'data-toggle': 'modal',
+            'script': $select.$input.data('script')
         });
         appended_link.appendTo($select.$dropdown).on('click', [$select], appended_link_clicked);
 
@@ -66,7 +67,8 @@ function init_selectize($select) {
                 href: $select.$input.data('url'),
                 title: 'Add New ' + name,
                 text: 'Add New ' + name,
-                'data-toggle': 'modal'
+                'data-toggle': 'modal',
+                'script': $select.$input.data('script')
             });
             appended_link.prependTo($select.$wrapper).on('click', [$select], appended_link_clicked);
         }
@@ -82,6 +84,9 @@ appended_link_clicked = function (e) {
     window.last_active_select.push(e.data[0]);
     e.preventDefault();
     var the_modal = modal.create();
+    if (typeof($(this).attr('script')) != 'undefined') {
+        var script = $(this).attr('script');
+    }
     var url = $(this).attr('href');
     if (url.indexOf('#') == 0) {
         $(url).modal('open');
@@ -97,7 +102,7 @@ appended_link_clicked = function (e) {
                 $(new_forms).each(function (form) {
                     apply_select2(new_forms[form]);
                 });
-                $.getScript( "/static/js/inventory/item.js" );
+                $.getScript(script);
             });
     }
     return false;
