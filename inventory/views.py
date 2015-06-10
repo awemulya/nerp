@@ -334,6 +334,12 @@ def yearly_report_detail(request, id):
     rows = obj.rows.order_by("sn")
     return render(request, 'yearly_report_detail.html', {'obj':obj, 'rows': rows})
 
+@group_required('Store Keeper', 'Chief')
+def delete_yearly_report(request, id):
+    obj = get_object_or_404(YearlyReport, id=id)
+    obj.delete()
+    return redirect(reverse('yearly_report_list'))
+
 def save_yearly_report(request):
     if request.is_ajax():
         params = json.loads(request.body)
