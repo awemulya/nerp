@@ -89,7 +89,7 @@
                     </td>
                     <td>
                         <select data-bind="selectize: $root.items, value: item_id, object: item, event: {change: $root.item_changed}"
-                                data-url="{% url 'create_inventory_item' %}"></select>
+                                data-url="{% url 'create_inventory_item' %}" data-script="/static/js/inventory/item.js"></select>
                         {#                                                <select class="span12 item-selector"#}
                         {#                                                        data-bind="options: $root.items, optionsText: 'name', optionsValue: 'id', value: item_id, optionsCaption: ' ', event: {change: $root.item_changed}"></select>#}
                         {#                        <input type="hidden" data-url="{% url 'create_inventory_item' %}" class="change-on-ready"#}

@@ -1,6 +1,12 @@
 $(document).ready(function () {
-    item = new ItemVM(item_data);
-    var item_form = $("#other-properties").get(0);
+    if (typeof(item_data) == "undefined") {
+    	item = new ItemVM();
+    } else {
+    	item = new ItemVM(item_data);
+    }
+    // ko.applyBindings(item);
+    var item_form = document.getElementById("other-properties");
+    // ko.cleanNode(item_form);
     ko.applyBindings(item, item_form);
     $('.change-on-ready').trigger('change');
 });
