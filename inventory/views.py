@@ -383,6 +383,12 @@ def inspection_report(request):
     data = TransactionSerializer(transaction_without_duplication, many=True).data
     return render(request, 'inspection_report.html', {'obj': transaction_without_duplication, 'data': data})
 
+@group_required('Store Keeper', 'Chief')
+def delete_inspection_report(request, id):
+    obj = get_object_or_404(Inspection, id=id)
+    obj.delete()
+    return redirect(reverse('inspection_report_list'))
+
 
 def save_inspection_report(request):
     if request.is_ajax():
