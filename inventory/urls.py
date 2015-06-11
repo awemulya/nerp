@@ -9,6 +9,8 @@ urlpatterns = patterns('',
                        url(r'^/yearly_report/(?P<id>[0-9]+)/$', views.yearly_report_detail, name='yearly_report_detail'),
                        url(r'^inspection/(?P<id>[0-9]+)/delete$', views.delete_yearly_report,
                            name='delete_yearly_report'),
+                       url(r'^list_transactions$', views.list_transactions,
+                           name='inventory_transactions_list'),
 
                        url(r'^inspection/$', views.inspection_report_list, name='inspection_report_list'),
                        url(r'^save/inspection/$', views.save_inspection_report, name='save_inspection_report'),

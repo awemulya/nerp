@@ -25,6 +25,16 @@ from openpyxl.styles import Style, Font, Alignment
 from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 from openpyxl.cell import get_column_letter
 
+def list_transactions(request):
+    # obj = Transaction.objects.all()
+    # obj = Transaction.objects.filter(journal_entry__date="2015-06-11")
+    # obj = Transaction.objects.filter(journal_entry__date="2015-04-07")
+    # obj = Transaction.objects.filter(journal_entry__date__range=["2015-04-07", "2015-06-11"])
+    obj = Transaction.objects.filter(journal_entry__date__range=["2015-05-15", "2015-06-11"])
+    
+    return render(request, "transaction_list.html", {'objects': obj})
+
+
 def xlsx_formula(ws, start_row, start_column, end_row, end_column, value):
     first_cell_column_id = str(ws.cell(row=start_row, column=start_column).column)
     first_cell_row_id = str(ws.cell(row=start_row, column=start_column).row)
