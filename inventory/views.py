@@ -26,16 +26,14 @@ from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 from openpyxl.cell import get_column_letter
 
 def list_transactions(request):
-    # obj = Transaction.objects.all()
-    # obj = Transaction.objects.filter(journal_entry__date="2015-06-11")
-    # obj = Transaction.objects.filter(journal_entry__date="2015-04-07")
-    # obj = Transaction.objects.filter(journal_entry__date__range=["2015-04-07", "2015-06-11"])
     if request.POST:
         param = request.POST
         date_list = request.POST.getlist('myDate')
-        start_date = date_list[0]
-        end_date = date_list[1]
-        obj = Transaction.objects.filter(journal_entry__date__range=[ start_date, end_date ])
+        start_date_bs = date_list[0]
+        end_date_bs = date_list[1]
+        start_date_ad = nepdate.string_from_tuple(nepdate.bs2ad(start_date_bs))
+        end_date_ad = nepdate.string_from_tuple(nepdate.bs2ad(end_date_bs))
+        obj = Transaction.objects.filter(journal_entry__date__range=[ start_date_ad, end_date_ad ])
         return render(request, "transaction_list.html", {'objects': obj})
     obj = Transaction.objects.all()
     return render(request, "transaction_list.html", {'objects': obj})
