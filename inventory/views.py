@@ -30,8 +30,15 @@ def list_transactions(request):
     # obj = Transaction.objects.filter(journal_entry__date="2015-06-11")
     # obj = Transaction.objects.filter(journal_entry__date="2015-04-07")
     # obj = Transaction.objects.filter(journal_entry__date__range=["2015-04-07", "2015-06-11"])
-    obj = Transaction.objects.filter(journal_entry__date__range=["2015-05-15", "2015-06-11"])
-    
+    if request.POST:
+        param = request.POST
+        date_list = request.POST.getlist('myDate')
+        start_date = date_list[0]
+        end_date = date_list[1]
+        import pdb; pdb.set_trace()    
+        obj = Transaction.objects.filter(journal_entry__date__range=[ start_date, end_date])
+        return render(request, "transaction_list.html", {'objects': obj})
+    obj = Transaction.objects.all()
     return render(request, "transaction_list.html", {'objects': obj})
 
 
