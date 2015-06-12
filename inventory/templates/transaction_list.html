@@ -11,21 +11,22 @@
 <form action="" method="POST">
 	{% csrf_token %}
     <div class="row">
-    	<div class="medium-2 small-2 columns">
+    	<div class="medium-4 small-4 columns">
 		    <label>Start Date:</label>
-			<input type="date" name="myDate">
+			<input type="text" id="nepali_date" name="myDate" placeholder="YYYY-MM-DD">
     	</div>
     </div>
 
     <div class="row">
-    	<div class="medium-2 small-2 columns">
+    	<div class="medium-4 small-4 columns">
 			<label>End Date:</label>
-			<input type="date" name="myDate">
+			<input type="text" id="nepali_date" name="myDate" placeholder="YYYY-MM-DD">
 	    </div>
     </div>
     <button type="submit" value="Submit" class="small secondary button">Submit</button>
 </form>
 
+<a href="{% url 'inventory_transactions_list' %}">{% trans 'All Transactions' %}</a>
 <table class="table table-bordered"> 
 <thead>
     <tr>
