@@ -1,6 +1,7 @@
 {% extends "inventory_base.html" %}
 {% load i18n staticfiles %}
 {% load filters %}
+{% block title %}{% trans scenario %} {% trans 'View Transactions' %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}

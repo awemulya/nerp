@@ -315,3 +315,8 @@ ul.messages li {
 .library-search ul *{
     display: inline;
 }
+
+ul.messages {
+    border: none;
+    margin-left: -1em;
+}
