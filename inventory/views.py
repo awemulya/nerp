@@ -24,6 +24,26 @@ from openpyxl.writer.excel import save_virtual_workbook
 from openpyxl.styles import Style, Font, Alignment
 from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 from openpyxl.cell import get_column_letter
+from django.contrib import messages
+
+def list_transactions(request):
+    if request.POST:
+        param = request.POST
+        date_list = request.POST.getlist('myDate')
+        start_date_bs = date_list[0]
+        end_date_bs = date_list[1]
+        if nepdate.is_valid(start_date_bs) and nepdate.is_valid(end_date_bs):
+            start_date_ad = nepdate.string_from_tuple(nepdate.bs2ad(start_date_bs))
+            end_date_ad = nepdate.string_from_tuple(nepdate.bs2ad(end_date_bs))
+            obj = Transaction.objects.filter(journal_entry__date__range=[ start_date_ad, end_date_ad ])
+            return render(request, "transaction_list.html", {'objects': obj})
+        elif start_date_bs == '' and end_date_bs == '':
+            messages.error(request, "Enter Date")
+        else:
+            messages.error(request, "Invalid Date")
+    obj = Transaction.objects.all()
+    return render(request, "transaction_list.html", {'objects': obj})
+
 
 def xlsx_formula(ws, start_row, start_column, end_row, end_column, value):
     first_cell_column_id = str(ws.cell(row=start_row, column=start_column).column)
