@@ -20,38 +20,52 @@
 
 
 {% block content %}
-    {{ form.non_field_errors }}
-    {{ form.errors }}
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <p>
-        <div id="other-properties">
-            <label for="id_other_properties">{% trans "Other properties" %}</label>
-            <div id="id_other_properties" data-bind="foreach: other_properties">
+    <ul class="tabs" data-tab id="training-tab">
+        <li class="tab-title active"><a href="#basic">Basic</a></li>
+        <li class="tab-title"><a href="#depreciation">Depreciation</a></li>
+    </ul>
+
+    <div class="tabs-content">
+        <div class="content active" id="basic">
+            {{ form.non_field_errors }}
+            {{ form.errors }}
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
                 <p>
-                    <input type="text" id="id_property_name" name="property_name" placeholder="Property name" data-bind="value: property_name"> 
-                    <input type="text" id="id_property" name="property" placeholder="Property" data-bind="value: property">
-                    <a href="#" class="close tiny secondary" data-bind="click: $parent.removeOtherProperty">x</a>
+                <div id="other-properties">
+                    <label for="id_other_properties">{% trans "Other properties" %}</label>
+                    <div id="id_other_properties" data-bind="foreach: other_properties">
+                        <p>
+                            <input type="text" id="id_property_name" name="property_name" placeholder="Property name" data-bind="value: property_name"> 
+                            <input type="text" id="id_property" name="property" placeholder="Property" data-bind="value: property">
+                            <a href="#" class="close tiny secondary" data-bind="click: $parent.removeOtherProperty">x</a>
+                        </p>
+                    </div>
+                    <a class="small secondary button" data-bind="click: addOtherProperty">
+                        {% trans 'Add New Row' %}
+                    </a>
+                </div>
                 </p>
-            </div>
-            <a class="small secondary button" data-bind="click: addOtherProperty">
-                {% trans 'Add New Row' %}
-            </a>
+                <div class="row">
+                    <div class="span12">
+                        <button type="submit" value="Submit" class="small secondary button">
+                            {% trans 'Submit' %}</button>
+                        {% if scenario == 'Update' %}
+                            <a class="small secondary button alert"
+                               href="{% url 'delete_inventory_item' form.instance.id %}">{% trans 'Delete' %}!</a>
+                        {% endif %}
+        {#                <a class="small secondary button" target="_blank"#}
+        {#                   href="{% url 'create_inventory_category' %}">{% trans 'New' %}#}
+        {#                    {% trans 'Inventory' %} {% trans 'Category' %}</a>#}
+                    </div>
+                </div>
+            </form>
         </div>
-        </p>
-        <div class="row">
-            <div class="span12">
-                <button type="submit" value="Submit" class="small secondary button">
-                    {% trans 'Submit' %}</button>
-                {% if scenario == 'Update' %}
-                    <a class="small secondary button alert"
-                       href="{% url 'delete_inventory_item' form.instance.id %}">{% trans 'Delete' %}!</a>
-                {% endif %}
-{#                <a class="small secondary button" target="_blank"#}
-{#                   href="{% url 'create_inventory_category' %}">{% trans 'New' %}#}
-{#                    {% trans 'Inventory' %} {% trans 'Category' %}</a>#}
-            </div>
+        <div class="content" id="depreciation">
+            <form>
+                {{ depreciation_form.as_p }}
+            </form>
         </div>
-    </form>
+    </div>
 {% endblock %}

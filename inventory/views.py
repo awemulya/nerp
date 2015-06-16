@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 
-from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm
+from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, DepreciationForm
 from inventory.filters import InventoryItemFilter
 
 from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow
@@ -476,6 +476,7 @@ def item_form(request, id=None):
             return redirect('/inventory/items/')
     else:
         form = ItemForm(instance=item, user=request.user)
+        depreciation_form = DepreciationForm()
     if request.is_ajax():
         base_template = 'modal.html'
     else:
@@ -485,6 +486,7 @@ def item_form(request, id=None):
         'form': form,
         'base_template': base_template,
         'item_data' : item.other_properties,
+        'depreciation_form': depreciation_form,
     })
 
 
