@@ -24,6 +24,26 @@ from openpyxl.writer.excel import save_virtual_workbook
 from openpyxl.styles import Style, Font, Alignment
 from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 from openpyxl.cell import get_column_letter
+from django.contrib import messages
+
+def list_transactions(request):
+    if request.POST:
+        param = request.POST
+        date_list = request.POST.getlist('myDate')
+        start_date_bs = date_list[0]
+        end_date_bs = date_list[1]
+        if nepdate.is_valid(start_date_bs) and nepdate.is_valid(end_date_bs):
+            start_date_ad = nepdate.string_from_tuple(nepdate.bs2ad(start_date_bs))
+            end_date_ad = nepdate.string_from_tuple(nepdate.bs2ad(end_date_bs))
+            obj = Transaction.objects.filter(journal_entry__date__range=[ start_date_ad, end_date_ad ])
+            return render(request, "transaction_list.html", {'objects': obj})
+        elif start_date_bs == '' and end_date_bs == '':
+            messages.error(request, "Enter Date")
+        else:
+            messages.error(request, "Invalid Date")
+    obj = Transaction.objects.all()
+    return render(request, "transaction_list.html", {'objects': obj})
+
 
 def xlsx_formula(ws, start_row, start_column, end_row, end_column, value):
     first_cell_column_id = str(ws.cell(row=start_row, column=start_column).column)
@@ -334,6 +354,12 @@ def yearly_report_detail(request, id):
     rows = obj.rows.order_by("sn")
     return render(request, 'yearly_report_detail.html', {'obj':obj, 'rows': rows})
 
+@group_required('Store Keeper', 'Chief')
+def delete_yearly_report(request, id):
+    obj = get_object_or_404(YearlyReport, id=id)
+    obj.delete()
+    return redirect(reverse('yearly_report_list'))
+
 def save_yearly_report(request):
     if request.is_ajax():
         params = json.loads(request.body)
@@ -382,6 +408,12 @@ def inspection_report(request):
     transaction_without_duplication = remove_transaction_duplicate(obj)
     data = TransactionSerializer(transaction_without_duplication, many=True).data
     return render(request, 'inspection_report.html', {'obj': transaction_without_duplication, 'data': data})
+
+@group_required('Store Keeper', 'Chief')
+def delete_inspection_report(request, id):
+    obj = get_object_or_404(Inspection, id=id)
+    obj.delete()
+    return redirect(reverse('inspection_report_list'))
 
 
 def save_inspection_report(request):

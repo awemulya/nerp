@@ -1,5 +1,9 @@
 $(document).ready(function () {
-    item = new ItemVM(item_data);
+    if (typeof(item_data) == "undefined") {
+    	item = new ItemVM();
+    } else {
+    	item = new ItemVM(item_data);
+    }
     // ko.applyBindings(item);
     var item_form = document.getElementById("other-properties");
     // ko.cleanNode(item_form);
@@ -9,7 +13,6 @@ $(document).ready(function () {
 
 function ItemVM(data) {
     var self = this;
-    self.opening_balance = ko.observable();
 	self.other_properties = ko.observableArray([]);
     
     if (data != null) {

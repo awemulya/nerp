@@ -106,7 +106,7 @@
                         {#                        <input type="hidden" data-url="{% url 'create_inventory_item' %}"#}
                         {#                               data-bind="value: item_id, select2: $root.items, event: {change: $root.item_changed}">#}
                         <select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}"
-                                data-url="{% url 'create_inventory_item' %}"></select>
+                                data-url="{% url 'create_inventory_item' %}" data-script="/static/js/inventory/item.js"></select>
                     </td>
                     <td data-bind="editableText: specification"></td>
                     <td data-bind="editableText: quantity, localize: true"></td>
