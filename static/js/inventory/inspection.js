@@ -8,6 +8,7 @@ function InspectionVM(data) {
 
     var self = this;
     self.release_no = ko.observable()
+    self.id = ko.observable()
 	self.table_view = new TableViewModel({rows: data}, InspectionRow);
 
 
@@ -48,6 +49,7 @@ function InspectionRow(row) {
 
     var self = this;
     // self.sn = ko.observable();
+    self.id = ko.observable()
     for (var k in row) {
         if (row[k] != null)
             self[k] = ko.observable(row[k]);
