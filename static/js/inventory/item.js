@@ -4,12 +4,27 @@ $(document).ready(function () {
     } else {
     	item = new ItemVM(item_data);
     }
+    if (typeof(depreciation_data) == "undefined") {
+        depreciate = new ItemVM();
+    } else {
+        depreciate = new DepreciationVM(depreciation_data);
+    }
+
     // ko.applyBindings(item);
     var item_form = document.getElementById("other-properties");
+    var depreciation_form = document.getElementById("depreciation")
     // ko.cleanNode(item_form);
     ko.applyBindings(item, item_form);
+    ko.applyBindings(depreciate, depreciation_form)
     $('.change-on-ready').trigger('change');
 });
+
+function DepreciationVM(data) {
+    for (var k in data) {
+        if (data[k] != null)
+            self[k] = ko.observable(data[k]);
+    }
+}
 
 function ItemVM(data) {
     var self = this;

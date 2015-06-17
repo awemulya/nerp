@@ -7,6 +7,7 @@
     <script src="{% static 'js/inventory/item.js' %}"></script>
     <script>
         item_data = {{ item_data| jsonify }};
+        depreciation_data = {{ depreciation_data|jsonify }}
     </script>
 
 {% endblock %}
@@ -60,12 +61,42 @@
         {#                    {% trans 'Inventory' %} {% trans 'Category' %}</a>#}
                     </div>
                 </div>
-            </form>
         </div>
         <div class="content" id="depreciation">
-            <form>
-                {{ depreciation_form.as_p }}
-            </form>
+            <div id="depreciation">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="medium-2 small-2 column">
+                    <label for="id_depreciate_value">Depreciate</label>
+
+                        {{ depreciation_form.depreciate_value }}
+                    </div>
+                    <div class="medium-2 small-2 column">
+                    <label for="id_depreciate_type">Depreciation</label>
+                        {{ depreciation_form.depreciate_type }}
+                    </div>
+                    <div class="medium-8 small-8 column">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="medium-12 small-12 column">
+                        <label>Every</label>
+                    </div>
+                </div>                
+                <div class="row">
+                    <div class="medium-2 small-2 column">
+                        {{ depreciation_form.time }}
+                    </div>
+                    <div class="medium-2 small-2 column">
+                    <label for="id_depreciate_type"> </label>
+
+                        {{ depreciation_form.time_type }}
+                    </div>
+                    <div class="medium-8 small-8 column">
+                    </div>
+                </div>
+            </div>
         </div>
+        </form>     
     </div>
 {% endblock %}

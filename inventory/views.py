@@ -11,9 +11,9 @@ from django.core.urlresolvers import reverse
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, DepreciationForm
 from inventory.filters import InventoryItemFilter
 
-from inventory.models import Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow
+from inventory.models import Depreciation, Demand, DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow
 from app.utils.helpers import invalid, save_model, empty_to_none
-from inventory.serializers import DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, TransactionSerializer
+from inventory.serializers import DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, TransactionSerializer
 import nepdate
 
 from users.models import group_required
@@ -456,20 +456,30 @@ def item_form(request, id=None):
     if id:
         item = get_object_or_404(Item, id=id)
         scenario = 'Update'
+        depreciation_data = DepreciationSerializer(item.depreciation).data
     else:
         item = Item()
         scenario = 'Create'
+        depreciation = Depreciation(depreciate_type="Fixed percentage", depreciate_value=0, time=0, time_type='Year')
+        depreciation_data = DepreciationSerializer(depreciation).data
     if request.POST:
         form = ItemForm(data=request.POST, instance=item, user=request.user)
         if form.is_valid():
             item = form.save(commit=False)
             property_name = request.POST.getlist('property_name')
             item_property = request.POST.getlist('property')
+            time = request.POST.get('time')
+            depreciate_value = request.POST.get('depreciate_value')
+            depreciate_type = request.POST.get('depreciate_type')
+            time_type = request.POST.get('time_type')
             other_properties = {}
+            dep = Depreciation(time=time, depreciate_value=depreciate_value, depreciate_type=depreciate_type, time_type=time_type)
+            dep.save()
             for key, value in zip(property_name, item_property):
                 other_properties[key] = value
             # other_properties_json = json.dumps(other_properties, sort_keys=True, indent=4)
             item.other_properties = other_properties
+            item.depreciation = dep
             item.save(account_no=form.cleaned_data['account_no'], opening_balance=form.cleaned_data['opening_balance'])
             if request.is_ajax():
                 return render(request, 'callback.html', {'obj': ItemSerializer(item).data})
@@ -487,6 +497,7 @@ def item_form(request, id=None):
         'base_template': base_template,
         'item_data' : item.other_properties,
         'depreciation_form': depreciation_form,
+        'depreciation_data': depreciation_data
     })
 
 
