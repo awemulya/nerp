@@ -34,7 +34,7 @@ class DemandSerializer(serializers.ModelSerializer):
 
 
 class PurchaseOrderRowSerializer(serializers.ModelSerializer):
-    item_id = serializers.Field(source='item.id')
+    item_id = serializers.ReadOnlyField(source='item.id')
 
     class Meta:
         model = PurchaseOrderRow
@@ -49,7 +49,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
 
 
 class HandoverRowSerializer(serializers.ModelSerializer):
-    item_id = serializers.Field(source='item.id')
+    item_id = serializers.ReadOnlyField(source='item.id')
 
     class Meta:
         model = HandoverRow
@@ -64,7 +64,7 @@ class HandoverSerializer(serializers.ModelSerializer):
 
 
 class EntryReportRowSerializer(serializers.ModelSerializer):
-    item_id = serializers.Field(source='item.id')
+    item_id = serializers.ReadOnlyField(source='item.id')
 
     class Meta:
         model = EntryReportRow
@@ -80,8 +80,8 @@ class EntryReportSerializer(serializers.ModelSerializer):
 
 class InventoryAccountRowSerializer(serializers.ModelSerializer):
     id = serializers.Field(source='id')
-    voucher_no = serializers.Field(source='creator.get_voucher_no')
-    specification = serializers.Field(source='creator.specification')
+    voucher_no = serializers.ReadOnlyField(source='creator.get_voucher_no')
+    specification = serializers.ReadOnlyField(source='creator.specification')
     country_or_company = serializers.SerializerMethodField('get_country_or_company')
     size = serializers.SerializerMethodField('get_size')
     expected_life = serializers.SerializerMethodField('get_expected_life')
