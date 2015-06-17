@@ -973,11 +973,12 @@ def save_entry_report(request):
                          ['dr', submodel.item.account, submodel.quantity],
         )
         for i in range(0, int(row.get('quantity'))):
-            t = ItemInstance()
-            t.item = Item.objects.get(id=int(row.get('item_id')))
-            t.item_rate = row.get('rate')
-            t.location = ItemLocation.objects.get(name='Store')
-            t.save()
+            item_instance = ItemInstance()
+            item_instance.item = Item.objects.get(id=int(row.get('item_id')))
+            item_instance.item_rate = row.get('rate')
+            item_instance.location = ItemLocation.objects.get(name='Store')
+            item_instance.source = submodel
+            item_instance.save()
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
 

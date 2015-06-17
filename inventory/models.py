@@ -134,17 +134,6 @@ class ItemLocation(models.Model):
     def __unicode__(self):
         return self.name
 
-
-class ItemInstance(models.Model):
-    item = models.ForeignKey(Item, related_name='tracked_item')
-    item_rate = models.FloatField(null=True)
-    location = models.ForeignKey(ItemLocation)
-    other_properties = JSONField(null=True, blank=True)
-
-    def __unicode__(self):
-        return str(self.item) + str(self.location)
-
-
 class JournalEntry(models.Model):
     date = BSDateField()
     content_type = models.ForeignKey(ContentType, related_name='inventory_journal_entries')
@@ -180,7 +169,8 @@ class Transaction(models.Model):
         return str(self.account) + ' [' + str(self.dr_amount) + ' / ' + str(self.cr_amount) + ']'
 
     def total_dr_amount(self):
-        dr_transctions = Transaction.objects.filter(account__name=self.account.name, cr_amount=None, journal_entry__journal__rate=self.journal_entry.creator.rate)
+        dr_transctions = Transaction.objects.filter(account__name=self.account.name, cr_amount=None,
+                                                    journal_entry__journal__rate=self.journal_entry.creator.rate)
         total = 0
         for transaction in dr_transctions:
             total += transaction.dr_amount
@@ -192,6 +182,7 @@ class Transaction(models.Model):
         for transaction in dr_transctions:
             total += transaction.dr_amount
         return total
+
 
 def alter(account, date, diff):
     Transaction.objects.filter(journal_entry__date__gt=date, account=account).update(
@@ -387,7 +378,8 @@ class EntryReportRow(models.Model):
     other_expenses = models.FloatField(default=0)
     remarks = models.CharField(max_length=254, blank=True, null=True)
     entry_report = models.ForeignKey(EntryReport, related_name='rows')
-    journal = GenericRelation(JournalEntry, related_query_name='journal', content_type_field="content_type", object_id_field='model_id')
+    journal = GenericRelation(JournalEntry, related_query_name='journal', content_type_field="content_type",
+                              object_id_field='model_id')
 
     def total_entry_cost(self):
         return self.rate * self.quantity * 1.13 + self.other_expenses
@@ -408,7 +400,7 @@ class Handover(models.Model):
     types = [('Incoming', 'Incoming'), ('Outgoing', 'Outgoing')]
     type = models.CharField(max_length=9, choices=types, default='Incoming')
     entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
-                                            object_id_field='source_object_id')
+                                    object_id_field='source_object_id')
 
     def get_entry_report(self):
         entry_reports = self.entry_reports.all()
@@ -434,9 +426,11 @@ class HandoverRow(models.Model):
     condition = models.TextField(null=True, blank=True)
     handover = models.ForeignKey(Handover, related_name='rows')
 
+
 class UnsavedForeignKey(models.ForeignKey):
     # A ForeignKey which can point to an unsaved object
     allow_unsaved_instance_assignment = True
+
 
 class PurchaseOrder(models.Model):
     party = models.ForeignKey(Party)
@@ -445,7 +439,7 @@ class PurchaseOrder(models.Model):
     due_days = models.IntegerField(default=3)
     fiscal_year = models.ForeignKey(FiscalYear)
     entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
-                                            object_id_field='source_object_id')
+                                    object_id_field='source_object_id')
 
     def get_entry_report(self):
         entry_reports = self.entry_reports.all()
@@ -517,6 +511,7 @@ def _transaction_delete(sender, instance, **kwargs):
 
     transaction.account.save()
 
+
 class Inspection(models.Model):
     release_no = models.IntegerField(blank=True, null=True)
     fiscal_year = models.ForeignKey(FiscalYear)
@@ -558,3 +553,14 @@ class YearlyReportRow(models.Model):
     remaining = models.FloatField(blank=True, null=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
     yearly_report = models.ForeignKey(YearlyReport, related_name='rows')
+
+
+class ItemInstance(models.Model):
+    item = models.ForeignKey(Item, related_name='tracked_item')
+    item_rate = models.FloatField(null=True)
+    location = models.ForeignKey(ItemLocation)
+    other_properties = JSONField(null=True, blank=True)
+    source = models.ForeignKey(EntryReportRow, null=True, blank=True)
+
+    def __unicode__(self):
+        return unicode(self.item) + u' at ' + unicode(self.location)
