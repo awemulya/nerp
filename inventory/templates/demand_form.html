@@ -78,7 +78,6 @@
                             {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>{% trans 'Released Item Quantity' %}</th>
 
 
-
                     <th
                             {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>{% trans 'Inventory Account No.' %}</th>
                     <th
@@ -95,7 +94,8 @@
                     </td>
                     <td>
                         <select data-bind="selectize: $root.items, value: item_id, object: item, event: {change: $root.item_changed}"
-                                data-url="{% url 'create_inventory_item' %}" data-script="/static/js/inventory/item.js"></select>
+                                data-url="{% url 'create_inventory_item' %}"
+                                data-script="/static/js/inventory/item.js"></select>
                         {#                                                <select class="span12 item-selector"#}
                         {#                                                        data-bind="options: $root.items, optionsText: 'name', optionsValue: 'id', value: item_id, optionsCaption: ' ', event: {change: $root.item_changed}"></select>#}
                         {#                        <input type="hidden" data-url="{% url 'create_inventory_item' %}" class="change-on-ready"#}
@@ -106,16 +106,16 @@
                     <td data-bind="editableText: unit, disable_content_editable: status() != 'Requested'"></td>
                     <td data-bind="editableText: purpose, disable_content_editable: status() != 'Requested'"></td>
 
-                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}
-                        data-bind="editableText: release_quantity, localize: true, disable_content_editable: status() != 'Requested'"></td>
+                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>
+                        <input type="text" readonly
+                               data-bind="attr: {'data-dropdown': 'drop' + $index()}, value: 2, event: {'focus': release_focused}">
 
-{#                    <td>#}
-{#                        <select {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}#}
-{#                        data-bind="selectize: $root.items_locations, value: location"#}
-{#                                data-url="{% url 'create_item_location' %}">#}
-{#                        </select>#}
-{#                    </td>#}
+                        <div data-bind="attr: {'id':'drop'+$index()}, foundation: 1" data-dropdown-content
+                             class="f-dropdown content amount-dropdown">
+                            Haha
+                        </div>
 
+                    </td>
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}
                         data-bind="text: localize(inventory_account_id(), window.lang)">2
@@ -193,7 +193,8 @@
                 {#               data-bind="visible: $root.status() == 'Requested'"#}
                 >
         {% if scenario == 'Update' %}
-            <a href="{% url 'convert_demand_form' form.instance.id %}" class="small secondary button">{% trans 'Converter to excel' %}</a>
+            <a href="{% url 'convert_demand_form' form.instance.id %}"
+               class="small secondary button">{% trans 'Converter to excel' %}</a>
             <a class="small secondary button alert"
                href="{% url 'delete_demand_form' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}

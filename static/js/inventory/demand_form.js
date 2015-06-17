@@ -172,4 +172,8 @@ function DemandRow(row) {
         });
     }
 
+    self.release_focused = function(row, e){
+        $(e.currentTarget).click();
+    }
+
 }
