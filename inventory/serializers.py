@@ -72,14 +72,14 @@ class EntryReportRowSerializer(serializers.ModelSerializer):
 
 
 class EntryReportSerializer(serializers.ModelSerializer):
-    rows = EntryReportRowSerializer()
+    rows = EntryReportRowSerializer(many=True)
 
     class Meta:
         model = EntryReport
 
 
 class InventoryAccountRowSerializer(serializers.ModelSerializer):
-    id = serializers.Field(source='id')
+    id = serializers.ReadOnlyField(source='id')
     voucher_no = serializers.ReadOnlyField(source='creator.get_voucher_no')
     specification = serializers.ReadOnlyField(source='creator.specification')
     country_or_company = serializers.SerializerMethodField('get_country_or_company')

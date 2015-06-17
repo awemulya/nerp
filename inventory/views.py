@@ -19,7 +19,6 @@ import nepdate
 
 from users.models import group_required
 
-STORE_LOCATION_ID = 2
 from core.models import app_setting, FiscalYear
 from openpyxl import Workbook
 from django.utils.translation import ugettext as _
@@ -977,7 +976,7 @@ def save_entry_report(request):
             t = ItemInstance()
             t.item = Item.objects.get(id=int(row.get('item_id')))
             t.item_rate = row.get('rate')
-            t.location = ItemLocation.objects.get(id=STORE_LOCATION_ID)
+            t.location = ItemLocation.objects.get(name='Store')
             t.save()
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
