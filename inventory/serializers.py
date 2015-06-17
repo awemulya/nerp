@@ -1,6 +1,9 @@
 from rest_framework import serializers
-from inventory.models import Demand, DemandRow, Item, Party, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction
+from inventory.models import Depreciation, Demand, DemandRow, Item, Party, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction
 
+class DepreciationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Depreciation
 
 class ItemSerializer(serializers.ModelSerializer):
     account_no = serializers.ReadOnlyField(source='account.account_no')
