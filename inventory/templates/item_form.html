@@ -67,15 +67,22 @@
                 {% csrf_token %}
                 <div class="row">
                     <div class="medium-2 small-2 column">
-                    <label for="id_depreciate_value">Depreciate</label>
-
-                        {{ depreciation_form.depreciate_value }}
+                   <div class="row collapse">
+                        <label>Depreciate</label>
+                        <div class="small-9 columns">
+                            {{ depreciation_form.depreciate_value }}
+                        </div>
+                         <div class="small-3 columns">
+                         <span class="postfix" data-bind="text: postfix">%</span>
+                         </div>
                     </div>
+                    </div>
+                    
                     <div class="medium-2 small-2 column">
                     <label for="id_depreciate_type">Depreciation</label>
                         {{ depreciation_form.depreciate_type }}
                     </div>
-                    <div class="medium-8 small-8 column">
+                    <div class="medium-5 small-5 column">
                     </div>
                 </div>
                 <div class="row">

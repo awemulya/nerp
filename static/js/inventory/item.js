@@ -24,6 +24,13 @@ function DepreciationVM(data) {
         if (data[k] != null)
             self[k] = ko.observable(data[k]);
     }
+    self.postfix = ko.computed( function () {
+            if (self.depreciate_type() == 'Fixed percentage' || self.depreciate_type() == 'Compounded percentage'){
+                return '%'
+            } else {
+                return '/-'
+            }
+        });
 }
 
 function ItemVM(data) {
