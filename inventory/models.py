@@ -96,8 +96,8 @@ class Depreciation(models.Model):
     depreciate_type = models.CharField(choices=depreciation_choices, max_length=25, default="Fixed percentage")
     depreciate_value = models.PositiveIntegerField(default=0)
     time = models.PositiveIntegerField(default=0)
-    time_choices = [('Day', _('Day')), ('Month', _('Month')), ('Year', _('Year'))]
-    time_type = models.CharField(choices=time_choices, max_length=5, default='Year')
+    time_choices = [('Day(s)', _('Day(s)')), ('Month(s)', _('Month(s)')), ('Year(s)', _('Year(s)'))]
+    time_type = models.CharField(choices=time_choices, max_length=8, default='Year(s)')
 
 
 
