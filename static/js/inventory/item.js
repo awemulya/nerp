@@ -1,25 +1,25 @@
 $(document).ready(function () {
     if (typeof(item_data) == "undefined") {
-    	item = new ItemVM();
+        item = new ItemVM();
     } else {
-    	item = new ItemVM(item_data);
+        item = new ItemVM(item_data);
     }
-    if (typeof(depreciation_data) == "undefined") {
-        depreciate = new ItemVM();
-    } else {
-        depreciate = new DepreciationVM(depreciation_data);
-    }
-
-    // ko.applyBindings(item);
+    // if (typeof(depreciation_data) == "undefined") {
+    //     depreciate = new ItemVM();
+    // } else {
+    //     depreciate = new DepreciationVM(depreciation_data);
+    // }
+    
+    depreciate = new DepreciationVM(depreciation_data);
     var item_form = document.getElementById("other-properties");
     var depreciation_form = document.getElementById("depreciation")
-    // ko.cleanNode(item_form);
     ko.applyBindings(item, item_form);
     ko.applyBindings(depreciate, depreciation_form)
     $('.change-on-ready').trigger('change');
 });
 
 function DepreciationVM(data) {
+    self = this;
     for (var k in data) {
         if (data[k] != null)
             self[k] = ko.observable(data[k]);
@@ -38,7 +38,6 @@ function ItemVM(data) {
 	self.other_properties = ko.observableArray([]);
     
     if (data != null) {
-    	// var test = JSON.parse(data);
     	for (item_property in data) {
     		var property_name = item_property
     		var property = data[item_property]
