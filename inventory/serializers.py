@@ -7,9 +7,11 @@ class DepreciationSerializer(serializers.ModelSerializer):
 
 class ItemSerializer(serializers.ModelSerializer):
     account_no = serializers.ReadOnlyField(source='account.account_no')
+    depreciation = DepreciationSerializer()
 
     class Meta:
         model = Item
+        exclude = ['depreciation']
 
 
 class DemandRowSerializer(serializers.ModelSerializer):

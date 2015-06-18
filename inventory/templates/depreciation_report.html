@@ -1,0 +1,14 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Depreciation' %} {% trans 'Reports' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url 'depreciation_report' %}">{% trans 'Depreciation' %} {% trans 'Reports' %}</a>
+{% endblock %}
+
+{% block content %}
+	<h1>Depreciation Report</h1>
+{% endblock %}

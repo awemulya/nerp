@@ -113,7 +113,7 @@ class Item(models.Model):
     # vattable = models.BooleanField(default=True)
     property_classification_reference_number = models.CharField(max_length=20, blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
-    depreciation = models.ForeignKey(Depreciation, blank=True, null=True)
+    depreciation = models.ForeignKey(Depreciation, blank=True, null=True, related_name='depreciate_item')
 
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')

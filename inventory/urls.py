@@ -84,6 +84,8 @@ urlpatterns = patterns('',
                            name='list_handover_entry_reports'),
                        url(r'^entry-reports/purchase/$', views.list_purchase_entry_reports,
                            name='list_purchase_entry_reports'),
+                       url(r'^depreciation-report/$', views.depreciation_report,
+                           name='depreciation_report'),
 
                        #url(r'^entry-report/$', views.entry_report, name='create_entry_report'),
                        #url(r'^purchase-order/(?P<id>[0-9]+)/$', views.purchase_order, name='update_purchase_order'),
