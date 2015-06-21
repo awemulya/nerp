@@ -452,9 +452,17 @@ def save_inspection_report(request):
     return JsonResponse(dct)
 
 def depreciation_report(request):
-    import pdb; pdb.set_trace()
-    pass
-    return render(request, "depreciation_report.html")
+    obj = Transaction.objects.filter(account__item__depreciation__depreciate_value__gte=0, cr_amount=None)
+    transaction_without_duplication = remove_transaction_duplicate(obj)
+    # depreciate_object_list = []
+    # for depreciate in transaction_without_duplication:
+    #     depreciate_object_list.append(depreciate.account.item.depreciation)
+    transaction = TransactionSerializer(transaction_without_duplication, many=True).data
+    # depreciate_item = DepreciationSerializer(depreciate_object_list, many=True).data
+    # depreciate_object_list = []
+    # import pdb; pdb.set_trace()
+    return render(request, "depreciation_report.html", {'data': transaction})
+
 @login_required
 def item_form(request, id=None):
     if id:
