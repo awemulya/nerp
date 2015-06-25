@@ -978,6 +978,7 @@ def save_entry_report(request):
             item_instance.item_rate = row.get('rate')
             item_instance.location = ItemLocation.objects.get(name='Store')
             item_instance.source = submodel
+            item_instance.other_properties = item_instance.item.other_properties
             item_instance.save()
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
