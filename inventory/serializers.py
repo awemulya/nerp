@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from inventory.models import Demand, DemandRow, Item, Party, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, \
-    EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction, ItemLocation, Depreciation
+    EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction, ItemLocation, Depreciation, ItemInstance
+
+
+class ItemInstanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemInstance
 
 
 class ItemLocationSerializer(serializers.ModelSerializer):

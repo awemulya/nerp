@@ -33,7 +33,7 @@ from inventory.models import Depreciation, Demand, ItemInstance, \
 
 from inventory.serializers import DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
-    TransactionSerializer, ItemLocationSerializer
+    TransactionSerializer, ItemLocationSerializer, ItemInstanceSerializer
 
 def list_transactions(request):
     if request.POST:
@@ -583,6 +583,12 @@ def delete_demand(request, id):
 def items_as_json(request):
     items = Item.objects.all()
     items_data = ItemSerializer(items, many=True).data
+    return JsonResponse(items_data, safe=False)
+
+@login_required
+def item_instances_as_json(request):
+    items = ItemInstance.objects.all()
+    items_data = ItemInstanceSerializer(items, many=True).data
     return JsonResponse(items_data, safe=False)
 
 
