@@ -1153,7 +1153,7 @@ def unfulfill_demand(request):
 
     items = ItemInstance.objects.filter(item_id=row.item_id, location_id=int(params.get('location')))
     for item in items:
-        item.location = ItemLocation.objects.get(id=STORE_LOCATION_ID)
+        item.location = ItemLocation.objects.get(name='Store')
         item.save()
 
     row.status = 'Approved'
