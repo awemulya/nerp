@@ -587,9 +587,16 @@ def items_as_json(request):
 
 @login_required
 def item_instances_as_json(request):
-    items = ItemInstance.objects.all()
-    items_data = ItemInstanceSerializer(items, many=True).data
-    return JsonResponse(items_data, safe=False)
+    item_instances = ItemInstance.objects.filter(location__name='Store')
+    instances = {}
+    for item in item_instances:
+        item.other_properties['rate'] = item.item_rate
+        # property = cPickle.dumps(item.other_properties)
+        prop = json.dumps(item.other_properties)
+        if not prop in instances.keys():
+            instances[prop] = []
+        instances[prop].append(item.id)
+    return JsonResponse(instances, safe=False)
 
 
 @login_required

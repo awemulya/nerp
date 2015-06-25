@@ -47,8 +47,6 @@ class ItemForm(KOModelForm):
             raise forms.ValidationError("The account no. must be a number.")
         try:
             existing = InventoryAccount.objects.get(account_no=self.cleaned_data['account_no'])
-            # import ipdb
-            # ipdb.set_trace()
             if self.instance.account.id is not existing.id:
                 raise forms.ValidationError("The account no. " + str(
                     self.cleaned_data['account_no']) + " is already in use.")
