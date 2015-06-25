@@ -589,13 +589,15 @@ def items_as_json(request):
 def item_instances_as_json(request):
     item_instances = ItemInstance.objects.filter(location__name='Store')
     instances = {}
-    for item in item_instances:
-        item.other_properties['rate'] = item.item_rate
+    for instance in item_instances:
+        if not instance.item_id in instances.keys():
+            instances[instance.item_id] = {}
+        instance.other_properties['rate'] = instance.item_rate
         # property = cPickle.dumps(item.other_properties)
-        prop = json.dumps(item.other_properties)
-        if not prop in instances.keys():
-            instances[prop] = []
-        instances[prop].append(item.id)
+        prop = json.dumps(instance.other_properties)
+        if not prop in instances[instance.item_id].keys():
+            instances[instance.item_id][prop] = []
+        instances[instance.item_id][prop].append(instance.id)
     return JsonResponse(instances, safe=False)
 
 
