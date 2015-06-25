@@ -1,10 +1,16 @@
 from rest_framework import serializers
-from inventory.models import Demand, DemandRow, Item, Party, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction, ItemLocation
+from inventory.models import Demand, DemandRow, Item, Party, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, \
+    EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction, ItemLocation, Depreciation
+
 
 class ItemLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemLocation
 
+
+class DepreciationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Depreciation
 
 
 class ItemSerializer(serializers.ModelSerializer):
@@ -157,7 +163,6 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         except:
             return ''
 
-
     def get_remarks(self, obj):
         try:
             return obj.account_row.remarks
@@ -171,7 +176,8 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
 class InspectionRowSerializer(serializers.ModelSerializer):
     item_name = serializers.ReadOnlyField(source="transaction.account.item.name")
     item_account_number = serializers.ReadOnlyField(source="transaction.account.account_no")
-    item_property_classification_reference_number = serializers.ReadOnlyField(source="transaction.account.item.property_classification_reference_number")
+    item_property_classification_reference_number = serializers.ReadOnlyField(
+        source="transaction.account.item.property_classification_reference_number")
     item_unit = serializers.ReadOnlyField(source="transaction.account.item.unit")
     item_quantity = serializers.ReadOnlyField(source="transaction.dr_amount")
 
@@ -179,16 +185,19 @@ class InspectionRowSerializer(serializers.ModelSerializer):
         model = InspectionRow
         exclude = ['transaction']
 
+
 class InspectionSerializer(serializers.ModelSerializer):
     rows = InspectionRowSerializer(many=True)
 
     class Meta:
         model = Inspection
 
+
 class TransactionSerializer(serializers.ModelSerializer):
     account_no = serializers.ReadOnlyField(source="account.account_no")
     current_balance = serializers.ReadOnlyField(source="account.current_balance")
-    inventory_classification_reference_no = serializers.ReadOnlyField(source="account.item.property_classification_reference_number")
+    inventory_classification_reference_no = serializers.ReadOnlyField(
+        source="account.item.property_classification_reference_number")
     item_name = serializers.ReadOnlyField(source="account.item.name")
     unit = serializers.ReadOnlyField(source="account.item.unit")
     rate = serializers.ReadOnlyField(source="journal_entry.creator.rate")

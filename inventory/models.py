@@ -91,6 +91,15 @@ class InventoryAccount(models.Model):
     #         return transactions[0].current_dr
     #     return 0
 
+class Depreciation(models.Model):
+    depreciation_choices = [('Fixed percentage', _('Fixed percentage')), ('Compounded percentage', _('Compounded percentage')),  ('Fixed price', _('Fixed price'))]
+    depreciate_type = models.CharField(choices=depreciation_choices, max_length=25, default="Fixed percentage")
+    depreciate_value = models.PositiveIntegerField(default=0)
+    time = models.PositiveIntegerField(default=0)
+    time_choices = [('Day(s)', _('Day(s)')), ('Month(s)', _('Month(s)')), ('Year(s)', _('Year(s)'))]
+    time_type = models.CharField(choices=time_choices, max_length=8, default='Year(s)')
+
+
 
 class Item(models.Model):
     code = models.CharField(max_length=10, blank=True, null=True)
@@ -104,6 +113,7 @@ class Item(models.Model):
     # vattable = models.BooleanField(default=True)
     property_classification_reference_number = models.CharField(max_length=20, blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
+    depreciation = models.ForeignKey(Depreciation, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')

@@ -1,9 +1,18 @@
 from django import forms
 
 from app.utils.forms import KOModelForm, UserModelChoiceField
-from models import Item, Category, Demand, PurchaseOrder, InventoryAccount, Handover, EntryReport, ItemLocation
+
+from models import Item, Category, Demand, PurchaseOrder, InventoryAccount, Handover, EntryReport, Depreciation, \
+    ItemLocation
+
 from users.models import User
 from django.utils.translation import ugettext_lazy as _
+
+
+class DepreciationForm(KOModelForm):
+    class Meta:
+        model = Depreciation
+        fields = ('depreciate_type', 'depreciate_value', 'time', 'time_type')
 
 
 class ItemForm(KOModelForm):
@@ -49,7 +58,7 @@ class ItemForm(KOModelForm):
 
     class Meta:
         model = Item
-        exclude = ['account', 'code', 'category', 'other_properties']
+        exclude = ['account', 'code', 'category', 'other_properties', 'depreciation']
 
 
 class CategoryForm(KOModelForm):
@@ -94,6 +103,7 @@ class EntryReportForm(KOModelForm):
     class Meta:
         model = EntryReport
         exclude = ()
+
 
 class ItemLocationForm(KOModelForm):
     class Meta:
