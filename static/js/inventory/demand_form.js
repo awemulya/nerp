@@ -16,7 +16,7 @@ function DemandViewModel(data) {
             self.items = ko.observableArray(data);
         }
     });
-    
+
     $.ajax({
         url: '/inventory/items_locations.json',
         dataType: 'json',
@@ -31,14 +31,14 @@ function DemandViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            console.log(data);
-            //self.item_instances = ko.observableArray(data);
+            //console.log(data);
+            self.item_instances = ko.observableArray(data);
         }
     });
-    
+
     self.msg = ko.observable('');
     self.status = ko.observable('standby');
-    
+
     self.item_changed = function (row) {
         var selected_item = $.grep(self.items(), function (i) {
             return i.id == row.item_id();
@@ -49,7 +49,7 @@ function DemandViewModel(data) {
         row.inventory_account_id(selected_item.account_no);
     }
 
-    self.table_view = new TableViewModel({rows: data.rows}, DemandRow);
+    self.table_view = new TableViewModel({rows: data.rows, argument: self}, DemandRow);
 
     for (var k in data)
         self[k] = ko.observable(data[k]);
@@ -86,13 +86,13 @@ function DemandViewModel(data) {
 
 }
 
-function DemandRow(row) {
+function DemandRow(row, demand_vm) {
 
     var self = this;
     //default values
     self.item_id = ko.observable();
     self.specification = ko.observable();
-    self.quantity = ko.observable().extend({ required: true });
+    self.quantity = ko.observable().extend({required: true});
     self.unit = ko.observable();
     self.release_quantity = ko.observable();
     self.inventory_account_id = ko.observable();
@@ -100,8 +100,9 @@ function DemandRow(row) {
     self.status = ko.observable('Requested');
     self.item = ko.observable();
     self.location = ko.observable();
-    self.purpose = ko.observable()
-    
+    self.purpose = ko.observable();
+    self.item_instances = ko.observableArray();
+
 
     for (var k in row) {
         if (row[k] != null)
@@ -182,8 +183,12 @@ function DemandRow(row) {
         });
     }
 
-    self.release_focused = function(row, e){
+    self.release_focused = function (row, e) {
         $(e.currentTarget).click();
     }
+
+    self.item_id.subscribe(function (val) {
+        self.item_instances(get_by_id(demand_vm.item_instances, val));
+    })
 
 }

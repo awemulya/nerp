@@ -1165,6 +1165,15 @@ Object.size = function (obj) {
     return size;
 };
 
+get_by_id = function (array, id) {
+    if (typeof(array) == 'function') {
+        array = array()
+    }
+    return $.grep(array, function (e) {
+        return e.id == id;
+    })[0];
+}
+
 //String
 
 //Converts underscored or dashed string to camelCase
