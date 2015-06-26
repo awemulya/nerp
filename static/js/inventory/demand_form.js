@@ -25,6 +25,16 @@ function DemandViewModel(data) {
             self.items_locations = ko.observableArray(data);
         }
     });
+
+    $.ajax({
+        url: '/inventory/item_instances.json',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            console.log(data);
+            //self.item_instances = ko.observableArray(data);
+        }
+    });
     
     self.msg = ko.observable('');
     self.status = ko.observable('standby');

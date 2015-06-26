@@ -598,7 +598,10 @@ def item_instances_as_json(request):
         if not prop in instances[instance.item_id].keys():
             instances[instance.item_id][prop] = []
         instances[instance.item_id][prop].append(instance.id)
-    return JsonResponse(instances, safe=False)
+    lst = []
+    for key, value in instances.iteritems():
+        lst.append({'id': key, 'instances': value})
+    return JsonResponse(lst, safe=False)
 
 
 @login_required
