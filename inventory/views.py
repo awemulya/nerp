@@ -35,6 +35,7 @@ from inventory.serializers import DepreciationSerializer, DemandSerializer, Item
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
     TransactionSerializer, ItemLocationSerializer, ItemInstanceSerializer
 
+
 def list_transactions(request):
     if request.POST:
         param = request.POST
@@ -585,6 +586,7 @@ def items_as_json(request):
     items_data = ItemSerializer(items, many=True).data
     return JsonResponse(items_data, safe=False)
 
+
 @login_required
 def item_instances_as_json(request):
     item_instances = ItemInstance.objects.filter(location__name='Store')
@@ -600,7 +602,10 @@ def item_instances_as_json(request):
         instances[instance.item_id][prop].append(instance.id)
     lst = []
     for key, value in instances.iteritems():
-        lst.append({'id': key, 'instances': value})
+        instance_lst = []
+        for pro, instance_ids in value.iteritems():
+            instance_lst.append({'property': pro, 'instances': instance_ids})
+        lst.append({'id': key, 'groups': instance_lst})
     return JsonResponse(lst, safe=False)
 
 
