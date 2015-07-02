@@ -124,9 +124,9 @@
                                 <tbody>
                                 <!-- ko foreach: item_instances -->
                                 <tr>
-                                    <td data-bind="text:property"></td>
-                                    <td data-bind="text:1"></td>
-                                    <td><input type="text" data-bind="value:1"/>/10</td>
+                                    <td data-bind="text:property_str"></td>
+                                    <td data-bind="text:rate"></td>
+                                    <td><input type="text" data-bind="value:1"/>/<span data-bind="text: count()"></span></td>
                                     <td data-bind="text:'Store'"></td>
                                     <td>
                                         <button>+</button>

@@ -11,7 +11,8 @@ function GroupVM(group) {
     self.rate = property.rate;
     delete property.rate;
     self.property = property;
-
+    var json_str = JSON.stringify(property);
+    self.property_str = json_str.substring(1, json_str.length - 1).replace(/"/g, '').replace(/,/g, ', ');
     self.count = function () {
         return self.instances().length;
     }
@@ -212,13 +213,15 @@ function DemandRow(row, demand_vm) {
     };
 
     self.item_id.subscribe(function (val) {
-        var instances = get_by_id(demand_vm.item_instances, val);
-        if (instances) {
-            self.item_instances(instances.groups);
-        }
-        else {
-            self.item_instances(null);
-        }
+        //var instances = get_by_id(demand_vm.item_instances, val);
+        //if (instances) {
+        //    self.item_instances(instances.groups);
+        //}
+        //else {
+        //    self.item_instances(null);
+        //}
+        self.item_instances(demand_vm.all_item_instances()[val]());
+        //debugger;
     })
 
 }
