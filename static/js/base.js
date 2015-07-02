@@ -1174,6 +1174,15 @@ get_by_id = function (array, id) {
     })[0];
 }
 
+get_by_name = function (array, name) {
+    if (typeof(array) == 'function') {
+        array = array()
+    }
+    return $.grep(array, function (e) {
+        return e.name == name;
+    })[0];
+}
+
 //String
 
 //Converts underscored or dashed string to camelCase

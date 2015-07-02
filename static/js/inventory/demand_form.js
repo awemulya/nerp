@@ -66,6 +66,9 @@ function DemandViewModel(data) {
         }
     });
 
+    self.item_locations_sans_store = ko.observableArray(self.item_locations().slice(0));
+    self.item_locations_sans_store.remove(get_by_name(self.item_locations_sans_store(), 'Store'));
+
     self.all_item_instances = ko.observable({});
 
     $.ajax({
