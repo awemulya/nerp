@@ -42,6 +42,14 @@ function GroupVM(group) {
     self.quantity = ko.observable();
     self.location_id = ko.observable();
     self.id = group.property;
+
+    self.valid = ko.computed(function(){
+        if (isAN(self.quantity()) && self.quantity()>0){
+            return true;
+        }
+        return false;
+    });
+
 }
 
 function DemandViewModel(data) {

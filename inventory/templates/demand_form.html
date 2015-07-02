@@ -159,7 +159,7 @@
                                             <select data-bind="selectize: $root.item_locations_sans_store, value: location_id"></select>
                                         </td>
                                         <td>
-                                            <button data-bind="click: $parent.add">+</button>
+                                            <button data-bind="click: $parent.add, enable: valid()">+</button>
                                         </td>
                                     </form>
                                 </tr>
