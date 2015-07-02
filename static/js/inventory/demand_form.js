@@ -4,6 +4,21 @@ $(document).ready(function () {
     $('.change-on-ready').trigger('change');
 });
 
+function ReleaseVM(group){
+    //debugger;
+    var self = this;
+    self.instances = ko.observableArray(group.instances.splice(0, group.quantity()));
+    self.id = group.id;
+    self.property = group.property;
+    self.property_str = group.property_str;
+    self.rate = group.rate;
+    self.location_id = group.location_id();
+    self.count = function () {
+        return self.instances().length;
+    }
+
+}
+
 function GroupVM(group) {
     var self = this;
     self.instances = ko.observableArray(group.instances);
@@ -16,6 +31,9 @@ function GroupVM(group) {
     self.count = function () {
         return self.instances().length;
     }
+    self.quantity = ko.observable();
+    self.location_id = ko.observable();
+    self.id = group.property;
 }
 
 function DemandViewModel(data) {
@@ -36,7 +54,7 @@ function DemandViewModel(data) {
         dataType: 'json',
         async: false,
         success: function (data) {
-            self.items_locations = ko.observableArray(data);
+            self.item_locations = ko.observableArray(data);
         }
     });
 
@@ -126,7 +144,8 @@ function DemandRow(row, demand_vm) {
     self.item = ko.observable();
     self.location = ko.observable();
     self.purpose = ko.observable();
-    self.item_instances = ko.observableArray();
+    self.groups = ko.observableArray();
+    self.releases = ko.observableArray();
 
 
     for (var k in row) {
@@ -212,16 +231,13 @@ function DemandRow(row, demand_vm) {
         $(e.currentTarget).click();
     };
 
+    self.add = function(group){
+        var release = new ReleaseVM(group);
+        self.releases.push(release);
+    }
+
     self.item_id.subscribe(function (val) {
-        //var instances = get_by_id(demand_vm.item_instances, val);
-        //if (instances) {
-        //    self.item_instances(instances.groups);
-        //}
-        //else {
-        //    self.item_instances(null);
-        //}
-        self.item_instances(demand_vm.all_item_instances()[val]());
-        //debugger;
-    })
+        self.groups(demand_vm.all_item_instances()[val]());
+    });
 
 }
