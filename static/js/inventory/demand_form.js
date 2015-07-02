@@ -188,7 +188,13 @@ function DemandRow(row, demand_vm) {
     }
 
     self.item_id.subscribe(function (val) {
-        self.item_instances(get_by_id(demand_vm.item_instances, val));
+        var instances = get_by_id(demand_vm.item_instances, val);
+        if (instances) {
+            self.item_instances(instances.groups);
+        }
+        else{
+            self.item_instances(null);
+        }
     })
 
 }

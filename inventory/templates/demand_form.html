@@ -112,7 +112,32 @@
                         <!-- ko if:item_id -->
                         <div data-bind="attr: {'id':'drop'+$index()}, foundation: 1" data-dropdown-content
                              class="f-dropdown content amount-dropdown">
-                            Haha
+                            <table>
+                                <thead>
+                                <th>Properties</th>
+                                <th>Rate</th>
+                                <th>Quantity</th>
+                                <th>Location</th>
+                                <th></th>
+                                </thead>
+
+                                <tbody>
+                                <!-- ko foreach: item_instances -->
+                                <tr>
+                                    <td data-bind="text:property"></td>
+                                    <td data-bind="text:1"></td>
+                                    <td><input type="text" data-bind="value:1"/>/10</td>
+                                    <td data-bind="text:'Store'"></td>
+                                    <td>
+                                        <button>+</button>
+                                    </td>
+                                </tr>
+                                <!-- /ko -->
+                                </tbody>
+                            </table>
+
+                            <br/>
+
                         </div>
                         <!-- /ko -->
 
