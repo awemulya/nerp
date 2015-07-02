@@ -127,16 +127,17 @@
                                     <td data-bind="text:property_str"></td>
                                     <td data-bind="text:rate"></td>
                                     <td data-bind="text:count()"></td>
-                                    <td data-bind="text:get_by_id($root.item_locations, location_id).name"></td>
+                                    <td data-bind="text:get_location_name($root.item_locations)"></td>
                                     <td>
                                         <button data-bind="click: $parent.add">x</button>
-{#                                        <span data-bind="text: ko.toJSON($parent)"></span>#}
+                                        {#                                        <span data-bind="text: ko.toJSON($parent)"></span>#}
                                     </td>
                                 </tr>
                                 <!-- /ko -->
                                 </tbody>
                             </table>
-                            <table>
+
+                            <table id="group-table">
                                 <thead>
                                 <th>Properties</th>
                                 <th>Rate</th>
@@ -150,14 +151,17 @@
                                 <tr>
                                     <td data-bind="text:property_str"></td>
                                     <td data-bind="text:rate"></td>
-                                    <td><input type="number" data-bind="value:quantity, attr:{}"/>/<span data-bind="text: count()"></span></td>
-                                    <td>
-                                        <select data-bind="selectize: $root.item_locations, value: location_id"></select>
-                                    </td>
-                                    <td>
-                                        <button data-bind="click: $parent.add">+</button>
-{#                                        <span data-bind="text: ko.toJSON($parent)"></span>#}
-                                    </td>
+                                    <form action="#" method="get">
+                                        <td><input type="number" required
+                                                   data-bind="value:quantity, max: count()"/>/<span
+                                                data-bind="text: count()"></span></td>
+                                        <td>
+                                            <select data-bind="selectize: $root.item_locations, value: location_id"></select>
+                                        </td>
+                                        <td>
+                                            <button data-bind="click: $parent.add">+</button>
+                                        </td>
+                                    </form>
                                 </tr>
                                 <!-- /ko -->
                                 </tbody>

@@ -312,11 +312,16 @@ ul.messages li {
     clear: both;
 }
 
-.library-search ul *{
+.library-search ul * {
     display: inline;
 }
 
 ul.messages {
     border: none;
     margin-left: -1em;
+}
+
+table#group-table td input[type="number"]{
+    display: inline;
+    max-width: 5em;
 }

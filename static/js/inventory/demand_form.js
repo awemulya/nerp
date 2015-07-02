@@ -16,6 +16,14 @@ function ReleaseVM(group){
     self.count = function () {
         return self.instances().length;
     }
+    self.get_location_name = function(locations){
+        var location = get_by_id(locations, self.location_id);
+        if (location){
+            return location.name;
+        }else{
+            return '-';
+        }
+    }
 
 }
 
@@ -234,6 +242,7 @@ function DemandRow(row, demand_vm) {
     self.add = function(group){
         var release = new ReleaseVM(group);
         self.releases.push(release);
+        group.quantity(null);
     }
 
     self.item_id.subscribe(function (val) {
