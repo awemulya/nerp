@@ -4,6 +4,19 @@ $(document).ready(function () {
     $('.change-on-ready').trigger('change');
 });
 
+function GroupVM(group) {
+    var self = this;
+    self.instances = ko.observableArray(group.instances);
+    var property = JSON.parse(group.property);
+    self.rate = property.rate;
+    delete property.rate;
+    self.property = property;
+
+    self.count = function () {
+        return self.instances().length;
+    }
+}
+
 function DemandViewModel(data) {
 
     var self = this;
@@ -26,13 +39,24 @@ function DemandViewModel(data) {
         }
     });
 
+    self.all_item_instances = ko.observable({});
+
     $.ajax({
         url: '/inventory/item_instances.json',
         dataType: 'json',
         async: false,
         success: function (data) {
-            //console.log(data);
             self.item_instances = ko.observableArray(data);
+            for (var k in data) {
+                var obj = data[k];
+                var groups = [];
+                for (var l in obj.groups) {
+                    var group = obj.groups[l];
+                    groups.push(new GroupVM(group));
+                }
+                self.all_item_instances()[obj.id] = ko.observableArray(groups);
+                //debugger;
+            }
         }
     });
 
@@ -192,7 +216,7 @@ function DemandRow(row, demand_vm) {
         if (instances) {
             self.item_instances(instances.groups);
         }
-        else{
+        else {
             self.item_instances(null);
         }
     })
