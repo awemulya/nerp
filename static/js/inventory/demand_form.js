@@ -71,7 +71,7 @@ function DemandViewModel(data) {
         row.specification(selected_item.description);
         row.unit(selected_item.unit);
         row.inventory_account_id(selected_item.account_no);
-    }
+    };
 
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, DemandRow);
 
@@ -148,7 +148,7 @@ function DemandRow(row, demand_vm) {
                 }
             }
         });
-    }
+    };
 
     self.disapprove = function (item, event) {
         $.ajax({
@@ -165,7 +165,7 @@ function DemandRow(row, demand_vm) {
                 }
             }
         });
-    }
+    };
 
     self.fulfill = function (root, item, event) {
         if (root.release_no() == '' || !root.release_no()) {
@@ -182,12 +182,12 @@ function DemandRow(row, demand_vm) {
                     alert.error(msg.error_message);
                 }
                 else {
-                    alert.success('Set as Fulfilled!')
+                    alert.success('Set as Fulfilled!');
                     self.status('Fulfilled');
                 }
             }
         });
-    }
+    };
 
     self.unfulfill = function (item, event) {
         $.ajax({
@@ -205,11 +205,11 @@ function DemandRow(row, demand_vm) {
                 }
             }
         });
-    }
+    };
 
     self.release_focused = function (row, e) {
         $(e.currentTarget).click();
-    }
+    };
 
     self.item_id.subscribe(function (val) {
         var instances = get_by_id(demand_vm.item_instances, val);
