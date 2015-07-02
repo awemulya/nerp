@@ -147,6 +147,20 @@ ko.bindingHandlers.flash = {
     }
 };
 
+ko.bindingHandlers.max = {
+    init: function (element, valueAccessor) {
+        $(element).attr('max', valueAccessor());
+    },
+    update: function (element, valueAccessor) {
+
+        $(element).on('change', function(e){
+            if ($(element).val()> valueAccessor()){
+                $(element).val(null);
+            }
+        });
+    }
+};
+
 
 ko.bindingHandlers.editableText = {
     init: function (element, valueAccessor) {
