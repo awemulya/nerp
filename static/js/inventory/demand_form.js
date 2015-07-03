@@ -4,7 +4,7 @@ $(document).ready(function () {
     $('.change-on-ready').trigger('change');
 });
 
-function ReleaseVM(group){
+function ReleaseVM(group) {
     //debugger;
     var self = this;
     self.instances = ko.observableArray(group.instances.splice(0, group.quantity()));
@@ -16,11 +16,11 @@ function ReleaseVM(group){
     self.count = function () {
         return self.instances().length;
     }
-    self.get_location_name = function(locations){
+    self.get_location_name = function (locations) {
         var location = get_by_id(locations, self.location_id);
-        if (location){
+        if (location) {
             return location.name;
-        }else{
+        } else {
             return '-';
         }
     }
@@ -43,8 +43,8 @@ function GroupVM(group) {
     self.location_id = ko.observable();
     self.id = group.property;
 
-    self.valid = ko.computed(function(){
-        if (isAN(self.quantity()) && self.quantity()>0){
+    self.valid = ko.computed(function () {
+        if (isAN(self.quantity()) && self.quantity() > 0) {
             return true;
         }
         return false;
@@ -250,10 +250,16 @@ function DemandRow(row, demand_vm) {
         $(e.currentTarget).click();
     };
 
-    self.add = function(group){
+    self.add = function (group) {
         var release = new ReleaseVM(group);
         self.releases.push(release);
         group.quantity(null);
+    }
+
+    self.remove = function (release) {
+        var group = get_by_id(self.groups(), release.id);
+        ko.utils.arrayPushAll(group.instances, release.instances())
+        self.releases.remove(release);
     }
 
     self.item_id.subscribe(function (val) {
