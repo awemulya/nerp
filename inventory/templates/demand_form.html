@@ -112,6 +112,7 @@
                         <!-- ko if:item_id -->
                         <div data-bind="attr: {'id':'drop'+$index()}, foundation: 1" data-dropdown-content
                              class="f-dropdown content amount-dropdown">
+                            <!-- ko if: releases().length -->
                             <table id="release-table">
                                 <thead>
                                 <th>Properties</th>
@@ -136,6 +137,7 @@
                                 <!-- /ko -->
                                 </tbody>
                             </table>
+                            <!-- /ko -->
 
                             <table id="group-table">
                                 <thead>
