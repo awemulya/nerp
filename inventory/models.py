@@ -19,6 +19,19 @@ from core.models import FiscalYear, Party
 from app.utils.translation import BSDateField
 from jsonfield import JSONField
 
+class Site(models.Model):
+    name = models.CharField(max_length=250)
+    head_office = models.BooleanField(default=False)
+    branch_office = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        if self.branch_office:
+            Site.objects.all().update(branch_office=False)
+        super(Site, self).save(*args, **kwargs)
+
 
 class Category(MPTTModel):
     name = models.CharField(max_length=50)
