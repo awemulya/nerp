@@ -249,10 +249,10 @@ function DemandRow(row, demand_vm) {
     self.release_focused = function (row, e) {
         var target = $(e.currentTarget);
         //target.click();
-        if (!target.hasClass('open')){
+        if (!target.hasClass('open')) {
             target.click();
         }
-        if (!target.hasClass('open')){
+        if (!target.hasClass('open')) {
             target.click();
         }
     };
@@ -270,7 +270,9 @@ function DemandRow(row, demand_vm) {
     }
 
     self.item_id.subscribe(function (val) {
-        self.groups(demand_vm.all_item_instances()[val]());
+        if (val) {
+            self.groups(demand_vm.all_item_instances()[val]());
+        }
     });
 
 }
