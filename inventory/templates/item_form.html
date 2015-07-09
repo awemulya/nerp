@@ -29,6 +29,9 @@
             <ul class="tabs" data-tab id="training-tab">
                 <li class="tab-title active"><a href="#basic">Basic</a></li>
                 <li class="tab-title"><a href="#depreciation">Depreciation</a></li>
+                {% if scenario == 'Update' %}
+                <li class="tab-title"><a href="#item_instance" class="item-instance">Item Instance</a></li>
+                {% endif %}
             </ul>
 
             <div class="tabs-content">
@@ -107,6 +110,32 @@
                 </div>
             </div>
         </div>
-        </form>     
+        </form>
+        {% if scenario == 'Update' %}
+        <div class="content" id="item_instance">
+            <table class="table-bordered">
+            <thead>
+                <th>{% trans "Name" %}</th>
+                <th>{% trans 'Rate' %}</th>
+                <th>{% trans 'Location' %}</th>
+                <th>{% trans "Other Properties" %}</th>
+            </thead>
+            <tbody>
+            {% for obj in item_instances %}
+                <tr>
+                    <td>
+                        <a href="#">{{ obj.item }}</a>
+                    </td>
+                    <td>
+                        <a href="#">{{ obj.item_rate }}</a>
+                    </td>
+                    <td>{{ obj.location }}</td>
+                    <td id="item_instance_properties">{{ obj.other_properties| jsonify }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            </table>
+        </div>     
+        {% endif %}
     </div>
 {% endblock %}

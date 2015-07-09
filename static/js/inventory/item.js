@@ -16,6 +16,12 @@ $(document).ready(function () {
     ko.applyBindings(item, item_form);
     ko.applyBindings(depreciate, depreciation_form)
     $('.change-on-ready').trigger('change');
+    
+    $("table tr #item_instance_properties").each(function(i) {
+        value = $(this).text().slice(1,-1);
+        $(this).html(value);
+    });
+    
 });
 
 function DepreciationVM(data) {
@@ -65,4 +71,4 @@ function OtherPropertiesVM() {
     var self = this;
     self.property_name = ko.observable();
     self.property = ko.observable();
-}    	
+}

@@ -513,11 +513,13 @@ def item_form(request, id=None):
         item = get_object_or_404(Item, id=id)
         scenario = 'Update'
         depreciation_data = DepreciationSerializer(item.depreciation).data
+        item_instances = ItemInstance.objects.filter(item__id=item.id)
     else:
         item = Item()
         scenario = 'Create'
         depreciation = Depreciation(depreciate_type="Fixed percentage", depreciate_value=0, time=0, time_type='Year(s)')
         depreciation_data = DepreciationSerializer(depreciation).data
+        item_instances = []
     if request.POST:
         form = ItemForm(data=request.POST, instance=item, user=request.user)
         if form.is_valid():
@@ -562,7 +564,8 @@ def item_form(request, id=None):
         'base_template': base_template,
         'item_data': item.other_properties,
         'depreciation_form': depreciation_form,
-        'depreciation_data': depreciation_data
+        'depreciation_data': depreciation_data,
+        'item_instances': item_instances,
     })
 
 
