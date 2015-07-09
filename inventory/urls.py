@@ -11,6 +11,8 @@ urlpatterns = patterns('',
                            name='delete_yearly_report'),
                        url(r'^list_transactions$', views.list_transactions,
                            name='inventory_transactions_list'),
+                       url(r'^iteminstance/(?P<id>[0-9]+)/$', views.item_instance_form, 
+                           name='item_instance_detail'),
 
                        url(r'^inspection/$', views.inspection_report_list, name='inspection_report_list'),
                        url(r'^save/inspection/$', views.save_inspection_report, name='save_inspection_report'),

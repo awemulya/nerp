@@ -24,7 +24,7 @@ from users.models import group_required
 from inventory.filters import InventoryItemFilter
 
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, \
-    ItemLocationForm, DepreciationForm
+    ItemLocationForm, DepreciationForm, ItemInstanceForm
 
 from inventory.models import Depreciation, Demand, ItemInstance, \
     DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, \
@@ -567,6 +567,24 @@ def item_form(request, id=None):
         'depreciation_data': depreciation_data,
         'item_instances': item_instances,
     })
+
+def item_instance_form(request, id):
+    item = get_object_or_404(ItemInstance, id=id)
+    if request.POST:
+        form = ItemInstanceForm(data=request.POST, instance=item)
+        if form.is_valid():
+            item_instance = form.save(commit=False)
+            property_name = request.POST.getlist('property_name')
+            item_property = request.POST.getlist('property')
+            other_properties = {}
+            for key, value in zip(property_name, item_property):
+                other_properties[key] = value
+            item_instance.other_properties = other_properties
+            item_instance.save()
+            return redirect('/inventory/items/')
+    else:
+        form = ItemInstanceForm(instance=item)
+    return render(request, 'item_instance_form.html', {'form': form, 'item_data': item.other_properties})
 
 
 @group_required('Store Keeper', 'Chief')
