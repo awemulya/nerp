@@ -19,6 +19,19 @@ from core.models import FiscalYear, Party
 from app.utils.translation import BSDateField
 from jsonfield import JSONField
 
+class Site(models.Model):
+    name = models.CharField(max_length=250)
+    head_office = models.BooleanField(default=False)
+    branch_office = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        if self.branch_office:
+            Site.objects.all().update(branch_office=False)
+        super(Site, self).save(*args, **kwargs)
+
 
 class Category(MPTTModel):
     name = models.CharField(max_length=50)
@@ -113,7 +126,7 @@ class Item(models.Model):
     # vattable = models.BooleanField(default=True)
     property_classification_reference_number = models.CharField(max_length=20, blank=True, null=True)
     other_properties = JSONField(blank=True, null=True)
-    depreciation = models.ForeignKey(Depreciation, blank=True, null=True)
+    depreciation = models.ForeignKey(Depreciation, blank=True, null=True, related_name='depreciate_item')
 
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')

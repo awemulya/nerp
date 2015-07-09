@@ -495,6 +495,17 @@ def save_inspection_report(request):
             dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
 
+def depreciation_report(request):
+    obj = Transaction.objects.filter(account__item__depreciation__depreciate_value__gte=0, cr_amount=None)
+    transaction_without_duplication = remove_transaction_duplicate(obj)
+    # depreciate_object_list = []
+    # for depreciate in transaction_without_duplication:
+    #     depreciate_object_list.append(depreciate.account.item.depreciation)
+    transaction = TransactionSerializer(transaction_without_duplication, many=True).data
+    # depreciate_item = DepreciationSerializer(depreciate_object_list, many=True).data
+    # depreciate_object_list = []
+    # import pdb; pdb.set_trace()
+    return render(request, "depreciation_report.html", {'data': transaction})
 
 @login_required
 def item_form(request, id=None):
@@ -517,10 +528,18 @@ def item_form(request, id=None):
             depreciate_value = request.POST.get('depreciate_value')
             depreciate_type = request.POST.get('depreciate_type')
             time_type = request.POST.get('time_type')
+            depreciation_id = request.POST.get('depreciation_id')
+            if depreciation_id == '':
+                dep = Depreciation(time=time, depreciate_value=depreciate_value, depreciate_type=depreciate_type, time_type=time_type)
+                dep.save()
+            else:
+                dep = Depreciation.objects.get(pk=depreciation_id)
+                dep.time = time
+                dep.depreciate_value = depreciate_value
+                dep.depreciate_type = depreciate_type
+                dep.time_type = time_type
+                dep.save()    
             other_properties = {}
-            dep = Depreciation(time=time, depreciate_value=depreciate_value, depreciate_type=depreciate_type,
-                               time_type=time_type)
-            dep.save()
             for key, value in zip(property_name, item_property):
                 other_properties[key] = value
             # other_properties_json = json.dumps(other_properties, sort_keys=True, indent=4)

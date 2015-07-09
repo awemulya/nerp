@@ -12,4 +12,3 @@ admin.site.register(Inspection)
 admin.site.register(InspectionRow)
 admin.site.register(YearlyReport)
 admin.site.register(YearlyReportRow)
-
