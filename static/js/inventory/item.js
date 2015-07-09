@@ -52,7 +52,6 @@ function ItemVM(data) {
     		var property = data[item_property]
     		self.other_properties.push(new OtherPropertiesVM().property_name(property_name).property(property))
     	}
-    	// debugger;
     } else {
     	self.other_properties.push(new OtherPropertiesVM())
     }
