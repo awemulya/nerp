@@ -247,7 +247,14 @@ function DemandRow(row, demand_vm) {
     };
 
     self.release_focused = function (row, e) {
-        $(e.currentTarget).click();
+        var target = $(e.currentTarget);
+        //target.click();
+        if (!target.hasClass('open')){
+            target.click();
+        }
+        if (!target.hasClass('open')){
+            target.click();
+        }
     };
 
     self.add = function (group) {
