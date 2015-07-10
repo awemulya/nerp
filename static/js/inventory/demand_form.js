@@ -269,6 +269,16 @@ function DemandRow(row, demand_vm) {
         self.releases.remove(release);
     }
 
+    self.total_quantity = ko.computed(function(){
+        var total = 0;
+        for (var k in self.groups()){
+            var group = self.groups()[k];
+            total += group.count();
+        }
+        console.log(total);
+        return total;
+    });
+
     self.item_id.subscribe(function (val) {
         if (val) {
             self.groups(demand_vm.all_item_instances()[val]());
