@@ -1,0 +1,74 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Depreciation' %} {% trans 'Reports' %}{% endblock %}
+
+{% block head_end %}
+    <script src="{% static 'js/inventory/depreciation_report.js' %}"></script>
+    <script>
+        ko_data = {{ data| jsonify }};
+    </script>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url 'depreciation_report' %}">{% trans 'Depreciation' %} {% trans 'Reports' %}</a>
+{% endblock %}
+
+{% block content %}
+	<h1 class="center">Depreciation Report</h1>
+    <div data-bind="with: table_view">
+	<table class="table table-bordered"> 
+        <thead>
+            <tr>
+                <th rowspan='2'>{% trans 'SN' %}</th>
+                <th rowspan='2'>{% trans 'Inventory Account Page No.' %}</th>
+                <th rowspan="2">{% trans 'Inventory Classification Reference No.' %}</th>
+                <th rowspan="2">{% trans "Item's Name" %}</th>
+                <th colspan='4'>{% trans "Description" %}</th>
+                <th colspan='2'>{% trans "Depreciation" %}</th>
+                <th colspan='3'>{% trans "Reviewed physical state" %}</th>
+                <th colspan='2'>{% trans "Physical condition" %}</th>
+                <th rowspan='2'>{% trans "Remark" %}</th>
+            </tr>
+            <tr>
+                <th>{% trans "Unit" %}</th>
+                <th>{% trans "Quantity" %}</th>
+                <th>{% trans "Rate" %}</th>
+                <th>{% trans "Price" %}</th>
+                <th>{% trans "Depreciation Type" %}</th>
+                <th>{% trans "Depreciation Value" %}</th>
+                <th>{% trans "Time" %}</th>
+                <th>{% trans "Time value" %}</th>
+                <th>{% trans "Decrement" %}/{% trans "Increment" %} {% trans "Price" %}</th>
+                <th>{% trans "Good" %}</th>
+                <th>{% trans "Bad" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+                <!-- ko foreach: rows -->
+            <tr>
+                <td data-bind="text: $index()+1, localize: true"></td>
+
+                <td data-bind="text: account_no"></td>
+                <td data-bind="text: inventory_classification_reference_no"></td>
+                <td data-bind="text: item_name" class="item_name"></td>
+                <td data-bind="text: unit"></td>
+                <td data-bind="text: total_dr_amount"></td>
+                <td data-bind="text: rate"></td>
+                <td data-bind="text: price"></td>
+                <!-- ko with: depreciation -->
+                <td data-bind="text: depreciate_type"></td>
+                <td data-bind="text: depreciate_value"></td>
+                <td data-bind="text: time"></td>
+                <td data-bind="text: time_type"></td>
+                <!-- /ko -->
+            </tr>
+                <!-- /ko -->
+
+        </tbody>
+        </table>
+		</div>	
+{% endblock %}

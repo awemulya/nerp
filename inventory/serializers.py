@@ -20,9 +20,11 @@ class DepreciationSerializer(serializers.ModelSerializer):
 
 class ItemSerializer(serializers.ModelSerializer):
     account_no = serializers.ReadOnlyField(source='account.account_no')
+    depreciation = DepreciationSerializer()
 
     class Meta:
         model = Item
+        exclude = ['depreciation']
 
 
 class DemandRowSerializer(serializers.ModelSerializer):
@@ -208,6 +210,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     rate = serializers.ReadOnlyField(source="journal_entry.creator.rate")
     total_dr_amount = serializers.ReadOnlyField()
     total_dr_amount_without_rate = serializers.ReadOnlyField()
+    depreciation = DepreciationSerializer(source="account.item.depreciation")
 
     class Meta:
         model = Transaction

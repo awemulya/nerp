@@ -1,0 +1,45 @@
+{% extends "inventory_base.html" %}
+{% load i18n %}
+{% load filters %}
+{% load staticfiles %}
+	
+{% block head_end %}
+    <script src="{% static 'js/inventory/item_instance.js' %}"></script>
+    <script>
+        item_data = {{ item_data| jsonify }};
+    </script>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url "list_inventory_items" %}">{% trans 'Inventory' %} {% trans 'Items' %}</a>
+    <span>{% trans scenario %} {% trans 'Inventory' %} {% trans 'Item' %}</span>
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+	{% csrf_token %}
+	{{ form.as_p }}
+    <div id="other-properties">
+        <label for="id_other_properties">{% trans "Other properties" %}</label>
+        <div id="id_other_properties" data-bind="foreach: other_properties">
+            <p>
+                <input type="text" id="id_property_name" name="property_name" placeholder="Property name" data-bind="value: property_name"> 
+                <input type="text" id="id_property" name="property" placeholder="Property" data-bind="value: property">
+                <a href="#" class="close tiny secondary" data-bind="click: $parent.removeOtherProperty">x</a>
+            </p>
+        </div>
+        <a class="small secondary button" data-bind="click: addOtherProperty">
+            {% trans 'Add New Row' %}
+        </a>
+    </div>
+            <button type="submit" value="Submit" class="small secondary button">
+                {% trans 'Submit' %}</button>
+            {% if scenario == 'Update' %}
+                <a class="small secondary button alert"
+                   href="#">{% trans 'Delete' %}!</a>
+            {% endif %}
+</form>
+{% endblock %}

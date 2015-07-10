@@ -55,6 +55,8 @@
                         <br/>
                         <a href="{% url 'inventory_transactions_list' %}">{% trans 'View Transaction' %}</a>
                         <br/>
+                        <a href="{% url 'depreciation_report' %}">{% trans 'Depreciation Report' %}</a>
+                        <br/>
                     {% else %}
                         <a href="{% url 'create_demand_form' %}">{% trans 'New Demand Form' %}</a>
                         <br/>
