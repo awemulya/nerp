@@ -370,6 +370,10 @@ class DemandRow(models.Model):
     location = models.ForeignKey(ItemLocation, null=True, blank=True)
     purpose = models.CharField(max_length=100, null=True, blank=True)
 
+    @property
+    def release_quantity(self):
+        return len(self.releases.all())
+
     def save(self, *args, **kwargs):
         self.quantity = ne2en(self.quantity)
         # self.release_quantity = ne2en(self.release_quantity)
