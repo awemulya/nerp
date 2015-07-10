@@ -288,7 +288,6 @@ function DemandRow(row, demand_vm) {
     });
 
     self.item_id.subscribe(function (val) {
-        debugger;
         if (val) {
             if (typeof demand_vm.all_item_instances()[val] == 'undefined') {
                 self.groups(null);

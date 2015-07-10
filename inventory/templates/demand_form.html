@@ -149,6 +149,7 @@
 
                                 <tbody>
                                 <!-- ko foreach: groups -->
+                                <!-- ko if: count()>0 -->
                                 <tr>
                                     <td data-bind="text:property_str"></td>
                                     <td data-bind="text:rate"></td>
@@ -164,6 +165,7 @@
                                         </td>
                                     </form>
                                 </tr>
+                                <!-- /ko -->
                                 <!-- /ko -->
                                 </tbody>
                             </table>
