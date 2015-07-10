@@ -31,7 +31,7 @@
     </div>
 
 
-    <form method="post" enctype="multipart/form-data" data-bind="submit: save">
+    <form method="post" enctype="multipart/form-data" data-bind="submit: save" name="demand-form" novalidate>
         {% csrf_token %}
 
 
@@ -153,7 +153,6 @@
                                 <tr>
                                     <td data-bind="text:property_str"></td>
                                     <td data-bind="text:rate"></td>
-                                    <form action="#" method="get">
                                         <td><input type="number" required
                                                    data-bind="value:quantity, max: count()"/>/<span
                                                 data-bind="text: count()"></span></td>
@@ -163,7 +162,6 @@
                                         <td>
                                             <button data-bind="click: $parent.add, enable: valid()">+</button>
                                         </td>
-                                    </form>
                                 </tr>
                                 <!-- /ko -->
                                 <!-- /ko -->

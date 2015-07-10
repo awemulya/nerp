@@ -495,6 +495,7 @@ def save_inspection_report(request):
             dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
 
+
 def depreciation_report(request):
     obj = Transaction.objects.filter(account__item__depreciation__depreciate_value__gte=0, cr_amount=None)
     transaction_without_duplication = remove_transaction_duplicate(obj)
@@ -506,6 +507,7 @@ def depreciation_report(request):
     # depreciate_object_list = []
     # import pdb; pdb.set_trace()
     return render(request, "depreciation_report.html", {'data': transaction})
+
 
 @login_required
 def item_form(request, id=None):
@@ -532,7 +534,8 @@ def item_form(request, id=None):
             time_type = request.POST.get('time_type')
             depreciation_id = request.POST.get('depreciation_id')
             if depreciation_id == '':
-                dep = Depreciation(time=time, depreciate_value=depreciate_value, depreciate_type=depreciate_type, time_type=time_type)
+                dep = Depreciation(time=time, depreciate_value=depreciate_value, depreciate_type=depreciate_type,
+                                   time_type=time_type)
                 dep.save()
             else:
                 dep = Depreciation.objects.get(pk=depreciation_id)
@@ -540,7 +543,7 @@ def item_form(request, id=None):
                 dep.depreciate_value = depreciate_value
                 dep.depreciate_type = depreciate_type
                 dep.time_type = time_type
-                dep.save()    
+                dep.save()
             other_properties = {}
             for key, value in zip(property_name, item_property):
                 other_properties[key] = value
@@ -567,6 +570,7 @@ def item_form(request, id=None):
         'depreciation_data': depreciation_data,
         'item_instances': item_instances,
     })
+
 
 def item_instance_form(request, id):
     item = get_object_or_404(ItemInstance, id=id)
@@ -784,8 +788,7 @@ def save_demand(request):
                 # row['release_quantity'] = 1
                 values = {'sn': index + 1, 'item_id': row.get('item_id'),
                           'specification': row.get('specification'),
-                          'quantity': row.get('quantity'), 'unit': row.get('unit'),
-                          'release_quantity': row.get('release_quantity'), 'remarks': row.get('remarks'),
+                          'quantity': row.get('quantity'), 'unit': row.get('unit'), 'remarks': row.get('remarks'),
                           'purpose': row.get('purpose'), 'demand': obj}
 
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
