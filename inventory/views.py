@@ -29,7 +29,7 @@ from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderFor
 from inventory.models import Depreciation, Demand, ItemInstance, \
     DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, \
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
-    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation
+    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release
 
 from inventory.serializers import DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
@@ -774,7 +774,8 @@ def save_demand(request):
     else:
         obj = Demand()
         object_values['demandee_id'] = params.get('demandee')
-    try:
+    # try:
+    if True:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = DemandRow
@@ -792,6 +793,17 @@ def save_demand(request):
                           'purpose': row.get('purpose'), 'demand': obj}
 
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                # import ipdb
+                # ipdb.set_trace()
+
+                for release in row['releases']:
+                    for instance in release['instances']:
+                        instance_model = ItemInstance.objects.get(id=instance)
+                        instance_model.location_id = release['location_id']
+                        instance_model.save()
+                        rel = Release(item_instance=instance_model, demand_row=submodel)
+                        rel.save()
+
             # set_transactions(submodel, request.POST.get('date'),
             #                  ['dr', bank_account, row.get('amount')],
             #                  ['cr', benefactor, row.get('amount')],
@@ -800,13 +812,13 @@ def save_demand(request):
                 submodel = save_model(submodel, values)
             dct['rows'][index] = submodel.id
         delete_rows(params.get('table_view').get('deleted_rows'), model)
-    except Exception as e:
-        if hasattr(e, 'messages'):
-            dct['error_message'] = '; '.join(e.messages)
-        elif str(e) != '':
-            dct['error_message'] = str(e)
-        else:
-            dct['error_message'] = 'Error in form data!'
+    # except Exception as e:
+    #     if hasattr(e, 'messages'):
+    #         dct['error_message'] = '; '.join(e.messages)
+    #     elif str(e) != '':
+    #         dct['error_message'] = str(e)
+    #     else:
+    #         dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
 
 

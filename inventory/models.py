@@ -372,7 +372,7 @@ class DemandRow(models.Model):
 
     def save(self, *args, **kwargs):
         self.quantity = ne2en(self.quantity)
-        self.release_quantity = ne2en(self.release_quantity)
+        # self.release_quantity = ne2en(self.release_quantity)
         super(DemandRow, self).save(*args, **kwargs)
 
     def get_voucher_no(self):
@@ -595,4 +595,4 @@ class ItemInstance(models.Model):
 class Release(models.Model):
     demand_row = models.ForeignKey(DemandRow)
     item_instance = models.ForeignKey(ItemInstance)
-    location = models.ForeignKey(ItemLocation)
+    # location = models.ForeignKey(ItemLocation)
