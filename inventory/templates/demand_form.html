@@ -108,7 +108,7 @@
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>
                         <input type="text" readonly
-                               data-bind="attr: {'data-dropdown': 'drop' + $index()}, value: 2, event: {'focus': release_focused}">
+                               data-bind="attr: {'data-dropdown': 'drop' + $index()}, value: total_release, event: {'focus': release_focused}">
                         <!-- ko if:item_id -->
                         <div data-bind="attr: {'id':'drop'+$index()}, foundation: 1" data-dropdown-content
                              class="f-dropdown content amount-dropdown">

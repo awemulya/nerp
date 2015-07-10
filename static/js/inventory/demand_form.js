@@ -275,7 +275,15 @@ function DemandRow(row, demand_vm) {
             var group = self.groups()[k];
             total += group.count();
         }
-        console.log(total);
+        return total;
+    });
+
+    self.total_release = ko.computed(function(){
+        var total = 0;
+        for (var k in self.releases()){
+            var release = self.releases()[k];
+            total += release.count();
+        }
         return total;
     });
 
