@@ -19,6 +19,7 @@ from core.models import FiscalYear, Party
 from app.utils.translation import BSDateField
 from jsonfield import JSONField
 
+
 class Site(models.Model):
     name = models.CharField(max_length=250)
     head_office = models.BooleanField(default=False)
@@ -26,7 +27,7 @@ class Site(models.Model):
 
     def __unicode__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         if self.branch_office:
             Site.objects.all().update(branch_office=False)
@@ -104,14 +105,15 @@ class InventoryAccount(models.Model):
     #         return transactions[0].current_dr
     #     return 0
 
+
 class Depreciation(models.Model):
-    depreciation_choices = [('Fixed percentage', _('Fixed percentage')), ('Compounded percentage', _('Compounded percentage')),  ('Fixed price', _('Fixed price'))]
+    depreciation_choices = [('Fixed percentage', _('Fixed percentage')),
+                            ('Compounded percentage', _('Compounded percentage')), ('Fixed price', _('Fixed price'))]
     depreciate_type = models.CharField(choices=depreciation_choices, max_length=25, default="Fixed percentage")
     depreciate_value = models.PositiveIntegerField(default=0)
     time = models.PositiveIntegerField(default=0)
     time_choices = [('Day(s)', _('Day(s)')), ('Month(s)', _('Month(s)')), ('Year(s)', _('Year(s)'))]
     time_type = models.CharField(choices=time_choices, max_length=8, default='Year(s)')
-
 
 
 class Item(models.Model):
@@ -156,6 +158,7 @@ class ItemLocation(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class JournalEntry(models.Model):
     date = BSDateField()
@@ -587,3 +590,9 @@ class ItemInstance(models.Model):
 
     def __unicode__(self):
         return unicode(self.item) + u' at ' + unicode(self.location)
+
+
+class Release(models.Model):
+    demand_row = models.ForeignKey(DemandRow)
+    item_instance = models.ForeignKey(ItemInstance)
+    location = models.ForeignKey(ItemLocation)
