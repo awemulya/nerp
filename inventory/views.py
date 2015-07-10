@@ -638,9 +638,11 @@ def item_instances_as_json(request):
     for instance in item_instances:
         if not instance.item_id in instances.keys():
             instances[instance.item_id] = {}
-        instance.other_properties['rate'] = instance.item_rate
+        s = str(instance.item_rate)
+        rate = s.rstrip('0').rstrip('.') if '.' in s else s
+        instance.other_properties['rate'] = rate
         # property = cPickle.dumps(item.other_properties)
-        prop = json.dumps(instance.other_properties)
+        prop = json.dumps(instance.other_properties).replace(' ','')
         if not prop in instances[instance.item_id].keys():
             instances[instance.item_id][prop] = []
         instances[instance.item_id][prop].append(instance.id)
@@ -796,7 +798,7 @@ def save_demand(request):
                 # import ipdb
                 # ipdb.set_trace()
 
-                for release in row['releases']:
+                for release in row['release_vms']:
                     for instance in release['instances']:
                         instance_model = ItemInstance.objects.get(id=instance)
                         instance_model.location_id = release['location_id']

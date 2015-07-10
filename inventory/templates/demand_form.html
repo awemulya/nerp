@@ -111,7 +111,7 @@
                         <!-- ko if:item_id -->
                         <div data-bind="attr: {'id':'drop'+$index()}, foundation: 1" data-dropdown-content
                              class="f-dropdown content amount-dropdown">
-                            <!-- ko if: releases().length -->
+                            <!-- ko if: release_vms().length -->
                             <table id="release-table">
                                 <thead>
                                 <th>Properties</th>
@@ -122,7 +122,7 @@
                                 </thead>
 
                                 <tbody>
-                                <!-- ko foreach: releases -->
+                                <!-- ko foreach: release_vms -->
                                 <tr>
                                     <td data-bind="text:property_str"></td>
                                     <td data-bind="text:rate"></td>
