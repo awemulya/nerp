@@ -362,7 +362,7 @@ class DemandRow(models.Model):
     specification = models.CharField(max_length=254, blank=True, null=True)
     quantity = models.FloatField()
     unit = models.CharField(max_length=50)
-    release_quantity = models.FloatField(null=True, blank=True)
+    # release_quantity = models.FloatField(null=True, blank=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
     demand = models.ForeignKey(Demand, related_name='rows')
     statuses = [('Requested', 'Requested'), ('Approved', 'Approved'), ('Fulfilled', 'Fulfilled')]
