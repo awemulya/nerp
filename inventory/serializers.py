@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from inventory.models import Demand, DemandRow, Item, Party, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, \
-    EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction, ItemLocation, Depreciation, ItemInstance
+    EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction, ItemLocation, Depreciation, ItemInstance, \
+    Release
 
 
 class ItemInstanceSerializer(serializers.ModelSerializer):
@@ -27,12 +28,20 @@ class ItemSerializer(serializers.ModelSerializer):
         exclude = ['depreciation']
 
 
+class ReleaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Release
+
+
 class DemandRowSerializer(serializers.ModelSerializer):
     item_id = serializers.ReadOnlyField(source='item.id')
+    releases = ReleaseSerializer(many=True)
 
     class Meta:
         model = DemandRow
         exclude = ['item']
+
+
 
 
 class DemandSerializer(serializers.ModelSerializer):

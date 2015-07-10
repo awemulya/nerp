@@ -593,6 +593,6 @@ class ItemInstance(models.Model):
 
 
 class Release(models.Model):
-    demand_row = models.ForeignKey(DemandRow)
+    demand_row = models.ForeignKey(DemandRow, related_name='releases')
     item_instance = models.ForeignKey(ItemInstance)
     # location = models.ForeignKey(ItemLocation)
