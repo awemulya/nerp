@@ -581,7 +581,7 @@ def item_instance_form(request, id):
                 other_properties[key] = value
             item_instance.other_properties = other_properties
             item_instance.save()
-            return redirect('/inventory/items/')
+            return redirect(reverse('update_inventory_item', kwargs={'id': item_instance.item_id}))
     else:
         form = ItemInstanceForm(instance=item)
     return render(request, 'item_instance_form.html', {'form': form, 'item_data': item.other_properties})
