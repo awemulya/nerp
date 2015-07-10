@@ -600,3 +600,6 @@ class Release(models.Model):
     demand_row = models.ForeignKey(DemandRow, related_name='releases')
     item_instance = models.ForeignKey(ItemInstance)
     # location = models.ForeignKey(ItemLocation)
+
+    def __unicode__(self):
+        return unicode(self.item_instance)
