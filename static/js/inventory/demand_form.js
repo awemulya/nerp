@@ -204,6 +204,7 @@ function DemandRow(row, demand_vm) {
             if (typeof group == 'undefined') {
                 var group_data = {'instances': [], property: id};
                 var group = new GroupVM(group_data);
+                self.groups.push(group);
             }
             //var release_vm = new ReleaseVM(group, release.item_instance.id, release.item_instance.location);
             //self.release_vms.push(release_vm);
@@ -321,6 +322,7 @@ function DemandRow(row, demand_vm) {
     }
 
     self.remove = function (release) {
+        debugger;
         var group = get_by_id(self.groups(), release.id);
         ko.utils.arrayPushAll(group.instances, release.instances())
         self.release_vms.remove(release);
