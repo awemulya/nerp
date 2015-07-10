@@ -316,8 +316,23 @@ function DemandRow(row, demand_vm) {
     };
 
     self.add = function (group) {
-        var release = new ReleaseVM(group);
-        self.release_vms.push(release);
+
+        var match = null;
+        var release_vm;
+        for (var k in self.release_vms()) {
+            release_vm = self.release_vms()[k];
+            if (release_vm.id == group.id && release_vm.location_id == group.location_id()) {
+                match = release_vm;
+                break;
+            }
+        }
+        if (match) {
+            release_vm.instances.push(group.instances.splice(0, group.quantity()));
+        }
+        else {
+            var release = new ReleaseVM(group);
+            self.release_vms.push(release);
+        }
         group.quantity(null);
     }
 
