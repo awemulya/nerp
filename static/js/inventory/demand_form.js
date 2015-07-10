@@ -194,7 +194,7 @@ function DemandRow(row, demand_vm) {
     self.load_groups(self.item_id());
 
     if (row) {
-        var vms = [];
+        //var vms = [];
 
         for (var k in row.releases) {
             var release = row.releases[k];
@@ -202,15 +202,30 @@ function DemandRow(row, demand_vm) {
             var id = JSON.stringify(release.item_instance.properties);
             var group = get_by_id(self.groups(), id);
             if (typeof group == 'undefined') {
-                //debugger;
-                var group_data = {'instances':[], property: id};
+                var group_data = {'instances': [], property: id};
                 var group = new GroupVM(group_data);
-                var release_vm = new ReleaseVM(group, release.item_instance.id, release.item_instance.location);
-                self.release_vms.push(release_vm);
-            } else {
-                var release_vm = new ReleaseVM(group, release.item_instance.id, release.item_instance.location);
+            }
+            //var release_vm = new ReleaseVM(group, release.item_instance.id, release.item_instance.location);
+            //self.release_vms.push(release_vm);
+            //} else {
+            var match = null;
+            var release_vm;
+            for (var k in self.release_vms()) {
+                release_vm = self.release_vms()[k];
+                if (release_vm.id == id && release_vm.location_id == release.item_instance.location) {
+                    match = release_vm;
+                    break;
+                }
+            }
+            if (match) {
+                release_vm.instances.push(release.item_instance.id);
+            }
+            else {
+                release_vm = new ReleaseVM(group, release.item_instance.id, release.item_instance.location);
                 self.release_vms.push(release_vm);
             }
+
+            //}
         }
     }
 
