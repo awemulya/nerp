@@ -321,11 +321,20 @@ ul.messages {
     margin-left: -1em;
 }
 
-table#group-table td input[type="number"]{
+table#group-table td input[type="number"] {
     display: inline;
     max-width: 5em;
 }
 
-.breadcrumbs span{
+.breadcrumbs span {
     color: #666666;
+}
+
+.dashboard div a i {
+    /*font-size: 6em;*/
+    color: #333333;
+}
+
+.dashboard div {
+    padding: 1em;
 }

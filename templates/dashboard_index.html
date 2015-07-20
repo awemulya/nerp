@@ -89,13 +89,13 @@
 
                         <div>
                             <a href="{% url 'list_resource_persons' %}">
-                                <img src="{% static 'img/icons/trainer.png' %}">
+                                <i class="fa fa-user-secret fa-5x"></i>
                                 Resource Persons</a>
                         </div>
 
                         <div>
                             <a href="{% url 'list_participants' %}">
-                                <img src="{% static 'img/icons/students.png' %}">
+                                <i class="fa fa-users fa-5x"></i>
                                 Participants</a>
                         </div>
                         <div>
@@ -138,7 +138,8 @@
                 <div class="content dashboard" id="library">
                     <div>
                         <a href="{% url 'list_records' %}">
-                            <img src="{% static 'img/icons/book.png' %}">
+{#                            <img src="{% static 'img/icons/book.png' %}">#}
+                            <i class="fa fa-book"></i>
                             Books</a>
                     </div>
                     {% ifusergroup 'Librarian' %}
