@@ -10,6 +10,7 @@ from django.utils.safestring import mark_safe
 from django.db.models import Model
 from django import template
 from django.contrib.auth.models import Group
+from django.utils.translation import get_language
 
 from app import settings
 
@@ -150,6 +151,8 @@ def setting(path):
 
 
 
+
+
 @register.tag
 def ifappexists(parser, token):
     """ Conditional Django template tag to check if one or more apps exist.
@@ -232,24 +235,35 @@ def get_class(value):
 
 @register.filter
 def localize(text):
-    text = str(text)
-    dic = {
-        '०': '0',
-        '१': '1',
-        '२': '2',
-        '३': '3',
-        '४': '4',
-        '५': '5',
-        '६': '6',
-        '७': '7',
-        '८': '8',
-        '९': '9'
-    }
-    res = dict((v, k) for k, v in dic.iteritems())
-    for i, j in res.iteritems():
-        text = text.replace(i, j)
+    lang_code = get_language()
+    if lang_code == 'ne':
+        text = str(text)
+        dic = {
+            '०': '0',
+            '१': '1',
+            '२': '2',
+            '३': '3',
+            '४': '4',
+            '५': '5',
+            '६': '6',
+            '७': '7',
+            '८': '8',
+            '९': '9'
+        }
+        res = dict((v, k) for k, v in dic.iteritems())
+        for i, j in res.iteritems():
+            text = text.replace(i, j)
     return text
 
+
+def do_localize(parser, token):
+    nodelist = parser.parse(('endcomment',))
+    parser.delete_first_token()
+    return CommentNode()
+
+class CommentNode(template.Node):
+    def render(self, context):
+        return ''
 
 @register.filter
 def debug(value):
