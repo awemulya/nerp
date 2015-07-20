@@ -9,7 +9,7 @@
 {% block breadcrumbs_right %}
     <form action="{% url 'isbn_to_record' %}" method="post">
         {% csrf_token %}
-        <input type="text" placeholder="ISBN" name="isbn">
+        <input type="text" placeholder="ISBN" name="isbn" autofocus>
     </form>
     {{ block.super }}
 {% endblock %}

@@ -257,8 +257,8 @@ ul.messages li {
 }
 
 .breadcrumbs input {
-    padding: 0 1em;
-    height: auto;
+    /*padding: 0 1em;*/
+    height: 2em;
 }
 
 .dashboard div {
@@ -324,4 +324,8 @@ ul.messages {
 table#group-table td input[type="number"]{
     display: inline;
     max-width: 5em;
+}
+
+.breadcrumbs span{
+    color: #666666;
 }
