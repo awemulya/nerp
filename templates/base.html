@@ -23,7 +23,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/print.css' %}" media="print">
 
-{#    <link rel="stylesheet" href="{% static 'css/print.css' %}" media="screen"> #}
+    {#    <link rel="stylesheet" href="{% static 'css/print.css' %}" media="screen"> #}
 
     <script src="{% static 'js/vendors/jquery.js' %}"></script>
 
@@ -67,6 +67,7 @@
                     <li><a href="{% url 'login' %}" class="secondary small button">{% trans 'Log in' %}</a></li>
                 {% endif %}
                 {% include '_change_language.html' %}
+                {% include '_change_calendar.html' %}
             </ul>
 
         </div>
