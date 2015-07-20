@@ -151,6 +151,8 @@ class BSDateField(DateField):
         return "DateField"
 
     def to_python(self, value):
+        from core.middleware import get_calendar
+        calendar = get_calendar()
         if value is None:
             return value
         if isinstance(value, datetime.datetime):
