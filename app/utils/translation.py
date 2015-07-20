@@ -179,3 +179,11 @@ class BSDateField(DateField):
         defaults = {'form_class': BSDateFormField}
         defaults.update(kwargs)
         return super(DateField, self).formfield(**defaults)
+
+    @staticmethod
+    def today():
+        calendar = get_calendar()
+        print calendar
+        if calendar == 'ad':
+            return datetime.date.today()
+        return nepdate.today_as_str()
