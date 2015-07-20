@@ -256,15 +256,6 @@ def localize(text):
     return text
 
 
-def do_localize(parser, token):
-    nodelist = parser.parse(('endcomment',))
-    parser.delete_first_token()
-    return CommentNode()
-
-class CommentNode(template.Node):
-    def render(self, context):
-        return ''
-
 @register.filter
 def debug(value):
     import pdb
