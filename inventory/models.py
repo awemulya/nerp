@@ -54,7 +54,7 @@ class InventoryAccount(models.Model):
     # current_cr = models.FloatField(null=True, blank=True)
     opening_balance = models.FloatField(default=0)
 
-    def __str__(self):
+    def __unicode__(self):
         return str(self.account_no) + ' [' + self.name + ']'
 
     def get_absolute_url(self):
@@ -381,6 +381,9 @@ class DemandRow(models.Model):
 
     def get_voucher_no(self):
         return self.demand.release_no
+
+    def __unicode__(self):
+        return unicode(self.item) + ' (' + unicode(self.quantity) + ')'
 
 
 class EntryReport(models.Model):
