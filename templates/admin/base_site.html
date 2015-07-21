@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load filters %}
 
-{% block title %}{{ 'core.models.app_setting.site_name'|setting }}{% endblock %}
+{% block title %}{{ title }} | {{ 'core.models.app_setting.site_name'|setting }} {% trans 'Admin' %}{% endblock %}
 
 {% block branding %}
     <h1 id="site-name">{{ 'core.models.app_setting.site_name'|setting }}</h1>
