@@ -4,15 +4,23 @@ $(document).ready(function () {
     $('.change-on-ready').trigger('change');
 });
 
-function ReleaseVM(group) {
+function ReleaseVM(group, instance_id, location) {
     //debugger;
     var self = this;
-    self.instances = ko.observableArray(group.instances.splice(0, group.quantity()));
+    if (typeof instance_id == 'undefined') {
+        self.instances = ko.observableArray(group.instances.splice(0, group.quantity()));
+        self.location_id = group.location_id();
+    }
+    else {
+        self.instances = ko.observableArray();
+        self.instances.push(instance_id);
+        self.location_id = location;
+    }
     self.id = group.id;
     self.property = group.property;
     self.property_str = group.property_str;
     self.rate = group.rate;
-    self.location_id = group.location_id();
+
     self.count = function () {
         return self.instances().length;
     }
@@ -164,12 +172,62 @@ function DemandRow(row, demand_vm) {
     self.location = ko.observable();
     self.purpose = ko.observable();
     self.groups = ko.observableArray();
-    self.releases = ko.observableArray();
+    self.release_vms = ko.observableArray();
 
 
     for (var k in row) {
         if (row[k] != null)
             self[k] = ko.observable(row[k]);
+    }
+
+    self.load_groups = function (val) {
+        if (val) {
+            if (typeof demand_vm.all_item_instances()[val] == 'undefined') {
+                self.groups(null);
+            } else {
+                self.groups(demand_vm.all_item_instances()[val]());
+            }
+        }
+    }
+
+
+    self.load_groups(self.item_id());
+
+    if (row) {
+        //var vms = [];
+
+        for (var k in row.releases) {
+            var release = row.releases[k];
+            release.item_instance.properties['rate'] = release.item_instance.item_rate + '';
+            var id = JSON.stringify(release.item_instance.properties);
+            var group = get_by_id(self.groups(), id);
+            if (typeof group == 'undefined') {
+                var group_data = {'instances': [], property: id};
+                var group = new GroupVM(group_data);
+                self.groups.push(group);
+            }
+            //var release_vm = new ReleaseVM(group, release.item_instance.id, release.item_instance.location);
+            //self.release_vms.push(release_vm);
+            //} else {
+            var match = null;
+            var release_vm;
+            for (var k in self.release_vms()) {
+                release_vm = self.release_vms()[k];
+                if (release_vm.id == id && release_vm.location_id == release.item_instance.location) {
+                    match = release_vm;
+                    break;
+                }
+            }
+            if (match) {
+                release_vm.instances.push(release.item_instance.id);
+            }
+            else {
+                release_vm = new ReleaseVM(group, release.item_instance.id, release.item_instance.location);
+                self.release_vms.push(release_vm);
+            }
+
+            //}
+        }
     }
 
     self.approve = function (item, event) {
@@ -258,26 +316,51 @@ function DemandRow(row, demand_vm) {
     };
 
     self.add = function (group) {
-        var release = new ReleaseVM(group);
-        self.releases.push(release);
+
+        var match = null;
+        var release_vm;
+        for (var k in self.release_vms()) {
+            release_vm = self.release_vms()[k];
+            if (release_vm.id == group.id && release_vm.location_id == group.location_id()) {
+                match = release_vm;
+                break;
+            }
+        }
+        if (match) {
+            release_vm.instances.push(group.instances.splice(0, group.quantity()));
+        }
+        else {
+            var release = new ReleaseVM(group);
+            self.release_vms.push(release);
+        }
         group.quantity(null);
     }
 
     self.remove = function (release) {
+        debugger;
         var group = get_by_id(self.groups(), release.id);
         ko.utils.arrayPushAll(group.instances, release.instances())
-        self.releases.remove(release);
+        self.release_vms.remove(release);
     }
 
-    self.item_id.subscribe(function (val) {
-        debugger;
-        if (val) {
-            if (typeof demand_vm.all_item_instances()[val] == 'undefined') {
-                self.groups(null);
-            } else {
-                self.groups(demand_vm.all_item_instances()[val]());
-            }
+    self.total_quantity = ko.computed(function () {
+        var total = 0;
+        for (var k in self.groups()) {
+            var group = self.groups()[k];
+            total += group.count();
         }
+        return total;
     });
+
+    self.total_release = ko.computed(function () {
+        var total = 0;
+        for (var k in self.release_vms()) {
+            var release = self.release_vms()[k];
+            total += release.count();
+        }
+        return total;
+    });
+
+    self.item_id.subscribe(self.load_groups);
 
 }

@@ -15,7 +15,6 @@
     <script src="{% static 'js/inventory/demand_form.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};
-        current_user = {{ user.id|jsonify }};
     </script>
 {% endblock %}
 
@@ -31,7 +30,7 @@
     </div>
 
 
-    <form method="post" enctype="multipart/form-data" data-bind="submit: save">
+    <form method="post" enctype="multipart/form-data" data-bind="submit: save" name="demand-form" novalidate>
         {% csrf_token %}
 
 
@@ -108,11 +107,11 @@
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>
                         <input type="text" readonly
-                               data-bind="attr: {'data-dropdown': 'drop' + $index()}, value: 2, event: {'focus': release_focused}">
+                               data-bind="attr: {'data-dropdown': 'drop' + $index()}, value: total_release, event: {'focus': release_focused}">
                         <!-- ko if:item_id -->
                         <div data-bind="attr: {'id':'drop'+$index()}, foundation: 1" data-dropdown-content
                              class="f-dropdown content amount-dropdown">
-                            <!-- ko if: releases().length -->
+                            <!-- ko if: release_vms().length -->
                             <table id="release-table">
                                 <thead>
                                 <th>Properties</th>
@@ -123,7 +122,7 @@
                                 </thead>
 
                                 <tbody>
-                                <!-- ko foreach: releases -->
+                                <!-- ko foreach: release_vms -->
                                 <tr>
                                     <td data-bind="text:property_str"></td>
                                     <td data-bind="text:rate"></td>
@@ -142,17 +141,17 @@
                                 <thead>
                                 <th>Properties</th>
                                 <th>Rate</th>
-                                <th>Quantity</th>
+                                <th>Quantity/<span data-bind="text: total_quantity()"></span></th>
                                 <th>Location</th>
                                 <th></th>
                                 </thead>
 
                                 <tbody>
                                 <!-- ko foreach: groups -->
+                                <!-- ko if: count()>0 -->
                                 <tr>
                                     <td data-bind="text:property_str"></td>
                                     <td data-bind="text:rate"></td>
-                                    <form action="#" method="get">
                                         <td><input type="number" required
                                                    data-bind="value:quantity, max: count()"/>/<span
                                                 data-bind="text: count()"></span></td>
@@ -162,8 +161,8 @@
                                         <td>
                                             <button data-bind="click: $parent.add, enable: valid()">+</button>
                                         </td>
-                                    </form>
                                 </tr>
+                                <!-- /ko -->
                                 <!-- /ko -->
                                 </tbody>
                             </table>

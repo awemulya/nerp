@@ -19,6 +19,7 @@ from core.models import FiscalYear, Party
 from app.utils.translation import BSDateField
 from jsonfield import JSONField
 
+
 class Site(models.Model):
     name = models.CharField(max_length=250)
     head_office = models.BooleanField(default=False)
@@ -26,7 +27,7 @@ class Site(models.Model):
 
     def __unicode__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         if self.branch_office:
             Site.objects.all().update(branch_office=False)
@@ -104,14 +105,15 @@ class InventoryAccount(models.Model):
     #         return transactions[0].current_dr
     #     return 0
 
+
 class Depreciation(models.Model):
-    depreciation_choices = [('Fixed percentage', _('Fixed percentage')), ('Compounded percentage', _('Compounded percentage')),  ('Fixed price', _('Fixed price'))]
+    depreciation_choices = [('Fixed percentage', _('Fixed percentage')),
+                            ('Compounded percentage', _('Compounded percentage')), ('Fixed price', _('Fixed price'))]
     depreciate_type = models.CharField(choices=depreciation_choices, max_length=25, default="Fixed percentage")
     depreciate_value = models.PositiveIntegerField(default=0)
     time = models.PositiveIntegerField(default=0)
     time_choices = [('Day(s)', _('Day(s)')), ('Month(s)', _('Month(s)')), ('Year(s)', _('Year(s)'))]
     time_type = models.CharField(choices=time_choices, max_length=8, default='Year(s)')
-
 
 
 class Item(models.Model):
@@ -156,6 +158,7 @@ class ItemLocation(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class JournalEntry(models.Model):
     date = BSDateField()
@@ -359,7 +362,7 @@ class DemandRow(models.Model):
     specification = models.CharField(max_length=254, blank=True, null=True)
     quantity = models.FloatField()
     unit = models.CharField(max_length=50)
-    release_quantity = models.FloatField(null=True, blank=True)
+    # release_quantity = models.FloatField(null=True, blank=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
     demand = models.ForeignKey(Demand, related_name='rows')
     statuses = [('Requested', 'Requested'), ('Approved', 'Approved'), ('Fulfilled', 'Fulfilled')]
@@ -367,9 +370,13 @@ class DemandRow(models.Model):
     location = models.ForeignKey(ItemLocation, null=True, blank=True)
     purpose = models.CharField(max_length=100, null=True, blank=True)
 
+    @property
+    def release_quantity(self):
+        return len(self.releases.all())
+
     def save(self, *args, **kwargs):
         self.quantity = ne2en(self.quantity)
-        self.release_quantity = ne2en(self.release_quantity)
+        # self.release_quantity = ne2en(self.release_quantity)
         super(DemandRow, self).save(*args, **kwargs)
 
     def get_voucher_no(self):
@@ -587,3 +594,12 @@ class ItemInstance(models.Model):
 
     def __unicode__(self):
         return unicode(self.item) + u' at ' + unicode(self.location)
+
+
+class Release(models.Model):
+    demand_row = models.ForeignKey(DemandRow, related_name='releases')
+    item_instance = models.ForeignKey(ItemInstance)
+    # location = models.ForeignKey(ItemLocation)
+
+    def __unicode__(self):
+        return unicode(self.item_instance)

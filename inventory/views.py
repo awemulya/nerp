@@ -29,7 +29,7 @@ from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderFor
 from inventory.models import Depreciation, Demand, ItemInstance, \
     DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, \
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
-    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation
+    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release
 
 from inventory.serializers import DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
@@ -495,6 +495,7 @@ def save_inspection_report(request):
             dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
 
+
 def depreciation_report(request):
     obj = Transaction.objects.filter(account__item__depreciation__depreciate_value__gte=0, cr_amount=None)
     transaction_without_duplication = remove_transaction_duplicate(obj)
@@ -506,6 +507,7 @@ def depreciation_report(request):
     # depreciate_object_list = []
     # import pdb; pdb.set_trace()
     return render(request, "depreciation_report.html", {'data': transaction})
+
 
 @login_required
 def item_form(request, id=None):
@@ -532,7 +534,8 @@ def item_form(request, id=None):
             time_type = request.POST.get('time_type')
             depreciation_id = request.POST.get('depreciation_id')
             if depreciation_id == '':
-                dep = Depreciation(time=time, depreciate_value=depreciate_value, depreciate_type=depreciate_type, time_type=time_type)
+                dep = Depreciation(time=time, depreciate_value=depreciate_value, depreciate_type=depreciate_type,
+                                   time_type=time_type)
                 dep.save()
             else:
                 dep = Depreciation.objects.get(pk=depreciation_id)
@@ -540,7 +543,7 @@ def item_form(request, id=None):
                 dep.depreciate_value = depreciate_value
                 dep.depreciate_type = depreciate_type
                 dep.time_type = time_type
-                dep.save()    
+                dep.save()
             other_properties = {}
             for key, value in zip(property_name, item_property):
                 other_properties[key] = value
@@ -568,6 +571,7 @@ def item_form(request, id=None):
         'item_instances': item_instances,
     })
 
+
 def item_instance_form(request, id):
     item = get_object_or_404(ItemInstance, id=id)
     if request.POST:
@@ -581,7 +585,7 @@ def item_instance_form(request, id):
                 other_properties[key] = value
             item_instance.other_properties = other_properties
             item_instance.save()
-            return redirect('/inventory/items/')
+            return redirect(reverse('update_inventory_item', kwargs={'id': item_instance.item_id}))
     else:
         form = ItemInstanceForm(instance=item)
     return render(request, 'item_instance_form.html', {'form': form, 'item_data': item.other_properties})
@@ -634,9 +638,11 @@ def item_instances_as_json(request):
     for instance in item_instances:
         if not instance.item_id in instances.keys():
             instances[instance.item_id] = {}
-        instance.other_properties['rate'] = instance.item_rate
+        s = str(instance.item_rate)
+        rate = s.rstrip('0').rstrip('.') if '.' in s else s
+        instance.other_properties['rate'] = rate
         # property = cPickle.dumps(item.other_properties)
-        prop = json.dumps(instance.other_properties)
+        prop = json.dumps(instance.other_properties).replace(' ', '')
         if not prop in instances[instance.item_id].keys():
             instances[instance.item_id][prop] = []
         instances[instance.item_id][prop].append(instance.id)
@@ -770,7 +776,8 @@ def save_demand(request):
     else:
         obj = Demand()
         object_values['demandee_id'] = params.get('demandee')
-    try:
+    # try:
+    if True:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = DemandRow
@@ -784,11 +791,20 @@ def save_demand(request):
                 # row['release_quantity'] = 1
                 values = {'sn': index + 1, 'item_id': row.get('item_id'),
                           'specification': row.get('specification'),
-                          'quantity': row.get('quantity'), 'unit': row.get('unit'),
-                          'release_quantity': row.get('release_quantity'), 'remarks': row.get('remarks'),
+                          'quantity': row.get('quantity'), 'unit': row.get('unit'), 'remarks': row.get('remarks'),
                           'purpose': row.get('purpose'), 'demand': obj}
 
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+
+                submodel.releases.all().delete()
+                for release in row['release_vms']:
+                    for instance in release['instances']:
+                        instance_model = ItemInstance.objects.get(id=instance)
+                        instance_model.location_id = release['location_id']
+                        instance_model.save()
+                        rel = Release(item_instance=instance_model, demand_row=submodel)
+                        rel.save()
+
             # set_transactions(submodel, request.POST.get('date'),
             #                  ['dr', bank_account, row.get('amount')],
             #                  ['cr', benefactor, row.get('amount')],
@@ -797,13 +813,13 @@ def save_demand(request):
                 submodel = save_model(submodel, values)
             dct['rows'][index] = submodel.id
         delete_rows(params.get('table_view').get('deleted_rows'), model)
-    except Exception as e:
-        if hasattr(e, 'messages'):
-            dct['error_message'] = '; '.join(e.messages)
-        elif str(e) != '':
-            dct['error_message'] = str(e)
-        else:
-            dct['error_message'] = 'Error in form data!'
+    # except Exception as e:
+    #     if hasattr(e, 'messages'):
+    #         dct['error_message'] = '; '.join(e.messages)
+    #     elif str(e) != '':
+    #         dct['error_message'] = str(e)
+    #     else:
+    #         dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
 
 
