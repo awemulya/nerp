@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     'core',
     'ils',
     'training',
+    'debug_toolbar',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'

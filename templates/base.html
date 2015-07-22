@@ -17,7 +17,10 @@
 
     <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
 
-    <link rel="stylesheet" href="{% static 'css/foundation.css' %}">
+    {# <link rel="stylesheet" href="{% static 'css/foundation.css' %}"> #}
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap/bootstrap.min.css' %}">
+
     <link rel="stylesheet" href="{% static 'css/vendors/selectize.default.css' %}">
 
     <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
@@ -50,32 +53,25 @@
 <body>
 
 <!-- Nav Bar -->
+<div class="container-fluid">
+    <div class="header row">
+        <div class="col-lg-12 col-md-12">
+            <div class="nav-bar pull-right">
+                <div class="btn-group" role="group" aria-label="...">
+                  {% if user.is_authenticated %}
+                    <button type="button" class="btn btn-default btn-lg"><a href="/admin">{% trans 'Control Panel' %}</a></button>
 
-<div class="header row">
-    <div class="large-12 columns">
-        <div class="nav-bar right">
-            <ul class="button-group">
-                {#                <li><a href="#" class="secondary small button">Link 1</a></li>#}
-                {% if user.is_admin %}
-                    <li><a href="/admin" class="secondary small button">{% trans 'Control Panel' %}</a></li>
-                {% endif %}
-
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}" class="secondary small button">{% trans 'Log out' %}</a></li>
-
-                {% else %}
-                    <li><a href="{% url 'login' %}" class="secondary small button">{% trans 'Log in' %}</a></li>
-                {% endif %}
-                {% include '_change_language.html' %}
-            </ul>
-
-        </div>
-        <a href="/"><h3>{{ 'core.models.app_setting.site_name'|setting }}</h3></a>
-
-
-    </div>
+                  <button type="button" class="btn btn-default btn-lg"><a href="{% url 'logout' %}">{% trans 'Log out' %}</a></button>
+                  {% else %}
+                  <button type="button" class="btn btn-default btn-lg"><a href="{% url 'login' %}">{% trans 'Log in' %}</a></button>
+                  {% endif %}
+                  <button type="button" class="btn btn-default">{% include '_change_language.html' %}</button>
+              </div>
+          </div>
+          <a href="/"><h3>{{ 'core.models.app_setting.site_name'|setting }}</h3></a>
+      </div>
+  </div>
 </div>
-
 <!-- End Nav -->
 
 <nav class="breadcrumbs">
@@ -133,7 +129,10 @@
 </footer>
 
 <!-- End Footer -->
-<script src="{% static 'js/foundation/foundation.min.js' %}"></script>
+{# <script src="{% static 'js/foundation/foundation.min.js' %}"></script> #}
+
+<script src="{% static 'js/bootstrap/bootstrap.min.js' %}"></script>
+
 <script src="{% static 'js/foundation/foundation.dropdown.js' %}"></script>
 <script>
     $(document).foundation();
