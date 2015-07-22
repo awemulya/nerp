@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_entry_reports" %}">{% trans 'Entry' %} {% trans 'Reports' %}</a>
+    <li><a href="{% url "list_entry_reports" %}">{% trans 'Entry' %} {% trans 'Reports' %}</a></li>
 {% endblock %}
 
 {% block content %}
