@@ -7,7 +7,7 @@
         <h2 class="intro">Login</h2>
 
         {% if form.errors %}
-            <p class="alert alert-error">Your username and password didn't match. Please try again.</p>
+            <p class="alert alert-error" role='alert'>Your username and password didn't match. Please try again.</p>
         {% endif %}
 
         <form method="post" action="{% url 'login' %}"
@@ -18,24 +18,23 @@
             {% if next %}
                 <input type="hidden" name="next" value="{{ next }}"/>
             {% endif %}
-            <div class="required">
-                <label for="id_username">Username:</label>
-                <input type="text" name="username" id="id_username" value="{{ username }}" required/>
+            <div class="form-group">
+                <label for="id_username">Username:</label><br>
+                <input type="text" name="username" class="form-control" id="id_username" value="{{ username }}" required/>
             </div>
 
-            <div class="required">
+            <div class="form-group">
                 <label for="id_password">Password:</label>
-                <input type="password" name="password" id="id_password" value="{{ username }}" required/>
+                <input type="password" name="password" class="form-control" id="id_password" value="{{ username }}" required/>
             </div>
 
-            <div>
+            <div >
                 <input type="checkbox" id="remember_me" name="remember_me" value="true"/>
                 <label for="remember_me">Remember Me</label>
-
             </div>
 
             <div>
-                <input type="submit" value="Log In" class="small secondary button"/>
+                <input type="submit" value="Log In" class="btn btn-default"/>
 
 
             </div>
