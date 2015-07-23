@@ -64,7 +64,7 @@
 
         <div data-bind="with:table_view">
 
-            <table class="table table-bordered">
+            <table class="table table-bordered table-striped">
                 <thead>
                 <tr>
                     <th class="span1">{% trans 'SN' %}</th>
@@ -107,7 +107,7 @@
                     <td data-bind="editableText: purpose, disable_content_editable: status() != 'Requested'"></td>
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>
-                        <input type="text" readonly
+                        <input type="text" readonly class="form-control"
                                data-bind="attr: {'data-dropdown': 'drop' + $index()}, value: total_release, event: {'focus': release_focused}">
                         <!-- ko if:item_id -->
                         <div data-bind="attr: {'id':'drop'+$index()}, foundation: 1" data-dropdown-content
@@ -185,19 +185,19 @@
                     <td class="hidden-print">
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
                         {% ifusergroup 'Store Keeper' 'Chief' %}
-                            <button class="small secondary button"
+                            <button class="btn btn-default"
                                     data-bind="click: approve, visible: $root.id() && status() == 'Requested'">Approve
                             </button>
-                            <button class="small secondary button"
+                            <button class="btn btn-default"
                                     data-bind="click: disapprove, visible: status() == 'Approved'">
                                 Disapprove
                             </button>
-                            <button class="small secondary button"
+                            <button class="btn btn-default"
                                     data-bind="click: function(data, event) { fulfill($root, data, event) }, visible: status() == 'Approved'">
                                 Set as
                                 Fulfilled
                             </button>
-                            <button class="small secondary button"
+                            <button class="btn btn-default"
                                     data-bind="click: unfulfill, visible: status() == 'Fulfilled'">Set
                                 as Unfulfilled
                             </button>
