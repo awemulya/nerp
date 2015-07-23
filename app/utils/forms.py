@@ -136,6 +136,7 @@ class KOModelForm(forms.ModelForm):
             if field.required:
                 field.widget.attrs['required'] = 'required'
             field.widget.attrs['data-bind'] = 'value: ' + name
+            field.widget.attrs['class'] = 'form-control'
 
 
 class UserModelChoiceField(forms.ModelChoiceField):
