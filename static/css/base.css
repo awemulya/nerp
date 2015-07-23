@@ -327,3 +327,7 @@ table#group-table td input[type="number"]{
     display: inline;
     max-width: 5em;
 }
+
+#library form {
+    margin: 0 1em;
+}
