@@ -7,8 +7,8 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_demand_forms" %}">{% trans 'Demand' %} {% trans 'Forms' %}</a>
-    <span> {% trans scenario %} {% trans 'Demand Form' %}</span>
+    <li><a href="{% url "list_demand_forms" %}">{% trans 'Demand' %} {% trans 'Forms' %}</a></li>
+    <li><span> {% trans scenario %} {% trans 'Demand Form' %}</span></li>
 {% endblock %}
 
 {% block head_end %}
@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="print-only">
+    <div class="visible-print-block">
         <span class="right">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '5' %}{% trans '1' %}</span>
         <br>
 
@@ -34,28 +34,29 @@
         {% csrf_token %}
 
 
-        <span class="print-only">श्री प्रमुख,</span>
+        <span class="visible-print-block">श्री प्रमुख,</span>
 
         <div class="one-line row">
-            <span class="column large-3 small-3 print-only">
+            <span class="col-lg-3 col-sm-3 visible-print-block">
     भण्डार शाखा
             </span>
 
 
-                <span class="column large-6 small-6">
+                <span class="col-lg-6 col-sm-6">
                     {% ifusergroup 'Store Keeper' 'Chief' %}
                         {% trans 'Release No.' %}:
-                        <input type="text" name="release_no" id="id_release_no"
+                        <input type="text" class="form-control" name="release_no" id="id_release_no"
                                data-bind="value: release_no, localize: true">
                         {{ form.release_no.errors }}
+                        <br>
                     {% else %}
-                        <div class="print-only">{% trans 'Release No.' %}: <span data-bind="text: release_no"></span>
+                        <div class="visible-print-block">{% trans 'Release No.' %}: <span data-bind="text: release_no"></span>
                         </div>
                     {% endifusergroup %}
                 </span>
 
 
-            <span class="right column large-3 small-3 print-only">
+            <span class="right col-lg-3 col-sm-3 visible-print-block">
                 {% trans 'Fiscal Year' %}:
                 {{ 'core.models.app_setting.fiscal_year'|setting|localize }}
             </span>
@@ -74,14 +75,14 @@
                     <th class="span3">{% trans 'Purpose' %}</th>
 
                     <th
-                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>{% trans 'Released Item Quantity' %}</th>
+                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>{% trans 'Released Item Quantity' %}</th>
 
 
                     <th
-                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>{% trans 'Inventory Account No.' %}</th>
+                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>{% trans 'Inventory Account No.' %}</th>
                     <th
-                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>{% trans 'Remarks' %}</th>
-                    <th class="span1 hide-on-print"></th>
+                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>{% trans 'Remarks' %}</th>
+                    <th class="span1 hidden-print"></th>
                 </tr>
                 </thead>
 
@@ -105,7 +106,7 @@
                     <td data-bind="editableText: unit, disable_content_editable: status() != 'Requested'"></td>
                     <td data-bind="editableText: purpose, disable_content_editable: status() != 'Requested'"></td>
 
-                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}>
+                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>
                         <input type="text" readonly
                                data-bind="attr: {'data-dropdown': 'drop' + $index()}, value: total_release, event: {'focus': release_focused}">
                         <!-- ko if:item_id -->
@@ -175,13 +176,13 @@
 
                     </td>
 
-                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}
+                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}
                         data-bind="text: localize(inventory_account_id(), window.lang)">2
                     </td>
-                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="only-on-print"{% endifusergroup %}
+                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}
                         data-bind="editableText: remarks"></td>
 
-                    <td class="hide-on-print">
+                    <td class="hidden-print">
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
                         {% ifusergroup 'Store Keeper' 'Chief' %}
                             <button class="small secondary button"
@@ -206,14 +207,14 @@
                 <!-- /ko -->
                 </tbody>
             </table>
-            <a class="small secondary button" data-bind="click: addRow">
+            <a class="btn btn-default" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>
         </div>
-
-        <div class="row inline-fields">
-            <div class="column large-6 small-6 marginless-inputs">
-                <div class="print-only">{% trans "Demandee's Signature" %}:-</div>
+        <br>
+        <div class="row">
+            <div class="col-lg-6 col-sm-6 marginless-inputs">
+                <div class="visible-print-block">{% trans "Demandee's Signature" %}:-</div>
                 <div>
                     {% trans "Name" %}:-
                     {% ifusergroup 'Store Keeper' 'Chief' %}
@@ -227,33 +228,33 @@
                 <div>
                     {% trans "Date" %}:-
                     {#                    {{ form.instance.date|date:"Y-m-d" }}#}
-                    <input type="text" required="required" name="date" id="id_date"
+                    <input class="form-control" type="text" required="required" name="date" id="id_date"
                            data-bind="value: date, localize: true">
                 </div>
                 <div>{% trans "Purpose" %}:- {{ form.purpose }}</div>
-                <div class="print-only">{% trans "Signature of the one who enters in Inventory Account" %}:-</div>
-                <div class="print-only">{% trans "Date" %}:-</div>
+                <div class="visible-print-block">{% trans "Signature of the one who enters in Inventory Account" %}:-</div>
+                <div class="visible-print-block">{% trans "Date" %}:-</div>
             </div>
 
-            <div class="column large-6 small-6 print-only">
+            <div class="col-lg-6 col-sm-6 visible-print-block">
                 <div>{% trans "(a)" %} {% trans "Buy from market" %}</div>
                 <div>{% trans "(b)" %} {% trans "Lend from store" %}</div>
-                <div class="print-only">{% trans "Signature of the orderer" %}:-</div>
-                <div class="print-only">{% trans "Date" %}:-</div>
-                <div class="print-only">{% trans "Signature of the receiver" %}:-</div>
-                <div class="print-only">{% trans "Date" %}:-</div>
+                <div class="visible-print-block">{% trans "Signature of the orderer" %}:-</div>
+                <div class="visible-print-block">{% trans "Date" %}:-</div>
+                <div class="visible-print-block">{% trans "Signature of the receiver" %}:-</div>
+                <div class="visible-print-block">{% trans "Date" %}:-</div>
             </div>
         </div>
 
         <br/>
 
-        <input type="submit" class="small secondary button" value="{% trans 'Save' %}"
+        <input type="submit" class="btn btn-primary btn-lg" value="{% trans 'Save' %}"
                 {#               data-bind="visible: $root.status() == 'Requested'"#}
                 >
         {% if scenario == 'Update' %}
             <a href="{% url 'convert_demand_form' form.instance.id %}"
-               class="small secondary button">{% trans 'Converter to excel' %}</a>
-            <a class="small secondary button alert"
+               class="btn btn-primary btn-lg">{% trans 'Converter to excel' %}</a>
+            <a class="btn btn-danger btn-lg"
                href="{% url 'delete_demand_form' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}
 
