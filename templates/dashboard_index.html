@@ -199,10 +199,9 @@
                         </div>
                     {% endifusergroup %}
 
-                   
-
+                    
       </div>
-       <form action="{% url 'isbn_to_record' %}" method="post">
+      <form action="{% url 'isbn_to_record' %}" method="post">
                         {% csrf_token %}
                         <input type="text" placeholder="ISBN" name="isbn">
                     </form>
