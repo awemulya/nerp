@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_inventory_items" %}">{% trans 'Inventory' %} {% trans 'Items' %}</a>
+    <li><a href="{% url "list_inventory_items" %}">{% trans 'Inventory' %} {% trans 'Items' %}</a></li>
 {% endblock %}
 
 {% block content %}
@@ -41,7 +41,7 @@
     {% autosort objects.qs as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
 
-    <table class="table-bordered">
+    <table class="table table-bordered table-striped">
         <thead>
         <th>{% anchor name _("Name") %}</th>
         <th>{% anchor account__account_no _('Account No.') %}</th>
@@ -68,7 +68,7 @@
 
     {% paginate %}
 
-    <a class="small secondary button"
+    <a class="btn btn-primary btn-lg"
        href="{% url 'create_inventory_item' %}">{% trans 'New' %} {% trans 'Inventory' %} {% trans 'Item' %}</a>
 
 {% endblock %}

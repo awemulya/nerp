@@ -14,8 +14,8 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_inventory_items" %}">{% trans 'Inventory' %} {% trans 'Items' %}</a>
-    <span>{% trans scenario %} {% trans 'Inventory' %} {% trans 'Item' %}</span>
+    <li><a href="{% url "list_inventory_items" %}">{% trans 'Inventory' %} {% trans 'Items' %}</a></li>
+    <li><span>{% trans scenario %} {% trans 'Inventory' %} {% trans 'Item' %}</span></li>
 {% endblock %}
 
 
@@ -26,16 +26,18 @@
             {{ form.non_field_errors }}
             {{ form.errors }}
         <form method="post">
-            <ul class="tabs" data-tab id="training-tab">
-                <li class="tab-title active"><a href="#basic">Basic</a></li>
-                <li class="tab-title"><a href="#depreciation">Depreciation</a></li>
+            <ul class="nav nav-tabs" role="tablist" id="training-tab">
+                <li role="presentation" class="active"><a href="#basic" data-toggle="tab">Basic</a></li>
+                <li role="presentation"><a href="#depreciation" data-toggle="tab">Depreciation</a></li>
                 {% if scenario == 'Update' %}
-                <li class="tab-title"><a href="#item_instance" class="item-instance">Item Instance</a></li>
+                <li class="tab-title"><a href="#item_instance" class="item-instance" data-toggle="tab">Item Instance</a></li>
                 {% endif %}
             </ul>
+            
+            <br>
 
-            <div class="tabs-content">
-            <div class="content active" id="basic">
+            <div class="tab-content">
+            <div class="content tab-pane active" id="basic">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <p>
@@ -67,12 +69,12 @@
                     </div>
                 </div>
             </div>
-        <div class="content" id="depreciation">
-            <div id="depreciation">
+        <div class="content tab-pane" id="depreciation">
+            <div>
                 {% csrf_token %}
-                <div class="row collapse">
-                    <div class="medium-2 small-2 columns">
-                   <div class="row collapse">
+                <div class="row">
+                    <div class="col-md-2 col-sm-2">
+                   <div class="row">
                         <label>Depreciate</label>
                         <div class="medium-9 small-9 columns">
                             {{ depreciation_form.depreciate_value }}
@@ -112,8 +114,8 @@
         </div>
         </form>
         {% if scenario == 'Update' %}
-        <div class="content" id="item_instance">
-            <table class="table-bordered">
+        <div class="content tab-pane" id="item_instance">
+            <table class="table table-bordered table-striped">
             <thead>
                 <th>{% trans "Name" %}</th>
                 <th>{% trans 'Rate' %}</th>
