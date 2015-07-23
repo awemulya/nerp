@@ -16,7 +16,7 @@
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
 
-    <table class="table-bordered">
+    <table class="table table-striped table-bordered">
         <thead>
         <th>{% anchor name _('Name') %}</th>
         <th>{% anchor address _('Address') %}</th>
@@ -45,7 +45,7 @@
 
     {% paginate %}
 
-    <a class="small secondary button"
+    <a class="btn btn-default btn-lg"
        href="{% url 'create_party' %}">{% trans 'New' %} {% trans 'Party' %}</a>
 
 {% endblock %}
