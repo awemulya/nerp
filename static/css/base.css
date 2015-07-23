@@ -332,7 +332,7 @@ table#group-table td input[type="number"]{
     margin: 0 1em;
 }
 /*Bootstrap override css*/
-form p select.form-control {
+form p select.form-control, form div select.form-control {
   width: auto;
 }
 

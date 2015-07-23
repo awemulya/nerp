@@ -207,14 +207,14 @@
                 <!-- /ko -->
                 </tbody>
             </table>
-            <a class="btn btn-default" data-bind="click: addRow">
+            <a class="btn btn-default hidden-p" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>
         </div>
         <br>
         <div class="row">
-            <div class="col-lg-6 col-sm-6 marginless-inputs">
-                <div class="visible-print-block">{% trans "Demandee's Signature" %}:-</div>
+            <div class="col-lg-6 col-sm-6 col-xs-6">
+                <div class="visible-print-inline-block">{% trans "Demandee's Signature" %}:-</div>
                 <div>
                     {% trans "Name" %}:-
                     {% ifusergroup 'Store Keeper' 'Chief' %}
@@ -232,17 +232,17 @@
                            data-bind="value: date, localize: true">
                 </div>
                 <div>{% trans "Purpose" %}:- {{ form.purpose }}</div>
-                <div class="visible-print-block">{% trans "Signature of the one who enters in Inventory Account" %}:-</div>
-                <div class="visible-print-block">{% trans "Date" %}:-</div>
+                <div class="visible-print-inline-block">{% trans "Signature of the one who enters in Inventory Account" %}:-</div>
+                <div class="visible-print-inline-block">{% trans "Date" %}:-</div>
             </div>
 
-            <div class="col-lg-6 col-sm-6 visible-print-block">
+            <div class="col-lg-6 col-sm-6 col-xs-6 visible-print-inline-block">
                 <div>{% trans "(a)" %} {% trans "Buy from market" %}</div>
                 <div>{% trans "(b)" %} {% trans "Lend from store" %}</div>
-                <div class="visible-print-block">{% trans "Signature of the orderer" %}:-</div>
-                <div class="visible-print-block">{% trans "Date" %}:-</div>
-                <div class="visible-print-block">{% trans "Signature of the receiver" %}:-</div>
-                <div class="visible-print-block">{% trans "Date" %}:-</div>
+                <div>{% trans "Signature of the orderer" %}:-</div>
+                <div>{% trans "Date" %}:-</div>
+                <div>{% trans "Signature of the receiver" %}:-</div>
+                <div>{% trans "Date" %}:-</div>
             </div>
         </div>
 
