@@ -45,29 +45,27 @@
                     <label for="id_other_properties">{% trans "Other properties" %}</label>
                     <div id="id_other_properties" data-bind="foreach: other_properties">
                         <p>
-                            <input type="text" id="id_property_name" name="property_name" placeholder="Property name" data-bind="value: property_name"> 
-                            <input type="text" id="id_property" name="property" placeholder="Property" data-bind="value: property">
-                            <a href="#" class="close tiny secondary" data-bind="click: $parent.removeOtherProperty">x</a>
+                            <input type="text" class="form-control" id="id_property_name" name="property_name" placeholder="Property name" data-bind="value: property_name"> 
+                            <input type="text" class="form-control" id="id_property" name="property" placeholder="Property" data-bind="value: property">
+                            <a href="#" data-bind="click: $parent.removeOtherProperty">x</a>
                         </p>
                     </div>
-                    <a class="small secondary button" data-bind="click: addOtherProperty">
+                    <a class="btn btn-default" data-bind="click: addOtherProperty">
                         {% trans 'Add New Row' %}
                     </a>
                 </div>
                 </p>
-                <div class="row">
                     <div class="span12">
-                        <button type="submit" value="Submit" class="small secondary button">
+                        <button type="submit" value="Submit" class="btn btn-primary btn-lg">
                             {% trans 'Submit' %}</button>
                         {% if scenario == 'Update' %}
-                            <a class="small secondary button alert"
+                            <a class="btn btn-danger btn-lg"
                                href="{% url 'delete_inventory_item' form.instance.id %}">{% trans 'Delete' %}!</a>
                         {% endif %}
         {#                <a class="small secondary button" target="_blank"#}
         {#                   href="{% url 'create_inventory_category' %}">{% trans 'New' %}#}
         {#                    {% trans 'Inventory' %} {% trans 'Category' %}</a>#}
                     </div>
-                </div>
             </div>
         <div class="content tab-pane" id="depreciation">
             <div>
@@ -75,39 +73,45 @@
                 <div class="row">
                     <div class="col-md-2 col-sm-2">
                    <div class="row">
+                    <div class="col-md-12 col-sm-12">
+
                         <label>Depreciate</label>
-                        <div class="medium-9 small-9 columns">
-                            {{ depreciation_form.depreciate_value }}
                         </div>
-                         <div class="medium-3 small-3 columns">
+                        <div class="col-md-9 col-sm-9">
+                        <div class="input-group">
+                            {{ depreciation_form.depreciate_value }}
+                            <div class="input-group-addon" class="postfix" data-bind="text: postfix">%</div>
+                            </div>
+                        </div>
+                         <div class="col-md-3 col-sm-3">
                          <span class="postfix" data-bind="text: postfix">%</span>
                          </div>
                     </div>
                     </div>
                     
-                    <div class="medium-2 small-2 columns">
+                    <div class="col-md-2 col-sm-2">
                     <label for="id_depreciate_type">Depreciation</label>
                         {{ depreciation_form.depreciate_type }}
                     </div>
-                    <div class="medium-5 small-5 columns">
+                    <div class="col-md-5 col-sm-5">
                     </div>
                 </div>
-                <div class="row collapse">
-                    <div class="medium-12 small-12 columns">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12">
                         <label>Every</label>
                     </div>
                 </div>                
-                <div class="row collapse">
-                    <div class="medium-2 small-2 columns">
+                <div class="row">
+                    <div class="col-md-2 col-sm-2">
                         {{ depreciation_form.time }}
                     </div>
-                    <div class="medium-2 small-2 columns">
+                    <div class="col-md-2 col-sm-2">
                     <label for="id_depreciate_type"> </label>
 
                         {{ depreciation_form.time_type }}
                         <input type="hidden" data-bind="value: id" name='depreciation_id'>
                     </div>
-                    <div class="medium-8 small-8 columns">
+                    <div class="col-md-8 col-sm-8">
                     </div>
                 </div>
             </div>
