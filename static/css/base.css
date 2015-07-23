@@ -344,7 +344,7 @@ input[type=text]{
     display: block;
 }
 
-#other-properties input[type=text]{
+#other-properties input[type=text], input[type=text]#id_q {
     display: inline;
 }
 
