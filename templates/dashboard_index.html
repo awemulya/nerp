@@ -10,12 +10,16 @@
 {% endblock %}
 
 {% block content %}
-
-    <dl class="accordion" data-accordion>
-        {% ifappexists inventory %}
-            <dd><a href="#inventory">{% trans 'Inventory' %}</a>
-
-                <div class="content active" id="inventory">
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+  {% ifappexists inventory %}
+    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#inventory" aria-expanded="true">
+      <h4 class="panel-title">
+       <a>{% trans 'Inventory' %}</a>
+      </h4>
+    </div>
+    <div id="inventory" class="panel-collapse collapse in">
+      <div class="panel-body">
                     {% ifusergroup 'Store Keeper' %}
                         <a href="{% url 'list_inventory_items' %}">{% trans 'Inventory Items' %}</a>
                         <br/>
@@ -71,14 +75,20 @@
                         <a href="{% url 'list_demand_forms' %}">{% trans 'Demand Forms' %}</a>
                         <br/>
                     {% endifusergroup %}
-                </div>
-            </dd>
+      </div>
+    </div>
         {% endifappexists %}
-
+    
+  </div>
+    <div class="panel panel-default">
         {% ifappexists training %}
-            <dd><a href="#training">{% trans 'Training' %}</a>
-
-                <div class="content dashboard" id="training">
+    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#training" aria-expanded="false">
+      <h4 class="panel-title">
+       <a>{% trans 'Training' %}</a>
+      </h4>
+    </div>
+    <div id="training" class="panel-collapse collapse">
+      <div class="panel-body">
                     {% ifusergroup 'Trainer' %}
 
                         <div>
@@ -128,14 +138,20 @@
                                 Register</a>
                         </div>
                     {% endifusergroup %}
-                </div>
-            </dd>
+      </div>
+    </div>
         {% endifappexists %}
-
+    
+  </div>
+   <div class="panel panel-default">
         {% ifappexists ils %}
-            <dd><a href="#library">{% trans 'Library' %}</a>
-
-                <div class="content dashboard" id="library">
+    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#library" >
+      <h4 class="panel-title">
+       <a>{% trans 'Library' %}</a>
+      </h4>
+    </div>
+    <div id="library" class="panel-collapse collapse">
+      <div class="panel-body">
                     <div>
                         <a href="{% url 'list_records' %}">
                             <img src="{% static 'img/icons/book.png' %}">
@@ -200,29 +216,10 @@
 
                     </form>
 
-                </div>
-
-            </dd>
-
+      </div>
+    </div>
         {% endifappexists %}
-
-        {#        {% ifappexists account %}#}
-        {#                        <dd><a href="#accounting">{% trans 'Accounting' %}</a>#}
-        {##}
-        {#                            <div class="content" id="accounting">#}
-        {#                                {% ifusergroup 'Store Keeper' %}#}
-        {#                                    {% trans 'Demand Form' %}#}
-        {#                                {% endifusergroup %}#}
-        {#                            </div>#}
-        {#                        </dd>#}
-        {#        {% endifappexists %}#}
-    </dl>
-
-
-
-
-
-
-
-
+    
+  </div>
+</div>
 {% endblock %}
