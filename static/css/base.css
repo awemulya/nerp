@@ -331,3 +331,20 @@ table#group-table td input[type="number"]{
 #library form {
     margin: 0 1em;
 }
+
+form p select.form-control {
+  width: auto;
+}
+
+label {
+    font-weight: normal;
+}
+
+input[type=text]{
+    display: block;
+}
+
+#other-properties input[type=text]{
+    display: inline;
+}
+
