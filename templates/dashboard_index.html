@@ -18,7 +18,7 @@
        <a>{% trans 'Inventory' %}</a>
       </h4>
     </div>
-    <div id="inventory" class="panel-collapse collapse in">
+    <div id="inventory" class="panel-collapse collapse">
       <div class="panel-body">
                     {% ifusergroup 'Store Keeper' %}
                         <a href="{% url 'list_inventory_items' %}">{% trans 'Inventory Items' %}</a>
@@ -88,7 +88,7 @@
       </h4>
     </div>
     <div id="training" class="panel-collapse collapse">
-      <div class="panel-body">
+      <div class="panel-body dashboard">
                     {% ifusergroup 'Trainer' %}
 
                         <div>
@@ -150,8 +150,8 @@
        <a>{% trans 'Library' %}</a>
       </h4>
     </div>
-    <div id="library" class="panel-collapse collapse">
-      <div class="panel-body">
+    <div id="library" class="panel-collapse collapse in">
+      <div class="panel-body dashboard">
                     <div>
                         <a href="{% url 'list_records' %}">
                             <img src="{% static 'img/icons/book.png' %}">
@@ -176,7 +176,7 @@
                     </div>
                     <div>
                         <a href="{% url 'list_ebooks' %}">
-                            <img src="{% static 'img/icons/ebook.png' %}">
+                            <img src="{% static 'img/icons/ebook.png' %}" width="150px" height="150px">
                             Ebooks</a>
                     </div>
 
@@ -199,7 +199,10 @@
                         </div>
                     {% endifusergroup %}
 
-                    <form action="{% url 'isbn_to_record' %}" method="post">
+                   
+
+      </div>
+       <form action="{% url 'isbn_to_record' %}" method="post">
                         {% csrf_token %}
                         <input type="text" placeholder="ISBN" name="isbn">
                     </form>
@@ -215,8 +218,6 @@
                         <input type="submit" value="Search!" class="tiny button">
 
                     </form>
-
-      </div>
     </div>
         {% endifappexists %}
     
