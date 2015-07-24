@@ -89,21 +89,21 @@
 
                     <label for="id_categories">Categories:</label>
                     {{ form.categories }}
-                    <a href="#" class="tiny secondary button" data-reveal-id="add-category">+</a>
+                    <a href="#" class="tiny secondary button" data-toggle="modal" data-target="#add-category">+</a>
 
 
                     <label for="id_target_groups">Target groups:</label>
                     {{ form.target_groups }}
-                    <a href="#" class="tiny secondary button" data-reveal-id="add-target-group">+</a>
+                    <a href="#" class="tiny secondary button" data-toggle="modal" data-target="#add-target-group">+</a>
 
                     <label for="id_resource_persons">Resource persons:</label>
                     {{ form.resource_persons }}
-                    <a href="#" class="tiny secondary button" data-reveal-id="add-resource-person">+</a>
+                    <a href="#" class="tiny secondary button" data-toggle="modal" data-target="#add-resource-person">+</a>
 
                 </div>
             </div>
 
-            <div class="content" id="detail">
+            <div class="content tab-pane" id="detail">
                 <label for="id_criteria_for_selection">Criteria for selection:</label>
                 {{ form.criteria_for_selection }}
 
@@ -126,13 +126,12 @@
 
                 </div>
 
-            </div>
 
-            <div class="content" id="participants">
+            <div class="content tab-pane" id="participants">
                   <select id="available"
                         data-bind="options: $root.participants_available, value: selected_participant, optionsText: 'name', optionsValue: 'id'"></select>
                 <button class="small secondary" data-bind="click: add_participant">↓ Add</button>
-                <a href="#" class="small secondary button" data-reveal-id="add-participant">+ Create New</a>
+                <a href="#" class="small secondary button" data-toggle="modal" data-target="#add-participant">+ Create New</a>
 
                 <table class="table table-bordered">
                     <thead>
@@ -171,7 +170,8 @@
                 <input type="hidden" name="selected_participants" data-bind="value: participants">
 
                 </div>
-               <div class="content" id="files">
+
+               <div class="content tab-pane" id="files">
 
                     <table class="table table-bordered">
                     <thead>
@@ -212,47 +212,78 @@
             </div>
     </form>
 
-    <div id="add-category" class="reveal-modal" data-reveal><h2>Add Category</h2>
-        <a class="close-reveal-modal">&#215;</a>
-
-        <form method="post" action="{% url 'add_training_category' %}">
-            {% csrf_token %}
-            {{ category_form.as_p }}
-            <input type="submit" value="Add" class="tiny button">
-        </form>
+    <div id="add-category" class="modal fade" data-reveal>
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2>Add Category</h2>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'add_training_category' %}">
+                        {% csrf_token %}
+                        {{ category_form.as_p }}
+                        <input type="submit" value="Add" class="tiny button">
+                    </form>
+                </div>
+            </div>
+        </div>  
     </div>
 
-    <div id="add-target-group" class="reveal-modal" data-reveal><h2>Add Target Group</h2>
-        <a class="close-reveal-modal">&#215;</a>
-
-        <form method="post" action="{% url 'add_target_group' %}">
-            {% csrf_token %}
-            {{ target_group_form.as_p }}
-            <input type="submit" value="Add" class="tiny button">
-        </form>
+    <div id="add-target-group" class="modal fade" data-reveal>
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2>Add Target Group</h2>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'add_target_group' %}">
+                        {% csrf_token %}
+                        {{ target_group_form.as_p }}
+                        <input type="submit" value="Add" class="tiny button">
+                    </form>
+                </div>
+            </div>
+        </div>  
     </div>
 
-    <div id="add-resource-person" class="reveal-modal" data-reveal><h2>Add Resource Person</h2>
-        <a class="close-reveal-modal">&#215;</a>
-
-        <form method="post" action="{% url 'add_resource_person' %}">
-            {% csrf_token %}
-            {{ resource_person_form.as_p }}
-            <input type="submit" value="Add" class="tiny button">
-        </form>
+    <div id="add-resource-person" class="modal fade" data-reveal>
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2>Add Resource Person</h2>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'add_resource_person' %}">
+                        {% csrf_token %}
+                        {{ resource_person_form.as_p }}
+                        <input type="submit" value="Add" class="tiny button">
+                    </form>
+                </div>
+            </div>
+        </div>  
     </div>
 
-    <div id="add-participant" class="reveal-modal" data-reveal><h2>Add Participant</h2>
-        <a class="close-reveal-modal">&#215;</a>
+    <div id="add-participant" class="modal fade" data-reveal>
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h2>dd Participant</h2>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'add_participant' %}">
+                        {% csrf_token %}
+                        {{ participant_form.as_p }}
+                        <input type="submit" value="Add" class="tiny button">
+                    </form>
+                </div>
+            </div>
+        </div> 
 
-        <form method="post" action="{% url 'add_participant' %}">
-            {% csrf_token %}
-            {{ participant_form.as_p }}
-            <input type="submit" value="Add" class="tiny button">
-        </form>
-    </div>
-
-    <div id="add-organization" class="reveal-modal" data-reveal><h2>Add Organization</h2>
+    <div id="add-organization" class="modal" data-reveal><h2>Add Organization</h2>
         <a class="close-reveal-modal">&#215;</a>
 
         <form method="post" action="{% url 'add_organization' %}">
