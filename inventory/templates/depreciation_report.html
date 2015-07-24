@@ -14,13 +14,13 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url 'depreciation_report' %}">{% trans 'Depreciation' %} {% trans 'Reports' %}</a>
+    <li><a href="{% url 'depreciation_report' %}">{% trans 'Depreciation' %} {% trans 'Reports' %}</a></li>
 {% endblock %}
 
 {% block content %}
 	<h1 class="center">Depreciation Report</h1>
     <div data-bind="with: table_view">
-	<table class="table table-bordered"> 
+	<table class="table table-striped table-bordered"> 
         <thead>
             <tr>
                 <th rowspan='2'>{% trans 'SN' %}</th>
