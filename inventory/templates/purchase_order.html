@@ -7,8 +7,8 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_purchase_orders" %}">{% trans 'Purchase' %} {% trans 'Orders' %}</a>
-    <span> {% trans scenario %} {% trans 'Purchase Order' %}</span>
+    <li><a href="{% url "list_purchase_orders" %}">{% trans 'Purchase' %} {% trans 'Orders' %}</a></li>
+    <li><span> {% trans scenario %} {% trans 'Purchase Order' %}</span></li>
 {% endblock %}
 
 {% block head_end %}
@@ -20,18 +20,18 @@
 
 {% block content %}
 
-    <span class="right print-only">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '4' %}{% trans '5' %}</span>
+    <span class="right visible-print-block">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '4' %}{% trans '5' %}</span>
     <br>
-    <h5 class="center print-only">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h5>
-    <h6 class="center print-only">{% trans 'Purchase Order' %}</h6>
+    <h5 class="center visible-print-block">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h5>
+    <h6 class="center visible-print-block">{% trans 'Purchase Order' %}</h6>
 
     <form method="post" data-bind="submit: save">
         {% csrf_token %}
 
         <div class="row">
 
-            <div class="column large-6 small-6 selectize-inline">
-                {% trans 'Shree' %} <input type="hidden" name="table_model"
+            <div class="col-lg-6 col-sm-6 col-lg-6 col-sm-6 selectize-inline">
+                {% trans 'Shree' %} <input type="hidden" class="form-control" name="table_model"
                                            data-bind="value: ko.toJSON($data.demand_rows, null, 2)">
                 {#                <input type="hidden" data-url="{% url 'create_party' %}"#}
                 {#                       data-bind="value: party, select2: $root.parties">#}
@@ -44,12 +44,12 @@
                 <br/>
             </div>
 
-            <div class="column large-6 small-6 marginless-inputs">
-                {% trans 'Purchase Order' %} {% trans 'No.' %}: <input type="text" name="order_no" id="id_order_no"
+            <div class="col-lg-6 col-sm-6 marginless-inputs">
+                {% trans 'Purchase Order' %} {% trans 'No.' %}: <input type="text" class="form-control" name="order_no" id="id_order_no"
                                                                        data-bind="value: order_no, localize: 1">
                 {{ form.order_no.errors }}
                 <br>
-                {% trans 'Date' %}: <input type="text" required="required" name="date" id="id_date"
+                {% trans 'Date' %}: <input type="text" class="form-control" required="required" name="date" id="id_date"
                                            data-bind="value: date, localize: 1">
                 {{ form.date.errors }}
             </div>
@@ -137,41 +137,41 @@
 
                 </tbody>
             </table>
-            <a class="small secondary button" data-bind="click: addRow">
+            <a class="btn btn-default" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>
         </div>
+        <br>
 
-
-        <input type="submit" class="small secondary button" value="{% trans 'Save' %}">
+        <input type="submit" class="btn btn-primary btn-lg" value="{% trans 'Save' %}">
         <span data-bind="text: msg, css: status"></span>
 
         {% if scenario == 'Update' %}
-            <a href="{% url 'convert_purchase_order' form.instance.id %}" class="small secondary button">{% trans 'Converter to excel' %}</a>
-            <a class="small secondary button alert"
+            <a href="{% url 'convert_purchase_order' form.instance.id %}" class="btn btn-primary btn-lg">{% trans 'Converter to excel' %}</a>
+            <a class="btn btn-danger btn-lg"
                href="{% url 'delete_purchase_order' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}
 
-        <a class="small secondary button" target="_blank"
+        <a class="btn btn-primary btn-lg" target="_blank"
            data-bind="visible: $root.id(), attr: {'href': '/inventory/entry-report/purchase/'+$root.id()}">{% trans 'Entry Report' %}</a>
 
 
     </form>
 
-    <div class="row print-only">
-        <div class="column large-6 small-6">
+    <div class="row visible-print-block">
+        <div class="col-lg-6 col-sm-6">
             {% trans "Faantwaala's" %} {% trans 'Signature' %}:-
             <br>
             {% trans 'Date' %}:-
         </div>
-        <div class="column large-6 small-6">
+        <div class="col-lg-6 col-sm-6">
             {% trans 'Section' %} {% trans "Head's" %} {% trans 'Signature' %}:-
             <br>
             {% trans 'Date' %}:-
         </div>
     </div>
 
-    <table class="table table-bordered print-only">
+    <table class="table table-bordered visible-print-block">
         <tr>
             <td><u>{% trans 'To be filled by financial administration section' %}</u>:-<br><br>
                 माथि उल्लेखि सामानहरु बजट उपशिर्षक न. .............. को खर्च शिर्षक न. .......... बाट भुक्तानी दिन बजेट
@@ -179,9 +179,9 @@
                 <br>
 
                 <div class="row">
-                    <span class="column large-6 small-6"></span>
+                    <span class="col-lg-6 col-sm-6"></span>
 
-                    <div class="column large-6 small-6">
+                    <div class="col-lg-6 col-sm-6">
                         {% trans 'Accounting' %} {% trans "Head's" %} {% trans 'Signature' %}:-
                         <br>
                         {% trans 'Date' %}:-
@@ -192,9 +192,9 @@
         <tr>
             <td>
                 <div class="row">
-                    <span class="column large-6 small-6"></span>
+                    <span class="col-lg-6 col-sm-6"></span>
 
-                    <div class="column large-6 small-6">
+                    <div class="col-lg-6 col-sm-6">
                         {% trans "Signature of Head of Office" %}:-
                         <br>
                         {% trans 'Date' %}:-
@@ -204,7 +204,7 @@
         </tr>
     </table>
 
-    <div class="print-only">
+    <div class="visible-print-block">
 
         माथि उल्लेखित सामानहरु मिति .......................... भित्र
         .............................................................. कार्यालयमा बुझाउने छु भनी सहिछाप गर्ने ।
@@ -213,17 +213,17 @@
     </div>
 
 
-    <div class="row print-only">
-        <div class="column large-4 small-4">
+    <div class="row visible-print-block">
+        <div class="col-lg-4 col-sm-4">
             <b>{% trans "Firm's Name" %}</b>
             <br>
             <span data-bind="text:party_name"></span>
         </div>
-        <div class="column large-4 small-4">
+        <div class="col-lg-4 col-sm-4">
             <b>{% trans 'Signature' %}</b>
             <br>
         </div>
-        <div class="column large-4 small-4">
+        <div class="col-lg-4 col-sm-4">
             <b>{% trans 'Date' %}</b>
             <br>
         </div>

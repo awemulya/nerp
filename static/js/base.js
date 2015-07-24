@@ -94,7 +94,7 @@ appended_link_clicked = function (e) {
         var old_forms = $('form');
         $.get(url, function (data) {
             the_modal.html(data);
-            the_modal.foundation('reveal', 'open');
+            the_modal.find('#myModal').modal('toggle');
         }).success(function () {
             var new_forms = $('form').not(old_forms).get();
             $(new_forms).submit({url: url}, override_form);
