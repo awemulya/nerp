@@ -17,7 +17,7 @@
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
 
-    <table class="table-bordered">
+    <table class="table table-striped table-bordered">
         <thead>
         <th>{% anchor entry_report_no _('Entry Report No.') %}</th>
         <th>{% trans 'Source' %}</th>

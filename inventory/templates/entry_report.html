@@ -7,8 +7,8 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li>><a href="{% url "list_entry_reports" %}">{% trans 'Entry' %} {% trans 'Reports' %}</a></li>
-    <span> {% trans scenario %} {% trans 'Entry Report' %}</span>
+    <li><a href="{% url "list_entry_reports" %}">{% trans 'Entry' %} {% trans 'Reports' %}</a></li>
+    <li><span> {% trans scenario %} {% trans 'Entry Report' %}</span></li>
 {% endblock %}
 
 {% block head_end %}
@@ -20,10 +20,10 @@
 
 {% block content %}
 
-    <span class="right print-only">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '4' %}{% trans '6' %}</span>
+    <span class="right visible-print-block">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '4' %}{% trans '6' %}</span>
     <br>
-    <h3 class="center print-only">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h3>
-    <h3 class="center print-only">{% trans 'Entry Report' %}</h3>
+    <h3 class="center visible-print-block">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h3>
+    <h3 class="center visible-print-block">{% trans 'Entry Report' %}</h3>
 
     <form method="post" data-bind="submit: save">
         {% csrf_token %}
@@ -31,15 +31,15 @@
         <input type="hidden" name="table_model" data-bind="value: ko.toJSON($data.demand_rows, null, 2)">
 
 
-        {% trans 'Entry Report' %} {% trans 'No.' %}: <input type="text" name="entry_report_no" min="0"
+        {% trans 'Entry Report' %} {% trans 'No.' %}: <input type="text" name="entry_report_no" min="0" class="form-control input-inline"
                                                              id="id_entry_report_no"
                                                              data-bind="value: entry_report_no, localize: 1">
         {{ form.entry_report.errors }}
 
-
+        <br><br>
         <div data-bind="with:table_view">
 
-            <table class="table table-bordered">
+            <table class="table table-striped table-bordered">
                 <thead>
                 <tr>
                     <th rowspan="2" class="span1">{% trans 'SN' %}</th>
@@ -92,31 +92,32 @@
                 <!-- /ko -->
                 </tbody>
             </table>
-            <a class="small secondary button" data-bind="click: addRow">
+            <a class="btn btn-default hidden-print" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>
         </div>
 
-
-        <input type="submit" class="small secondary button" value="{% trans 'Save' %}">
+    <br>
+        <input type="submit" class="btn btn-primary btn-lg hidden-print" value="{% trans 'Save' %}">
         <span data-bind="text: msg, css: status"></span>
 
         {% if form.instance.id %}
-            <a href="{% url 'convert_entry_report' form.instance.id %}" class="small secondary button">{% trans 'Converter to excel' %}</a>
-            <a class="small secondary button alert"
+            <a href="{% url 'convert_entry_report' form.instance.id %}" class="btn btn-primary btn-lg hidden-print">{% trans 'Converter to excel' %}</a>
+            <a class="btn btn-danger btn-lg hidden-print"
                href="{% url 'delete_entry_report' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}
 
         {% if form.instance.source|get_class == 'PurchaseOrder' %}
-            <a class="small secondary button" target="_blank"
+            <a class="btn btn-primary btn-lg hidden-print" target="_blank"
                href="{% url 'update_purchase_order' form.instance.source.id %}">{% trans 'Purchase Order' %}</a>
         {% else %}
-            <a class="small secondary button" target="_blank"
+            <a class="btn btn-primary btn-lg hidden-print" target="_blank"
                href="{% url 'update_handover' form.instance.source.id %}">{% trans 'Handover' %}</a>
         {% endif %}
 
 
     </form>
+    <br>
     {% if form.instance.source|get_class == 'PurchaseOrder' %}
         माथि उल्लेखित सामानहरु खरिद आदेश नम्बर <b>{{ form.instance.source.order_no|localize }}</b> मिति
         <b>{{ form.instance.source.date|date:"Y-m-d"|localize }}</b>
@@ -134,22 +135,22 @@
         बाँधेको प्रमाणित गर्दछु ।
     {% endif %}
     <br>
-    <div class="row print-only">
-        <div class="column large-4 small-4">
+    <div class="row visible-print-block">
+        <div class="col-lg-4 col-sm-4 col-xs-4">
             {% trans "Faantwaala's" %} {% trans 'Signature' %}:
             <br>
             {% trans 'Name' %}:<br>
             {% trans 'Designation' %}:<br>
             {% trans 'Date' %}:
         </div>
-        <div class="column large-4 small-4">
+        <div class="col-lg-4 col-sm-4 col-xs-4">
             {% trans "Signature of Verifying Section Head" %}:
             <br>
             {% trans 'Name' %}:<br>
             {% trans 'Designation' %}:<br>
             {% trans 'Date' %}
         </div>
-        <div class="column large-4 small-4">
+        <div class="col-lg-4 col-sm-4 col-xs-4">
             {% trans "Signature of Head of Office" %}:
             <br>
             {% trans 'Name' %}:<br>
