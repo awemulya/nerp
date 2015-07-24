@@ -7,12 +7,12 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_trainings" %}">{% trans 'All Trainings' %}</a>
-    <span>{% trans scenario %} {% trans 'Training' %} </span>
+    <li><a href="{% url "list_trainings" %}">{% trans 'All Trainings' %}</a></li>
+    <li><span>{% trans scenario %} {% trans 'Training' %} </span></li>
 {% endblock %}
 {% block head_end %}
-    <script src="{% static 'js/vendors/foundation-datepicker.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'css/vendors/foundation-datepicker.css' %}">
+    <!--script src="{% static 'js/vendors/foundation-datepicker.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/vendors/foundation-datepicker.css' %}"-->
     <script src="{% static 'js/training/form.js' %}"></script>
 
     <link href="{% static 'froala_editor/css/font-awesome.min.css' %}" type="text/css" media="all" rel="stylesheet"/>
@@ -30,7 +30,7 @@
 
 {% block breadcrumbs_right %}
     {% if scenario == 'Update' %}
-        <a href="{% url 'print_training' form.instance.id %}">{% trans 'Print' %}</a>
+        <li><a href="{% url 'print_training' form.instance.id %}">{% trans 'Print' %}</a></li>
     {% endif %}
 {% endblock %}
 
@@ -54,16 +54,21 @@
             </div>
         </div>
 
-        <ul class="tabs" data-tab id="training-tab">
+        <!--ul class="tabs" data-tab id="training-tab">
             <li class="tab-title active"><a href="#basic">Basic</a></li>
             <li class="tab-title"><a href="#detail">Details</a></li>
             <li class="tab-title"><a href="#participants">Participants</a></li>
             <li class="tab-title"><a href="#files">Files </a></li>
+        </ul-->
+        <ul class="nav nav-tabs" role="tablist" id="training-tab">
+            <li role="presentation" class="active"><a href="#basic" data-toggle="tab">Basic</a></li>
+            <li role="presentation"><a href="#detail" data-toggle="tab">Detail</a></li>
+            <li role="presentation"><a href="#participants" data-toggle="tab">Particiapants</a></li>
+            <li role="presentation"><a href="#files" data-toggle="tab">Files</a></li>
         </ul>
 
-
-        <div class="tabs-content">
-            <div class="content active" id="basic">
+        <div class="tab-content">
+            <div class="content tab-pane active" id="basic">
                 <label for="id_title">Title:</label>
                 {{ form.title }}
 
@@ -96,8 +101,8 @@
                     <a href="#" class="tiny secondary button" data-reveal-id="add-resource-person">+</a>
 
                 </div>
-
             </div>
+
             <div class="content" id="detail">
                 <label for="id_criteria_for_selection">Criteria for selection:</label>
                 {{ form.criteria_for_selection }}
@@ -119,13 +124,12 @@
                 {{ form.curriculum }}
 
 
+                </div>
+
             </div>
+
             <div class="content" id="participants">
-
-                {#                <label for="id_participants">Participants:</label>#}
-                {#                {{ form.participants }}#}
-
-                <select id="available"
+                  <select id="available"
                         data-bind="options: $root.participants_available, value: selected_participant, optionsText: 'name', optionsValue: 'id'"></select>
                 <button class="small secondary" data-bind="click: add_participant">↓ Add</button>
                 <a href="#" class="small secondary button" data-reveal-id="add-participant">+ Create New</a>
@@ -166,10 +170,10 @@
 
                 <input type="hidden" name="selected_participants" data-bind="value: participants">
 
-            </div>
-            <div class="content" id="files">
+                </div>
+               <div class="content" id="files">
 
-                <table class="table table-bordered">
+                    <table class="table table-bordered">
                     <thead>
                     <tr>
                         <th>File</th>
@@ -200,17 +204,12 @@
                     </tr>
                     <!-- /ko -->
                     </tbody>
-                </table>
-                <button class="small secondary" data-bind="click: add_row">+ Add File</button>
-                <input type="hidden" name="deleted_files" data-bind="value: deleted_rows()">
+                    </table>
+                    <button class="small secondary" data-bind="click: add_row">+ Add File</button>
+                    <input type="hidden" name="deleted_files" data-bind="value: deleted_rows()">
+                </div>
 
             </div>
-        </div>
-
-        <div>
-
-        </div>
-
     </form>
 
     <div id="add-category" class="reveal-modal" data-reveal><h2>Add Category</h2>
