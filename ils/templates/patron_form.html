@@ -7,8 +7,8 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url 'list_patrons' %}">Patrons</a>
-    <span> {{ scenario }} Patron</span>
+    <li><a href="{% url 'list_patrons' %}">Patrons</a></li>
+    <li><span> {{ scenario }} Patron</span></li>
 {% endblock %}
 
 {% block content %}
@@ -30,14 +30,14 @@
         </p>
 
         <p><label for="id_password">Password:</label>
-            <input type="password" name="password" maxlength="128" id="id_password">
+            <input class="form-control" type="password" name="password" maxlength="128" id="id_password">
         </p>
 
         <p><label for="id_password1">Password Again:</label>
-            <input type="password" name="password1" maxlength="128" id="id_password1">
+            <input class="form-control" type="password" name="password1" maxlength="128" id="id_password1">
         </p>
 
-        <input type="submit" value="Save!" class="button">
+        <input type="submit" value="Save!" class="btn btn-primary btn-lg">
 
     </form>
 

@@ -97,7 +97,7 @@ class IncomingForm(KOModelForm):
         exclude = ()
 
 
-class PatronForm(forms.ModelForm):
+class PatronForm(KOModelForm):
     password1 = forms.CharField(max_length=128, widget=forms.PasswordInput, label=_("Password (again)"))
 
     class Meta:
