@@ -5,8 +5,8 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_target_groups" %}">{% trans 'Target Groups' %}</a>
-    <span>{% trans scenario %} {% trans 'Target Group' %}</span>
+    <li><a href="{% url "list_target_groups" %}">{% trans 'Target Groups' %}</a></li>
+    <li><span>{% trans scenario %} {% trans 'Target Group' %}</span></li>
 {% endblock %}
 
 {% block content %}
@@ -16,16 +16,14 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <div class="row">
             <div class="span12">
-                <button type="submit" value="Submit" class="small secondary button">
+                <button type="submit" value="Submit" class="btn btn-primary btn-lg">
                     {% trans 'Submit' %}</button>
                 {% if scenario == 'Update' %}
-                    <a class="small secondary button alert"
+                    <a class="btn btn-danger btn-lg"
                        href="{% url 'delete_target_group' form.instance.id %}">{% trans 'Delete' %}!</a>
                 {% endif %}
             </div>
-        </div>
     </form>
 
     {% if scenario == 'Update' %}
