@@ -8,7 +8,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <span> Search</span>
+    <li><span> Search</span></li>
 {% endblock %}
 
 {% block content %}
@@ -23,7 +23,7 @@
 
         {{ form.as_p }}
 
-        <input type="submit" value="Search!" class="button">
+        <input type="submit" value="Search!" class="btn btn-default">
 
     </form>
 
@@ -37,7 +37,7 @@
                     <li>
                         {% with item.object as  record %}
                             <div class="row">
-                                <div class="column large-1 medium-1 small-1">
+                                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
                                     {% if record.get_small_cover %}
                                         <a href="{{ record.get_absolute_url }}">
                                             {#                                            <img src="{{ MEDIA_URL }}{{ record.small_cover }}"></a>#}
@@ -50,7 +50,7 @@
                                             <img src="{% static 'img/no_cover-40x60.png' %}"></a>
                                     {% endif %}
                                 </div>
-                                <div class="column large-7 medium-7 small-7">
+                                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
                                     <a href="{{ record.get_absolute_url }}"><h3>{{ record }}</h3></a>
                                     <h5>
                                         {% if record.authors.all %}
@@ -69,7 +69,7 @@
                                         {% endif %}
                                     </h5>
                                 </div>
-                                <div class="column large-4 medium-4 small-4">
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                                 </div>
                             </div>
                         {% endwith %}
