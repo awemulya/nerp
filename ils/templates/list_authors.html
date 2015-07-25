@@ -9,7 +9,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <span> {% trans 'Authors' %}</span>
+    <li><span> {% trans 'Authors' %}</span></li>
 {% endblock %}
 
 {% block head_end %}
@@ -20,7 +20,7 @@
     {% autosort authors as sorted_objects %}
     {% autopaginate sorted_objects 20 as paginated_objects %}
 
-    <table class="table-bordered">
+    <table class="table table-striped table-bordered">
         <thead>
         <tr>
             <th>{% anchor id 'Author' %}</th>

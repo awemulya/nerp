@@ -10,7 +10,7 @@
 {% block breadcrumbs %}
     {{ block.super }}
     {#    <a href="{% url "list_demand_forms" %}">{% trans 'Demand' %} {% trans 'Forms' %}</a>#}
-    <span> {% trans 'Transactions' %}</span>
+    <li><span> {% trans 'Transactions' %}</span></li>
 {% endblock %}
 
 {% block head_end %}
@@ -22,7 +22,7 @@
     {% autopaginate sorted_objects 20 as paginated_objects %}
 
     <div class="transactions">
-        <table class="table-bordered">
+        <table class="table table-striped table-bordered">
             <thead>
             <tr>
                 <th>{% anchor record_id 'Book' %}</th>
