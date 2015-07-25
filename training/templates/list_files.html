@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_files" %}">{% trans 'Files' %}</a>
+    <li><a href="{% url "list_files" %}">{% trans 'Files' %}</a></li>
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
 
-    <table class="table-bordered">
+    <table class="table table-striped table-bordered">
         <thead>
         <th>{% trans 'File' %}</th>
         <th>{% anchor description _('Description') %}</th>

@@ -344,7 +344,7 @@ input[type=text]{
     display: block;
 }
 
-.width-auto {
+.width-auto, input[type=url]{
     width:auto;
 }
 #other-properties input[type=text], input[type=text]#id_q, form input[type=text].input-inline, .input-inline {

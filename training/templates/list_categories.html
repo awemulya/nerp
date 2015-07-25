@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_training_categories" %}">{% trans 'Categories' %}</a>
+    <li><a href="{% url "list_training_categories" %}">{% trans 'Categories' %}</a></li>
 {% endblock %}
 
 {% block content %}
@@ -27,7 +27,7 @@
         {% endrecursetree %}
     </ul>
 
-    <a class="small secondary button"
+    <a class="btn btn-default btn-lg"
        href="{% url 'add_training_category' %}">{% trans 'New' %} {% trans 'Category' %}</a>
 
 {% endblock %}
