@@ -6,7 +6,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_participants" %}">{% trans 'Participants' %}</a>
+    <li><a href="{% url "list_participants" %}">{% trans 'Participants' %}</a></li>
 {% endblock %}
 
 {% block content %}
@@ -17,7 +17,7 @@
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
 
-    <table class="table-bordered">
+    <table class="table table-striped table-bordered">
         <thead>
         <th>{% anchor name _('Name') %}</th>
         <th>{% anchor address _('Address') %}</th>
@@ -45,7 +45,7 @@
 
     {% paginate %}
 
-    <a class="small secondary button"
+    <a class="btn btn-default btn-lg"
        href="{% url 'add_participant' %}">{% trans 'New' %} {% trans 'Participant' %}</a>
 
 {% endblock %}
