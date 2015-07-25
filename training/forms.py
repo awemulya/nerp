@@ -53,7 +53,7 @@ class ParticipantForm(forms.ModelForm):
         exclude = ()
 
 
-class OrganizationForm(forms.ModelForm):
+class OrganizationForm(KOModelForm):
     class Meta:
         model = Organization
         exclude = ()
