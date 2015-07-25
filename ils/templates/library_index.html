@@ -34,7 +34,7 @@
 
         <div>
             <a href="{% url 'list_ebooks' %}">
-                <img src="{% static 'img/icons/ebook.png' %}">
+                <img src="{% static 'img/icons/ebook.png' %}" width="150px" height="150px">
                 Ebooks</a>
         </div>
 
@@ -61,13 +61,13 @@
     <div class="dashboard-search">
         <form method="get" action="{% url 'search' %}">
 
-            <input type="text" name="q" id="id_q" placeholder="Search">
+            <input type="text" name="q" id="id_q" class="form-control" placeholder="Search">
 
             {{ form.models }}
 
             {#            {{ form.as_p }}#}
 
-            <input type="submit" value="Search!" class="tiny button">
+            <input type="submit" value="Search!" class="btn btn-default">
 
         </form>
     </div>

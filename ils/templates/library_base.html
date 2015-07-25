@@ -7,9 +7,11 @@
 
 
 {% block breadcrumbs_right %}
+<li class="pull-right">
     <form action="{% url 'isbn_to_record' %}" method="post">
         {% csrf_token %}
-        <input type="text" placeholder="ISBN" name="isbn">
+        <input type="text" class="form-control" id="breadcrumb-isbn" placeholder="ISBN" name="isbn">
     </form>
+</li>
     {{ block.super }}
 {% endblock %}

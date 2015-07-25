@@ -354,3 +354,9 @@ input[type=text]{
 form {
     line-height: 2.5em;
 }
+
+#breadcrumb-isbn{
+    margin-top: -23px;
+    margin-left: 17px;
+    height: 26px;
+}
