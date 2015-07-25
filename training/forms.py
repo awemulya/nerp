@@ -21,9 +21,13 @@ class CategoryForm(KOModelForm):
         exclude = ()
 
 
-class ResourcePersonForm(KOModelForm):
+class ResourcePersonForm(forms.ModelForm):
+    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    address = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}))
+    phone_no = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.CharField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
     organization = forms.ModelChoiceField(Organization.objects.all(), widget=forms.Select(
-        attrs={'class': 'selectize', 'data-url': reverse_lazy('add_organization')}), required=False)
+        attrs={'class': 'selectize form-control', 'data-url': reverse_lazy('add_organization')}), required=False)
 
     class Meta:
         model = ResourcePerson
@@ -42,7 +46,7 @@ class ParticipantForm(forms.ModelForm):
     email = forms.CharField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
     address = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}))
     organization = forms.ModelChoiceField(Organization.objects.all(), widget=forms.Select(
-        attrs={'class': 'selectize', 'data-url': reverse_lazy('add_organization')}), required=False)
+        attrs={'class': 'selectize form-control', 'data-url': reverse_lazy('add_organization')}), required=False)
 
     class Meta:
         model = Participant
