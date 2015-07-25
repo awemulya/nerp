@@ -7,7 +7,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <span> {% trans 'Acquisition' %}</span>
+    <li><span> {% trans 'Acquisition' %}</span></li>
 {% endblock %}
 
 {% block head_end %}
@@ -19,7 +19,7 @@
     
     <label id="id_isbn13" class="record-isbn13">ISBN</label>
     {{ rr_form.isbn13 }}
-    <input type="submit" class="tiny button" value="Get">
+    <input type="submit" class="btn btn-default" value="Get">
     
     
 </form>
@@ -30,45 +30,45 @@
 {% endif %}
     
     {% csrf_token %}
-    <div id="main-error-area" class="row">
+    <div id="main-error-area">
     </div>
     <div class="row">
-        <div class="column large-12">
+        <div class="col-lg-12">
             {{ b_form.title.label }}</br>
             {{ b_form.title.errors }}
             {{ b_form.title}}
         </div>
-        <div class="column large-12">
+        <div class="col-lg-12">
             {{ b_form.subtitle.label }}</br>
             {{ b_form.subtitle.errors }}
             {{ b_form.subtitle}}
         </div>
     </div>
     <div class="row">
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ b_form.subjects.label }}
             {{ b_form.subjects.errors }}
             {{ b_form.subjects}}
         </div>
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.authors.label }}
             {{ rr_form.authors.errors }}
             {{ rr_form.authors}}
         </div>
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.languages.label }}
             {{ rr_form.languages.errors }}
             {{ rr_form.languages}}
         </div>    
     </div></br>
     <div class="row">
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ pub_form.name.label }}</br>
             {{ pub_form.name.errors }}
             {{ pub_form.name}}
         </div>
         
-        <div class="column large-8">
+        <div class="col-lg-8">
             {{ rr_form.published_places.label }}
             {{ rr_form.published_places.errors }}
             {{ rr_form.published_places}}
@@ -76,55 +76,55 @@
     </div>
     </br></br>
     <div class="row">
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.edition.label }}</br>
             {{ rr_form.edition.errors }}
             {{ rr_form.edition}}
         </div>
-        <div class="column large-8">
+        <div class="col-lg-8">
             {{ rr_form.format.label }}</br>
             {{ rr_form.format.errors }}
             {{ rr_form.format}}
         </div>
     </div>
     <div class="row">
-        <div class="column large-12">
+        <div class="col-lg-12">
             {{ rr_form.pagination.label }}</br>
             {{ rr_form.pagination.errors }}
             {{ rr_form.pagination}}
         </div>
     </div>
     <div class="row">
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.date_of_publication.label }}</br>
             {{ rr_form.date_of_publication.errors }}
             {{ rr_form.date_of_publication}}
         </div>
-        <div class="column large-8">
+        <div class="col-lg-8">
             {{ rr_form.date_added.label }}</br>
             {{ rr_form.date_added.errors }}
             {{ rr_form.date_added}}
         </div>
     </div>
     <div class="row">
-        <div class="column large-4">
+        <div class="col-lg-4">
             <label>LCC</label>
             {{ rr_form.lcc.errors }}
             {{ rr_form.lcc}}
         </div>
-        <div class="column large-8">
+        <div class="col-lg-8">
             <label>DDC</label>
             {{ rr_form.ddc.errors }}
             {{ rr_form.ddc}}
         </div>
     </div>
     <div class="row">
-        <div class="column large-4">
+        <div class="col-lg-4">
             <label>LCCN ID</label>
             {{ rr_form.lccn_id.errors }}
             {{ rr_form.lccn_id}}
         </div>
-        <div class="column large-8">
+        <div class="col-lg-8">
             <label>OCLC ID</label>
             {{ rr_form.oclc_id.errors }}
             {{ rr_form.oclc_id }}
@@ -133,7 +133,7 @@
     </br></br>
     {% if rr_form.isbn13.value %}
         <div class="row" hidden>
-            <div class="column large-12">
+            <div class="col-lg-12">
                 <label>ISBN</label>
                 {{ rr_form.isbn13.errors }}
                 {{ rr_form.isbn13 }}
@@ -141,7 +141,7 @@
         </div>
     {% else %}
         <div class="row">
-            <div class="column large-12">
+            <div class="col-lg-12">
                 <label>ISBN</label>
                 {{ rr_form.isbn13.errors }}
                 {{ rr_form.isbn13 }}
@@ -150,34 +150,34 @@
     {% endif %}
     
     <div class="row">
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.goodreads_id.label }}
             {{ rr_form.goodreads_id.errors }}
             {{ rr_form.goodreads_id}}
         </div>
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.librarything_id.label }}
             {{ rr_form.librarything_id.errors }}
             {{ rr_form.librarything_id}}
         </div>
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.openlibrary_id.label }}</br>
             {{ rr_form.openlibrary_id.errors }}
             {{ rr_form.openlibrary_id}}
         </div>
     </div>
     <div class="row">
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.weight.label }}</br>
             {{ rr_form.weight.errors }}
             {{ rr_form.weight}}
         </div>
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.dimensions.label }}</br>
             {{ rr_form.dimensions.errors }}
             {{ rr_form.dimensions}}
         </div>
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.by_statement.label }}</br>
             {{ rr_form.by_statement.errors }}
             {{ rr_form.by_statement}}
@@ -194,17 +194,17 @@
     {% endif %}
 
     <div class="row">
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.small_cover.label }}</br>
             {{ rr_form.small_cover.errors }}
             {{ rr_form.small_cover}}
         </div>
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.medium_cover.label }}</br>
             {{ rr_form.medium_cover.errors }}
             {{ rr_form.medium_cover}}
         </div>
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.large_cover.label }}</br>
             {{ rr_form.large_cover.errors }}
             {{ rr_form.large_cover}}
@@ -212,21 +212,21 @@
     </div>
     </br>
     <div class="row">
-        <div class="column large-12">
+        <div class="col-lg-12">
             {{ rr_form.notes.label }}</br>
             {{ rr_form.notes.errors }}
             {{ rr_form.notes}}
         </div>
     </div>
     <div class="row">
-        <div class="column large-12">
+        <div class="col-lg-12">
             {{ rr_form.excerpt.label }}</br>
             {{ rr_form.excerpt.errors }}
             {{ rr_form.excerpt}}
         </div>
     </div>
     <div class="row">
-        <div class="column large-12">
+        <div class="col-lg-12">
             {{ rr_form.description.label }}</br>
             {{ rr_form.description.errors }}
             {{ rr_form.description}}
@@ -234,17 +234,17 @@
     </div>
     </br>
     <div class="row">
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.quantity.label }}
             {{ rr_form.quantity.errors }}
             {{ rr_form.quantity}}
         </div>
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.price.label }}
             {{ rr_form.price.errors }}
             {{ rr_form.price}}
         </div>
-        <div class="column large-4">
+        <div class="col-lg-4">
             {{ rr_form.type.label }}</br>
             {{ rr_form.type.errors }}
             {{ rr_form.type}}

@@ -13,7 +13,7 @@ class LanguageForm(forms.ModelForm):
         fields = '__all__'
 
 
-class RecordForm(forms.ModelForm):
+class RecordForm(KOModelForm):
     class Meta:
         model = Record
         fields = '__all__'
@@ -24,7 +24,7 @@ class RecordForm(forms.ModelForm):
         }
 
 
-class BookForm(forms.ModelForm):
+class BookForm(KOModelForm):
     class Meta:
         model = Book
         exclude = ['slug']
@@ -54,7 +54,7 @@ class PlaceForm(forms.ModelForm):
         exclude = ['slug']
 
 
-class PublisherForm(forms.ModelForm):
+class PublisherForm(KOModelForm):
     class Meta:
         model = Publisher
         exclude = ['slug']
@@ -70,7 +70,9 @@ class SubjectForm(forms.ModelForm):
 
 
 class OutgoingForm(forms.ModelForm):
-    isbn = forms.CharField(label='ISBN')
+    borrow_date = forms.CharField(widget=forms.TextInput(attrs={'data-date-format': 'yyyy-mm-dd', 'class': 'form-control'}), required=False)
+    due_date = forms.CharField(widget=forms.TextInput(attrs={'data-date-format': 'yyyy-mm-dd', 'class': 'form-control'}), required=False)
+    isbn = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='ISBN')
 
     def __init__(self, *args, **kwargs):
         super(OutgoingForm, self).__init__(*args, **kwargs)
