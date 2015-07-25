@@ -351,3 +351,6 @@ input[type=text]{
     display: inline;
 }
 
+form {
+    line-height: 2.5em;
+}

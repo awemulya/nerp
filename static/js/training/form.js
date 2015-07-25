@@ -114,8 +114,8 @@ $(document).ready(function () {
         $('#duration').html('[ ' + duration + plural + ' ]');
     }
 
-    $('#id_starts').fdatepicker();
-    $('#id_ends').fdatepicker();
+    $('#id_starts').datepicker();
+    $('#id_ends').datepicker();
     $('#id_starts').on('change', date_changed);
     $('#id_ends').on('change', date_changed);
 

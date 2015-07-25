@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_trainings" %}">{% trans 'All Trainings' %}</a>
+    <li><a href="{% url "list_trainings" %}">{% trans 'All Trainings' %}</a></li>
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
 
-    <table class="table-bordered">
+    <table class="table table-striped table-bordered">
         <thead>
         <th>{% anchor title _('Title') %}</th>
         <th>{% anchor starts _('Starts') %}</th>
@@ -44,7 +44,7 @@
 
     {% paginate %}
 
-    <a class="small secondary button"
+    <a class="btn btn-default btn-lg"
        href="{% url 'add_training' %}">{% trans 'New' %} {% trans 'Training' %}</a>
 
 {% endblock %}
