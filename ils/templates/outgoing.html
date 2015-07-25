@@ -10,7 +10,7 @@
     {% if form.instance.record %}
         <span> <a href="{% url 'view_record' pk=form.instance.record.id %}">{{ form.instance.record }}</a></span>
     {% endif %}
-    <span> {% trans 'Outgoing' %}</span>
+    <li><span> {% trans 'Outgoing' %}</span></li>
 {% endblock %}
 
 {% block head_end %}
@@ -37,12 +37,12 @@
         {{ form.user }}
 
         <div class="row">
-            <div class="column large-6 small-6 medium-6">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                 <label for="borrow_date">Borrow Date</label>
                 {{ form.borrow_date }}
             </div>
 
-            <div class="column large-6 small-6 medium-6">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                 <label for="due_date">Due Date</label>
                 {{ form.due_date }}
             </div>
@@ -50,20 +50,20 @@
         </div>
 
         <div class="row">
-            <div class="column large-6 small-6 medium-6">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                 <label for="isbn">ISBN</label>
                 {{ form.isbn }}
             </div>
 
-            <div class="column large-6 small-6 medium-6">
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                 <label for="id_record">Item:</label>
                 {{ form.record }}
             </div>
 
         </div>
+        <br>
 
-
-        <input type="submit" value="Checkout!" class="button">
+        <input type="submit" value="Checkout!" class="btn btn-default">
 
     </form>
 
