@@ -227,7 +227,7 @@
                     <form method="post" action="{% url 'add_training_category' %}">
                         {% csrf_token %}
                         {{ category_form.as_p }}
-                        <input type="submit" value="Add" class="tiny button">
+                        <input type="submit" value="Add" class="btn btn-default">
                     </form>
                 </div>
             </div>
@@ -245,7 +245,7 @@
                     <form method="post" action="{% url 'add_target_group' %}">
                         {% csrf_token %}
                         {{ target_group_form.as_p }}
-                        <input type="submit" value="Add" class="tiny button">
+                        <input type="submit" value="Add" class="btn btn-default">
                     </form>
                 </div>
             </div>
@@ -263,7 +263,7 @@
                     <form method="post" action="{% url 'add_resource_person' %}">
                         {% csrf_token %}
                         {{ resource_person_form.as_p }}
-                        <input type="submit" value="Add" class="tiny button">
+                        <input type="submit" value="Add" class="btn btn-default">
                     </form>
                 </div>
             </div>
@@ -281,7 +281,7 @@
                     <form method="post" action="{% url 'add_participant' %}">
                         {% csrf_token %}
                         {{ participant_form.as_p }}
-                        <input type="submit" value="Add" class="tiny button">
+                        <input type="submit" value="Add" class="btn btn-default">
                     </form>
                 </div>
             </div>
