@@ -10,8 +10,8 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url 'list_publishers' %}">Publishers</a>
-    <span> {{ publisher }}</span>
+    <li><a href="{% url 'list_publishers' %}">Publishers</a></li>
+    <li><span> {{ publisher }}</span></li>
 {% endblock %}
 
 {% block head_end %}
@@ -22,7 +22,7 @@
 
     <h3>Books published by {{ publisher }}</h3>
 
-    <div class="right">
+    <div class="pull-right">
         Sort by {% anchor date_of_publication 'Published Date' %} | {% anchor author %}
     </div>
 
@@ -33,7 +33,7 @@
         {% for record in paginated_objects %}
             <li>
                 <div class="row">
-                    <div class="column large-1 medium-1 small-1">
+                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
                         {% if record.get_small_cover %}
                             <a href="{{ record.get_absolute_url }}">
                             {#                                <img src="{{ MEDIA_URL }}{{ record.small_cover }}"></a>#}
@@ -45,7 +45,7 @@
                                 <img src="{% static 'img/no_cover-40x60.png' %}"></a>
                         {% endif %}
                     </div>
-                    <div class="column large-7 medium-7 small-7">
+                    <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
                         <a href="{{ record.get_absolute_url }}"><h3>{{ record }}</h3></a>
                         {% if record.authors.all %}
                             <h5>by {% for author in record.authors.all %}
@@ -63,7 +63,7 @@
                             </h5>
                         {% endif %}
                     </div>
-                    <div class="column large-4 medium-4 small-4">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                     </div>
                 </div>
             </li>

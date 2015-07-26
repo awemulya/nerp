@@ -1,7 +1,7 @@
 from django import forms
+from app.utils.forms import KOModelForm
 from django.core.urlresolvers import reverse_lazy
 from models import Training, Category, TargetGroup, ResourcePerson, Participant, Organization
-from app.utils.forms import KOModelForm
 
 class TrainingForm(forms.ModelForm):
     #category = TreeNodeChoiceField(queryset=Category.objects.all(), required=False)
