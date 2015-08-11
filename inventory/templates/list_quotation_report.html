@@ -10,5 +10,9 @@
 {% endblock %}
 
 {% block content %}
-<h1>Quotation Report</h1>
+<h1>Quotation Report List</h1>
+
+<a class="btn btn-default btn-lg"
+       href="{% url 'quotation_report' %}">{% trans 'New' %} {% trans 'Inspection' %} {% trans 'Report' %}</a>
+
 {% endblock %}

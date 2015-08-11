@@ -18,21 +18,51 @@
 
 {% block content %}
 <h1 class='center'>Quotation Report</h1>
+<div data-bind="with:table_view">
+
 <table class="table table-bordered table-striped">
 	<thead>
 		<tr>
-			<th>{% trans 'SN' %}</th>
-			<th>{% trans 'Item Name' %}</th>
-			<th>{% trans 'Specification' %}</th>
-			<th>{% trans 'Item Quantity' %}</th>
-			<th>{% trans 'Estimated Cost' %}</th>
+			<th rowspan='3'>{% trans 'SN' %}</th>
+			<th rowspan='3'>{% trans 'Item Name' %}</th>
+			<th rowspan='3'>{% trans 'Specification' %}</th>
+			<th rowspan='3'>{% trans 'Item Quantity' %}</th>
+			<th rowspan='3'>{% trans 'Estimated Cost' %}</th>
+			<th colspan='6'>{% trans "Bidder's Quoted Price" %}</th>
+			<th rowspan='3'>{% trans "Remarks" %}</th>
+		</tr>
+		<tr>
+			<th colspan='2'>{% trans "Gauri Shanar" %}</th>
+			<th colspan='2'>{% trans "Gauri Shanar" %}</th>
+			<th colspan='2'>{% trans "Gauri Shanar" %}</th>
+		</tr>
+		<tr>
+			<th>{% trans "Per Unit Price" %}</th>
+			<th>{% trans "Total Price" %}</th>
+			<th>{% trans "Per Unit Price" %}</th>
+			<th>{% trans "Total Price" %}</th>
+			<th>{% trans "Per Unit Price" %}</th>
+			<th>{% trans "Total Price" %}</th>
+
 		</tr>
 
 	</thead>
 	<tbody>
-		<tr>
-		<td>sn</td>
+                <!-- ko foreach: rows -->
+
+		<!--tr>
+			<td>sn</td>
+			<td>
+				{#                        <input type="hidden" data-url="{% url 'create_inventory_item' %}" class="change-on-ready"#}
+				{#                               data-bind="value: item_id, select2: $root.items, event: {change: $root.item_changed}">#}
+				<select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}"
+				data-url="{% url 'create_inventory_item' %}" data-script="/static/js/inventory/item.js"></select>
+			</td>
+
 		</tr>
+                <!-- /ko -->
+
 	</tbody>
 </table>
+</div>	
 {% endblock %}

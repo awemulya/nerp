@@ -387,6 +387,8 @@ def yearly_report_detail(request, id):
 def quotation_report_list(request):
     return render(request, 'list_quotation_report.html',)
 
+def quotation_report(request):
+    return render(request, 'quotation_report.html',)
 
 @group_required('Store Keeper', 'Chief')
 def delete_yearly_report(request, id):
