@@ -1,0 +1,38 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Quotation' %} {% trans 'Reports' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url 'list_quotation_forms' %}">{% trans 'Quotation' %} {% trans 'Reports' %}</a></li>
+{% endblock %}
+
+{% block head_end %}
+    <script src="{% static 'js/inventory/quotation_report.js' %}"></script>
+    <script>
+        // ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}
+
+{% block content %}
+<h1 class='center'>Quotation Report</h1>
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th>{% trans 'SN' %}</th>
+			<th>{% trans 'Item Name' %}</th>
+			<th>{% trans 'Specification' %}</th>
+			<th>{% trans 'Item Quantity' %}</th>
+			<th>{% trans 'Estimated Cost' %}</th>
+		</tr>
+
+	</thead>
+	<tbody>
+		<tr>
+		<td>sn</td>
+		</tr>
+	</tbody>
+</table>
+{% endblock %}
