@@ -585,6 +585,23 @@ class YearlyReportRow(models.Model):
     yearly_report = models.ForeignKey(YearlyReport, related_name='rows')
 
 
+class PartyQuote(models.Model):
+    party = models.ForeignKey(Party, related_name='party_quote')
+    per_unit_price = models.FloatField()
+    total_price = models.FloatField()
+
+class QuotationReport(models.Model):
+    fiscal_year = models.ForeignKey(FiscalYear)
+
+class QuotationReportRow(models.Model):
+    sn = models.PositiveIntegerField()
+    item = models.ForeignKey(Item, related_name='item-quotation')
+    specification = models.CharField(max_length=250)
+    quantity = models.FloatField()
+    estimated_cost = models.FloatField()
+    party = models.ForeignKey(PartyQuote, related_name='bidder_quote')
+
+
 class ItemInstance(models.Model):
     item = models.ForeignKey(Item, related_name='tracked_item')
     item_rate = models.FloatField(null=True)
