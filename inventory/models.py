@@ -589,16 +589,16 @@ class PartyQuotation(models.Model):
     party = models.ForeignKey(Party, related_name='party_quote')
     per_unit_price = models.FloatField()
 
-class QuotationComparision(models.Model):
+class QuotationComparison(models.Model):
     fiscal_year = models.ForeignKey(FiscalYear)
 
-class QuotationComparisionRow(models.Model):
+class QuotationComparisonRow(models.Model):
     sn = models.PositiveIntegerField()
     item = models.ForeignKey(Item, related_name='item-quotation')
     specification = models.CharField(max_length=250)
     quantity = models.FloatField()
     estimated_cost = models.FloatField()
-    quotation = models.ForeignKey(QuotationComparision, related_name='rows')
+    quotation = models.ForeignKey(QuotationComparison, related_name='rows')
     party = models.ForeignKey(PartyQuotation, related_name='bidder_quote')
 
 
