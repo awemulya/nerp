@@ -1,0 +1,14 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Quotation' %} {% trans 'Reports' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url 'list_quotation_forms' %}">{% trans 'Quotation' %} {% trans 'Reports' %}</a></li>
+{% endblock %}
+
+{% block content %}
+<h1>Quotation Report</h1>
+{% endblock %}

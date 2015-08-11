@@ -13,7 +13,7 @@ urlpatterns = patterns('',
                            name='inventory_transactions_list'),
                        url(r'^iteminstance/(?P<id>[0-9]+)/$', views.item_instance_form, 
                            name='item_instance_detail'),
-
+                       url(r'^quotation/list$', views.quotation_report_list, name='list_quotation_forms'),
                        url(r'^inspection/$', views.inspection_report_list, name='inspection_report_list'),
                        url(r'^save/inspection/$', views.save_inspection_report, name='save_inspection_report'),
                        url(r'^inspection/create$', views.inspection_report, name='inspection_report'),

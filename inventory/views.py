@@ -384,6 +384,9 @@ def yearly_report_detail(request, id):
     rows = obj.rows.order_by("sn")
     return render(request, 'yearly_report_detail.html', {'obj': obj, 'rows': rows})
 
+def quotation_report_list(request):
+    return render(request, 'list_quotation_report.html',)
+
 
 @group_required('Store Keeper', 'Chief')
 def delete_yearly_report(request, id):
