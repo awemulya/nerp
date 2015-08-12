@@ -594,7 +594,7 @@ class QuotationComparison(models.Model):
 
 class QuotationComparisonRow(models.Model):
     sn = models.PositiveIntegerField()
-    item = models.ForeignKey(Item, related_name='item-quotation')
+    item = models.ForeignKey(Item, related_name='item_quotation')
     specification = models.CharField(max_length=250)
     quantity = models.FloatField()
     estimated_cost = models.FloatField()
