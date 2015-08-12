@@ -26,12 +26,12 @@ from inventory.filters import InventoryItemFilter
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, \
     ItemLocationForm, DepreciationForm, ItemInstanceForm
 
-from inventory.models import Depreciation, Demand, ItemInstance, \
+from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Depreciation, Demand, ItemInstance, \
     DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, \
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
     InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release
 
-from inventory.serializers import DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, \
+from inventory.serializers import PartyQuotationSerializer, QuotationComparisonSerializer, QuotationComparisonRowSerializer, DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
     TransactionSerializer, ItemLocationSerializer, ItemInstanceSerializer
 
@@ -388,7 +388,12 @@ def quotation_report_list(request):
     return render(request, 'list_quotation_report.html',)
 
 def quotation_report(request):
-    return render(request, 'quotation_report.html',)
+    quotation = QuotationComparison(fiscal_year=FiscalYear.get(app_setting.fiscal_year))
+    # quotation = QuotationComparison.objects.get(pk=1)
+    data = QuotationComparisonSerializer(quotation).data
+    # import ipdb
+    # ipdb.set_trace()
+    return render(request, 'quotation_comparison.html',{'data': data})
 
 @group_required('Store Keeper', 'Chief')
 def delete_yearly_report(request, id):
