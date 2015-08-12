@@ -1,0 +1,74 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Quotation' %} {% trans 'Reports' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url 'list_quotation_forms' %}">{% trans 'Quotation' %} {% trans 'Reports' %}</a></li>
+{% endblock %}
+
+{% block head_end %}
+    <script src="{% static 'js/inventory/quotation_comparison.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}
+
+{% block content %}
+<h1 class='center'>Quotation Report</h1>
+<div data-bind="with: table_view">
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th rowspan='3'>{% trans 'SN' %}</th>
+			<th rowspan='3'>{% trans 'Item Name' %}</th>
+			<th rowspan='3'>{% trans 'Specification' %}</th>
+			<th rowspan='3'>{% trans 'Item Quantity' %}</th>
+			<th rowspan='3'>{% trans 'Estimated Cost' %}</th>
+			<th colspan='6'>{% trans "Bidder's Quoted Price" %}</th>
+			<th rowspan='3'>{% trans "Remarks" %}</th>
+		</tr>
+		<tr>
+			<th colspan='2'>{% trans "Gauri Shanar" %}</th>
+			<th colspan='2'>{% trans "Gauri Shanar" %}</th>
+			<th colspan='2'>{% trans "Gauri Shanar" %}</th>
+		</tr>
+		<tr>
+			<th>{% trans "Per Unit Price" %}</th>
+			<th>{% trans "Total Price" %}</th>
+			<th>{% trans "Per Unit Price" %}</th>
+			<th>{% trans "Total Price" %}</th>
+			<th>{% trans "Per Unit Price" %}</th>
+			<th>{% trans "Total Price" %}</th>
+
+		</tr>
+
+	</thead>
+	<tbody>
+                <!-- ko foreach: rows -->
+
+		<tr>
+			<td>
+	            <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: true"> </span>
+			</td>
+ 			<td>
+                <select data-bind="selectize: $root.items, value: item_id, object: item, event: {change: $root.item_changed}"
+                                data-url="{% url 'create_inventory_item' %}"
+                                data-script="/static/js/inventory/item.js"></select>
+                        {#                                                <select class="span12 item-selector"#}
+                        {#                                                        data-bind="options: $root.items, optionsText: 'name', optionsValue: 'id', value: item_id, optionsCaption: ' ', event: {change: $root.item_changed}"></select>#}
+                        {#                        <input type="hidden" data-url="{% url 'create_inventory_item' %}" class="change-on-ready"#}
+                        {#                               data-bind="value: item_id, select2: $root.items, event: {change: $root.item_changed}, readOnly: status() != 'Requested'">#}
+            </td>
+
+		</tr>
+               <!-- /ko -->
+
+	</tbody>
+</table>
+
+</div>	
+
+{% endblock %}
