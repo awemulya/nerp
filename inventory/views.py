@@ -17,7 +17,7 @@ from openpyxl.cell import get_column_letter
 
 import nepdate
 
-from core.models import app_setting, FiscalYear
+from core.models import app_setting, FiscalYear, Party
 from app.utils.helpers import invalid, save_model, empty_to_none
 from users.models import group_required
 
@@ -31,7 +31,7 @@ from inventory.models import PartyQuotation, QuotationComparison, QuotationCompa
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
     InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release
 
-from inventory.serializers import PartyQuotationSerializer, QuotationComparisonSerializer, QuotationComparisonRowSerializer, DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, \
+from inventory.serializers import PartySerializer, PartyQuotationSerializer, QuotationComparisonSerializer, QuotationComparisonRowSerializer, DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
     TransactionSerializer, ItemLocationSerializer, ItemInstanceSerializer
 
@@ -388,8 +388,8 @@ def quotation_report_list(request):
     return render(request, 'list_quotation_report.html',)
 
 def quotation_report(request):
-    quotation = QuotationComparison(fiscal_year=FiscalYear.get(app_setting.fiscal_year))
-    # quotation = QuotationComparison.objects.get(pk=1)
+    # quotation = QuotationComparison(fiscal_year=FiscalYear.get(app_setting.fiscal_year))
+    quotation = QuotationComparison.objects.get(pk=1)
     data = QuotationComparisonSerializer(quotation).data
     # import ipdb
     # ipdb.set_trace()
@@ -640,6 +640,10 @@ def items_as_json(request):
     items_data = ItemSerializer(items, many=True).data
     return JsonResponse(items_data, safe=False)
 
+def parties_as_json(request):
+    parties = Party.objects.all()
+    parties_data = PartySerializer(parties, many=True).data
+    return JsonResponse(parties_data, safe=False)
 
 @login_required
 def item_instances_as_json(request):
