@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Demand, DemandRow, Item, Party, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, \
+from core.models import Party
+from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Demand, DemandRow, Item, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, \
     EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction, ItemLocation, Depreciation, \
     ItemInstance, \
     Release
@@ -220,10 +221,16 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = Transaction
         exclude = ['dr_amount', 'cr_amount', 'current_balance', 'account', 'journal_entry']
 
+class PartySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Party
+
 class PartyQuotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PartyQuotation
+
 
 class QuotationComparisonRowSerializer(serializers.ModelSerializer):
     party = PartyQuotationSerializer()
