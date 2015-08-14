@@ -6,7 +6,6 @@ $(document).ready(function () {
 
 function QuotationComparisonVM(data){
 	var self = this;
-    // debugger;
 
 	$.ajax({
 		url: '/inventory/items.json',
@@ -18,15 +17,29 @@ function QuotationComparisonVM(data){
 	});
 
 	$.ajax({
-		url: '/inventory/party.json',
+		url: '/parties.json',
 		dataType: 'json',
 		async: false,
 		success: function (data) {
-			debugger
 			self.parties = ko.observableArray(data);
 		}
 	});
-    
+	
+	self.selected_party = ko.observable()
+	self.party_display = ko.observableArray([])
+
+	self.add_party = function () {
+		for (o in self.parties() ){
+			if (self.parties()[o].id == self.selected_party()) {
+				self.party_display.push(self.parties()[o]);
+			}
+		}
+	}
+
+    for (i in data.rows) {
+    	self.party_display.push(data.rows[i].party.party)
+    }
+
     self.table_view = new TableViewModel({rows: data.rows}, QuotationRow);
 
 	self.item_changed = function (row) {
@@ -42,6 +55,15 @@ function QuotationComparisonVM(data){
 		row.account_no(selected_item.account_no);
 	}
 
+    for (var k in data)
+        self[k] = ko.observable(data[k]);
+
+
+}
+
+function PartyQuotationVM(party) {
+	var self = this;
+	self.per_unit_price = ko.observable();
 
 }
 
@@ -49,61 +71,17 @@ function QuotationRow(row) {
 	var self = this;
 	self.item_id = ko.observable()
 	self.specification = ko.observable()
+	self.remarks = ko.observable()
 	self.quantity = ko.observable()
 	self.estimated_cost = ko.observable()
-	
+    // debugger;
+    self.unit = ko.observable()
+    self.inventory_classification_reference_no = ko.observable()
+    self.account_no = ko.observable()
+
     for (var k in row) {
         if (row[k] != null)
             self[k] = ko.observable(row[k]);
     }
-    debugger;
+
 }
-// <table class="table table-bordered table-striped">
-	// <thead>
-	// 	<tr>
-	// 		<th rowspan='3'>{% trans 'SN' %}</th>
-	// 		<th rowspan='3'>{% trans 'Item Name' %}</th>
-	// 		<th rowspan='3'>{% trans 'Specification' %}</th>
-	// 		<th rowspan='3'>{% trans 'Item Quantity' %}</th>
-	// 		<th rowspan='3'>{% trans 'Estimated Cost' %}</th>
-	// 		<th colspan='6'>{% trans "Bidder's Quoted Price" %}</th>
-	// 		<th rowspan='3'>{% trans "Remarks" %}</th>
-	// 	</tr>
-	// 	<tr>
-	// 		<th colspan='2'>{% trans "Gauri Shanar" %}</th>
-	// 		<th colspan='2'>{% trans "Gauri Shanar" %}</th>
-	// 		<th colspan='2'>{% trans "Gauri Shanar" %}</th>
-	// 	</tr>
-	// 	<tr>
-	// 		<th>{% trans "Per Unit Price" %}</th>
-	// 		<th>{% trans "Total Price" %}</th>
-	// 		<th>{% trans "Per Unit Price" %}</th>
-	// 		<th>{% trans "Total Price" %}</th>
-	// 		<th>{% trans "Per Unit Price" %}</th>
-	// 		<th>{% trans "Total Price" %}</th>
-
-	// 	</tr>
-
-	// </thead>
-	// <tbody>
- //                <!-- ko foreach: rows -->
-
-	// 	<tr>
-	// 		<td>
-	//             <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: true"> </span>
-	// 		</td>
- 			// <td>
-    //             <select data-bind="selectize: $root.items, value: item_id, object: item, event: {change: $root.item_changed}"
-    //                             data-url="{% url 'create_inventory_item' %}"
-    //                             data-script="/static/js/inventory/item.js"></select>
-    //                     {#                                                <select class="span12 item-selector"#}
-    //                     {#                                                        data-bind="options: $root.items, optionsText: 'name', optionsValue: 'id', value: item_id, optionsCaption: ' ', event: {change: $root.item_changed}"></select>#}
-    //                     {#                        <input type="hidden" data-url="{% url 'create_inventory_item' %}" class="change-on-ready"#}
-    //                     {#                               data-bind="value: item_id, select2: $root.items, event: {change: $root.item_changed}, readOnly: status() != 'Requested'">#}
-    //         </td>
-
-	// 	</tr>
- //               <!-- /ko -->
-
-	// </tbody>
-// </table>

@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from core.models import Party
+from core.serializers import PartySerializer
+
 from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Demand, DemandRow, Item, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, \
     EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction, ItemLocation, Depreciation, \
     ItemInstance, \
@@ -221,12 +223,8 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = Transaction
         exclude = ['dr_amount', 'cr_amount', 'current_balance', 'account', 'journal_entry']
 
-class PartySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Party
-
 class PartyQuotationSerializer(serializers.ModelSerializer):
+    party = PartySerializer()
 
     class Meta:
         model = PartyQuotation
