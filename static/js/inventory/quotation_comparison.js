@@ -43,7 +43,6 @@ function QuotationComparisonVM(data){
 
 	self.parties_to_display = ko.observableArray([])
 
-	self.test = ko.observable()
 	self.add_party = function (row) {
 		for (o in self.parties()){
 			if (self.parties()[o].id == self.selected_party()) {
@@ -53,11 +52,18 @@ function QuotationComparisonVM(data){
 				}
 			}
 		}
-		// debugger;
 		self.parties.remove( function(item) {return item.id == self.selected_party() })
-  //       console.log(self.parties())
 	}
 
+	self.removeParty = function(party) {
+		self.parties_to_display.remove(party)
+		self.parties.push(party)
+		for ( o in self.table_view.rows()){
+			self.table_view.rows()[o].partyVM.remove( function(item) {
+				return item.bidder_name() === party.name
+			});
+		}
+	}
     self.table_view = new TableViewModel({rows: data.rows, argument: self.parties_to_display() }, QuotationRow);
 
 
@@ -65,7 +71,6 @@ function QuotationComparisonVM(data){
   //   	self.parties_to_display.push(data.rows[i].party.party)
 		// self.partyVM.push(new PartyQuotationVM().bidder_name(data.rows[i].party.party.name))
   //   }
-	// console.log(self.parties())
 }
 
 function PartyQuotationVM() {

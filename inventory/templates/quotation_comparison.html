@@ -43,7 +43,7 @@
 			</tr>
 			<tr>
 				<!-- ko foreach: $root.parties_to_display -->
-				<th colspan='2' data-bind="text: name"></th>
+				<th colspan='2'><span data-bind="text: name"></span> <span><a href="#" class="close tiny secondary" data-bind="click: $root.removeParty">x</a></span></th>
 				<!-- /ko -->
 			</tr>
 			<tr>
