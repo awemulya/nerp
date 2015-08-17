@@ -20,17 +20,18 @@
 <h1 class='center'>Quotation Report</h1>
 <div class="row">
 	<div class="col-md-3">
-		<select data-bind="selectize: parties, value: selected_party" data-url="{% url 'create_party' %}"></select>
+		<select id='party-select' data-bind="selectize: parties, value: selected_party" data-url="{% url 'create_party' %}"></select>
 		
 	</div>
 	<div class="col-md-9">
-		<button data-bind="click: add_party" class="btn btn-default">Add Party</button>
 		
 	</div>
 </div>
 <br>
+
 <div data-bind="with: table_view">
 
+	<button data-bind="click: $root.add_party" class="btn btn-default" id="add_party">Add Party</button><br>
 	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>
@@ -41,12 +42,12 @@
 				<th rowspan='3'>{% trans 'Estimated Cost' %}</th>
 			</tr>
 			<tr>
-				<!-- ko foreach: $root.party_display -->
+				<!-- ko foreach: $root.parties_to_display -->
 				<th colspan='2' data-bind="text: name"></th>
 				<!-- /ko -->
 			</tr>
 			<tr>
-				<!-- ko foreach: $root.party_display -->
+				<!-- ko foreach: $root.parties_to_display -->
 				<th>{% trans "Per Unit Price" %}</th>
 				<th>{% trans "Total Price" %}</th>
 				<!-- /ko -->
@@ -73,6 +74,11 @@
            		<td data-bind="editableText: specification"></td>
            		<td data-bind="editableText: quantity"></td>
            		<td data-bind="editableText: estimated_cost"></td>
+				<!-- ko foreach: partyVM -->
+           		<td data-bind="editableText: per_unit_price"></td>
+           		<td data-bind="editableText: function(){return parseInt($parent.quantity()) * parseInt(per_unit_price())}"></td>
+				<!-- /ko -->
+
 
 				<td data-bind="editableText: remarks"></td>
 				 <td class="hide-on-print">
