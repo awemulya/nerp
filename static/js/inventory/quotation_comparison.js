@@ -43,7 +43,7 @@ function QuotationComparisonVM(data){
 
 	self.parties_to_display = ko.observableArray([])
 
-
+	self.test = ko.observable()
 	self.add_party = function (row) {
 		for (o in self.parties()){
 			if (self.parties()[o].id == self.selected_party()) {
@@ -53,7 +53,8 @@ function QuotationComparisonVM(data){
 				}
 			}
 		}
-		// self.parties.remove( function(item) {return item.id == self.selected_party() })
+		// debugger;
+		self.parties.remove( function(item) {return item.id == self.selected_party() })
   //       console.log(self.parties())
 	}
 

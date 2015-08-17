@@ -365,3 +365,7 @@ form {
 .acquision-form div .selectize-control {
     height:4em;
 }
+
+#add_party {
+    margin-top: -24px;
+}
