@@ -388,8 +388,8 @@ def quotation_report_list(request):
     return render(request, 'list_quotation_report.html',)
 
 def quotation_report(request):
-    # quotation = QuotationComparison()
-    quotation = QuotationComparison.objects.get(pk=1)
+    quotation = QuotationComparison()
+    # quotation = QuotationComparison.objects.get(pk=1)
     data = QuotationComparisonSerializer(quotation).data
     return render(request, 'quotation_comparison.html',{'data': data})
 

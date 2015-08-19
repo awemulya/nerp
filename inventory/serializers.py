@@ -231,7 +231,7 @@ class PartyQuotationSerializer(serializers.ModelSerializer):
 
 
 class QuotationComparisonRowSerializer(serializers.ModelSerializer):
-    party = PartyQuotationSerializer()
+    bidder_quote = PartyQuotationSerializer(many=True)
 
     class Meta:
         model = QuotationComparisonRow
