@@ -7,6 +7,9 @@ $(document).ready(function () {
 function QuotationComparisonVM(data){
 	var self = this;
 
+    self.release_no = ko.observable();
+    self.id = ko.observable()
+
 	$.ajax({
 		url: '/inventory/items.json',
 		dataType: 'json',
@@ -66,15 +69,51 @@ function QuotationComparisonVM(data){
 	}
     self.table_view = new TableViewModel({rows: data.rows, argument: self.parties_to_display() }, QuotationRow);
 
+    self.save = function (item, event) {
+        $.ajax({
+            type: "POST",
+            url: '/inventory/save/quotation-comparison/',
+            data: ko.toJSON(self),
+            success: function (msg) {
+                alert(msg)
+                if (typeof (msg.error_message) != 'undefined') {
+//                    $('#message').html(msg.error_message);
+//                    self.msg();
+                    alert.error(msg.error_message);
+                    self.status('errorlist');
+                }
+                else {
+                    alert.success('Saved!');
+                    if (msg.id)
+                        self.id(msg.id);
+                    $("#tbody > tr").each(function (i) {
+                        $($("#tbody > tr")[i]).addClass('invalid-row');
+                    });
+                    for (var i in msg.rows) {
+                        self.table_view.rows()[i].id = msg.rows[i];
+                        $($("#tbody > tr")[i]).removeClass('invalid-row');
+                    }
+                }
+            }
+//            error: function(XMLHttpRequest, textStatus, errorThrown) {
+//                $('#message').html(XMLHttpRequest.responseText.message);
+//            }
+        });
+    }
+    for (var k in data) {
+    if (data[k] != null)
+        self[k] = ko.observable(data[k]);
+}
 
-  //   for (i in data.rows) {
-  //   	self.parties_to_display.push(data.rows[i].party.party)
+    for (i in data.rows) {
+    	self.parties_to_display.push(data.rows[i].party.party)
 		// self.partyVM.push(new PartyQuotationVM().bidder_name(data.rows[i].party.party.name))
-  //   }
+    }
 }
 
 function PartyQuotationVM() {
 	var self = this;
+	self.id = ko.observable()
 	self.bidder_name = ko.observable();
 	self.per_unit_price = ko.observable();
 }
@@ -99,6 +138,10 @@ function QuotationRow(row, argument) {
     		self.partyVM.push(new PartyQuotationVM().bidder_name(argument[o].name))
     	}
     }
+
+    // if( row.party ) {
+    // 	self.partyVM.push(row.party)
+    // }
 	
     for (var k in row) {
         if (row[k] != null)
