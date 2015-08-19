@@ -483,20 +483,6 @@ def save_quotation_comparison(request):
         for index, row in enumerate(params.get('table_view').get('rows')):
             values = {'sn': index+1, 'specification': empty_to_none(row.get('specification')), 'quantity': row.get('quantity'),
                 'estimated_cost': row.get('estimated_cost'), 'quotation': obj, 'item_id': row.get('item_id') }
-                # import ipdb; ipdb.set_trace()
-
-        #     values = {'sn': index + 1, 'account_no': row.get('account_no'),
-        #               'property_classification_reference_number': row.get('inventory_classification_reference_no'),
-        #               'item_name': row.get('item_name'), 'unit': row.get('unit'),
-        #               'quantity': row.get('total_dr_amount'), 'rate': row.get('rate'), 'price': row.get('price'),
-        #               'matched_number': empty_to_none(row.get('match_number')),
-        #               'unmatched_number': empty_to_none(row.get('unmatch_number')),
-        #               'decrement': empty_to_none(row.get('decrement')),
-        #               'increment': empty_to_none(row.get('increment')),
-        #               'decrement_increment_price': empty_to_none(row.get('decrement_increment_price')),
-        #               'good': empty_to_none(row.get('good')), 'bad': empty_to_none(row.get('bad')),
-        #               'remarks': row.get('remarks'), 'inspection': obj}
-
             submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
             if not created:
                 submodel = save_model(submodel, values)
