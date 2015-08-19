@@ -18,6 +18,8 @@
 
 {% block content %}
 <h1 class='center'>Quotation Report</h1>
+<h4>Release no:<input data-bind="value: release_no" class="form-control width-auto input-inline"></h4>
+
 <div class="row">
 	<div class="col-md-3">
 		<select id='party-select' data-bind="selectize: parties, value: selected_party" data-url="{% url 'create_party' %}"></select>
@@ -28,6 +30,8 @@
 	</div>
 </div>
 <br>
+<form method="post" enctype="multipart/form-data" data-bind="submit: save" name="demand-form" novalidate>
+{% csrf_token %}
 
 <div data-bind="with: table_view">
 
@@ -96,5 +100,8 @@
             </a>
 
 </div>	
+<br>
+<input class="btn btn-primary btn-lg" type="submit" value="Save">
+</form>
 
 {% endblock %}

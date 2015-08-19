@@ -17,7 +17,7 @@ from openpyxl.cell import get_column_letter
 
 import nepdate
 
-from core.models import app_setting, FiscalYear
+from core.models import app_setting, FiscalYear, Party
 from app.utils.helpers import invalid, save_model, empty_to_none
 from users.models import group_required
 
@@ -388,11 +388,9 @@ def quotation_report_list(request):
     return render(request, 'list_quotation_report.html',)
 
 def quotation_report(request):
-    quotation = QuotationComparison(fiscal_year=FiscalYear.get(app_setting.fiscal_year))
-    # quotation = QuotationComparison.objects.get(pk=1)
+    # quotation = QuotationComparison()
+    quotation = QuotationComparison.objects.get(pk=1)
     data = QuotationComparisonSerializer(quotation).data
-    # import ipdb
-    # ipdb.set_trace()
     return render(request, 'quotation_comparison.html',{'data': data})
 
 @group_required('Store Keeper', 'Chief')
@@ -461,6 +459,59 @@ def delete_inspection_report(request, id):
     obj = get_object_or_404(Inspection, id=id)
     obj.delete()
     return redirect(reverse('inspection_report_list'))
+
+def save_quotation_comparison(request):
+    if request.is_ajax():
+        params = json.loads(request.body)
+    dct= {'rows': {}}
+    if params.get('release_no') == '':
+        params['release_no'] = None
+    object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
+    if params.get('id'):
+        obj = QuotationComparison.objects.get(id=params.get('id'))
+    else:
+        obj = QuotationComparison()
+    import ipdb; ipdb.set_trace()
+    
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = QuotationComparisonRow
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            values = {'sn': index+1, 'specification': empty_to_none(row.get('specification')), 'quantity': row.get('quantity'),
+                'estimated_cost': row.get('estimated_cost'), 'quotation': obj, 'item_id': row.get('item_id') }
+            for index, party in enumerate(row.get('partyVM')):
+                party_object = Party.objects.get(name=party.get('bidder_name'))
+                party_quotation = PartyQuotation(party=party_object, per_unit_price=party.get('per_unit_price'))
+                # import ipdb; ipdb.set_trace()
+
+        #     values = {'sn': index + 1, 'account_no': row.get('account_no'),
+        #               'property_classification_reference_number': row.get('inventory_classification_reference_no'),
+        #               'item_name': row.get('item_name'), 'unit': row.get('unit'),
+        #               'quantity': row.get('total_dr_amount'), 'rate': row.get('rate'), 'price': row.get('price'),
+        #               'matched_number': empty_to_none(row.get('match_number')),
+        #               'unmatched_number': empty_to_none(row.get('unmatch_number')),
+        #               'decrement': empty_to_none(row.get('decrement')),
+        #               'increment': empty_to_none(row.get('increment')),
+        #               'decrement_increment_price': empty_to_none(row.get('decrement_increment_price')),
+        #               'good': empty_to_none(row.get('good')), 'bad': empty_to_none(row.get('bad')),
+        #               'remarks': row.get('remarks'), 'inspection': obj}
+
+        #     submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+        #     if not created:
+        #         submodel = save_model(submodel, values)
+        #     dct['rows'][index] = submodel.id
+        # delete_rows(params.get('table_view').get('deleted_rows'), model)
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+    return JsonResponse(dct)
+
+
 
 
 def save_inspection_report(request):

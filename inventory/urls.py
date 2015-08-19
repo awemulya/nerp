@@ -21,6 +21,8 @@ urlpatterns = patterns('',
                        url(r'^inspection/(?P<id>[0-9]+)/$', views.inspection_report_detail, name='inspection_report_detail'),
                        url(r'^inspection/(?P<id>[0-9]+)/delete$', views.delete_inspection_report,
                            name='delete_inspection_report'),
+                       url(r'^save/quotation-comparison/$', views.save_quotation_comparison, name='save_quotation_comparison'),
+
 
                        url(r'^items/$', views.list_inventory_items, name='list_inventory_items'),
                        url(r'^create/$', views.item_form, name='create_inventory_item'),

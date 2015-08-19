@@ -591,6 +591,7 @@ class PartyQuotation(models.Model):
 
 class QuotationComparison(models.Model):
     fiscal_year = models.ForeignKey(FiscalYear)
+    release_no = models.IntegerField(blank=True, null=True)
 
 class QuotationComparisonRow(models.Model):
     sn = models.PositiveIntegerField()
