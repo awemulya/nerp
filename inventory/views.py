@@ -385,11 +385,16 @@ def yearly_report_detail(request, id):
     return render(request, 'yearly_report_detail.html', {'obj': obj, 'rows': rows})
 
 def quotation_report_list(request):
-    return render(request, 'list_quotation_report.html',)
+    obj = QuotationComparison.objects.all()
+    return render(request, 'list_quotation_report.html',{'objects': obj})
 
-def quotation_report(request):
-    quotation = QuotationComparison()
-    # quotation = QuotationComparison.objects.get(pk=1)
+def quotation_report(request, id=None):
+    if id:
+        quotation = get_object_or_404(QuotationComparison, id=id)
+        scenario = 'Update'
+    else:
+        quotation = QuotationComparison()
+        scenario = 'Create'
     data = QuotationComparisonSerializer(quotation).data
     return render(request, 'quotation_comparison.html',{'data': data})
 
@@ -471,8 +476,6 @@ def save_quotation_comparison(request):
         obj = QuotationComparison.objects.get(id=params.get('id'))
     else:
         obj = QuotationComparison()
-    import ipdb; ipdb.set_trace()
-    
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
@@ -480,9 +483,6 @@ def save_quotation_comparison(request):
         for index, row in enumerate(params.get('table_view').get('rows')):
             values = {'sn': index+1, 'specification': empty_to_none(row.get('specification')), 'quantity': row.get('quantity'),
                 'estimated_cost': row.get('estimated_cost'), 'quotation': obj, 'item_id': row.get('item_id') }
-            for index, party in enumerate(row.get('partyVM')):
-                party_object = Party.objects.get(name=party.get('bidder_name'))
-                party_quotation = PartyQuotation(party=party_object, per_unit_price=party.get('per_unit_price'))
                 # import ipdb; ipdb.set_trace()
 
         #     values = {'sn': index + 1, 'account_no': row.get('account_no'),
@@ -497,10 +497,15 @@ def save_quotation_comparison(request):
         #               'good': empty_to_none(row.get('good')), 'bad': empty_to_none(row.get('bad')),
         #               'remarks': row.get('remarks'), 'inspection': obj}
 
-        #     submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-        #     if not created:
-        #         submodel = save_model(submodel, values)
-        #     dct['rows'][index] = submodel.id
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            if not created:
+                submodel = save_model(submodel, values)
+                
+            for index, party in enumerate(row.get('partyVM')):
+                party_object = Party.objects.get(name=party.get('bidder_name'))
+                party_quotation = PartyQuotation(party=party_object, per_unit_price=party.get('per_unit_price'), quotation_comparison_row=submodel )
+                party_quotation.save()
+            dct['rows'][index] = submodel.id
         # delete_rows(params.get('table_view').get('deleted_rows'), model)
     except Exception as e:
         if hasattr(e, 'messages'):

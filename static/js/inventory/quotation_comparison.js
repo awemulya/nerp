@@ -106,7 +106,7 @@ function QuotationComparisonVM(data){
 }
 
     for (i in data.rows) {
-    	self.parties_to_display.push(data.rows[i].party.party)
+    	// self.parties_to_display.push(data.rows[i].party.party)
 		// self.partyVM.push(new PartyQuotationVM().bidder_name(data.rows[i].party.party.name))
     }
 }
