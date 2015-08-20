@@ -480,15 +480,15 @@ def save_quotation_comparison(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = QuotationComparisonRow
-        dct['rows']['party'] = {}
+        dct['party'] = {}
         for index, row in enumerate(params.get('table_view').get('rows')):
             values = {'sn': index+1, 'specification': empty_to_none(row.get('specification')), 'quantity': row.get('quantity'),
                 'estimated_cost': row.get('estimated_cost'), 'quotation': obj, 'item_id': row.get('item_id') }
             submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
             if not created:
                 submodel = save_model(submodel, values)
-            # import ipdb; ipdb.set_trace()
-            for index, party in enumerate(row.get('partyVM')):
+            dct['rows'][index] = submodel.id
+            for index, party in enumerate(row.get('bidder_quote')):
                 party_object = Party.objects.get(name=party.get('bidder_name'))
                 if party.get('id'):
                     party_quotation = PartyQuotation.objects.get(pk=party.get('id'))
@@ -499,9 +499,8 @@ def save_quotation_comparison(request):
                 else:
                     party_quotation= PartyQuotation(party=party_object, per_unit_price=party.get('per_unit_price'), quotation_comparison_row=submodel )
                     party_quotation.save()
-                dct['rows']['party'][index] = party_quotation.id
-            dct['rows'][index] = submodel.id
-        # delete_rows(params.get('table_view').get('deleted_rows'), model)
+                
+                dct['party'][index] = party_quotation.id
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)

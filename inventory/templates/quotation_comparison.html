@@ -78,7 +78,7 @@
            		<td data-bind="editableText: specification"></td>
            		<td data-bind="editableText: quantity"></td>
            		<td data-bind="editableText: estimated_cost"></td>
-				<!-- ko foreach: partyVM -->
+				<!-- ko foreach: bidder_quote -->
            		<td data-bind="editableText: per_unit_price"></td>
            		<td data-bind="editableText: function(){return parseInt($parent.quantity()) * parseInt(per_unit_price())}"></td>
 				<!-- /ko -->

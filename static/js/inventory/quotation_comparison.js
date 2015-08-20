@@ -51,7 +51,7 @@ function QuotationComparisonVM(data){
 			if (self.parties()[o].id == self.selected_party()) {
 				self.parties_to_display.push(self.parties()[o]);
 				for ( qr in row.rows()){
-					row.rows()[qr].partyVM.push(new PartyQuotationVM().bidder_name(self.parties()[o].name))
+					row.rows()[qr].bidder_quote.push(new PartyQuotationVM().bidder_name(self.parties()[o].name))
 				}
 			}
 		}
@@ -62,7 +62,7 @@ function QuotationComparisonVM(data){
 		self.parties_to_display.remove(party)
 		self.parties.push(party)
 		for ( o in self.table_view.rows()){
-			self.table_view.rows()[o].partyVM.remove( function(item) {
+			self.table_view.rows()[o].bidder_quote.remove( function(item) {
 				return item.bidder_name() === party.name
 			});
 		}
@@ -90,10 +90,11 @@ function QuotationComparisonVM(data){
                         $($("#tbody > tr")[i]).addClass('invalid-row');
                     });
                     for (var i in msg.rows) {
-                    	// debugger;
+                    	debugger;
                         self.table_view.rows()[i].id = msg.rows[i];
-                        for (var j in self.table_view.rows()){
-                        	self.table_view.rows[i].partyVM()[j].id = msg.rows.party[j]
+                        for (var j in self.table_view.rows()[i].bidder_quote()){
+                        	debugger;
+                        	self.table_view.rows()[i].bidder_quote()[j].id = msg.party[j]
                         }
                         $($("#tbody > tr")[i]).removeClass('invalid-row');
                     }
@@ -111,7 +112,7 @@ function QuotationComparisonVM(data){
 
     for (i in data.rows) {
     	// self.parties_to_display.push(data.rows[i].party.party)
-		// self.partyVM.push(new PartyQuotationVM().bidder_name(data.rows[i].party.party.name))
+		// self.bidder_quote.push(new PartyQuotationVM().bidder_name(data.rows[i].party.party.name))
     }
 }
 
@@ -136,15 +137,15 @@ function QuotationRow(row, argument) {
     self.account_no = ko.observable()
 	self.remarks = ko.observable()
 
-    self.partyVM = ko.observableArray()
+    self.bidder_quote = ko.observableArray()
     if ( argument ){
     	for (o in argument) {
-    		self.partyVM.push(new PartyQuotationVM().bidder_name(argument[o].name))
+    		self.bidder_quote.push(new PartyQuotationVM().bidder_name(argument[o].name))
     	}
     }
 
     // if( row.party ) {
-    // 	self.partyVM.push(row.party)
+    // 	self.bidder_quote.push(row.party)
     // }
 	
     for (var k in row) {
