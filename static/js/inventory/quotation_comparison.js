@@ -90,10 +90,8 @@ function QuotationComparisonVM(data){
                         $($("#tbody > tr")[i]).addClass('invalid-row');
                     });
                     for (var i in msg.rows) {
-                    	debugger;
                         self.table_view.rows()[i].id = msg.rows[i];
                         for (var j in self.table_view.rows()[i].bidder_quote()){
-                        	debugger;
                         	self.table_view.rows()[i].bidder_quote()[j].id = msg.party[j]
                         }
                         $($("#tbody > tr")[i]).removeClass('invalid-row');
