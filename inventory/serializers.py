@@ -232,10 +232,12 @@ class PartyQuotationSerializer(serializers.ModelSerializer):
 
 class QuotationComparisonRowSerializer(serializers.ModelSerializer):
     bidder_quote = PartyQuotationSerializer(many=True)
+    item_id = serializers.ReadOnlyField(source='item.id')
+    
 
     class Meta:
         model = QuotationComparisonRow
-        # exclude = ['party']
+        exclude = ['item']
         
 class QuotationComparisonSerializer(serializers.ModelSerializer):
     rows = QuotationComparisonRowSerializer(many=True)
