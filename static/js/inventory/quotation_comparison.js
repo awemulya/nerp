@@ -90,7 +90,11 @@ function QuotationComparisonVM(data){
                         $($("#tbody > tr")[i]).addClass('invalid-row');
                     });
                     for (var i in msg.rows) {
+                    	// debugger;
                         self.table_view.rows()[i].id = msg.rows[i];
+                        for (var j in self.table_view.rows()){
+                        	self.table_view.rows[i].partyVM()[j].id = msg.rows.party[j]
+                        }
                         $($("#tbody > tr")[i]).removeClass('invalid-row');
                     }
                 }
