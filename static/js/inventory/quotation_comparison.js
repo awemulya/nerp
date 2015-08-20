@@ -106,11 +106,14 @@ function QuotationComparisonVM(data){
     for (var k in data) {
     if (data[k] != null)
         self[k] = ko.observable(data[k]);
-}
+	}
 
-    for (i in data.rows) {
-    	// self.parties_to_display.push(data.rows[i].party.party)
-		// self.bidder_quote.push(new PartyQuotationVM().bidder_name(data.rows[i].party.party.name))
+	if ( data.rows != '' ){
+	    for (var j in data.rows[0].bidder_quote) {
+	    	// debugger;
+	    	self.parties_to_display.push(data.rows[0].bidder_quote[j].party)
+			// self.bidder_quote.push(new PartyQuotationVM().bidder_name(data.rows[i].party.party.name))
+	    }
     }
 }
 
