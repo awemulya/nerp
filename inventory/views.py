@@ -480,17 +480,26 @@ def save_quotation_comparison(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = QuotationComparisonRow
+        dct['rows']['party'] = {}
         for index, row in enumerate(params.get('table_view').get('rows')):
             values = {'sn': index+1, 'specification': empty_to_none(row.get('specification')), 'quantity': row.get('quantity'),
                 'estimated_cost': row.get('estimated_cost'), 'quotation': obj, 'item_id': row.get('item_id') }
             submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
             if not created:
                 submodel = save_model(submodel, values)
-                
+            # import ipdb; ipdb.set_trace()
             for index, party in enumerate(row.get('partyVM')):
                 party_object = Party.objects.get(name=party.get('bidder_name'))
-                party_quotation = PartyQuotation(party=party_object, per_unit_price=party.get('per_unit_price'), quotation_comparison_row=submodel )
-                party_quotation.save()
+                if party.get('id'):
+                    party_quotation = PartyQuotation.objects.get(pk=party.get('id'))
+                    party_quotation.party = party_object
+                    party_quotation.per_unit_price = party.get('per_unit_price')
+                    party_quotation.quotation_comparison_row = submodel
+                    party_quotation.save()
+                else:
+                    party_quotation= PartyQuotation(party=party_object, per_unit_price=party.get('per_unit_price'), quotation_comparison_row=submodel )
+                    party_quotation.save()
+                dct['rows']['party'][index] = party_quotation.id
             dct['rows'][index] = submodel.id
         # delete_rows(params.get('table_view').get('deleted_rows'), model)
     except Exception as e:
