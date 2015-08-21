@@ -80,12 +80,10 @@
            		<td data-bind="editableText: estimated_cost"></td>
 				<!-- ko foreach: bidder_quote -->
            		<td data-bind="editableText: per_unit_price"></td>
-           		<td data-bind="editableText: function(){return parseInt($parent.quantity()) * parseInt(per_unit_price())}"></td>
+           		<td data-bind="text: total($parent.quantity)"></td>
 				<!-- /ko -->
-
-
 				<td data-bind="editableText: remarks"></td>
-				 <td class="hide-on-print">
+				<td class="hide-on-print">
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
                 </td>
 

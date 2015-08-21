@@ -98,9 +98,6 @@ function QuotationComparisonVM(data){
                     }
                 }
             }
-//            error: function(XMLHttpRequest, textStatus, errorThrown) {
-//                $('#message').html(XMLHttpRequest.responseText.message);
-//            }
         });
     }
     for (var k in data) {
@@ -110,9 +107,7 @@ function QuotationComparisonVM(data){
 
 	if ( data.rows != '' ){
 	    for (var j in data.rows[0].bidder_quote) {
-	    	// debugger;
 	    	self.parties_to_display.push(data.rows[0].bidder_quote[j].party)
-			// self.bidder_quote.push(new PartyQuotationVM().bidder_name(data.rows[i].party.party.name))
 	    }
     }
 }
@@ -122,6 +117,9 @@ function PartyQuotationVM() {
 	self.id = ko.observable()
 	self.bidder_name = ko.observable();
 	self.per_unit_price = ko.observable();
+	self.total = function(quantity) {
+		return parseInt(quantity()) * self.per_unit_price()
+	}
 }
 
 
@@ -145,13 +143,15 @@ function QuotationRow(row, argument) {
     	}
     }
 
-    // if( row.party ) {
-    // 	self.bidder_quote.push(row.party)
-    // }
-	
     for (var k in row) {
         if (row[k] != null)
-            self[k] = ko.observable(row[k]);
+        	if (k == 'bidder_quote'){
+        		for ( var j in row[k] ){
+        			self.bidder_quote.push(new PartyQuotationVM().bidder_name(row[k][j].party.name).id(row[k][j].id).per_unit_price(row[k][j].per_unit_price))
+        		}
+        	} else {
+            	self[k] = ko.observable(row[k]);
+        	}
     }
 
 }
