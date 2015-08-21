@@ -482,25 +482,32 @@ def save_quotation_comparison(request):
         model = QuotationComparisonRow
         dct['party'] = {}
         for index, row in enumerate(params.get('table_view').get('rows')):
-            values = {'sn': index+1, 'specification': empty_to_none(row.get('specification')), 'quantity': row.get('quantity'),
-                'estimated_cost': row.get('estimated_cost'), 'quotation': obj, 'item_id': row.get('item_id') }
-            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-            if not created:
-                submodel = save_model(submodel, values)
-            dct['rows'][index] = submodel.id
-            for index, party in enumerate(row.get('bidder_quote')):
-                party_object = Party.objects.get(name=party.get('bidder_name'))
-                if party.get('id'):
-                    party_quotation = PartyQuotation.objects.get(pk=party.get('id'))
-                    party_quotation.party = party_object
-                    party_quotation.per_unit_price = party.get('per_unit_price')
-                    party_quotation.quotation_comparison_row = submodel
-                    party_quotation.save()
-                else:
-                    party_quotation= PartyQuotation(party=party_object, per_unit_price=party.get('per_unit_price'), quotation_comparison_row=submodel )
-                    party_quotation.save()
-                
-                dct['party'][index] = party_quotation.id
+            invalid_check = invalid(row, ['item_id', 'quantity', 'estimated_cost'])
+            if invalid_check:
+                dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
+                return JsonResponse(dct)
+            else:
+                values = {'sn': index+1, 'specification': empty_to_none(row.get('specification')), 'quantity': row.get('quantity'),
+                    'estimated_cost': row.get('estimated_cost'), 'quotation': obj, 'item_id': row.get('item_id') }
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                dct['rows'][index] = submodel.id
+                for index, party in enumerate(row.get('bidder_quote')):
+                    party_object = Party.objects.get(name=party.get('bidder_name'))
+                    if party.get('id'):
+                        party_quotation = PartyQuotation.objects.get(pk=party.get('id'))
+                        party_quotation.party = party_object
+                        party_quotation.per_unit_price = party.get('per_unit_price')
+                        party_quotation.quotation_comparison_row = submodel
+                        party_quotation.save()
+                    else:
+                        party_quotation= PartyQuotation(party=party_object, per_unit_price=party.get('per_unit_price'), quotation_comparison_row=submodel )
+                        party_quotation.save()
+                    
+                    dct['party'][index] = party_quotation.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
