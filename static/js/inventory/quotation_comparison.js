@@ -104,10 +104,10 @@ function QuotationComparisonVM(data){
     if (data[k] != null)
         self[k] = ko.observable(data[k]);
 	}
-
 	if ( data.rows != '' ){
 	    for (var j in data.rows[0].bidder_quote) {
 	    	self.parties_to_display.push(data.rows[0].bidder_quote[j].party)
+			self.parties.remove( function(item) {return item.id == data.rows[0].bidder_quote[j].party.id })
 	    }
     }
 }
