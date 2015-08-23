@@ -506,6 +506,16 @@ def save_quotation_comparison(request):
                         party_quotation.save()
                     
                     dct['party'][index] = party_quotation.id
+                    
+                party_quotation_remove = PartyQuotation.objects.filter(quotation_comparison_row__id=submodel.id)
+                all_party_id_list = [all_party.id for all_party in party_quotation_remove]
+                save_party_id = [ dct['party'][i] for i in dct['party']]
+                party_to_delete = list(set(all_party_id_list).difference(save_party_id))
+                if party_to_delete != []:
+                    for i in party_to_delete:
+                        party_to_remove = PartyQuotation.objects.get(id = i)
+                        party_to_remove.delete()
+
         delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
