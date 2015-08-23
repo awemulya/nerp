@@ -76,10 +76,10 @@
                         {#                               data-bind="value: item_id, select2: $root.items, event: {change: $root.item_changed}, readOnly: status() != 'Requested'">#}
             	</td>
            		<td data-bind="editableText: specification"></td>
-           		<td data-bind="editableText: quantity"></td>
-           		<td data-bind="editableText: estimated_cost"></td>
+           		<td data-bind="editableText: quantity, numeric: true"></td>
+           		<td data-bind="editableText: estimated_cost, numeric: true"></td>
 				<!-- ko foreach: bidder_quote -->
-           		<td data-bind="editableText: per_unit_price"></td>
+           		<td data-bind="editableText: per_unit_price, numeric: true"></td>
            		<td data-bind="text: total($parent.quantity)"></td>
 				<!-- /ko -->
 				<td data-bind="editableText: remarks"></td>
