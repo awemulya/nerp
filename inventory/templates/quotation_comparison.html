@@ -7,6 +7,7 @@
 {% block breadcrumbs %}
     {{ block.super }}
     <li><a href="{% url 'list_quotation_forms' %}">{% trans 'Quotation' %} {% trans 'Reports' %}</a></li>
+    <li><span> {% trans scenario %} {% trans 'Quotation Comparison' %}</span></li>
 {% endblock %}
 
 {% block head_end %}
@@ -100,6 +101,11 @@
 </div>	
 <br>
 <input class="btn btn-primary btn-lg" type="submit" value="Save">
+{% if scenario == 'Update' %}
+    <a class="btn btn-danger btn-lg"
+       href="{% url 'delete_quotation_comparison' quotation.id %}">{% trans 'Delete!' %}</a>
+{% endif %}
+
 </form>
 
 {% endblock %}

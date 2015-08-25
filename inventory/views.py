@@ -396,7 +396,12 @@ def quotation_report(request, id=None):
         quotation = QuotationComparison()
         scenario = 'Create'
     data = QuotationComparisonSerializer(quotation).data
-    return render(request, 'quotation_comparison.html',{'data': data})
+    return render(request, 'quotation_comparison.html',{'data': data, 'scenario': scenario, 'quotation': quotation})
+
+def delete_quotation_comparison(request, id):
+    obj = get_object_or_404(QuotationComparison, id=id)
+    obj.delete()
+    return redirect(reverse('list_quotation_forms'))
 
 @group_required('Store Keeper', 'Chief')
 def delete_yearly_report(request, id):
