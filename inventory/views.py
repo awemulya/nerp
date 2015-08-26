@@ -640,7 +640,12 @@ def item_instances_as_json(request):
             instances[instance.item_id] = {}
         s = str(instance.item_rate)
         rate = s.rstrip('0').rstrip('.') if '.' in s else s
-        instance.other_properties['rate'] = rate
+        if not instance.other_properties:
+            instance.other_properties = {}
+        try:
+            instance.other_properties['rate'] = rate
+        except:
+            import ipdb; ipdb.set_trace()
         # property = cPickle.dumps(item.other_properties)
         prop = json.dumps(instance.other_properties).replace(' ', '')
         if not prop in instances[instance.item_id].keys():
