@@ -4,7 +4,6 @@ from inventory.models import Demand, DemandRow, Item, Party, PurchaseOrder, Purc
     ItemInstance, \
     Release
 
-
 class ItemInstanceSerializer(serializers.ModelSerializer):
     properties = serializers.SerializerMethodField()
 
@@ -15,16 +14,13 @@ class ItemInstanceSerializer(serializers.ModelSerializer):
     def get_properties(self, obj):
         return obj.other_properties
 
-
 class ItemLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemLocation
 
-
 class DepreciationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Depreciation
-
 
 class ItemSerializer(serializers.ModelSerializer):
     account_no = serializers.ReadOnlyField(source='account.account_no')
@@ -34,27 +30,22 @@ class ItemSerializer(serializers.ModelSerializer):
         model = Item
         exclude = ['depreciation']
 
-
 class ReleaseSerializer(serializers.ModelSerializer):
     item_instance = ItemInstanceSerializer()
 
     class Meta:
         model = Release
-
-
+        
 class DemandRowSerializer(serializers.ModelSerializer):
     item_id = serializers.ReadOnlyField(source='item.id')
     releases = ReleaseSerializer(many=True)
-
+    
     class Meta:
         model = DemandRow
         exclude = ['item']
 
 
 class DemandSerializer(serializers.ModelSerializer):
-    # rows = serializers.PrimaryKeyRelatedField(
-    #     queryset=DemandRow.objects.all(),
-    #     many=True)
     rows = DemandRowSerializer(many=True)
     date = serializers.DateField(format=None)
 
@@ -108,21 +99,21 @@ class EntryReportSerializer(serializers.ModelSerializer):
 
 
 class InventoryAccountRowSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='id')
+    id = serializers.ReadOnlyField()
     voucher_no = serializers.ReadOnlyField(source='creator.get_voucher_no')
     specification = serializers.ReadOnlyField(source='creator.specification')
-    country_or_company = serializers.SerializerMethodField('get_country_or_company')
-    size = serializers.SerializerMethodField('get_size')
-    expected_life = serializers.SerializerMethodField('get_expected_life')
-    source = serializers.SerializerMethodField('get_source')
-    income_quantity = serializers.SerializerMethodField('get_income_quantity')
-    income_rate = serializers.SerializerMethodField('get_income_rate')
-    income_total = serializers.SerializerMethodField('get_income_total')
-    expense_quantity = serializers.SerializerMethodField('get_expense_quantity')
-    expense_total_cost_price = serializers.SerializerMethodField('get_expense_total_cost_price')
-    remaining_total_cost_price = serializers.SerializerMethodField('get_remaining_total_cost_price')
-    remarks = serializers.SerializerMethodField('get_remarks')
-    current_balance = serializers.SerializerMethodField('get_current_balance')
+    country_or_company = serializers.SerializerMethodField()
+    size = serializers.SerializerMethodField()
+    expected_life = serializers.SerializerMethodField()
+    source = serializers.SerializerMethodField()
+    income_quantity = serializers.SerializerMethodField()
+    income_rate = serializers.SerializerMethodField()
+    income_total = serializers.SerializerMethodField()
+    expense_quantity = serializers.SerializerMethodField()
+    expense_total_cost_price = serializers.SerializerMethodField()
+    remaining_total_cost_price = serializers.SerializerMethodField()
+    remarks = serializers.SerializerMethodField()
+    current_balance = serializers.SerializerMethodField()
     date = serializers.DateField(format=None)
 
     class Meta:
@@ -186,6 +177,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         except:
             return ''
 
+
     def get_remarks(self, obj):
         try:
             return obj.account_row.remarks
@@ -199,8 +191,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
 class InspectionRowSerializer(serializers.ModelSerializer):
     item_name = serializers.ReadOnlyField(source="transaction.account.item.name")
     item_account_number = serializers.ReadOnlyField(source="transaction.account.account_no")
-    item_property_classification_reference_number = serializers.ReadOnlyField(
-        source="transaction.account.item.property_classification_reference_number")
+    item_property_classification_reference_number = serializers.ReadOnlyField(source="transaction.account.item.property_classification_reference_number")
     item_unit = serializers.ReadOnlyField(source="transaction.account.item.unit")
     item_quantity = serializers.ReadOnlyField(source="transaction.dr_amount")
 
@@ -208,19 +199,16 @@ class InspectionRowSerializer(serializers.ModelSerializer):
         model = InspectionRow
         exclude = ['transaction']
 
-
 class InspectionSerializer(serializers.ModelSerializer):
     rows = InspectionRowSerializer(many=True)
 
     class Meta:
         model = Inspection
 
-
 class TransactionSerializer(serializers.ModelSerializer):
     account_no = serializers.ReadOnlyField(source="account.account_no")
     current_balance = serializers.ReadOnlyField(source="account.current_balance")
-    inventory_classification_reference_no = serializers.ReadOnlyField(
-        source="account.item.property_classification_reference_number")
+    inventory_classification_reference_no = serializers.ReadOnlyField(source="account.item.property_classification_reference_number")
     item_name = serializers.ReadOnlyField(source="account.item.name")
     unit = serializers.ReadOnlyField(source="account.item.unit")
     rate = serializers.ReadOnlyField(source="journal_entry.creator.rate")
