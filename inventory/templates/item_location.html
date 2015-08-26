@@ -1,0 +1,45 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles %}
+{% load filters %}
+
+{% block title %}{% trans 'Item' %} {% trans 'Location' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href=''>{% trans 'Item' %} {% trans 'Location' %}</a></li>
+{% endblock %}
+
+{% block content %}
+
+<form action="" method='POST'>
+{% csrf_token %}
+<div class="form-group">
+  <label for="sel1">Select Location:</label>
+  <select class="form-control" id="sel1" name="location">
+	{% for location in locations %}
+	<option>{{location.name}}</option>
+	{% endfor %}
+  </select>
+</div>	
+<input type="submit" name="submit" class="btn btn-default">
+</form>
+<table class="table table-striped table-bordered"> 
+        <thead>
+            <tr>
+                <th>{% trans 'Name' %}</th>
+                <th>{% trans 'Location' %}</th>
+                <th>{% trans 'Properties' %}</th>
+        </thead>
+        <tbody>
+        	{% for item_instance in item_instances %}
+        	<tr>
+        		<td>{{ item_instance.item.name }}</td>
+        		<td>{{ item_instance.location.name }}</td>
+        		<td>{{ item_instance.other_properties }}</td>
+        	</tr>
+        	{% endfor %}
+
+        </tbody>
+        </table>
+
+{% endblock %}

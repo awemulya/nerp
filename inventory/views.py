@@ -527,7 +527,14 @@ def save_quotation_comparison(request):
             dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
 
-
+def item_location(request):
+    locations = ItemLocation.objects.all()
+    item_instances = ItemInstance.objects.all()
+    if request.POST:
+        location = request.POST.get('location')
+        import ipdb; ipdb.set_trace()
+    import ipdb; ipdb.set_trace()
+    return render(request, 'item_location.html', {'locations': locations, 'item_instances': item_instances})
 
 
 def save_inspection_report(request):
