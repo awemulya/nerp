@@ -110,7 +110,7 @@
                         <input type="text" readonly class="form-control"
                                data-bind="attr: {'data-dropdown': 'drop' + $index()}, value: total_release, event: {'focus': release_focused}">
                         <!-- ko if:item_id -->
-                        <div data-bind="attr: {'id':'drop'+$index()}, foundation: 1" data-dropdown-content
+                        <div data-bind="attr: {'id':'drop'+$index()}" data-dropdown-content
                              class="f-dropdown content amount-dropdown">
                             <!-- ko if: release_vms().length -->
                             <h2>वर्तमान निकासी </h2>
