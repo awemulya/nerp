@@ -18,9 +18,9 @@
             {% if next %}
                 <input type="hidden" name="next" value="{{ next }}"/>
             {% endif %}
-            <div class="form-group">
-                <label for="id_username">Username:</label><br>
-                <input type="text" name="username" class="form-control" id="id_username" value="{{ username }}" required/>
+            <div class="required">
+                <label for="id_username">Username:</label>
+                <input type="text" name="username" id="id_username" value="{{ username }}" required autofocus/>
             </div>
 
             <div class="form-group">

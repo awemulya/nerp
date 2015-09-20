@@ -10,7 +10,7 @@
 <li class="pull-right">
     <form action="{% url 'isbn_to_record' %}" method="post">
         {% csrf_token %}
-        <input type="text" class="form-control" id="breadcrumb-isbn" placeholder="ISBN" name="isbn">
+        <input type="text" placeholder="ISBN" name="isbn" autofocus>
     </form>
 </li>
     {{ block.super }}

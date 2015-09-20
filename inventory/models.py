@@ -97,7 +97,7 @@ class InventoryAccount(models.Model):
     # current_cr = models.FloatField(null=True, blank=True)
     opening_balance = models.FloatField(default=0)
 
-    def __str__(self):
+    def __unicode__(self):
         return str(self.account_no) + ' [' + self.name + ']'
 
     def get_absolute_url(self):
@@ -349,7 +349,7 @@ class Demand(models.Model):
     release_no = models.IntegerField(blank=True, null=True)
     fiscal_year = models.ForeignKey(FiscalYear)
     demandee = models.ForeignKey(User)
-    date = BSDateField()
+    date = BSDateField(default=BSDateField.today)
     purpose = models.CharField(max_length=254)
 
     def get_voucher_no(self):
@@ -386,6 +386,9 @@ class DemandRow(models.Model):
 
     def get_voucher_no(self):
         return self.demand.release_no
+
+    def __unicode__(self):
+        return unicode(self.item) + ' (' + unicode(self.quantity) + ')'
 
 
 class EntryReport(models.Model):
@@ -430,7 +433,7 @@ class EntryReportRow(models.Model):
 class Handover(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     addressee = models.CharField(max_length=254)
-    date = BSDateField()
+    date = BSDateField(default=BSDateField.today)
     office = models.CharField(max_length=254)
     designation = models.CharField(max_length=254)
     handed_to = models.CharField(max_length=254)
@@ -474,7 +477,7 @@ class UnsavedForeignKey(models.ForeignKey):
 class PurchaseOrder(models.Model):
     party = models.ForeignKey(Party)
     order_no = models.IntegerField(blank=True, null=True)
-    date = BSDateField()
+    date = BSDateField(default=BSDateField.today)
     due_days = models.IntegerField(default=3)
     fiscal_year = models.ForeignKey(FiscalYear)
     entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',

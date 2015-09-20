@@ -8,6 +8,7 @@ from django import forms
 import re
 import datetime
 from django.db import models
+from core.middleware import get_calendar
 
 
 def ne2en(num, reverse=False):
@@ -51,7 +52,7 @@ def transl(s):
 
 
 class TranslatableNumberModel(models.Model):
-    #TODO override form validation
+    # TODO override form validation
     def clean(self):
         for field in self.__class__._translatable_number_fields:
             setattr(self, field, ne2en(getattr(self, field)))
@@ -151,6 +152,9 @@ class BSDateField(DateField):
         return "DateField"
 
     def to_python(self, value):
+        calendar = get_calendar()
+        if calendar == 'ad':
+            return value
         if value is None:
             return value
         if isinstance(value, datetime.datetime):
@@ -161,7 +165,11 @@ class BSDateField(DateField):
         return value
 
     def pre_save(self, model_instance, add):
-        return nepdate.string_from_tuple(nepdate.bs2ad(self._get_val_from_obj(model_instance)))
+        value = self._get_val_from_obj(model_instance)
+        calendar = get_calendar()
+        if calendar == 'ad':
+            return value
+        return nepdate.string_from_tuple(nepdate.bs2ad(value))
 
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
@@ -171,3 +179,11 @@ class BSDateField(DateField):
         defaults = {'form_class': BSDateFormField}
         defaults.update(kwargs)
         return super(DateField, self).formfield(**defaults)
+
+    @staticmethod
+    def today():
+        calendar = get_calendar()
+        print calendar
+        if calendar == 'ad':
+            return datetime.date.today()
+        return nepdate.today_as_str()

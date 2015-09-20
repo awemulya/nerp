@@ -1,6 +1,8 @@
+from django import http
 from django.core.urlresolvers import reverse
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.http import is_safe_url
 from account.serializers import AccountSerializer
 from app.utils.forms import form_view
 from core.forms import PartyForm, EmployeeForm
@@ -125,3 +127,16 @@ def languages_as_json(request):
     objects = Language.objects.all()
     objects_data = LanguageSerializer(objects, many=True).data
     return JsonResponse(objects_data, safe=False)
+
+def change_calendar(request):
+    nxt = request.POST.get('next', request.GET.get('next'))
+    if not is_safe_url(url=nxt, host=request.get_host()):
+        nxt = request.META.get('HTTP_REFERER')
+        if not is_safe_url(url=nxt, host=request.get_host()):
+            nxt = '/'
+    response = http.HttpResponseRedirect(nxt)
+    if request.method == 'POST':
+        cal_code = request.POST.get('calendar')
+        if cal_code and hasattr(request, 'session'):
+            request.session['sess_cal'] = cal_code
+    return response

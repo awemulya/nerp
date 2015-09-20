@@ -1,0 +1,16 @@
+{% load i18n %}
+<form action="{% url 'change_calendar' %}" method="post" style="display: inline;">
+    {% csrf_token %}
+    <div style="display: inline;">
+        <select name="calendar" onchange="javascript:form.submit()">
+
+            <option value="ad"{% ifequal request.session.sess_cal 'ad' %}
+                    selected="selected"{% endifequal %}>AD
+            </option>
+            <option value="bs"{% ifequal request.session.sess_cal 'bs' %}
+                    selected="selected"{% endifequal %}>BS
+            </option>
+
+        </select>
+    </div>
+</form>

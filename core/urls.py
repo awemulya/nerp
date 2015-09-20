@@ -22,4 +22,6 @@ urlpatterns = patterns('',
                        url(r'^tax_schemes.json$', views.tax_schemes_as_json, name='tax_schemes_as_json'),
                        url(r'^languages.json$', views.languages_as_json, name='languages_as_json'),
 
+                       url(r'^change_calendar/$', views.change_calendar, name='change_calendar'),
+
 )

@@ -659,7 +659,12 @@ def item_instances_as_json(request):
             instances[instance.item_id] = {}
         s = str(instance.item_rate)
         rate = s.rstrip('0').rstrip('.') if '.' in s else s
-        instance.other_properties['rate'] = rate
+        if not instance.other_properties:
+            instance.other_properties = {}
+        try:
+            instance.other_properties['rate'] = rate
+        except:
+            import ipdb; ipdb.set_trace()
         # property = cPickle.dumps(item.other_properties)
         prop = json.dumps(instance.other_properties).replace(' ', '')
         if not prop in instances[instance.item_id].keys():
@@ -774,7 +779,7 @@ def demand_form(request, id=None):
         obj = get_object_or_404(Demand, id=id)
         scenario = 'Update'
     else:
-        obj = Demand(date=nepdate.today_as_str(), demandee=request.user)
+        obj = Demand(demandee=request.user)
         scenario = 'Create'
     form = DemandForm(instance=obj)
     object_data = DemandSerializer(obj).data
@@ -848,7 +853,7 @@ def purchase_order(request, id=None):
         obj = get_object_or_404(PurchaseOrder, id=id)
         scenario = 'Update'
     else:
-        obj = PurchaseOrder(date=nepdate.today_as_str())
+        obj = PurchaseOrder()
         scenario = 'Create'
     form = PurchaseOrderForm(instance=obj)
     object_data = PurchaseOrderSerializer(obj).data
@@ -948,7 +953,7 @@ def handover_incoming(request, id=None):
         obj = get_object_or_404(Handover, id=id)
         scenario = 'Update'
     else:
-        obj = Handover(date=nepdate.today_as_str(), type='Incoming')
+        obj = Handover(type='Incoming')
         scenario = 'Create'
     form = HandoverForm(instance=obj)
     object_data = HandoverSerializer(obj).data
@@ -962,7 +967,7 @@ def handover_outgoing(request, id=None):
         obj = get_object_or_404(Handover, id=id)
         scenario = 'Update'
     else:
-        obj = Handover(date=nepdate.today_as_str(), type='Outgoing')
+        obj = Handover(type='Outgoing')
         scenario = 'Create'
     form = HandoverForm(instance=obj)
     object_data = HandoverSerializer(obj).data
