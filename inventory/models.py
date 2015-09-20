@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+import datetime, nepdate
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.core.urlresolvers import reverse
 
@@ -18,6 +18,49 @@ from users.models import User
 from core.models import FiscalYear, Party
 from app.utils.translation import BSDateField
 from jsonfield import JSONField
+
+
+def alter(account, date, diff):
+    Transaction.objects.filter(journal_entry__date__gt=date, account=account).update(
+        current_balance=none_for_zero(zero_for_none(F('current_balance')) + zero_for_none(diff)))
+
+
+def set_transactions(model, date, *args):
+    args = [arg for arg in args if arg is not None]
+    journal_entry, created = JournalEntry.objects.get_or_create(
+        content_type=ContentType.objects.get_for_model(model), model_id=model.id,
+        defaults={
+            'date': date
+        })
+
+    for arg in args:
+        matches = journal_entry.transactions.filter(account=arg[1])
+        diff = 0
+        if not matches:
+            transaction = Transaction()
+        else:
+            transaction = matches[0]
+            diff = zero_for_none(transaction.cr_amount)
+            diff -= zero_for_none(transaction.dr_amount)
+        if arg[0] == 'dr':
+            transaction.dr_amount = float(arg[2])
+            transaction.cr_amount = None
+            diff += float(arg[2])
+        elif arg[0] == 'cr':
+            transaction.cr_amount = float(arg[2])
+            transaction.dr_amount = None
+            diff -= float(arg[2])
+        else:
+            raise Exception('Transactions can only be either "dr" or "cr".')
+        transaction.account = arg[1]
+        if isinstance(transaction.account.current_balance, unicode):
+            transaction.account.current_balance = float(transaction.account.current_balance) + diff
+        else:
+            transaction.account.current_balance += diff
+        transaction.current_balance = transaction.account.current_balance
+        transaction.account.save()
+        journal_entry.transactions.add(transaction)
+        alter(transaction.account, date, diff)
 
 
 class Site(models.Model):
@@ -210,44 +253,6 @@ class Transaction(models.Model):
         return total
 
 
-def alter(account, date, diff):
-    Transaction.objects.filter(journal_entry__date__gt=date, account=account).update(
-        current_balance=none_for_zero(zero_for_none(F('current_balance')) + zero_for_none(diff)))
-
-
-def set_transactions(model, date, *args):
-    args = [arg for arg in args if arg is not None]
-    journal_entry, created = JournalEntry.objects.get_or_create(
-        content_type=ContentType.objects.get_for_model(model), model_id=model.id,
-        defaults={
-            'date': date
-        })
-
-    for arg in args:
-        matches = journal_entry.transactions.filter(account=arg[1])
-        diff = 0
-        if not matches:
-            transaction = Transaction()
-        else:
-            transaction = matches[0]
-            diff = zero_for_none(transaction.cr_amount)
-            diff -= zero_for_none(transaction.dr_amount)
-        if arg[0] == 'dr':
-            transaction.dr_amount = float(arg[2])
-            transaction.cr_amount = None
-            diff += float(arg[2])
-        elif arg[0] == 'cr':
-            transaction.cr_amount = float(arg[2])
-            transaction.dr_amount = None
-            diff -= float(arg[2])
-        else:
-            raise Exception('Transactions can only be either "dr" or "cr".')
-        transaction.account = arg[1]
-        transaction.account.current_balance += diff
-        transaction.current_balance = transaction.account.current_balance
-        transaction.account.save()
-        journal_entry.transactions.add(transaction)
-        alter(transaction.account, date, diff)
 
 
 # def set_transactions(submodel, date, *args):
@@ -407,7 +412,7 @@ class EntryReportRow(models.Model):
     rate = models.FloatField()
     other_expenses = models.FloatField(default=0)
     remarks = models.CharField(max_length=254, blank=True, null=True)
-    entry_report = models.ForeignKey(EntryReport, related_name='rows')
+    entry_report = models.ForeignKey(EntryReport, related_name='rows', blank=True, null=True)
     journal = GenericRelation(JournalEntry, related_query_name='journal', content_type_field="content_type",
                               object_id_field='model_id')
 
@@ -415,7 +420,11 @@ class EntryReportRow(models.Model):
         return self.rate * self.quantity * 1.13 + self.other_expenses
 
     def get_voucher_no(self):
-        return self.entry_report.entry_report_no
+        if self.entry_report:
+            return self.entry_report.entry_report_no
+        else:
+            return 'Opening Balance'
+            
 
 
 class Handover(models.Model):

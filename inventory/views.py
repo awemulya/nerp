@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
+import json, nepdate, datetime
 # from datetime import date
 
 from django.http import JsonResponse, HttpResponse
@@ -554,6 +554,22 @@ def item_form(request, id=None):
             item.other_properties = other_properties
             item.depreciation = dep
             item.save(account_no=form.cleaned_data['account_no'], opening_balance=form.cleaned_data['opening_balance'])
+            opening_balance = form.cleaned_data['opening_balance']
+            if int(opening_balance) > 0:
+                entry_report_row = EntryReportRow(sn=1, item=item, quantity=opening_balance, unit=item.unit, rate=0, remarks="Opening Balance")
+                date = nepdate.string_from_tuple(nepdate.ad2bs(datetime.datetime.now()))
+                entry_report_row.save()
+                set_transactions(entry_report_row, date,
+                                 ['dr', entry_report_row.item.account, 0],
+                                 )
+                for i in range(0, int(opening_balance)):
+                    item_instance = ItemInstance()
+                    item_instance.item = Item.objects.get(id=item.id)
+                    item_instance.item_rate = 0
+                    item_instance.location = ItemLocation.objects.get(name='Store')
+                    item_instance.source = entry_report_row
+                    item_instance.other_properties = item.other_properties
+                    item_instance.save()
             if request.is_ajax():
                 return render(request, 'callback.html', {'obj': ItemSerializer(item).data})
             return redirect('/inventory/items/')
