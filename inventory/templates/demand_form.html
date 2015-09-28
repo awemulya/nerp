@@ -108,9 +108,8 @@
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>
                         <div class="btn-group">
-                            
                             <input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" data-bind="value: total_release">
-                            <div class="dropdown-menu">
+                            <div class="dropdown-menu" id="demand-drop-menu">
                                 <!-- ko if: release_vms().length -->
                                 <h2>वर्तमान निकासी </h2>
                                 <table id="release-table" class="table table-bordered table-striped">

@@ -368,3 +368,8 @@ form {
 .breadcrumbs span{
     color: #666666;
 }
+
+#demand-drop-menu {
+    width: 32em;
+    padding: 0px 12px;
+}
