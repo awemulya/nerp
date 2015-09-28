@@ -64,7 +64,7 @@
 
         <div data-bind="with:table_view">
 
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped table-responsive">
                 <thead>
                 <tr>
                     <th class="span1">{% trans 'SN' %}</th>
@@ -107,14 +107,13 @@
                     <td data-bind="editableText: purpose, disable_content_editable: status() != 'Requested'"></td>
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>
-                        <input type="text" readonly class="form-control"
-                               data-bind="attr: {'data-dropdown': 'drop' + $index()}, value: total_release, event: {'focus': release_focused}">
-                        <!-- ko if:item_id -->
-                        <div data-bind="attr: {'id':'drop'+$index()}" data-dropdown-content
-                             class="f-dropdown content amount-dropdown">
+                        <div class="btn-group">
+                    
+                    <input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" data-bind="value: total_release">
+                        <div class="dropdown-menu">
                             <!-- ko if: release_vms().length -->
                             <h2>वर्तमान निकासी </h2>
-                            <table id="release-table">
+                            <table id="release-table" class="table table-bordered table-striped">
                                 <thead>
                                 <th>Properties</th>
                                 <th>Rate</th>
@@ -139,7 +138,7 @@
                             </table>
                             <!-- /ko -->
                              <h2>मौज्दात सामान</h2>
-                            <table id="group-table">
+                            <table id="group-table" class="table table-bordered table-striped">
                                 <thead>
                                 <th>Properties</th>
                                 <th>Rate</th>
@@ -154,7 +153,7 @@
                                 <tr>
                                     <td data-bind="text:property_str"></td>
                                     <td data-bind="text:rate"></td>
-                                        <td><input type="number" required
+                                        <td><input type="number" required class="form-control"
                                                    data-bind="value:quantity, max: count()"/>/<span
                                                 data-bind="text: count()"></span></td>
                                         <td>
@@ -174,7 +173,7 @@
                         </div>
                         <!-- /ko -->
 
-
+</div>
                     </td>
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}

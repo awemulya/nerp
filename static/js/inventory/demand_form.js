@@ -337,7 +337,6 @@ function DemandRow(row, demand_vm) {
     }
 
     self.remove = function (release) {
-        debugger;
         var group = get_by_id(self.groups(), release.id);
         ko.utils.arrayPushAll(group.instances, release.instances())
         self.release_vms.remove(release);
