@@ -1179,19 +1179,21 @@ def approve_demand(request):
     else:
         dct['error_message'] = 'Row needs to be saved before being approved!'
         return JsonResponse(dct)
-    invalid_check = invalid(params, ['item_id', 'quantity', 'unit', 'release_quantity', 'purpose', 'location'])
-    if invalid_check:
-        dct['error_message'] = 'Fill out following fields: ' + ', '.join(invalid_check)
-        return JsonResponse(dct)
-    else:
-        if row.item.account.current_balance < float(params.get('release_quantity')):
-            dct['error_message'] = 'We dont have this item in stock. Purchase Item'
-        values = {'item_id': params.get('item_id'),
-                  'specification': params.get('specification'),
-                  'quantity': params.get('quantity'), 'unit': params.get('unit'),
-                  'release_quantity': params.get('release_quantity'), 'remarks': params.get('remarks'),
-                  'purpose': params.get('purpose'), 'location': ItemLocation.objects.get(id=params.get('location'))}
-        row = save_model(row, values)
+    # invalid_check = invalid(params, ['item_id', 'quantity', 'unit', 'release_quantity', 'purpose', 'location'])
+    # invalid_check = invalid(params, ['item_id', 'quantity', 'unit'])
+
+    # if invalid_check:
+    #     dct['error_message'] = 'Fill out following fields: ' + ', '.join(invalid_check)
+    #     return JsonResponse(dct)
+    # else:
+        # if row.item.account.current_balance < float(params.get('release_quantity')):
+            # dct['error_message'] = 'We dont have this item in stock. Purchase Item'
+        # values = {'item_id': params.get('item_id'),
+        #           'specification': params.get('specification'),
+        #           'quantity': params.get('quantity'), 'unit': params.get('unit'),
+        #           'release_quantity': params.get('release_quantity'), 'remarks': params.get('remarks'),
+        #           'purpose': params.get('purpose'), 'location': ItemLocation.objects.get(id=params.get('location'))}
+        # row = save_model(row, values)
     row.status = 'Approved'
     row.save()
     return JsonResponse(dct)
@@ -1228,11 +1230,11 @@ def fulfill_demand(request):
                      )
 
     # Search items in the stock
-    items = ItemInstance.objects.filter(item_id=row.item_id, location_id=STORE_LOCATION_ID)
-    release_quantity = int(row.release_quantity)
-    for item, i in zip(items, range(0, release_quantity)):
-        item.location = row.location
-        item.save()
+    # items = ItemInstance.objects.filter(item_id=row.item_id, location_id=STORE_LOCATION_ID)
+    # release_quantity = int(row.release_quantity)
+    # for item, i in zip(items, range(0, release_quantity)):
+    #     item.location = row.location
+    #     item.save()
 
     row.status = 'Fulfilled'
     row.save()
