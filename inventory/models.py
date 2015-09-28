@@ -50,6 +50,10 @@ def set_transactions(model, date, *args):
             transaction.cr_amount = float(arg[2])
             transaction.dr_amount = None
             diff -= float(arg[2])
+        elif arg[0] == 'ob':
+            transaction.dr_amount = float(arg[2])
+            transaction.cr_amount = None
+            diff = 0
         else:
             raise Exception('Transactions can only be either "dr" or "cr".')
         transaction.account = arg[1]

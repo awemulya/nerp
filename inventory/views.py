@@ -560,7 +560,7 @@ def item_form(request, id=None):
                 date = nepdate.string_from_tuple(nepdate.ad2bs(datetime.datetime.now()))
                 entry_report_row.save()
                 set_transactions(entry_report_row, date,
-                                 ['dr', entry_report_row.item.account, 0],
+                                 ['ob', entry_report_row.item.account, opening_balance],
                                  )
                 for i in range(0, int(opening_balance)):
                     item_instance = ItemInstance()
