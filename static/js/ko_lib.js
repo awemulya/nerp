@@ -147,6 +147,12 @@ ko.bindingHandlers.flash = {
     }
 };
 
+ko.bindingHandlers.focus = {
+    init: function (element, valueAccessor) {
+        $(element).on('focus', valueAccessor());
+    }
+};
+
 ko.bindingHandlers.max = {
     init: function (element, valueAccessor) {
         $(element).attr('max', valueAccessor());

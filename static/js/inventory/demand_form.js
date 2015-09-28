@@ -2,6 +2,9 @@ $(document).ready(function () {
     vm = new DemandViewModel(ko_data);
     ko.applyBindings(vm);
     $('.change-on-ready').trigger('change');
+    $('.dropdown-menu').click(function (event) {
+        event.stopPropagation();
+    });
 });
 
 function ReleaseVM(group, instance_id, location) {
@@ -306,13 +309,11 @@ function DemandRow(row, demand_vm) {
 
     self.release_focused = function (row, e) {
         var target = $(e.currentTarget);
-        //target.click();
-        if (!target.hasClass('open')) {
-            target.click();
+        //if (!e.isTrigger) {
+        if (!target.parent().hasClass('open') && !target.is(":hover")) {
+            target.parent().addClass('open');
         }
-        if (!target.hasClass('open')) {
-            target.click();
-        }
+        //}
     };
 
     self.add = function (group) {
