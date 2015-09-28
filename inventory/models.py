@@ -16,7 +16,7 @@ from app.utils.helpers import zero_for_none, none_for_zero
 from app.utils.translation import ne2en
 from users.models import User
 from core.models import FiscalYear, Party
-from app.utils.translation import BSDateField
+from app.utils.translation import BSDateField, today
 from jsonfield import JSONField
 
 
@@ -353,7 +353,7 @@ class Demand(models.Model):
     release_no = models.IntegerField(blank=True, null=True)
     fiscal_year = models.ForeignKey(FiscalYear)
     demandee = models.ForeignKey(User)
-    date = BSDateField(default=BSDateField.today)
+    date = BSDateField(default=today)
     purpose = models.CharField(max_length=254)
 
     def get_voucher_no(self):
@@ -437,7 +437,7 @@ class EntryReportRow(models.Model):
 class Handover(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     addressee = models.CharField(max_length=254)
-    date = BSDateField(default=BSDateField.today)
+    date = BSDateField(default=today)
     office = models.CharField(max_length=254)
     designation = models.CharField(max_length=254)
     handed_to = models.CharField(max_length=254)
@@ -481,7 +481,7 @@ class UnsavedForeignKey(models.ForeignKey):
 class PurchaseOrder(models.Model):
     party = models.ForeignKey(Party)
     order_no = models.IntegerField(blank=True, null=True)
-    date = BSDateField(default=BSDateField.today)
+    date = BSDateField(default=today)
     due_days = models.IntegerField(default=3)
     fiscal_year = models.ForeignKey(FiscalYear)
     entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
@@ -602,7 +602,7 @@ class YearlyReportRow(models.Model):
 
 
 class ItemInstance(models.Model):
-    item = models.ForeignKey(Item, related_name='tracked_item')
+    item = models.ForeignKey(Item, related_name='instances')
     item_rate = models.FloatField(null=True)
     location = models.ForeignKey(ItemLocation)
     other_properties = JSONField(null=True, blank=True)

@@ -81,8 +81,8 @@ class User(AbstractBaseUser):
 
     def in_group(self, group_name):
         try:
-            group = Group.objects.get(name=group_name)
-            return group in self.groups.all()
+            group = self.groups.get(name=group_name)
+            return True
         except Group.DoesNotExist:
             return False
 
