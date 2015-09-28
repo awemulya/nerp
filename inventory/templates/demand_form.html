@@ -108,72 +108,72 @@
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>
                         <div class="btn-group">
-                    
-                    <input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" data-bind="value: total_release">
-                        <div class="dropdown-menu">
-                            <!-- ko if: release_vms().length -->
-                            <h2>वर्तमान निकासी </h2>
-                            <table id="release-table" class="table table-bordered table-striped">
-                                <thead>
-                                <th>Properties</th>
-                                <th>Rate</th>
-                                <th>Quantity</th>
-                                <th>Location</th>
-                                <th></th>
-                                </thead>
+                            
+                            <input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" data-bind="value: total_release">
+                            <div class="dropdown-menu">
+                                <!-- ko if: release_vms().length -->
+                                <h2>वर्तमान निकासी </h2>
+                                <table id="release-table" class="table table-bordered table-striped">
+                                    <thead>
+                                        <th>Properties</th>
+                                        <th>Rate</th>
+                                        <th>Quantity</th>
+                                        <th>Location</th>
+                                        <th></th>
+                                    </thead>
 
-                                <tbody>
-                                <!-- ko foreach: release_vms -->
-                                <tr>
-                                    <td data-bind="text:property_str"></td>
-                                    <td data-bind="text:rate"></td>
-                                    <td data-bind="text:count()"></td>
-                                    <td data-bind="text:get_location_name($root.item_locations)"></td>
-                                    <td>
-                                        <button data-bind="click: $parent.remove">x</button>
-                                    </td>
-                                </tr>
+                                    <tbody>
+                                        <!-- ko foreach: release_vms -->
+                                        <tr>
+                                            <td data-bind="text:property_str"></td>
+                                            <td data-bind="text:rate"></td>
+                                            <td data-bind="text:count()"></td>
+                                            <td data-bind="text:get_location_name($root.item_locations)"></td>
+                                            <td>
+                                                <button data-bind="click: $parent.remove">x</button>
+                                            </td>
+                                        </tr>
+                                        <!-- /ko -->
+                                    </tbody>
+                                </table>
                                 <!-- /ko -->
-                                </tbody>
-                            </table>
+                                <h2>मौज्दात सामान</h2>
+                                <table id="group-table" class="table table-bordered table-striped">
+                                    <thead>
+                                        <th>Properties</th>
+                                        <th>Rate</th>
+                                        <th>Quantity/<span data-bind="text: total_quantity()"></span></th>
+                                        <th>Location</th>
+                                        <th></th>
+                                    </thead>
+
+                                    <tbody>
+                                        <!-- ko foreach: groups -->
+                                        <!-- ko if: count()>0 -->
+                                        <tr>
+                                            <td data-bind="text:property_str"></td>
+                                            <td data-bind="text:rate"></td>
+                                            <td><input type="number" required class="form-control"
+                                             data-bind="value:quantity, max: count()"/>/<span
+                                             data-bind="text: count()"></span></td>
+                                             <td>
+                                                <select data-bind="selectize: $root.item_locations_sans_store, value: location_id"></select>
+                                            </td>
+                                            <td>
+                                                <button data-bind="click: $parent.add, enable: valid()">+</button>
+                                            </td>
+                                        </tr>
+                                        <!-- /ko -->
+                                        <!-- /ko -->
+                                    </tbody>
+                                </table>
+
+                                <br/>
+
+                            </div>
                             <!-- /ko -->
-                             <h2>मौज्दात सामान</h2>
-                            <table id="group-table" class="table table-bordered table-striped">
-                                <thead>
-                                <th>Properties</th>
-                                <th>Rate</th>
-                                <th>Quantity/<span data-bind="text: total_quantity()"></span></th>
-                                <th>Location</th>
-                                <th></th>
-                                </thead>
-
-                                <tbody>
-                                <!-- ko foreach: groups -->
-                                <!-- ko if: count()>0 -->
-                                <tr>
-                                    <td data-bind="text:property_str"></td>
-                                    <td data-bind="text:rate"></td>
-                                        <td><input type="number" required class="form-control"
-                                                   data-bind="value:quantity, max: count()"/>/<span
-                                                data-bind="text: count()"></span></td>
-                                        <td>
-                                            <select data-bind="selectize: $root.item_locations_sans_store, value: location_id"></select>
-                                        </td>
-                                        <td>
-                                            <button data-bind="click: $parent.add, enable: valid()">+</button>
-                                        </td>
-                                </tr>
-                                <!-- /ko -->
-                                <!-- /ko -->
-                                </tbody>
-                            </table>
-
-                            <br/>
 
                         </div>
-                        <!-- /ko -->
-
-</div>
                     </td>
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}
