@@ -257,8 +257,8 @@ ul.messages li {
 }
 
 .breadcrumbs input {
-    /*padding: 0 1em;*/
-    height: 2em;
+    padding: 0 1em;
+    height: auto;
 }
 
 .dashboard div {
@@ -266,7 +266,8 @@ ul.messages li {
     border-radius: 0.25em;
     box-shadow: 0 0 0 1px #F8F8F8 inset, 0 0 0 1px #CCCCCC;
     float: left;
-    height: 11em;
+    /*height: 10em;*/
+    height: 13em;
     margin: 0.75em 1.5em 0.75em 0;
     text-align: center;
     /*width: 7.5em;*/
