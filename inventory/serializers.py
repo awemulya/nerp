@@ -1,5 +1,8 @@
 from rest_framework import serializers
-from inventory.models import Demand, DemandRow, Item, Party, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, \
+from core.models import Party
+from core.serializers import PartySerializer
+
+from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Demand, DemandRow, Item, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, \
     EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction, ItemLocation, Depreciation, \
     ItemInstance, \
     Release
@@ -219,3 +222,25 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         exclude = ['dr_amount', 'cr_amount', 'current_balance', 'account', 'journal_entry']
+
+class PartyQuotationSerializer(serializers.ModelSerializer):
+    party = PartySerializer()
+
+    class Meta:
+        model = PartyQuotation
+
+
+class QuotationComparisonRowSerializer(serializers.ModelSerializer):
+    bidder_quote = PartyQuotationSerializer(many=True)
+    item_id = serializers.ReadOnlyField(source='item.id')
+    
+
+    class Meta:
+        model = QuotationComparisonRow
+        exclude = ['item']
+        
+class QuotationComparisonSerializer(serializers.ModelSerializer):
+    rows = QuotationComparisonRowSerializer(many=True)
+
+    class Meta:
+        model = QuotationComparison

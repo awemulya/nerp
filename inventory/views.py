@@ -17,7 +17,7 @@ from openpyxl.cell import get_column_letter
 
 import nepdate
 
-from core.models import app_setting, FiscalYear
+from core.models import app_setting, FiscalYear, Party
 from app.utils.helpers import invalid, save_model, empty_to_none
 from users.models import group_required
 
@@ -26,12 +26,12 @@ from inventory.filters import InventoryItemFilter
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, \
     ItemLocationForm, DepreciationForm, ItemInstanceForm
 
-from inventory.models import Depreciation, Demand, ItemInstance, \
+from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Depreciation, Demand, ItemInstance, \
     DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, \
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
     InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release
 
-from inventory.serializers import DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, \
+from inventory.serializers import PartyQuotationSerializer, QuotationComparisonSerializer, QuotationComparisonRowSerializer, DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
     TransactionSerializer, ItemLocationSerializer, ItemInstanceSerializer
 
@@ -385,8 +385,23 @@ def yearly_report_detail(request, id):
     return render(request, 'yearly_report_detail.html', {'obj': obj, 'rows': rows})
 
 def quotation_report_list(request):
-    return render(request, 'list_quotation_report.html',)
+    obj = QuotationComparison.objects.all()
+    return render(request, 'list_quotation_report.html',{'objects': obj})
 
+def quotation_report(request, id=None):
+    if id:
+        quotation = get_object_or_404(QuotationComparison, id=id)
+        scenario = 'Update'
+    else:
+        quotation = QuotationComparison()
+        scenario = 'Create'
+    data = QuotationComparisonSerializer(quotation).data
+    return render(request, 'quotation_comparison.html',{'data': data, 'scenario': scenario, 'quotation': quotation})
+
+def delete_quotation_comparison(request, id):
+    obj = get_object_or_404(QuotationComparison, id=id)
+    obj.delete()
+    return redirect(reverse('list_quotation_forms'))
 
 @group_required('Store Keeper', 'Chief')
 def delete_yearly_report(request, id):
@@ -454,6 +469,70 @@ def delete_inspection_report(request, id):
     obj = get_object_or_404(Inspection, id=id)
     obj.delete()
     return redirect(reverse('inspection_report_list'))
+
+def save_quotation_comparison(request):
+    if request.is_ajax():
+        params = json.loads(request.body)
+    dct= {'rows': {}}
+    if params.get('release_no') == '':
+        params['release_no'] = None
+    object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
+    if params.get('id'):
+        obj = QuotationComparison.objects.get(id=params.get('id'))
+    else:
+        obj = QuotationComparison()
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = QuotationComparisonRow
+        dct['party'] = {}
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            invalid_check = invalid(row, ['item_id', 'quantity', 'estimated_cost'])
+            if invalid_check:
+                dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
+                return JsonResponse(dct)
+            else:
+                values = {'sn': index+1, 'specification': empty_to_none(row.get('specification')), 'quantity': row.get('quantity'),
+                    'estimated_cost': row.get('estimated_cost'), 'quotation': obj, 'item_id': row.get('item_id') }
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                dct['rows'][index] = submodel.id
+                for index, party in enumerate(row.get('bidder_quote')):
+                    party_object = Party.objects.get(name=party.get('bidder_name'))
+                    if party.get('id'):
+                        party_quotation = PartyQuotation.objects.get(pk=party.get('id'))
+                        party_quotation.party = party_object
+                        party_quotation.per_unit_price = party.get('per_unit_price')
+                        party_quotation.quotation_comparison_row = submodel
+                        party_quotation.save()
+                    else:
+                        party_quotation= PartyQuotation(party=party_object, per_unit_price=party.get('per_unit_price'), quotation_comparison_row=submodel )
+                        party_quotation.save()
+                    
+                    dct['party'][index] = party_quotation.id
+                    
+                party_quotation_remove = PartyQuotation.objects.filter(quotation_comparison_row__id=submodel.id)
+                all_party_id_list = [all_party.id for all_party in party_quotation_remove]
+                save_party_id = [ dct['party'][i] for i in dct['party']]
+                party_to_delete = list(set(all_party_id_list).difference(save_party_id))
+                if party_to_delete != []:
+                    for i in party_to_delete:
+                        party_to_remove = PartyQuotation.objects.get(id = i)
+                        party_to_remove.delete()
+
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+    return JsonResponse(dct)
+
+
 
 
 def save_inspection_report(request):
@@ -649,7 +728,6 @@ def items_as_json(request):
     items = Item.objects.all()
     items_data = ItemSerializer(items, many=True).data
     return JsonResponse(items_data, safe=False)
-
 
 @login_required
 def item_instances_as_json(request):

@@ -365,6 +365,7 @@ form {
     height:4em;
 }
 
+
 .breadcrumbs span{
     color: #666666;
 }
@@ -372,4 +373,8 @@ form {
 #demand-drop-menu {
     width: 32em;
     padding: 0px 12px;
+}
+
+#add_party {
+    margin-top: -24px;
 }

@@ -55,4 +55,7 @@ admin.site.register(Release)
 admin.site.register(EntryReportRow)
 admin.site.register(Transaction)
 admin.site.register(JournalEntry)
+admin.site.register(PartyQuotation)
+admin.site.register(QuotationComparison)
+admin.site.register(QuotationComparisonRow)
 
