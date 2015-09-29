@@ -21,7 +21,26 @@
 {#    <a href="#" class="btn" data-dismiss="modal">Cancel</a>#}
 {#</div>#}
 <script>
-$('#form').submit(function(event) {
-	$('.modal').modal('hide');
+$(document).ready(function() {
+	if ($('.modal-lg #form').length == 2) {
+		$('.modal-lg #form').last().submit(function() {
+			$('.modal').last().modal('hide');
+		});
+	} else {
+		$('.modal-lg #form').submit(function() {
+			$('.modal').modal('hide');
+		});
+
+	}
 });
+
+if ($('.modal').length == 2 ) {
+	$('.modal').last().on('hidden.bs.modal', function () {
+		$('.modal').last().remove();
+	})
+} else {
+	$('.modal').on('hidden.bs.modal', function () {
+		$('.modal').remove();
+	})
+}
 </script>
