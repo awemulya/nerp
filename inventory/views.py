@@ -515,10 +515,10 @@ def depreciation_report(request):
 @login_required
 def item_form(request, id=None):
     if id:
-        item = get_object_or_404(Item, id=id)
+        item = get_object_or_404(Item.objects.prefetch_related('instances', 'instances__location'), id=id)
         scenario = 'Update'
         depreciation_data = DepreciationSerializer(item.depreciation).data
-        item_instances = ItemInstance.objects.filter(item__id=item.id)
+        item_instances = ItemInstance.objects.filter(item__id=item.id).select_related('location', 'item')
     else:
         item = Item()
         scenario = 'Create'
@@ -562,11 +562,12 @@ def item_form(request, id=None):
                 set_transactions(entry_report_row, date,
                                  ['ob', entry_report_row.item.account, opening_balance],
                                  )
+                store = ItemLocation.objects.get(name='Store')
                 for i in range(0, int(opening_balance)):
                     item_instance = ItemInstance()
                     item_instance.item = Item.objects.get(id=item.id)
                     item_instance.item_rate = 0
-                    item_instance.location = ItemLocation.objects.get(name='Store')
+                    item_instance.location = store
                     item_instance.source = entry_report_row
                     item_instance.other_properties = item.other_properties
                     item_instance.save()

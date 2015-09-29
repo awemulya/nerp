@@ -144,7 +144,9 @@ class BSDateFormField(DateFormField):
                 params={'value': value},
             )
 
+from django.utils.deconstruct import deconstructible
 
+# @deconstructible
 class BSDateField(DateField):
     __metaclass__ = models.SubfieldBase
 
@@ -180,10 +182,16 @@ class BSDateField(DateField):
         defaults.update(kwargs)
         return super(DateField, self).formfield(**defaults)
 
-    @staticmethod
-    def today():
+
+    @classmethod
+    def today(cls):
         calendar = get_calendar()
-        print calendar
         if calendar == 'ad':
             return datetime.date.today()
         return nepdate.today_as_str()
+
+def today():
+    calendar = get_calendar()
+    if calendar == 'ad':
+        return datetime.date.today()
+    return nepdate.today_as_str()
