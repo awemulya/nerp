@@ -25,7 +25,7 @@
 </script>
             {{ form.non_field_errors }}
             {{ form.errors }}
-        <form method="post" id="item-form">
+        <form method="post" id="form">
             <ul class="nav nav-tabs" role="tablist" id="training-tab">
                 <li role="presentation" class="active"><a href="#basic" data-toggle="tab">Basic</a></li>
                 <li role="presentation"><a href="#depreciation" data-toggle="tab">Depreciation</a></li>
@@ -47,7 +47,7 @@
                         <p>
                             <input type="text" class="form-control test" id="id_property_name" name="property_name" placeholder="Property name" data-bind="value: property_name"> 
                             <input type="text" class="form-control" id="id_property" name="property" placeholder="Property" data-bind="value: property">
-                            <a href="#" data-bind="click: $parent.removeOtherProperty">x</a>
+                            <a href="#" class="btn btn-default" data-bind="click: $parent.removeOtherProperty">x</a>
                         </p>
                     </div>
                     <a class="btn btn-default" data-bind="click: addOtherProperty">

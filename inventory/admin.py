@@ -1,6 +1,6 @@
 from django.contrib import admin
 from models import Item, InventoryAccount, EntryReportRow, Demand, Inspection, DemandRow, InspectionRow, YearlyReport, YearlyReportRow, \
-    ItemLocation, ItemInstance, Release, Transaction, JournalEntry
+    ItemLocation, ItemInstance, Release, Transaction, JournalEntry, QuotationComparison ,QuotationComparisonRow
 
 
 class DemandRowAdmin(admin.ModelAdmin):
@@ -55,7 +55,6 @@ admin.site.register(Release)
 admin.site.register(EntryReportRow)
 admin.site.register(Transaction)
 admin.site.register(JournalEntry)
-admin.site.register(PartyQuotation)
 admin.site.register(QuotationComparison)
 admin.site.register(QuotationComparisonRow)
 
