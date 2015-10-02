@@ -969,6 +969,7 @@ def save_purchase_order(request):
         for index, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['quantity', 'unit', 'rate', 'item_id']):
                 continue
+            # else:
             if row.get('budget_title_no') == '':
                 row['budget_title_no'] = None
             values = {'sn': index + 1, 'item_id': row.get('item_id'),
