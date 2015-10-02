@@ -127,6 +127,10 @@ function DemandViewModel(data) {
     for (var k in data)
         self[k] = ko.observable(data[k]);
 
+    self.id.subscribe(function (id) {
+        history.pushState(id, id, window.location.href + id + '/');
+    });
+
     self.save = function (item, event) {
         $.ajax({
             type: "POST",
