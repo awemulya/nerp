@@ -643,7 +643,7 @@ def item_form(request, id=None):
             if int(opening_balance) > 0:
                 entry_report_row = EntryReportRow(sn=1, item=item, quantity=opening_balance, unit=item.unit, rate=0,
                                                   remarks="Opening Balance")
-                date = nepdate.string_from_tuple(nepdate.ad2bs(datetime.datetime.now()))
+                date = datetime.datetime.now()
                 entry_report_row.save()
                 set_transactions(entry_report_row, date,
                                  ['ob', entry_report_row.item.account, opening_balance],
