@@ -34,8 +34,9 @@
                 {% if scenario == 'Update' %}
                 <li class="tab-title"><a href="#item_instance" class="item-instance" data-toggle="tab">Item Instance</a></li>
                 {% endif %}
+             <button type="submit" value="Submit" class="btn btn-primary pull-right">
+                            {% trans 'Submit' %}</button>
             </ul>
-            
             <br>
 
             <div class="tab-content">
@@ -58,8 +59,7 @@
                 </div>
                 </p>
                     <div class="span12">
-                        <button type="submit" value="Submit" class="btn btn-primary btn-lg">
-                            {% trans 'Submit' %}</button>
+                       
                         {% if scenario == 'Update' %}
                             <a class="btn btn-danger btn-lg"
                                href="{% url 'delete_inventory_item' form.instance.id %}">{% trans 'Delete' %}!</a>
