@@ -1,6 +1,6 @@
 {% extends base_template %}
 {% load i18n %}
-{% load staticfiles filters%}
+{% load staticfiles filters %}
 
 {% block title %}{{ scenario }} {% trans 'Inventory' %} {% trans 'Item' %} {% endblock %}
 {% block head_end %}
@@ -28,7 +28,9 @@
         <form method="post" id="form">
             <ul class="nav nav-tabs" role="tablist" id="training-tab">
                 <li role="presentation" class="active"><a href="#basic" data-toggle="tab">Basic</a></li>
-                <li role="presentation"><a href="#depreciation" data-toggle="tab">Depreciation</a></li>
+                {% ifusergroup 'Store Keeper' %}
+                    <li role="presentation"><a href="#depreciation" data-toggle="tab">Depreciation</a></li>
+                {% endifusergroup %}
                 {% if scenario == 'Update' %}
                 <li class="tab-title"><a href="#item_instance" class="item-instance" data-toggle="tab">Item Instance</a></li>
                 {% endif %}
