@@ -31,7 +31,8 @@ from inventory.models import PartyQuotation, QuotationComparison, QuotationCompa
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
     InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release
 
-from inventory.serializers import PartyQuotationSerializer, QuotationComparisonSerializer, QuotationComparisonRowSerializer, DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, \
+from inventory.serializers import PartyQuotationSerializer, QuotationComparisonSerializer, QuotationComparisonRowSerializer, \
+    DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
     TransactionSerializer, ItemLocationSerializer, ItemInstanceSerializer
 
@@ -384,9 +385,11 @@ def yearly_report_detail(request, id):
     rows = obj.rows.order_by("sn")
     return render(request, 'yearly_report_detail.html', {'obj': obj, 'rows': rows})
 
+
 def quotation_report_list(request):
     obj = QuotationComparison.objects.all()
-    return render(request, 'list_quotation_report.html',{'objects': obj})
+    return render(request, 'list_quotation_report.html', {'objects': obj})
+
 
 def quotation_report(request, id=None):
     if id:
@@ -396,12 +399,14 @@ def quotation_report(request, id=None):
         quotation = QuotationComparison()
         scenario = 'Create'
     data = QuotationComparisonSerializer(quotation).data
-    return render(request, 'quotation_comparison.html',{'data': data, 'scenario': scenario, 'quotation': quotation})
+    return render(request, 'quotation_comparison.html', {'data': data, 'scenario': scenario, 'quotation': quotation})
+
 
 def delete_quotation_comparison(request, id):
     obj = get_object_or_404(QuotationComparison, id=id)
     obj.delete()
     return redirect(reverse('list_quotation_forms'))
+
 
 @group_required('Store Keeper', 'Chief')
 def delete_yearly_report(request, id):
@@ -470,10 +475,11 @@ def delete_inspection_report(request, id):
     obj.delete()
     return redirect(reverse('inspection_report_list'))
 
+
 def save_quotation_comparison(request):
     if request.is_ajax():
         params = json.loads(request.body)
-    dct= {'rows': {}}
+    dct = {'rows': {}}
     if params.get('release_no') == '':
         params['release_no'] = None
     object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
@@ -492,8 +498,9 @@ def save_quotation_comparison(request):
                 dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
                 return JsonResponse(dct)
             else:
-                values = {'sn': index+1, 'specification': empty_to_none(row.get('specification')), 'quantity': row.get('quantity'),
-                    'estimated_cost': row.get('estimated_cost'), 'quotation': obj, 'item_id': row.get('item_id') }
+                values = {'sn': index + 1, 'specification': empty_to_none(row.get('specification')),
+                          'quantity': row.get('quantity'),
+                          'estimated_cost': row.get('estimated_cost'), 'quotation': obj, 'item_id': row.get('item_id')}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
@@ -507,18 +514,19 @@ def save_quotation_comparison(request):
                         party_quotation.quotation_comparison_row = submodel
                         party_quotation.save()
                     else:
-                        party_quotation= PartyQuotation(party=party_object, per_unit_price=party.get('per_unit_price'), quotation_comparison_row=submodel )
+                        party_quotation = PartyQuotation(party=party_object, per_unit_price=party.get('per_unit_price'),
+                                                         quotation_comparison_row=submodel)
                         party_quotation.save()
-                    
+
                     dct['party'][index] = party_quotation.id
-                    
+
                 party_quotation_remove = PartyQuotation.objects.filter(quotation_comparison_row__id=submodel.id)
                 all_party_id_list = [all_party.id for all_party in party_quotation_remove]
-                save_party_id = [ dct['party'][i] for i in dct['party']]
+                save_party_id = [dct['party'][i] for i in dct['party']]
                 party_to_delete = list(set(all_party_id_list).difference(save_party_id))
                 if party_to_delete != []:
                     for i in party_to_delete:
-                        party_to_remove = PartyQuotation.objects.get(id = i)
+                        party_to_remove = PartyQuotation.objects.get(id=i)
                         party_to_remove.delete()
 
         delete_rows(params.get('table_view').get('deleted_rows'), model)
@@ -531,8 +539,6 @@ def save_quotation_comparison(request):
         else:
             dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
-
-
 
 
 def save_inspection_report(request):
@@ -635,8 +641,9 @@ def item_form(request, id=None):
             item.save(account_no=form.cleaned_data['account_no'], opening_balance=form.cleaned_data['opening_balance'])
             opening_balance = form.cleaned_data['opening_balance']
             if int(opening_balance) > 0:
-                entry_report_row = EntryReportRow(sn=1, item=item, quantity=opening_balance, unit=item.unit, rate=0, remarks="Opening Balance")
-                date = nepdate.string_from_tuple(nepdate.ad2bs(datetime.datetime.now()))
+                entry_report_row = EntryReportRow(sn=1, item=item, quantity=opening_balance, unit=item.unit, rate=0,
+                                                  remarks="Opening Balance")
+                date = datetime.datetime.now()
                 entry_report_row.save()
                 set_transactions(entry_report_row, date,
                                  ['ob', entry_report_row.item.account, opening_balance],
@@ -729,6 +736,7 @@ def items_as_json(request):
     items_data = ItemSerializer(items, many=True).data
     return JsonResponse(items_data, safe=False)
 
+
 @login_required
 def item_instances_as_json(request):
     item_instances = ItemInstance.objects.filter(location__name='Store')
@@ -743,7 +751,9 @@ def item_instances_as_json(request):
         try:
             instance.other_properties['rate'] = rate
         except:
-            import ipdb; ipdb.set_trace()
+            import ipdb;
+
+            ipdb.set_trace()
         # property = cPickle.dumps(item.other_properties)
         prop = json.dumps(instance.other_properties).replace(' ', '')
         if not prop in instances[instance.item_id].keys():
@@ -879,16 +889,16 @@ def save_demand(request):
     else:
         obj = Demand()
         object_values['demandee_id'] = params.get('demandee')
-    # try:
-    if True:
+    try:
+        # if True:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = DemandRow
         for index, row in enumerate(params.get('table_view').get('rows')):
-            invalid_check = invalid(row, ['item_id', 'quantity', 'unit', 'purpose'])
+            invalid_check = invalid(row, ['item_id', 'quantity', 'unit'])
             if invalid_check:
-                dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
-                return JsonResponse(dct)
+                # dct['error_message'] = 'These fields must be filled: ' + ', '.join(invalid_check)
+                continue
             else:
                 # if row.get('release_quantity') == '':
                 # row['release_quantity'] = 1
@@ -908,21 +918,21 @@ def save_demand(request):
                         rel = Release(item_instance=instance_model, demand_row=submodel)
                         rel.save()
 
-            # set_transactions(submodel, request.POST.get('date'),
-            #                  ['dr', bank_account, row.get('amount')],
-            #                  ['cr', benefactor, row.get('amount')],
-            # )
-            if not created:
-                submodel = save_model(submodel, values)
+                # set_transactions(submodel, request.POST.get('date'),
+                #                  ['dr', bank_account, row.get('amount')],
+                #                  ['cr', benefactor, row.get('amount')],
+                # )
+                if not created:
+                    submodel = save_model(submodel, values)
             dct['rows'][index] = submodel.id
         delete_rows(params.get('table_view').get('deleted_rows'), model)
-    # except Exception as e:
-    #     if hasattr(e, 'messages'):
-    #         dct['error_message'] = '; '.join(e.messages)
-    #     elif str(e) != '':
-    #         dct['error_message'] = str(e)
-    #     else:
-    #         dct['error_message'] = 'Error in form data!'
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
 
 
@@ -959,6 +969,7 @@ def save_purchase_order(request):
         for index, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['quantity', 'unit', 'rate', 'item_id']):
                 continue
+            # else:
             if row.get('budget_title_no') == '':
                 row['budget_title_no'] = None
             values = {'sn': index + 1, 'item_id': row.get('item_id'),
@@ -1258,15 +1269,15 @@ def approve_demand(request):
     else:
         dct['error_message'] = 'Row needs to be saved before being approved!'
         return JsonResponse(dct)
-    # invalid_check = invalid(params, ['item_id', 'quantity', 'unit', 'release_quantity', 'purpose', 'location'])
-    # invalid_check = invalid(params, ['item_id', 'quantity', 'unit'])
+        # invalid_check = invalid(params, ['item_id', 'quantity', 'unit', 'release_quantity', 'purpose', 'location'])
+        # invalid_check = invalid(params, ['item_id', 'quantity', 'unit'])
 
-    # if invalid_check:
-    #     dct['error_message'] = 'Fill out following fields: ' + ', '.join(invalid_check)
-    #     return JsonResponse(dct)
-    # else:
+        # if invalid_check:
+        #     dct['error_message'] = 'Fill out following fields: ' + ', '.join(invalid_check)
+        #     return JsonResponse(dct)
+        # else:
         # if row.item.account.current_balance < float(params.get('release_quantity')):
-            # dct['error_message'] = 'We dont have this item in stock. Purchase Item'
+        # dct['error_message'] = 'We dont have this item in stock. Purchase Item'
         # values = {'item_id': params.get('item_id'),
         #           'specification': params.get('specification'),
         #           'quantity': params.get('quantity'), 'unit': params.get('unit'),

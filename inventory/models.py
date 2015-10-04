@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import datetime, nepdate
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.core.urlresolvers import reverse
-
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_delete
@@ -11,13 +9,13 @@ from django.dispatch.dispatcher import receiver
 from django.db.models import F
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import ugettext as _
+from jsonfield import JSONField
 
 from app.utils.helpers import zero_for_none, none_for_zero
 from app.utils.translation import ne2en
 from users.models import User
 from core.models import FiscalYear, Party
 from app.utils.translation import BSDateField, today
-from jsonfield import JSONField
 
 
 def alter(account, date, diff):
@@ -58,9 +56,8 @@ def set_transactions(model, date, *args):
             raise Exception('Transactions can only be either "dr" or "cr".')
         transaction.account = arg[1]
         if isinstance(transaction.account.current_balance, unicode):
-            transaction.account.current_balance = float(transaction.account.current_balance) + diff
-        else:
-            transaction.account.current_balance += diff
+            transaction.account.current_balance = float(transaction.account.current_balance)
+        transaction.account.current_balance += diff
         transaction.current_balance = transaction.account.current_balance
         transaction.account.save()
         journal_entry.transactions.add(transaction)
@@ -431,7 +428,6 @@ class EntryReportRow(models.Model):
             return self.entry_report.entry_report_no
         else:
             return 'Opening Balance'
-            
 
 
 class Handover(models.Model):
