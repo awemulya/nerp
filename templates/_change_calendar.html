@@ -2,13 +2,13 @@
 <form action="{% url 'change_calendar' %}" method="post" style="display: inline;">
     {% csrf_token %}
     <div style="display: inline;">
-        <select name="calendar" onchange="javascript:form.submit()">
+        <select name="calendar" onchange="javascript:form.submit()" class="btn btn-default">
 
             <option value="ad"{% ifequal request.session.sess_cal 'ad' %}
-                    selected="selected"{% endifequal %}>AD
+                    selected="selected"{% endifequal %}>{% trans 'AD' %}
             </option>
             <option value="bs"{% ifequal request.session.sess_cal 'bs' %}
-                    selected="selected"{% endifequal %}>BS
+                    selected="selected"{% endifequal %}>{% trans 'BS' %}
             </option>
 
         </select>
