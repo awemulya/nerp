@@ -87,6 +87,10 @@ function PurchaseOrderViewModel(data) {
     });
 
     self.save = function (item, event) {
+        if (!self.order_no()) {
+            alert.error('Order No. is required!');
+            return false;
+        }
         if (!self.party()) {
             alert.error('Party is required!');
             return false;

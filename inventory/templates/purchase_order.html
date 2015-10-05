@@ -45,8 +45,9 @@
             </div>
 
             <div class="col-lg-6 col-sm-6 marginless-inputs">
-                {% trans 'Purchase Order' %} {% trans 'No.' %}: <input type="text" class="form-control" name="order_no" id="id_order_no"
-                                                                       data-bind="value: order_no, localize: 1">
+                {% trans 'Purchase Order' %} {% trans 'No.' %}:
+                <input type="text" class="form-control" name="order_no" id="id_order_no" required
+                       data-bind="value: order_no, localize: 1">
                 {{ form.order_no.errors }}
                 <br>
                 {% trans 'Date' %}: <input type="text" class="form-control" required="required" name="date" id="id_date"
@@ -57,7 +58,8 @@
 
         <div class="centre">
             देहाय बमोजिमका सामानहरु
-            <input class="inline" type="text" size="" required="required" name="due_days" id="id_due_days" data-bind="value: due_days, autosize: 0, localize: true">
+            <input class="inline" type="text" size="" required="required" name="due_days" id="id_due_days"
+                   data-bind="value: due_days, autosize: 0, localize: true">
             दिन भित्र यस कार्यालयमा दाखिला गरि विल / इन्भ्वाईस प्रस्तुत गर्नु होला ।
             {{ form.due_days.errors }}
         </div>
@@ -146,7 +148,8 @@
         <span data-bind="text: msg, css: status"></span>
 
         {% if scenario == 'Update' %}
-            <a href="{% url 'convert_purchase_order' form.instance.id %}" class="btn btn-primary btn-lg">{% trans 'Converter to excel' %}</a>
+            <a href="{% url 'convert_purchase_order' form.instance.id %}"
+               class="btn btn-primary btn-lg">{% trans 'Converter to excel' %}</a>
             <a class="btn btn-danger btn-lg"
                href="{% url 'delete_purchase_order' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}

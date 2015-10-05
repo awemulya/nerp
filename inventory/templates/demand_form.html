@@ -30,7 +30,7 @@
     </div>
 
 
-    <form method="post" enctype="multipart/form-data" data-bind="submit: save" name="demand-form" novalidate>
+    <form method="post" enctype="multipart/form-data" data-bind="submit: save" name="demand-form">
         {% csrf_token %}
 
 
@@ -46,7 +46,7 @@
                     {% ifusergroup 'Store Keeper' 'Chief' %}
                         {% trans 'Release No.' %}:
                         <input type="text" class="form-control" name="release_no" id="id_release_no"
-                               data-bind="value: release_no, localize: true">
+                               data-bind="value: release_no, localize: true" required>
                         {{ form.release_no.errors }}
                         <br>
                     {% else %}

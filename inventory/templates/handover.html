@@ -30,7 +30,7 @@
     <form method="post" data-bind="submit: save">
         {% csrf_token %}
 
-        <input type="hidden"name="table_model" data-bind="value: ko.toJSON($data.demand_rows, null, 2)">
+        <input type="hidden" name="table_model" data-bind="value: ko.toJSON($data.demand_rows, null, 2)">
 
 
         {% trans 'Handover' %} {% trans 'Form No.' %}
@@ -48,10 +48,12 @@
         <input type="text" required="required" name="office" maxlength="254" id="id_office" class="input-inline form-control"
                data-bind="value: office, autosize: 12">
         मन्त्रालय/विभाग/कार्यालय/आयोजनाका
-        <input type="text" required="required" name="designation" maxlength="254" id="id_designation" class="input-inline form-control"
+        <input type="text" required="required" name="designation" maxlength="254" id="id_designation"
+               class="input-inline form-control"
                data-bind="value: designation, autosize: 12">
         श्री
-        <input type="text" required="required" name="handed_to" maxlength="254" id="id_handed_to" class="input-inline form-control" 
+        <input type="text" required="required" name="handed_to" maxlength="254" id="id_handed_to"
+               class="input-inline form-control"
                data-bind="value: handed_to, autosize: 12">
         {{ form.addressee.errors }}
         {{ form.date.errors }}
@@ -64,10 +66,10 @@
         दिनभित्र दाखिला प्रतिवेदन समेत पठाईदिनुहुन
         अनुरोध छ ।
         {{ form.due_days.errors }}
-        
+
         <div data-bind="with:table_view">
-<br>
-<br>
+            <br>
+            <br>
             <table class="table table-bordered table-striped">
                 <thead>
                 <tr>
@@ -132,10 +134,10 @@
 
     </form>
     <br>
-
-    माथि लेखिए बमोजिमका मालसामानहरु
-    ...............................................................मन्त्रालय/विभाग/कार्यालय/आयोजनामा दाखिला गर्ने गरी
-    दुई प्रति हस्तान्तरण फाराम समेत बुझिलिँए ।
+    <div class="visible-print-block">
+        माथि लेखिए बमोजिमका मालसामानहरु
+        ...............................................................मन्त्रालय/विभाग/कार्यालय/आयोजनामा दाखिला गर्ने गरी
+        दुई प्रति हस्तान्तरण फाराम समेत बुझिलिँए ।
 
         <div class="col-lg-6 col-sm-6 col-xs-6"></div>
         <div class="col-lg-6 col-sm-6 col-xs-6">
@@ -146,10 +148,10 @@
             {% trans 'Date' %}:<br>
         </div>
 
-    <u><b>सामान बुझिलिने कार्यालयले भर्ने ।–</b></u><br>
+        <u><b>सामान बुझिलिने कार्यालयले भर्ने ।–</b></u><br>
 
-    माथि लेखिए बमोजिमका मालसामानहरु कार्यालयका........................................श्री हस्ते यस कार्यालयमा प्राप्त
-    भएको प्रमाणित गर्दछु ।<br>
+        माथि लेखिए बमोजिमका मालसामानहरु कार्यालयका........................................श्री हस्ते यस कार्यालयमा प्राप्त
+        भएको प्रमाणित गर्दछु ।<br>
 
         <div class="col-lg-6 col-sm-6 col-xs-6"></div>
         <div class="col-lg-6 col-sm-6 col-xs-6">
@@ -159,5 +161,6 @@
             {% trans 'Office' %}:<br>
             {% trans 'Date' %}:<br>
         </div>
+    </div>
 
 {% endblock %}

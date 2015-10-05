@@ -39,6 +39,10 @@ function HandoverVM(data) {
         self[k] = ko.observable(data[k]);
 
     self.save = function (item, event) {
+        if (!self.voucher_no()) {
+            alert.error('Voucher No. is required!');
+            return false;
+        }
         $.ajax({
             type: "POST",
             url: '/inventory/save/handover/',

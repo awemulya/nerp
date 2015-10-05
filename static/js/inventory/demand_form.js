@@ -132,6 +132,10 @@ function DemandViewModel(data) {
     });
 
     self.save = function (item, event) {
+        if (!self.release_no()) {
+            alert.error('Release No. is required!');
+            return false;
+        }
         $.ajax({
             type: "POST",
             url: '/inventory/save/demand_form/',
