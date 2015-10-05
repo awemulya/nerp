@@ -1,9 +1,15 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load staticfiles %}
+{% load filters %}
 
 {% block title %}{% trans 'Home' %}{% endblock %}
-{% load filters %}
+
+{% block head_end %}
+    <script src="{% static 'js/vendors/jquery.cookie.js' %}"></script>
+    <script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}
+
 
 {% block breadcrumbs %}
     <a href="#">{% trans 'Home' %}</a>
@@ -11,233 +17,235 @@
 
 {% block content %}
 
-<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-  <div class="panel panel-default">
-    {% ifappexists inventory %}
-    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#inventory" aria-expanded="true">
-      <h4 class="panel-title">
-       <a>{% trans 'Inventory' %}</a>
-      </h4>
-    </div>
-    <div id="inventory" class="panel-collapse collapse in">
-      <div class="panel-body">
-        {% ifusergroup 'Store Keeper' %}
-        <a href="{% url 'list_inventory_items' %}">{% trans 'Inventory Items' %}</a>
-        <br/>
-        <a href="{% url 'create_inventory_item' %}">{% trans 'Create Inventory Item' %}</a>
-        <br/>
-        <a href="{% url 'list_parties' %}">{% trans 'Parties' %}</a>
-        <br/>
-        <a href="{% url 'create_party' %}">{% trans 'New' %} {% trans 'Party' %}</a>
-        <br/>
-        {#                        <a href="{% url 'list_inventory_categories' %}">{% trans 'Inventory Categories' %}</a>#}
-        {#                        <br/>#}
-        {#                        <a href="{% url 'create_inventory_category' %}">{% trans 'Create' %} {% trans 'Inventory' %} {% trans 'Category' %}</a>#}
-        {#                        <br/>#}
-        <a href="{% url 'create_demand_form' %}">{% trans 'New Demand Form' %}</a>
-        <br/>
-        <a href="{% url 'list_demand_forms' %}">{% trans 'Demand Forms' %}</a>
-        <br/>
-        <a href="{% url 'create_purchase_order' %}">{% trans 'New' %} {% trans 'Purchase Order' %}</a>
-        <br/>
-        <a href="{% url 'list_purchase_orders' %}">{% trans 'Purchase Orders' %}</a>
-        <br/>
-        <a href="{% url 'create_incoming_handover' %}">{% trans 'New' %} {% trans 'Incoming Handover' %}</a>
-        <br/>
-        <a href="{% url 'create_outgoing_handover' %}">{% trans 'Create' %} {% trans 'Outgoing Handover' %}</a>
-        <br/>
-        <a href="{% url 'list_incoming_handovers' %}">{% trans 'Incoming Handovers' %}</a>
-        <br/>
-        <a href="{% url 'list_outgoing_handovers' %}">{% trans 'Outgoing Handovers' %}</a>
-        <br/>
-        <a href="{% url 'list_entry_reports' %}">{% trans 'Entry Reports' %}</a>
-        <br/>
-        <a href="{% url 'list_handover_entry_reports' %}">{% trans 'Entry Reports for Handovers' %}</a>
-        <br/>
-        <a href="{% url 'list_purchase_entry_reports' %}">{% trans 'Entry Reports for Purchase Orders' %}</a>
-        <br/>
-        <a href="{% url 'list_inventory_accounts' %}">{% trans 'Inventory' %} {% trans 'Accounts' %}</a>
-        <br/>
-        <a href="{% url 'list_consumable_inventory_accounts' %}">{% trans 'Consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}</a>
-        <br/>
-        <a href="{% url 'list_non_consumable_inventory_accounts' %}">{% trans 'Non-Consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}</a>
-        <br/>
-        <a href="{% url 'inspection_report_list' %}">{% trans 'Inspection Report' %}</a>
-        <br>
-        <a href="{% url 'yearly_report_list' %}">{% trans 'Yearly Report' %}</a>
-        <br/>
-        <a href="{% url 'inventory_transactions_list' %}">{% trans 'View Transaction' %}</a>
-        <br/>
-        <a href="{% url 'depreciation_report' %}">{% trans 'Depreciation Report' %}</a>
-        <br/>
-        <a href="{% url 'list_quotation_forms' %}">{% trans 'Quotation Comparison' %}</a>
-        <br/>
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel panel-default">
+            {% ifappexists inventory %}
+                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#inventory" aria-expanded="true">
+                    <h4 class="panel-title">
+                        <a>{% trans 'Inventory' %}</a>
+                    </h4>
+                </div>
+                <div id="inventory" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        {% ifusergroup 'Store Keeper' %}
+                            <a href="{% url 'list_inventory_items' %}">{% trans 'Inventory Items' %}</a>
+                            <br/>
+                            <a href="{% url 'create_inventory_item' %}">{% trans 'Create Inventory Item' %}</a>
+                            <br/>
+                            <a href="{% url 'list_parties' %}">{% trans 'Parties' %}</a>
+                            <br/>
+                            <a href="{% url 'create_party' %}">{% trans 'New' %} {% trans 'Party' %}</a>
+                            <br/>
+                            {#                        <a href="{% url 'list_inventory_categories' %}">{% trans 'Inventory Categories' %}</a>#}
+                            {#                        <br/>#}
+                            {#                        <a href="{% url 'create_inventory_category' %}">{% trans 'Create' %} {% trans 'Inventory' %} {% trans 'Category' %}</a>#}
+                            {#                        <br/>#}
+                            <a href="{% url 'create_demand_form' %}">{% trans 'New Demand Form' %}</a>
+                            <br/>
+                            <a href="{% url 'list_demand_forms' %}">{% trans 'Demand Forms' %}</a>
+                            <br/>
+                            <a href="{% url 'create_purchase_order' %}">{% trans 'New' %} {% trans 'Purchase Order' %}</a>
+                            <br/>
+                            <a href="{% url 'list_purchase_orders' %}">{% trans 'Purchase Orders' %}</a>
+                            <br/>
+                            <a href="{% url 'create_incoming_handover' %}">{% trans 'New' %} {% trans 'Incoming Handover' %}</a>
+                            <br/>
+                            <a href="{% url 'create_outgoing_handover' %}">{% trans 'Create' %} {% trans 'Outgoing Handover' %}</a>
+                            <br/>
+                            <a href="{% url 'list_incoming_handovers' %}">{% trans 'Incoming Handovers' %}</a>
+                            <br/>
+                            <a href="{% url 'list_outgoing_handovers' %}">{% trans 'Outgoing Handovers' %}</a>
+                            <br/>
+                            <a href="{% url 'list_entry_reports' %}">{% trans 'Entry Reports' %}</a>
+                            <br/>
+                            <a href="{% url 'list_handover_entry_reports' %}">{% trans 'Entry Reports for Handovers' %}</a>
+                            <br/>
+                            <a href="{% url 'list_purchase_entry_reports' %}">{% trans 'Entry Reports for Purchase Orders' %}</a>
+                            <br/>
+                            <a href="{% url 'list_inventory_accounts' %}">{% trans 'Inventory' %} {% trans 'Accounts' %}</a>
+                            <br/>
+                            <a href="{% url 'list_consumable_inventory_accounts' %}">{% trans 'Consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}</a>
+                            <br/>
+                            <a href="{% url 'list_non_consumable_inventory_accounts' %}">{% trans 'Non-Consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}</a>
+                            <br/>
+                            <a href="{% url 'inspection_report_list' %}">{% trans 'Inspection Report' %}</a>
+                            <br>
+                            <a href="{% url 'yearly_report_list' %}">{% trans 'Yearly Report' %}</a>
+                            <br/>
+                            <a href="{% url 'inventory_transactions_list' %}">{% trans 'View Transaction' %}</a>
+                            <br/>
+                            <a href="{% url 'depreciation_report' %}">{% trans 'Depreciation Report' %}</a>
+                            <br/>
+                            <a href="{% url 'list_quotation_forms' %}">{% trans 'Quotation Comparison' %}</a>
+                            <br/>
 
-        {% else %}
-        <a href="{% url 'create_demand_form' %}">{% trans 'New Demand Form' %}</a>
-        <br/>
-        <a href="{% url 'list_demand_forms' %}">{% trans 'Demand Forms' %}</a>
-        <br/>
-        {% endifusergroup %}
-      </div>
-    </div>
-    {% endifappexists %}
-  </div>
-
-    <div class="panel panel-default">
-        {% ifappexists training %}
-    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#training" aria-expanded="false">
-      <h4 class="panel-title">
-       <a>{% trans 'Training' %}</a>
-      </h4>
-    </div>
-    <div id="training" class="panel-collapse collapse">
-      <div class="panel-body dashboard">
-        {% ifusergroup 'Trainer' %}
-            <div>
-                <a href="{% url 'list_trainings' %}">
-                    <img src="{% static 'img/icons/training.png' %}">
-                    <b>Trainings</b>
-                </a>
-            </div>
-
-            <div>
-                <a href="{% url 'list_resource_persons' %}">
-                    <img src="{% static 'img/icons/trainer.png' %}">
-                    Resource Persons
-                </a>
-            </div>
-
-            <div>
-                <a href="{% url 'list_participants' %}">
-                    <img src="{% static 'img/icons/students.png' %}">
-                    Participants
-                </a>
-            </div>
-            <div>
-                <a href="{% url 'list_organizations' %}">
-                    <img src="{% static 'img/icons/organization.png' %}">
-                    Organizations
-                </a>
-            </div>
-
-
-            <div>
-                <a href="{% url 'list_files' %}">
-                    <img src="{% static 'img/icons/file.png' %}">
-                    Files
-                </a>
-            </div>
-
-            <div>
-                <a href="{% url 'list_training_categories' %}">
-                    <img src="{% static 'img/icons/category.png' %}">
-                    Categories
-                </a>
-            </div>
-            <div>
-                <a href="{% url 'list_target_groups' %}">
-                    <img src="{% static 'img/icons/target.png' %}">
-                    Target Groups
-                </a>
-            </div>
-        {% else %}
-            <div>
-                <a href="{% url 'add_participant' %}">
-                    <img src="{% static 'img/icons/students.png' %}">
-                    Register
-                </a>
-            </div>
-        {% endifusergroup %}
-      </div>
-    </div>
-        {% endifappexists %}
-  </div>
-
-   <div class="panel panel-default">
-        {% ifappexists ils %}
-    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#library" >
-      <h4 class="panel-title">
-       <a>{% trans 'Library' %}</a>
-      </h4>
-    </div>
-    <div id="library" class="panel-collapse collapse">
-      <div class="panel-body dashboard">
-        <div>
-            <a href="{% url 'list_records' %}">
-                <img src="{% static 'img/icons/book.png' %}">
-                Books
-            </a>
-        </div>
-        {% ifusergroup 'Librarian' %}
-            <div>
-                <a href="{% url 'list_patrons' %}">
-                    <img src="{% static 'img/icons/user.png' %}">
-                    Patrons
-                </a>
-            </div>
-        {% endifusergroup %}
-        <div>
-            <a href="{% url 'list_authors' %}">
-                <img src="{% static 'img/icons/write.png' %}">
-                Authors
-            </a>
-        </div>
-        <div>
-            <a href="{% url 'list_publishers' %}">
-                <img src="{% static 'img/icons/print.png' %}">
-                Publishers
-            </a>
-        </div>
-        <div>
-            <a href="{% url 'list_ebooks' %}">
-                <img src="{% static 'img/icons/ebook.png' %}" width="150px" height="150px">
-                Ebooks
-            </a>
+                        {% else %}
+                            <a href="{% url 'create_demand_form' %}">{% trans 'New Demand Form' %}</a>
+                            <br/>
+                            <a href="{% url 'list_demand_forms' %}">{% trans 'Demand Forms' %}</a>
+                            <br/>
+                        {% endifusergroup %}
+                    </div>
+                </div>
+            {% endifappexists %}
         </div>
 
-        {% ifusergroup 'Librarian' %}
-            <div>
-                <a href="{% url 'list_transactions' %}">
-                    <img src="{% static 'img/icons/import.png' %}">
-                    Transactions
-                </a>
-            </div>
+        <div class="panel panel-default">
+            {% ifappexists training %}
+                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#training" aria-expanded="false">
+                    <h4 class="panel-title">
+                        <a>{% trans 'Training' %}</a>
+                    </h4>
+                </div>
+                <div id="training" class="panel-collapse collapse">
+                    <div class="panel-body dashboard">
+                        {% ifusergroup 'Trainer' %}
+                            <div>
+                                <a href="{% url 'list_trainings' %}">
+                                    <img src="{% static 'img/icons/training.png' %}">
+                                    <b>Trainings</b>
+                                </a>
+                            </div>
 
-            <div>
-                <a href="{% url 'acq' %}">
-                    <img src="{% static 'img/icons/download.png' %}">
-                    Acquisition
-                </a>
-            </div>
-            <div>
-                <a href="{% url 'outgoing' %}">
-                    <img src="{% static 'img/icons/export.png' %}">
-                    Checkout
-                </a>
-            </div>
-        {% endifusergroup %}
-      </div>
+                            <div>
+                                <a href="{% url 'list_resource_persons' %}">
+                                    <img src="{% static 'img/icons/trainer.png' %}">
+                                    Resource Persons
+                                </a>
+                            </div>
 
-        <form action="{% url 'isbn_to_record' %}" method="post">
-            {% csrf_token %}
-            <input type="text" class="form-control" placeholder="ISBN" name="isbn">
-        </form>
-        <br>
-        <form method="get" action="{% url 'search' %}">
+                            <div>
+                                <a href="{% url 'list_participants' %}">
+                                    <img src="{% static 'img/icons/students.png' %}">
+                                    Participants
+                                </a>
+                            </div>
+                            <div>
+                                <a href="{% url 'list_organizations' %}">
+                                    <img src="{% static 'img/icons/organization.png' %}">
+                                    Organizations
+                                </a>
+                            </div>
 
-            <input type="text" name="q" class="form-control" id="id_q" placeholder="Search">
 
-            {{ form.models }}
+                            <div>
+                                <a href="{% url 'list_files' %}">
+                                    <img src="{% static 'img/icons/file.png' %}">
+                                    Files
+                                </a>
+                            </div>
 
-            {#            {{ form.as_p }}#}
+                            <div>
+                                <a href="{% url 'list_training_categories' %}">
+                                    <img src="{% static 'img/icons/category.png' %}">
+                                    Categories
+                                </a>
+                            </div>
+                            <div>
+                                <a href="{% url 'list_target_groups' %}">
+                                    <img src="{% static 'img/icons/target.png' %}">
+                                    Target Groups
+                                </a>
+                            </div>
+                        {% else %}
+                            <div>
+                                <a href="{% url 'add_participant' %}">
+                                    <img src="{% static 'img/icons/students.png' %}">
+                                    Register
+                                </a>
+                            </div>
+                        {% endifusergroup %}
+                    </div>
+                </div>
+            {% endifappexists %}
+        </div>
 
-            <input type="submit" value="Search!" class="btn btn-primary">
-        </form>
-        <br>
+        <div class="panel panel-default">
+            {% ifappexists ils %}
+                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#library">
+                    <h4 class="panel-title">
+                        <a>{% trans 'Library' %}</a>
+                    </h4>
+                </div>
+                <div id="library" class="panel-collapse collapse">
+                    <div class="panel-body dashboard">
+                        <div>
+                            <a href="{% url 'list_records' %}">
+                                <img src="{% static 'img/icons/book.png' %}">
+                                Books
+                            </a>
+                        </div>
+                        {% ifusergroup 'Librarian' %}
+                            <div>
+                                <a href="{% url 'list_patrons' %}">
+                                    <img src="{% static 'img/icons/user.png' %}">
+                                    Patrons
+                                </a>
+                            </div>
+                        {% endifusergroup %}
+                        <div>
+                            <a href="{% url 'list_authors' %}">
+                                <img src="{% static 'img/icons/write.png' %}">
+                                Authors
+                            </a>
+                        </div>
+                        <div>
+                            <a href="{% url 'list_publishers' %}">
+                                <img src="{% static 'img/icons/print.png' %}">
+                                Publishers
+                            </a>
+                        </div>
+                        <div>
+                            <a href="{% url 'list_ebooks' %}">
+                                <img src="{% static 'img/icons/ebook.png' %}" width="150px" height="150px">
+                                Ebooks
+                            </a>
+                        </div>
+
+                        {% ifusergroup 'Librarian' %}
+                            <div>
+                                <a href="{% url 'list_transactions' %}">
+                                    <img src="{% static 'img/icons/import.png' %}">
+                                    Transactions
+                                </a>
+                            </div>
+
+                            <div>
+                                <a href="{% url 'acq' %}">
+                                    <img src="{% static 'img/icons/download.png' %}">
+                                    Acquisition
+                                </a>
+                            </div>
+                            <div>
+                                <a href="{% url 'outgoing' %}">
+                                    <img src="{% static 'img/icons/export.png' %}">
+                                    Checkout
+                                </a>
+                            </div>
+                        {% endifusergroup %}
+                    </div>
+
+                    <form action="{% url 'isbn_to_record' %}" method="post">
+                        {% csrf_token %}
+                        <input type="text" class="form-control" placeholder="ISBN" name="isbn">
+                    </form>
+                    <br>
+
+                    <form method="get" action="{% url 'search' %}">
+
+                        <input type="text" name="q" class="form-control" id="id_q" placeholder="Search">
+
+                        {{ form.models }}
+
+                        {#            {{ form.as_p }}#}
+
+                        <input type="submit" value="Search!" class="btn btn-primary">
+                    </form>
+                    <br>
+                </div>
+            {% endifappexists %}
+        </div>
+
     </div>
-        {% endifappexists %}
-  </div>
 
-</div>
 {% endblock %}
