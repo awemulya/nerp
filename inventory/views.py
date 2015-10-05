@@ -421,7 +421,7 @@ def save_yearly_report(request):
     dct = {'rows': {}}
     if params.get('release_no') == '':
         params['release_no'] = None
-    object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
+    object_values = {'report_no': params.get('report_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
     if params.get('id'):
         obj = YearlyReport.objects.get(id=params.get('id'))
     else:
@@ -482,7 +482,7 @@ def save_quotation_comparison(request):
     dct = {'rows': {}}
     if params.get('release_no') == '':
         params['release_no'] = None
-    object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
+    object_values = {'report_no': params.get('report_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
     if params.get('id'):
         obj = QuotationComparison.objects.get(id=params.get('id'))
     else:
@@ -547,7 +547,7 @@ def save_inspection_report(request):
     dct = {'rows': {}}
     if params.get('release_no') == '':
         params['release_no'] = None
-    object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
+    object_values = {'report_no': params.get('report_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
     if params.get('id'):
         obj = Inspection.objects.get(id=params.get('id'))
     else:

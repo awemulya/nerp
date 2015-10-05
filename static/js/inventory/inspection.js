@@ -7,7 +7,7 @@ $(document).ready(function () {
 function InspectionVM(data) {
 
     var self = this;
-    self.release_no = ko.observable()
+    self.report_no = ko.observable()
     self.id = ko.observable()
 	self.table_view = new TableViewModel({rows: data}, InspectionRow);
 
@@ -18,7 +18,10 @@ function InspectionVM(data) {
             url: '/inventory/save/inspection/',
             data: ko.toJSON(self),
             success: function (msg) {
-                alert(msg)
+                if (!self.report_no()) {
+                    alert.error('Report No. is required!');
+                    return false;
+                }
                 if (typeof (msg.error_message) != 'undefined') {
 //                    $('#message').html(msg.error_message);
 //                    self.msg();

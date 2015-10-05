@@ -7,7 +7,7 @@ $(document).ready(function () {
 function QuotationComparisonVM(data){
 	var self = this;
 
-    self.release_no = ko.observable();
+    self.report_no = ko.observable();
     self.id = ko.observable()
 
 	$.ajax({
@@ -75,7 +75,10 @@ function QuotationComparisonVM(data){
             url: '/inventory/save/quotation-comparison/',
             data: ko.toJSON(self),
             success: function (msg) {
-                alert(msg)
+                if (!self.report_no()) {
+                    alert.error('Report No. is required!');
+                    return false;
+                }
                 if (typeof (msg.error_message) != 'undefined') {
 //                    $('#message').html(msg.error_message);
 //                    self.msg();

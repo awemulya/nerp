@@ -19,7 +19,7 @@
 {% block content %}
 
     <h1 class='center'>Inspection Report</h1>
-    <h4>Release no:<input data-bind="value: release_no" class="form-control width-auto input-inline"></h4>
+    <h4>Report No: <input data-bind="value: report_no" class="form-control width-auto input-inline"></h4>
     <form method="POST" data-bind="submit: save">
     {% csrf_token %}
         <div data-bind="with: table_view">

@@ -6,7 +6,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url 'inspection_report_list' %}">{% trans 'Inspection' %} {% trans 'Reports' %}</a>
+    <li><a href="{% url 'inspection_report_list' %}">{% trans 'Inspection' %} {% trans 'Reports' %}</a></li>
 {% endblock %}
 
 
@@ -14,8 +14,8 @@
 {% block content %}
     <h1 class='center'>Inspection Detail</h1>
     <h4>Fiscal Year: {{ obj.fiscal_year }} </h4>
-    {% if obj.release_no %}
-    <h4>Release no : {{ obj.release_no }}</h4>
+    {% if obj.report_no %}
+    <h4>Release no : {{ obj.report_no }}</h4>
     {% else %}
     {% endif %}
 

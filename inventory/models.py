@@ -555,7 +555,7 @@ def _transaction_delete(sender, instance, **kwargs):
 
 
 class Inspection(models.Model):
-    release_no = models.IntegerField(blank=True, null=True)
+    report_no = models.IntegerField(blank=True, null=True)
     fiscal_year = models.ForeignKey(FiscalYear)
     # transaction = models.ForeignKey(Transaction, related_name='inspection')
 
@@ -581,7 +581,7 @@ class InspectionRow(models.Model):
 
 
 class YearlyReport(models.Model):
-    release_no = models.IntegerField(blank=True, null=True)
+    report_no = models.IntegerField(blank=True, null=True)
     fiscal_year = models.ForeignKey(FiscalYear)
 
 
@@ -599,7 +599,7 @@ class YearlyReportRow(models.Model):
 
 class QuotationComparison(models.Model):
     fiscal_year = models.ForeignKey(FiscalYear)
-    release_no = models.IntegerField(blank=True, null=True)
+    report_no = models.IntegerField(blank=True, null=True)
 
 class QuotationComparisonRow(models.Model):
     sn = models.PositiveIntegerField()

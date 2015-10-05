@@ -27,7 +27,7 @@
         {% for yearly_report in paginated_objects %}
             <tr>
                 <td>
-                    <a href="{% url 'yearly_report_detail' yearly_report.pk %}">{{ yearly_report.release_no }}</a>
+                    <a href="{% url 'yearly_report_detail' yearly_report.pk %}">{{ yearly_report.report_no }}</a>
                 </td>
                 <td>
                     {{ yearly_report.fiscal_year }}
