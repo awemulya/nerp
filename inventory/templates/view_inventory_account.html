@@ -33,20 +33,21 @@
 
         <h5 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h5>
 
-        {% if obj.item.type == 'non-consumable' %}
-            <h6 class="center clear">{% trans 'Inventory Account for Non-Consumable Item' %}</h6>
-        {% else %}
-            <h6 class="center clear">{% trans 'Inventory Account for Consumable Item' %}</h6>
-        {% endif %}
-    </div>
 
+    </div>
     {% trans "Inventory Item's Name" %} : {{ obj.item.name }}
     <br>
     {% trans 'Unit' %} : {{ obj.item.unit }}
     <br>
     {% trans "Inventory Item's Property Classification Reference Number" %} :
     {{ obj.item.property_classification_reference_number|localize }}
-    <br><br>
+    <br>
+    {% trans 'Type' %} :
+    {% if obj.item.type == 'non-consumable' %}
+        {% trans 'Non-Consumable' %}
+    {% else %}
+        {% trans 'Consumable' %}
+    {% endif %}<br><br>
 
     <table class="table table-striped table-bordered">
         <thead>
