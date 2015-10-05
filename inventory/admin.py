@@ -1,6 +1,10 @@
 from django.contrib import admin
-from models import Item, InventoryAccount, EntryReportRow, Demand, Inspection, DemandRow, InspectionRow, YearlyReport, YearlyReportRow, \
-    ItemLocation, ItemInstance, Release, Transaction, JournalEntry, QuotationComparison ,QuotationComparisonRow, PurchaseOrder
+from models import Item, InventoryAccount, EntryReport, EntryReportRow, Demand, Inspection, DemandRow, InspectionRow, YearlyReport, YearlyReportRow, \
+    ItemLocation, ItemInstance, Release, Transaction, JournalEntry, QuotationComparison ,QuotationComparisonRow, PurchaseOrder, PurchaseOrderRow
+
+
+class DemandRowInline(admin.TabularInline):
+    model = DemandRow
 
 
 class DemandRowAdmin(admin.ModelAdmin):
@@ -14,6 +18,49 @@ class DemandAdmin(admin.ModelAdmin):
     list_display = ('release_no', 'fiscal_year', 'demandee', 'date')
     list_display_links = ('release_no',)
     list_filter = ('fiscal_year', 'demandee')
+    inlines = [
+        DemandRowInline,
+    ]
+
+
+class PurchaseOrderRowInline(admin.TabularInline):
+    model = PurchaseOrderRow
+
+
+class PurchaseOrderAdmin(admin.ModelAdmin):
+    inlines = [
+        PurchaseOrderRowInline,
+    ]
+
+
+class EntryReportRowInline(admin.TabularInline):
+    model = EntryReportRow
+
+
+class EntryReportAdmin(admin.ModelAdmin):
+    inlines = [
+        EntryReportRowInline,
+    ]
+
+
+class InspectionRowInline(admin.TabularInline):
+    model = InspectionRow
+
+
+class InspectionAdmin(admin.ModelAdmin):
+    inlines = [
+        InspectionRowInline,
+    ]
+
+
+class YearlyReportRowInline(admin.TabularInline):
+    model = YearlyReportRow
+
+
+class YearlyReportAdmin(admin.ModelAdmin):
+    inlines = [
+        YearlyReportRowInline,
+    ]
 
 
 class InventoryAccountAdmin(admin.ModelAdmin):
@@ -45,17 +92,18 @@ admin.site.register(Item, ItemAdmin)
 admin.site.register(InventoryAccount, InventoryAccountAdmin)
 admin.site.register(Demand, DemandAdmin)
 admin.site.register(DemandRow, DemandRowAdmin)
+admin.site.register(PurchaseOrder, PurchaseOrderAdmin)
+admin.site.register(EntryReport, EntryReportAdmin)
+admin.site.register(EntryReportRow)
 admin.site.register(ItemLocation, ItemLocationAdmin)
 admin.site.register(ItemInstance, ItemInstanceAdmin)
-admin.site.register(Inspection)
+admin.site.register(Inspection, InspectionAdmin)
 admin.site.register(InspectionRow)
-admin.site.register(YearlyReport)
+admin.site.register(YearlyReport, YearlyReportAdmin)
 admin.site.register(YearlyReportRow)
 admin.site.register(Release)
-admin.site.register(EntryReportRow)
 admin.site.register(Transaction)
 admin.site.register(JournalEntry)
 admin.site.register(QuotationComparison)
 admin.site.register(QuotationComparisonRow)
-admin.site.register(PurchaseOrder)
 

@@ -121,7 +121,8 @@ function PartyQuotationVM() {
 	self.bidder_name = ko.observable();
 	self.per_unit_price = ko.observable();
 	self.total = function(quantity) {
-		return parseInt(quantity()) * self.per_unit_price()
+		var result = parseInt(quantity()) * self.per_unit_price()
+		return round2(result)
 	}
 }
 
