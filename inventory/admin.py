@@ -1,6 +1,9 @@
 from django.contrib import admin
-from models import Item, InventoryAccount, EntryReport, EntryReportRow, Demand, Inspection, DemandRow, InspectionRow, YearlyReport, YearlyReportRow, \
-    ItemLocation, ItemInstance, PartyQuotation, Release, Transaction, JournalEntry, QuotationComparison ,QuotationComparisonRow, PurchaseOrder, PurchaseOrderRow, Depreciation
+
+from models import Item, InventoryAccount, EntryReport, EntryReportRow, Demand, Inspection, DemandRow, InspectionRow, \
+    YearlyReport, YearlyReportRow, \
+    ItemLocation, ItemInstance, PartyQuotation, Release, Transaction, JournalEntry, QuotationComparison, QuotationComparisonRow, \
+    PurchaseOrder, PurchaseOrderRow, Depreciation
 
 
 class DemandRowInline(admin.TabularInline):
@@ -16,6 +19,7 @@ class DemandRowAdmin(admin.ModelAdmin):
     list_display_links = ('item',)
     list_filter = ('status', 'unit', 'location')
     search_fields = ('item', 'location')
+    # inlines = [ReleaseInline]
 
 
 class DemandAdmin(admin.ModelAdmin):
@@ -33,8 +37,8 @@ class PurchaseOrderRowInline(admin.TabularInline):
 
 class PurchaseOrderRowAdmin(admin.ModelAdmin):
     list_display = ('budget_title_no', 'item', 'quantity', 'unit',
-        'rate', 'vattable',
-        'remarks')
+                    'rate', 'vattable',
+                    'remarks')
     search_fields = ('item',)
 
 
@@ -68,9 +72,9 @@ class InspectionRowInline(admin.TabularInline):
 
 class InspectionRowAdmin(admin.ModelAdmin):
     list_display = ('item_name', 'quantity', 'rate', 'price',
-        'matched_number', 'unmatched_number',
-        'decrement', 'increment', 'good', 'bad',
-        'remarks')
+                    'matched_number', 'unmatched_number',
+                    'decrement', 'increment', 'good', 'bad',
+                    'remarks')
     list_display_links = ('item_name',)
     search_fields = ('item',)
 
@@ -88,7 +92,7 @@ class YearlyReportRowInline(admin.TabularInline):
 
 class YearlyReportRowAdmin(admin.ModelAdmin):
     list_display = ('item_name', 'account_no', 'income', 'expense',
-        'remaining', 'remarks')
+                    'remaining', 'remarks')
     list_display_links = ('item_name',)
     search_fields = ('item_name',)
 
@@ -118,7 +122,6 @@ class QuotationComparisonAdmin(admin.ModelAdmin):
     inlines = [
         QuotationComparisonRowInline,
     ]
-
 
 
 class InventoryAccountAdmin(admin.ModelAdmin):
@@ -166,4 +169,3 @@ admin.site.register(Transaction)
 admin.site.register(JournalEntry)
 admin.site.register(QuotationComparison, QuotationComparisonAdmin)
 admin.site.register(QuotationComparisonRow, QuotationComparisonRowAdmin)
-
