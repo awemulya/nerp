@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import app.utils.translation
+import njango
 
 
 class Migration(migrations.Migration):
@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='demand',
             name='date',
-            field=app.utils.translation.BSDateField(),
+            field=njango.fields.BSDateField(),
         ),
     ]

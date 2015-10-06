@@ -12,10 +12,10 @@ from django.utils.translation import ugettext as _
 from jsonfield import JSONField
 
 from app.utils.helpers import zero_for_none, none_for_zero
-from app.utils.translation import ne2en
+from njango.utils import ne2en
 from users.models import User
 from core.models import FiscalYear, Party
-from app.utils.translation import BSDateField, today
+from njango.fields import BSDateField, today
 
 
 def alter(account, date, diff):

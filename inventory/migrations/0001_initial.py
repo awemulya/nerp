@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import app.utils.translation
+import njango
 import mptt.fields
 from django.conf import settings
 
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('release_no', models.IntegerField(null=True, blank=True)),
-                ('date', app.utils.translation.BSDateField()),
+                ('date', njango.fields.BSDateField()),
                 ('purpose', models.CharField(max_length=254)),
                 ('demandee', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
                 ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
@@ -100,7 +100,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('voucher_no', models.PositiveIntegerField(null=True, blank=True)),
                 ('addressee', models.CharField(max_length=254)),
-                ('date', app.utils.translation.BSDateField()),
+                ('date', njango.fields.BSDateField()),
                 ('office', models.CharField(max_length=254)),
                 ('designation', models.CharField(max_length=254)),
                 ('handed_to', models.CharField(max_length=254)),
@@ -180,7 +180,7 @@ class Migration(migrations.Migration):
             name='JournalEntry',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date', app.utils.translation.BSDateField()),
+                ('date', njango.fields.BSDateField()),
                 ('model_id', models.PositiveIntegerField()),
                 ('content_type', models.ForeignKey(related_name='inventory_journal_entries', to='contenttypes.ContentType')),
             ],
@@ -194,7 +194,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('order_no', models.IntegerField(null=True, blank=True)),
-                ('date', app.utils.translation.BSDateField()),
+                ('date', njango.fields.BSDateField()),
                 ('due_days', models.IntegerField(default=3)),
                 ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
                 ('party', models.ForeignKey(to='core.Party')),
