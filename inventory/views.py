@@ -545,8 +545,6 @@ def save_inspection_report(request):
     if request.is_ajax():
         params = json.loads(request.body)
     dct = {'rows': {}}
-    if params.get('release_no') == '':
-        params['release_no'] = None
     object_values = {'report_no': params.get('report_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
     if params.get('id'):
         obj = Inspection.objects.get(id=params.get('id'))
