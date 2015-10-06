@@ -35,8 +35,9 @@ re{% extends "inventory_base.html" %}
 {% csrf_token %}
 
 <div data-bind="with: table_view">
-
-	<button data-bind="click: $root.add_party" class="btn btn-default" id="add_party">Add Party</button><br>
+	<br>
+	<button data-bind="click: $root.add_party" class="btn btn-default" id="add_party">Add Party</button>
+	<br>
 	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>

@@ -108,7 +108,7 @@
         {% endfor %}
         </tbody>
         </table>
-    <a class="small secondary button alert" href="{% url 'delete_inspection_report' obj.id %}">{% trans 'Delete!' %}</a>
+    <a class="btn btn-danger btn-lg hidden-print" href="{% url 'delete_inspection_report' obj.id %}">{% trans 'Delete!' %}</a>
 
 
 {% endblock %}

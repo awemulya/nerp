@@ -495,8 +495,8 @@ def save_quotation_comparison(request):
         for index, row in enumerate(params.get('table_view').get('rows')):
             invalid_check = invalid(row, ['item_id', 'quantity', 'estimated_cost'])
             if invalid_check:
-                dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
-                return JsonResponse(dct)
+                # dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
+                continue
             else:
                 values = {'sn': index + 1, 'specification': empty_to_none(row.get('specification')),
                           'quantity': row.get('quantity'),
@@ -528,7 +528,7 @@ def save_quotation_comparison(request):
                     for i in party_to_delete:
                         party_to_remove = PartyQuotation.objects.get(id=i)
                         party_to_remove.delete()
-
+            dct['rows'][index] = submodel.id
         delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
@@ -751,9 +751,7 @@ def item_instances_as_json(request):
         try:
             instance.other_properties['rate'] = rate
         except:
-            import ipdb;
-
-            ipdb.set_trace()
+            pass
         # property = cPickle.dumps(item.other_properties)
         prop = json.dumps(instance.other_properties).replace(' ', '')
         if not prop in instances[instance.item_id].keys():
