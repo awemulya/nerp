@@ -156,8 +156,12 @@ class Depreciation(models.Model):
     depreciate_type = models.CharField(choices=depreciation_choices, max_length=25, default="Fixed percentage")
     depreciate_value = models.PositiveIntegerField(default=0)
     time = models.PositiveIntegerField(default=0)
-    time_choices = [('Day(s)', _('Day(s)')), ('Month(s)', _('Month(s)')), ('Year(s)', _('Year(s)'))]
-    time_type = models.CharField(choices=time_choices, max_length=8, default='Year(s)')
+    time_choices = [('days', _('Day(s)')), ('months', _('Month(s)')), ('years', _('Year(s)'))]
+    time_type = models.CharField(choices=time_choices, max_length=8, default='years')
+
+    def __str__(self):
+        return unicode(self.depreciate_item.first()) + ': ' + self.depreciate_type + ' - ' + unicode(
+            self.depreciate_value) + ' @ ' + unicode(self.time) + ' ' + self.time_type
 
 
 class Item(models.Model):
@@ -252,8 +256,6 @@ class Transaction(models.Model):
         for transaction in dr_transctions:
             total += transaction.dr_amount
         return total
-
-
 
 
 # def set_transactions(submodel, date, *args):
@@ -361,6 +363,9 @@ class Demand(models.Model):
         if not self.pk and not self.release_no:
             self.release_no = get_next_voucher_no(Demand, 'release_no')
 
+    def __str__(self):
+        return unicode(self.release_no)
+
 
 class DemandRow(models.Model):
     sn = models.PositiveIntegerField()
@@ -405,6 +410,9 @@ class EntryReport(models.Model):
         else:
             source_type = 'purchase'
         return '/inventory/entry-report/' + source_type + '/' + str(self.source.id)
+
+    def __str__(self):
+        return unicode(self.entry_report_no)
 
 
 class EntryReportRow(models.Model):
@@ -559,6 +567,9 @@ class Inspection(models.Model):
     fiscal_year = models.ForeignKey(FiscalYear)
     # transaction = models.ForeignKey(Transaction, related_name='inspection')
 
+    def __str__(self):
+        return unicode(self.report_no)
+
 
 class InspectionRow(models.Model):
     sn = models.PositiveIntegerField()
@@ -578,6 +589,9 @@ class InspectionRow(models.Model):
     bad = models.PositiveIntegerField(blank=True, null=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
     inspection = models.ForeignKey(Inspection, related_name='rows')
+
+    def __str__(self):
+        return unicode(self.item_name)
 
 
 class YearlyReport(models.Model):
@@ -601,6 +615,7 @@ class QuotationComparison(models.Model):
     fiscal_year = models.ForeignKey(FiscalYear)
     report_no = models.IntegerField(blank=True, null=True)
 
+
 class QuotationComparisonRow(models.Model):
     sn = models.PositiveIntegerField()
     item = models.ForeignKey(Item, related_name='item_quotation')
@@ -610,10 +625,12 @@ class QuotationComparisonRow(models.Model):
     quotation = models.ForeignKey(QuotationComparison, related_name='rows')
     # party = models.ForeignKey(PartyQuotation, related_name='bidder_quote')
 
+
 class PartyQuotation(models.Model):
     party = models.ForeignKey(Party, related_name='party_quote')
     per_unit_price = models.FloatField()
     quotation_comparison_row = models.ForeignKey(QuotationComparisonRow, related_name='bidder_quote', blank=True, null=True)
+
 
 class ItemInstance(models.Model):
     item = models.ForeignKey(Item, related_name='instances')
