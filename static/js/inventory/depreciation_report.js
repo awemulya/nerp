@@ -52,5 +52,4 @@ function DepreciationRow(row) {
         return self.total_dr_amount() * self.rate()
     });
     self.depreciate = ko.toJS(self.depreciation())
-    debugger;
 }
