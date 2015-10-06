@@ -1,5 +1,5 @@
 from django.db import models
-from app.utils.translation import TranslatableNumberModel
+from njango.models import TranslatableNumberModel
 
 
 FISCAL_YEARS = (

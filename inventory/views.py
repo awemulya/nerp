@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json, nepdate, datetime
+import json, datetime
 # from datetime import date
 
 from django.http import JsonResponse, HttpResponse
@@ -15,7 +15,7 @@ from openpyxl.styles import Style, Font, Alignment
 from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 from openpyxl.cell import get_column_letter
 
-import nepdate
+from njango import nepdate
 
 from core.models import app_setting, FiscalYear, Party
 from app.utils.helpers import invalid, save_model, empty_to_none
