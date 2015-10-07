@@ -15,8 +15,6 @@ from openpyxl.styles import Style, Font, Alignment
 from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 from openpyxl.cell import get_column_letter
 
-from njango import nepdate
-
 from core.models import app_setting, FiscalYear, Party
 from app.utils.helpers import invalid, save_model, empty_to_none
 from users.models import group_required
@@ -39,21 +37,17 @@ from inventory.serializers import PartyQuotationSerializer, QuotationComparisonS
 
 def list_transactions(request):
     if request.POST:
-        param = request.POST
-        date_list = request.POST.getlist('myDate')
-        start_date_bs = date_list[0]
-        end_date_bs = date_list[1]
-        if nepdate.is_valid(start_date_bs) and nepdate.is_valid(end_date_bs):
-            start_date_ad = nepdate.string_from_tuple(nepdate.bs2ad(start_date_bs))
-            end_date_ad = nepdate.string_from_tuple(nepdate.bs2ad(end_date_bs))
-            obj = Transaction.objects.filter(journal_entry__date__range=[start_date_ad, end_date_ad])
-            return render(request, "transaction_list.html", {'objects': obj})
-        elif start_date_bs == '' and end_date_bs == '':
-            messages.error(request, "Enter Date")
-        else:
-            messages.error(request, "Invalid Date")
-    obj = Transaction.objects.all()
-    return render(request, "transaction_list.html", {'objects': obj})
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        td = datetime.date.today()
+        if not start_date:
+            start_date = td
+        if not end_date:
+            end_date = td
+        transactions = Transaction.objects.filter(journal_entry__date__range=[start_date, end_date])
+    else:
+        transactions = Transaction.objects.all()
+    return render(request, "transaction_list.html", {'objects': transactions})
 
 
 def xlsx_formula(ws, start_row, start_column, end_row, end_column, value):
