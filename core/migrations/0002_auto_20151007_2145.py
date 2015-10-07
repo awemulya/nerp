@@ -7,13 +7,8 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0016_demand_date'),
+        ('core', '0001_initial'),
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='demand',
-            name='date',
-            field=models.DateField(),
-        ),
     ]

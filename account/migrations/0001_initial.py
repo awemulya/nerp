@@ -19,9 +19,6 @@ class Migration(migrations.Migration):
                 ('date', models.DateField()),
                 ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='JournalVoucherRow',
@@ -31,9 +28,6 @@ class Migration(migrations.Migration):
                 ('cr_amount', models.PositiveIntegerField(null=True, blank=True)),
                 ('account', models.ForeignKey(to='core.Account')),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Receipt',
@@ -43,9 +37,6 @@ class Migration(migrations.Migration):
                 ('no', models.PositiveIntegerField()),
                 ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='ReceiptRow',
@@ -68,11 +59,8 @@ class Migration(migrations.Migration):
                 ('activity', models.ForeignKey(blank=True, to='core.Activity', null=True)),
                 ('budget_head', models.ForeignKey(to='core.BudgetHead')),
                 ('donor', models.ForeignKey(blank=True, to='core.Donor', null=True)),
-                ('receipt', models.ForeignKey(related_name=b'rows', to='account.Receipt')),
+                ('receipt', models.ForeignKey(related_name='rows', to='account.Receipt')),
                 ('tax_scheme', models.ForeignKey(to='core.TaxScheme')),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
     ]
