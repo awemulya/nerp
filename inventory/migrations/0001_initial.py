@@ -2,27 +2,19 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-<<<<<<< HEAD
-import app.utils.translation
-import jsonfield.fields
-=======
 import mptt.fields
 import njango.fields
 import jsonfield.fields
 from django.conf import settings
->>>>>>> 128076c5178b4b053929ebe3f13201e61b9009dd
 import inventory.models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('core', '0003_auto_20151008_1051'),
         ('contenttypes', '0002_remove_content_type_name'),
-<<<<<<< HEAD
-=======
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
->>>>>>> 128076c5178b4b053929ebe3f13201e61b9009dd
-        ('core', '0001_initial'),
     ]
 
     operations = [
@@ -36,6 +28,7 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
+                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='inventory.Category', null=True)),
             ],
             options={
                 'verbose_name_plural': 'Inventory Categories',
@@ -46,12 +39,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('release_no', models.IntegerField()),
-<<<<<<< HEAD
-                ('date', app.utils.translation.BSDateField(default=app.utils.translation.today)),
-=======
                 ('date', njango.fields.BSDateField(default=njango.fields.today)),
->>>>>>> 128076c5178b4b053929ebe3f13201e61b9009dd
                 ('purpose', models.CharField(max_length=254)),
+                ('demandee', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
             ],
         ),
         migrations.CreateModel(
@@ -108,11 +99,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('voucher_no', models.PositiveIntegerField(null=True, blank=True)),
                 ('addressee', models.CharField(max_length=254)),
-<<<<<<< HEAD
-                ('date', app.utils.translation.BSDateField(default=app.utils.translation.today)),
-=======
                 ('date', njango.fields.BSDateField(default=njango.fields.today)),
->>>>>>> 128076c5178b4b053929ebe3f13201e61b9009dd
                 ('office', models.CharField(max_length=254)),
                 ('designation', models.CharField(max_length=254)),
                 ('handed_to', models.CharField(max_length=254)),
@@ -139,11 +126,7 @@ class Migration(migrations.Migration):
             name='Inspection',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-<<<<<<< HEAD
                 ('report_no', models.IntegerField()),
-=======
-                ('report_no', models.IntegerField(null=True, blank=True)),
->>>>>>> 128076c5178b4b053929ebe3f13201e61b9009dd
                 ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
             ],
         ),
@@ -252,11 +235,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('order_no', models.IntegerField(null=True, blank=True)),
-<<<<<<< HEAD
-                ('date', app.utils.translation.BSDateField(default=app.utils.translation.today)),
-=======
                 ('date', njango.fields.BSDateField(default=njango.fields.today)),
->>>>>>> 128076c5178b4b053929ebe3f13201e61b9009dd
                 ('due_days', models.IntegerField(default=3)),
                 ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
                 ('party', models.ForeignKey(to='core.Party')),
@@ -282,11 +261,7 @@ class Migration(migrations.Migration):
             name='QuotationComparison',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-<<<<<<< HEAD
                 ('report_no', models.IntegerField()),
-=======
-                ('report_no', models.IntegerField(null=True, blank=True)),
->>>>>>> 128076c5178b4b053929ebe3f13201e61b9009dd
                 ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
             ],
         ),
@@ -334,11 +309,7 @@ class Migration(migrations.Migration):
             name='YearlyReport',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-<<<<<<< HEAD
                 ('report_no', models.IntegerField()),
-=======
-                ('report_no', models.IntegerField(null=True, blank=True)),
->>>>>>> 128076c5178b4b053929ebe3f13201e61b9009dd
                 ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
             ],
         ),
