@@ -168,16 +168,12 @@ msgid "Save"
 msgstr "बचत गर्नुहोस्"
 
 #: app/settings.py:31
-#, fuzzy
-#| msgid "Name in English"
 msgid "English"
-msgstr "अंग्रेजीमा नाम"
+msgstr "अंग्रेजी"
 
 #: app/settings.py:32
-#, fuzzy
-#| msgid "Name in Nepali"
 msgid "Nepali"
-msgstr "नाम"
+msgstr "नेपाली"
 
 #: app/utils/multilingual.py:108
 msgid "Name in Nepali"
@@ -303,12 +299,12 @@ msgid "Party"
 msgstr "पार्टी"
 
 #: ils/forms.py:62
-msgid "Publisher Name"
-msgstr ""
+msgid "Publisher"
+msgstr "प्रकाशक"
 
 #: ils/forms.py:103
 msgid "Password (again)"
-msgstr ""
+msgstr "पासवर्ड (फेरि)"
 
 #: ils/forms.py:118
 msgid "A user with that username already exists."
@@ -324,13 +320,11 @@ msgstr ""
 
 #: ils/templates/acquisition1.html:6 ils/templates/acquisition1.html.py:10
 msgid "Acquisition"
-msgstr ""
+msgstr "अधिग्रहण"
 
 #: ils/templates/incoming.html:7 ils/templates/incoming.html.py:13
-#, fuzzy
-#| msgid "Income"
 msgid "Incoming"
-msgstr "आम्दानि"
+msgstr "आगमन"
 
 #: ils/templates/library_index.html:6
 msgid "Integrated Library System"
@@ -338,7 +332,7 @@ msgstr ""
 
 #: ils/templates/list_authors.html:8 ils/templates/list_authors.html.py:12
 msgid "Authors"
-msgstr ""
+msgstr "लेखकहरू"
 
 #: ils/templates/list_patrons.html:8 ils/templates/list_patrons.html.py:13
 msgid "Patrons"
@@ -346,17 +340,17 @@ msgstr ""
 
 #: ils/templates/list_publishers.html:8 ils/templates/list_publishers.html:13
 msgid "Publishers"
-msgstr ""
+msgstr "प्रकाशकहरू"
 
 #: ils/templates/list_records.html:9 ils/templates/list_records.html.py:14
 msgid "Books"
-msgstr ""
+msgstr "पुस्तकहरू"
 
 #: ils/templates/list_transactions.html:8
 #: ils/templates/list_transactions.html:13
 #: inventory/templates/transaction_list.html:8
 msgid "Transactions"
-msgstr ""
+msgstr "कारोबार"
 
 #: ils/templates/outgoing.html:6 ils/templates/outgoing.html.py:13
 #, fuzzy
@@ -422,7 +416,7 @@ msgstr "प्रकार"
 
 #: inventory/models.py:154
 msgid "Fixed percentage"
-msgstr ""
+msgstr "निर्धारित प्रतिशत"
 
 #: inventory/models.py:155
 msgid "Compounded percentage"
@@ -430,19 +424,19 @@ msgstr ""
 
 #: inventory/models.py:155
 msgid "Fixed price"
-msgstr ""
+msgstr "निर्धारित मूल्य"
 
 #: inventory/models.py:159
 msgid "Day(s)"
-msgstr ""
+msgstr "दिन(हरू)"
 
 #: inventory/models.py:159
 msgid "Month(s)"
-msgstr ""
+msgstr "महिना(हरू)"
 
 #: inventory/models.py:159
 msgid "Year(s)"
-msgstr ""
+msgstr "year(s)"
 
 #: inventory/models.py:173 inventory/templates/inventory_index.html:48
 #: inventory/templates/list_consumable_inventory_accounts.html:4
@@ -792,22 +786,20 @@ msgid "Price"
 msgstr "मूल्य"
 
 #: inventory/templates/depreciation_report.html:41
-#, fuzzy
-#| msgid "Specification"
 msgid "Depreciation Type"
-msgstr "स्पेसिफिकशन"
+msgstr "विमूल्यन प्रकार"
 
 #: inventory/templates/depreciation_report.html:42
 msgid "Depreciation Value"
-msgstr ""
+msgstr "विमूल्यन मूल्य"
 
 #: inventory/templates/depreciation_report.html:43
 msgid "Time"
-msgstr ""
+msgstr "समय"
 
 #: inventory/templates/depreciation_report.html:44
 msgid "Time value"
-msgstr ""
+msgstr "समय मान"
 
 #: inventory/templates/depreciation_report.html:45
 #: inventory/templates/inspection_detail.html:42
@@ -815,7 +807,7 @@ msgstr ""
 #: inventory/templates/inspection_report.html:46
 #: inventory/templates/inspection_report.html:48
 msgid "Decrement"
-msgstr ""
+msgstr "घटाइ"
 
 #: inventory/templates/depreciation_report.html:45
 #: inventory/templates/inspection_detail.html:43
@@ -823,19 +815,19 @@ msgstr ""
 #: inventory/templates/inspection_report.html:47
 #: inventory/templates/inspection_report.html:48
 msgid "Increment"
-msgstr ""
+msgstr "बढाइ"
 
 #: inventory/templates/depreciation_report.html:46
 #: inventory/templates/inspection_detail.html:45
 #: inventory/templates/inspection_report.html:49
 msgid "Good"
-msgstr ""
+msgstr "राम्रो"
 
 #: inventory/templates/depreciation_report.html:47
 #: inventory/templates/inspection_detail.html:46
 #: inventory/templates/inspection_report.html:50
 msgid "Bad"
-msgstr ""
+msgstr "खराब"
 
 #: inventory/templates/entry_report.html:6
 #: inventory/templates/entry_report.html:11
@@ -993,32 +985,22 @@ msgstr "जिन्सी खाता न."
 #: inventory/templates/inspection_detail.html:40
 #: inventory/templates/inspection_report.html:44
 msgid "Matched number"
-msgstr ""
+msgstr "मिलेको नम्बर"
 
 #: inventory/templates/inspection_detail.html:41
 #: inventory/templates/inspection_report.html:45
 msgid "Unmatched number"
-msgstr ""
+msgstr "नमिलेको नम्बर"
 
 #: inventory/templates/inspection_list.html:5
 #: inventory/templates/inspection_report.html:5
-#, fuzzy
-#| msgid "Section"
 msgid "Inspections"
-msgstr "शाखा"
-
-#: inventory/templates/inspection_list.html:23
-#: inventory/templates/list_quotation_report.html:24
-#: inventory/templates/yearly_report_list.html:23
-msgid "id"
-msgstr ""
+msgstr "निरीक्षण"
 
 #: inventory/templates/inspection_list.html:43
 #: inventory/templates/yearly_report_list.html:43
-#, fuzzy
-#| msgid "Reports"
 msgid "Report"
-msgstr "प्रतिवेदनहरु"
+msgstr "प्रतिवेदन"
 
 #: inventory/templates/inventory_category_create_form.html:4
 #: inventory/templates/inventory_category_create_form.html:9
@@ -1140,48 +1122,36 @@ msgstr "खाताहरु"
 
 #: inventory/templates/inventory_index.html:52
 #: templates/dashboard_index.html:71
-#, fuzzy
 #| msgid "Entry Report"
 msgid "Inspection Report"
-msgstr "दाखिला प्रतिवेदन"
+msgstr "निरीक्षण प्रतिवेदन"
 
 #: inventory/templates/inventory_index.html:54
 #: templates/dashboard_index.html:73
-#, fuzzy
 #| msgid "Entry Report"
 msgid "Yearly Report"
-msgstr "दाखिला प्रतिवेदन"
-
-#: inventory/templates/inventory_index.html:56
-#: templates/dashboard_index.html:75
-msgid "View Transaction"
-msgstr ""
+msgstr "वार्षिक प्रतिवेदन"
 
 #: inventory/templates/inventory_index.html:58
 #: templates/dashboard_index.html:77
 msgid "Depreciation Report"
-msgstr ""
+msgstr "मूल्यह्रास प्रतिवेदन"
 
 #: inventory/templates/inventory_index.html:60
 #: inventory/templates/quotation_comparison.html:10
 #: templates/dashboard_index.html:79
 msgid "Quotation Comparison"
-msgstr ""
+msgstr "उद्धरण तुलना"
 
 #: inventory/templates/item_form.html:48
 #: inventory/templates/item_instance_form.html:26
 msgid "Other properties"
-msgstr ""
+msgstr "अन्य गुण"
 
 #: inventory/templates/item_form.html:57
-#, fuzzy
 #| msgid "Add New Row"
 msgid "Add New Property"
-msgstr "नया लाइन"
-
-#: inventory/templates/item_form.html:132
-msgid "Other Properties"
-msgstr ""
+msgstr "नया गुण"
 
 #: inventory/templates/list_consumable_inventory_accounts.html:24
 #: inventory/templates/list_inventory_accounts.html:25
@@ -1205,7 +1175,7 @@ msgstr "स्रोत"
 #: inventory/templates/list_incoming_handovers.html:22
 #: inventory/templates/list_outgoing_handovers.html:22
 msgid "Handed Over Office"
-msgstr ""
+msgstr "हस्तान्तरण गरिएको कार्यालय"
 
 #: inventory/templates/list_inventory_items.html:22
 #: inventory/templates/list_inventory_items.html:31
@@ -1234,11 +1204,11 @@ msgstr "आदेश न."
 #: inventory/templates/quotation_comparison.html:5
 #: inventory/templates/quotation_comparison.html:9
 msgid "Quotation"
-msgstr ""
+msgstr "उद्धरण"
 
 #: inventory/templates/list_quotation_report.html:45
 msgid "Comparison"
-msgstr ""
+msgstr "तुलना"
 
 #: inventory/templates/purchase_order.html:34 inventory/views.py:207
 msgid "Shree"
@@ -1292,11 +1262,11 @@ msgstr "फर्मको नाम"
 
 #: inventory/templates/quotation_comparison.html:47
 msgid "Estimated Cost"
-msgstr ""
+msgstr "अनुमानित लागत"
 
 #: inventory/templates/quotation_comparison.html:56
 msgid "Per Unit Price"
-msgstr ""
+msgstr "प्रति एकाइ मूल्य"
 
 #: inventory/templates/quotation_comparison.html:57
 #, fuzzy
@@ -1306,19 +1276,19 @@ msgstr "जम्मा परल मूल्य"
 
 #: inventory/templates/transaction_list.html:4
 msgid "View Transactions"
-msgstr ""
+msgstr "कारोवार हेर्नुहोस"
 
 #: inventory/templates/transaction_list.html:8
 msgid "View"
-msgstr ""
+msgstr "हेर्नुहोस"
 
 #: inventory/templates/transaction_list.html:27
 msgid "All Transactions"
-msgstr ""
+msgstr "सबै कारोवार"
 
 #: inventory/templates/transaction_list.html:36
 msgid "Status"
-msgstr ""
+msgstr "स्थिति"
 
 #: inventory/templates/view_inventory_account.html:27
 msgid "7"
@@ -1386,7 +1356,7 @@ msgstr "प्रति इकाई मूल्य"
 #: inventory/templates/yearly_report_list.html:9
 #: inventory/templates/yearly_report_list.html:43
 msgid "Yearly"
-msgstr ""
+msgstr "वार्षिक"
 
 #: inventory/templates/yearly_report.html:32
 #, fuzzy
@@ -1402,25 +1372,24 @@ msgstr "जिन्सी"
 
 #: inventory/views.py:211
 msgid "VAT/PAN"
-msgstr ""
+msgstr "भ्याट/प्यान"
 
 #: inventory/views.py:242
 msgid "13% VAT"
-msgstr ""
+msgstr "१३% भ्याट"
 
 #: inventory/views.py:294
 msgid "No.:- "
-msgstr ""
+msgstr "न.:-"
 
 #: templates/admin/base_site.html:5
 msgid "Admin"
-msgstr ""
+msgstr "व्यवस्थापक"
 
 #: templates/admin/base_site.html:16
-#, fuzzy
 #| msgid "Designation"
 msgid "Documentation"
-msgstr "पद"
+msgstr "दस्तावेज"
 
 #: templates/admin/base_site.html:18
 #, fuzzy
@@ -1430,11 +1399,11 @@ msgstr "गृह"
 
 #: templates/admin/base_site.html:19
 msgid "Settings"
-msgstr ""
+msgstr "सेटिङ"
 
 #: templates/admin/base_site.html:22
 msgid "Change password"
-msgstr ""
+msgstr "पासवर्ड परिवर्तन गर्नुहोस्"
 
 #: templates/admin/base_site.html:24 templates/base.html:67
 msgid "Log out"
@@ -1464,52 +1433,49 @@ msgstr "प्रिन्ट"
 #: training/templates/training_form.html:6
 #: training/templates/training_form.html:11
 #: training/templates/training_index.html:6
-#, fuzzy
 #| msgid "Remaining"
 msgid "Training"
-msgstr "बाँकी"
+msgstr "प्रशिक्षण"
 
 #: templates/dashboard_index.html:167
 msgid "Library"
-msgstr ""
+msgstr "पुस्तकालय"
 
 #: training/templates/list_files.html:4 training/templates/list_files.html:8
 msgid "Files"
-msgstr ""
+msgstr "फाइलहरू"
 
 #: training/templates/list_files.html:21
 msgid "File"
-msgstr ""
+msgstr "फाइल"
 
 #: training/templates/list_organizations.html:5
 #: training/templates/list_organizations.html:9
 #: training/templates/organization_form.html:8
 msgid "Organizations"
-msgstr ""
+msgstr "संगठनहरू"
 
 #: training/templates/list_organizations.html:24
 #: training/templates/list_participants.html:24
 #: training/templates/list_resource_persons.html:24
 #: training/templates/print_training.html:121
-#, fuzzy
-#| msgid "Phone No."
 msgid "Phone"
 msgstr "फोन न."
 
 #: training/templates/list_organizations.html:25
 msgid "Fax"
-msgstr ""
+msgstr "फ्याक्स"
 
 #: training/templates/list_organizations.html:26
 #: training/templates/list_participants.html:25
 #: training/templates/list_resource_persons.html:25
 #: training/templates/print_training.html:122
 msgid "Email"
-msgstr ""
+msgstr "ई-मेल"
 
 #: training/templates/list_organizations.html:27
 msgid "Website"
-msgstr ""
+msgstr "वेबसाइट"
 
 #: training/templates/list_organizations.html:46
 #: training/templates/list_participants.html:26
@@ -1517,28 +1483,22 @@ msgstr ""
 #: training/templates/organization_form.html:4
 #: training/templates/organization_form.html:9
 #: training/templates/print_training.html:123
-#, fuzzy
-#| msgid "Designation"
 msgid "Organization"
-msgstr "पद"
+msgstr "संगठन"
 
 #: training/templates/list_participants.html:5
 #: training/templates/list_participants.html:9
 #: training/templates/list_trainings.html:26
 #: training/templates/participant_form.html:8
 #: training/templates/training_report.html:74
-#, fuzzy
-#| msgid "Particulars"
 msgid "Participants"
-msgstr "विवरण"
+msgstr "सहभागीहरू"
 
 #: training/templates/list_participants.html:49
 #: training/templates/participant_form.html:4
 #: training/templates/participant_form.html:9
-#, fuzzy
-#| msgid "Particular"
 msgid "Participant"
-msgstr "विवरण"
+msgstr "सहभागी"
 
 #: training/templates/list_resource_persons.html:5
 #: training/templates/list_resource_persons.html:9
@@ -1546,64 +1506,62 @@ msgstr "विवरण"
 #: training/templates/resource_person_form.html:8
 #: training/templates/training_report.html:73
 msgid "Resource Persons"
-msgstr ""
+msgstr "स्रोत व्यक्ति"
 
 #: training/templates/list_resource_persons.html:49
 #: training/templates/resource_person_form.html:4
 #: training/templates/resource_person_form.html:9
 msgid "Resource Person"
-msgstr ""
+msgstr "स्रोत व्यक्तिहरू"
 
 #: training/templates/list_target_groups.html:4
 #: training/templates/list_target_groups.html:8
 #: training/templates/target_group_form.html:8
 msgid "Target Groups"
-msgstr ""
+msgstr "लक्ष्य समूहहरू"
 
 #: training/templates/list_target_groups.html:31
 #: training/templates/target_group_form.html:4
 #: training/templates/target_group_form.html:9
 msgid "Target Group"
-msgstr ""
+msgstr "लक्ष्य समूह"
 
 #: training/templates/list_trainings.html:4
-#, fuzzy
-#| msgid "Remaining"
 msgid "Trainings"
-msgstr "बाँकी"
+msgstr "प्रशिक्षणहरू"
 
 #: training/templates/list_trainings.html:8
 #: training/templates/training_form.html:10
 msgid "All Trainings"
-msgstr ""
+msgstr "सबै प्रशिक्षणहरू"
 
 #: training/templates/list_trainings.html:21
 #: training/templates/training_report.html:69
 msgid "Title"
-msgstr ""
+msgstr "शीर्षक"
 
 #: training/templates/list_trainings.html:22
 #: training/templates/training_report.html:70
 msgid "Starts"
-msgstr ""
+msgstr "सुरु"
 
 #: training/templates/list_trainings.html:23
 #: training/templates/training_report.html:71
 msgid "Ends"
-msgstr ""
+msgstr "समाप्ती"
 
 #: training/templates/list_trainings.html:24
 #: training/templates/training_report.html:72
 msgid "Days"
-msgstr ""
+msgstr "दिनहरू"
 
 #: training/templates/training_report.html:10
 msgid "Training Report"
-msgstr ""
+msgstr "प्रशिक्षण प्रतिवेदन"
 
 #: users/models.py:119
 msgid "Group"
-msgstr ""
+msgstr "समूह"
 
 #~ msgid "Inventory Account for Non-Consumable Item"
 #~ msgstr "खप्ने सामानको जिन्सी खाता"

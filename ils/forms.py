@@ -1,10 +1,11 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
+from haystack.forms import ModelSearchForm
+
 from app.utils.forms import KOModelForm
-from models import Record, Transaction, Book, Author, Place, Publisher, Subject
+from ils.models import Record, Transaction, Book, Author, Place, Publisher, Subject
 from core.models import Language
 from users.models import User
-from django.utils.translation import ugettext_lazy as _
-from haystack.forms import SearchForm, ModelSearchForm
 
 
 class LanguageForm(forms.ModelForm):
@@ -59,7 +60,7 @@ class PublisherForm(KOModelForm):
         model = Publisher
         exclude = ['slug']
         labels = {
-            'name': _('Publisher Name')
+            'name': _('Publisher')
         }
 
 
@@ -70,8 +71,10 @@ class SubjectForm(forms.ModelForm):
 
 
 class OutgoingForm(forms.ModelForm):
-    borrow_date = forms.CharField(widget=forms.TextInput(attrs={'data-date-format': 'yyyy-mm-dd', 'class': 'form-control'}), required=False)
-    due_date = forms.CharField(widget=forms.TextInput(attrs={'data-date-format': 'yyyy-mm-dd', 'class': 'form-control'}), required=False)
+    borrow_date = forms.CharField(widget=forms.TextInput(attrs={'data-date-format': 'yyyy-mm-dd', 'class': 'form-control'}),
+                                  required=False)
+    due_date = forms.CharField(widget=forms.TextInput(attrs={'data-date-format': 'yyyy-mm-dd', 'class': 'form-control'}),
+                               required=False)
     isbn = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label='ISBN')
 
     def __init__(self, *args, **kwargs):
@@ -106,7 +109,6 @@ class PatronForm(KOModelForm):
         model = User
         exclude = ['last_login', 'is_active', 'is_staff', 'is_superuser', 'groups']
 
-
     def clean_username(self):
         """
         Validate that the username is alphanumeric and is not already
@@ -130,7 +132,6 @@ class PatronForm(KOModelForm):
             raise forms.ValidationError(_("A user with that email already exists."))
         else:
             return self.cleaned_data['email']
-
 
     def clean(self):
         """
