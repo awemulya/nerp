@@ -599,7 +599,7 @@ def item_form(request, id=None):
     else:
         item = Item()
         scenario = 'Create'
-        depreciation = Depreciation(depreciate_type="Fixed percentage", depreciate_value=0, time=0, time_type='Year(s)')
+        depreciation = Depreciation(depreciate_type="Fixed percentage", depreciate_value=0, time=0, time_type='years')
         depreciation_data = DepreciationSerializer(depreciation).data
         item_instances = []
     if request.POST:

@@ -22,12 +22,11 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
-                ('parent', mptt.fields.TreeForeignKey(related_name=b'children', blank=True, to='training.Category', null=True)),
+                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='training.Category', null=True)),
             ],
             options={
                 'verbose_name_plural': 'Categories',
             },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='File',
@@ -36,9 +35,6 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(null=True, blank=True)),
                 ('file', models.FileField(null=True, upload_to=b'training/files/', blank=True)),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Organization',
@@ -47,13 +43,10 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('address', models.TextField(null=True, blank=True)),
                 ('phone_no', models.CharField(max_length=50, null=True, blank=True)),
-                ('email', models.EmailField(max_length=75, null=True, blank=True)),
+                ('email', models.EmailField(max_length=254, null=True, blank=True)),
                 ('fax', models.CharField(max_length=50, null=True, blank=True)),
                 ('website', models.URLField(null=True, blank=True)),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Participant',
@@ -62,12 +55,9 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('address', models.TextField(null=True, blank=True)),
                 ('phone_no', models.CharField(max_length=50, null=True, blank=True)),
-                ('email', models.EmailField(max_length=75, null=True, blank=True)),
+                ('email', models.EmailField(max_length=254, null=True, blank=True)),
                 ('organization', models.ForeignKey(blank=True, to='training.Organization', null=True)),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='ResourcePerson',
@@ -76,12 +66,9 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('address', models.TextField(null=True, blank=True)),
                 ('phone_no', models.CharField(max_length=50, null=True, blank=True)),
-                ('email', models.EmailField(max_length=75, null=True, blank=True)),
+                ('email', models.EmailField(max_length=254, null=True, blank=True)),
                 ('organization', models.ForeignKey(blank=True, to='training.Organization', null=True)),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='TargetGroup',
@@ -93,12 +80,11 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
-                ('parent', mptt.fields.TreeForeignKey(related_name=b'children', blank=True, to='training.TargetGroup', null=True)),
+                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='training.TargetGroup', null=True)),
             ],
             options={
                 'abstract': False,
             },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Training',
@@ -114,19 +100,15 @@ class Migration(migrations.Migration):
                 ('conclusion', froala_editor.fields.FroalaField(null=True, blank=True)),
                 ('feedback', froala_editor.fields.FroalaField(null=True, blank=True)),
                 ('curriculum', froala_editor.fields.FroalaField(null=True, blank=True)),
-                ('categories', models.ManyToManyField(related_name=b'trainings', null=True, to='training.Category', blank=True)),
-                ('participants', models.ManyToManyField(related_name=b'trainings', null=True, to='training.Participant', blank=True)),
-                ('resource_persons', models.ManyToManyField(related_name=b'trainings', null=True, to='training.ResourcePerson', blank=True)),
-                ('target_groups', models.ManyToManyField(related_name=b'trainings', null=True, to='training.TargetGroup', blank=True)),
+                ('categories', models.ManyToManyField(related_name='trainings', to='training.Category', blank=True)),
+                ('participants', models.ManyToManyField(related_name='trainings', to='training.Participant', blank=True)),
+                ('resource_persons', models.ManyToManyField(related_name='trainings', to='training.ResourcePerson', blank=True)),
+                ('target_groups', models.ManyToManyField(related_name='trainings', to='training.TargetGroup', blank=True)),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
         migrations.AddField(
             model_name='file',
             name='training',
-            field=models.ForeignKey(related_name=b'files', to='training.Training'),
-            preserve_default=True,
+            field=models.ForeignKey(related_name='files', to='training.Training'),
         ),
     ]
