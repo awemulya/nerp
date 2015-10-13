@@ -12,7 +12,7 @@ import inventory.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0003_auto_20151008_1051'),
+        ('core', '0002_auto_20151007_2145'),
         ('contenttypes', '0002_remove_content_type_name'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
