@@ -192,10 +192,14 @@
                                     data-bind="click: disapprove, visible: status() == 'Approved'">
                                 Disapprove
                             </button>
+{#                            <button class="btn btn-default"#}
+{#                                    data-bind="click: function(data, event) { fulfill($root, data, event) }, visible: status() == 'Approved'">#}
+{#                                Set as#}
+{#                                Fulfilled#}
+{#                            </button>#}
                             <button class="btn btn-default"
-                                    data-bind="click: function(data, event) { fulfill($root, data, event) }, visible: status() == 'Approved'">
-                                Set as
-                                Fulfilled
+                                    data-bind="click: fulfill, visible: status() == 'Approved'">
+                                Set as Fulfilled
                             </button>
                             <button class="btn btn-default"
                                     data-bind="click: unfulfill, visible: status() == 'Fulfilled'">Set

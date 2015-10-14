@@ -272,12 +272,13 @@ function DemandRow(row, demand_vm) {
         });
     };
 
-    self.fulfill = function (root, item, event) {
-        if (root.release_no() == '' || !root.release_no()) {
-            alert.error('Release No. is required!');
-            return false;
-        }
-        root.save();
+    self.fulfill = function (item, event) {
+    //self.fulfill = function (root, item, event) {
+        //if (root.release_no() == '' || !root.release_no()) {
+        //    alert.error('Release No. is required!');
+        //    return false;
+        //}
+        //root.save();
         $.ajax({
             type: "POST",
             url: '/inventory/fulfill/demand_form/',
