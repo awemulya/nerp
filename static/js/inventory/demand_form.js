@@ -113,16 +113,6 @@ function DemandViewModel(data) {
     self.msg = ko.observable('');
     self.status = ko.observable('standby');
 
-    self.item_changed = function (row) {
-        var selected_item = $.grep(self.items(), function (i) {
-            return i.id == row.item_id();
-        })[0];
-        if (!selected_item) return;
-        row.specification(selected_item.description);
-        row.unit(selected_item.unit);
-        row.inventory_account_id(selected_item.account_no);
-    };
-
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, DemandRow);
 
     for (var k in data)
@@ -191,6 +181,15 @@ function DemandRow(row, demand_vm) {
         if (row[k] != null)
             self[k] = ko.observable(row[k]);
     }
+
+    self.item.subscribe(function (item) {
+        if (!item) return;
+        if (!self.specification())
+            self.specification(item.description);
+        if (!self.unit())
+            self.unit(item.unit);
+        self.inventory_account_id(item.account_no);
+    });
 
     self.load_groups = function (val) {
         if (val) {
