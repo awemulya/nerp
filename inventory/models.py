@@ -97,6 +97,7 @@ class InventoryAccount(models.Model):
     current_balance = models.FloatField(default=0)
     # current_cr = models.FloatField(null=True, blank=True)
     opening_balance = models.FloatField(default=0)
+    opening_rate = models.FloatField(default=0)
 
     def __unicode__(self):
         return str(self.account_no) + ' [' + self.name + ']'
@@ -181,13 +182,15 @@ class Item(models.Model):
     def save(self, *args, **kwargs):
         account_no = kwargs.pop('account_no')
         opening_balance = kwargs.pop('opening_balance')
+        opening_rate = kwargs.pop('opening_rate')
         if account_no:
             if self.account:
                 account = self.account
                 account.account_no = account_no
             else:
                 account = InventoryAccount(code=self.code, name=self.name, account_no=account_no,
-                                           opening_balance=opening_balance, current_balance=opening_balance)
+                                           opening_balance=opening_balance, current_balance=opening_balance,
+                                           opening_rate=opening_rate)
             account.save()
             self.account = account
         super(Item, self).save(*args, **kwargs)
@@ -422,6 +425,7 @@ class EntryReportRow(models.Model):
     quantity = models.FloatField()
     unit = models.CharField(max_length=50)
     rate = models.FloatField()
+    vattable = models.BooleanField(default=True)
     other_expenses = models.FloatField(default=0)
     remarks = models.CharField(max_length=254, blank=True, null=True)
     entry_report = models.ForeignKey(EntryReport, related_name='rows', blank=True, null=True)
@@ -429,7 +433,10 @@ class EntryReportRow(models.Model):
                               object_id_field='model_id')
 
     def total_entry_cost(self):
-        return self.rate * self.quantity * 1.13 + self.other_expenses
+        cost = self.rate * self.quantity
+        if self.vattable:
+            cost *= 1.13
+        return cost + self.other_expenses
 
     def get_voucher_no(self):
         if self.entry_report:

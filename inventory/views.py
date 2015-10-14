@@ -630,10 +630,11 @@ def item_form(request, id=None):
             # other_properties_json = json.dumps(other_properties, sort_keys=True, indent=4)
             item.other_properties = other_properties
             item.depreciation = dep
-            item.save(account_no=form.cleaned_data['account_no'], opening_balance=form.cleaned_data['opening_balance'])
+            item.save(account_no=form.cleaned_data['account_no'], opening_balance=form.cleaned_data['opening_balance'], opening_rate=form.cleaned_data['opening_rate'])
             opening_balance = form.cleaned_data['opening_balance']
+            opening_rate = form.cleaned_data['opening_rate']
             if int(opening_balance) > 0:
-                entry_report_row = EntryReportRow(sn=1, item=item, quantity=opening_balance, unit=item.unit, rate=0,
+                entry_report_row = EntryReportRow(sn=1, item=item, quantity=opening_balance, unit=item.unit, rate=opening_rate,
                                                   remarks="Opening Balance")
                 date = datetime.datetime.now()
                 entry_report_row.save()
@@ -1264,6 +1265,7 @@ def purchase_entry_report(request, id=None):
             row.quantity = r.quantity
             row.unit = r.unit
             row.rate = r.rate
+            row.vattable = r.vattable
             row.remarks = r.remarks
             row_data = EntryReportRowSerializer(row).data
             all_rows.append(row_data)
@@ -1311,7 +1313,7 @@ def save_entry_report(request):
         values = {'sn': index + 1, 'item_id': row.get('item_id'),
                   'specification': row.get('specification'),
                   'quantity': row.get('quantity'), 'unit': row.get('unit'), 'rate': row.get('rate'),
-                  'remarks': row.get('remarks'), 'other_expenses': other_expenses,
+                  'remarks': row.get('remarks'), 'other_expenses': other_expenses, 'vattable': row.get('vattable'),
                   'entry_report': obj}
         submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
         if not created:

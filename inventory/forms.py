@@ -24,6 +24,7 @@ class ItemForm(KOModelForm):
                                                                required=False)
     account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'))
     opening_balance = forms.Field(widget=forms.TextInput(), initial=0, label=_('Opening Balance'))
+    opening_rate = forms.Field(widget=forms.TextInput(), initial=0, label=_('Opening Rate'))
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')

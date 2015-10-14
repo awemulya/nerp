@@ -1142,6 +1142,9 @@ function empty_to_zero(o) {
 }
 
 function round2(n) {
+    if (n == 0){
+        return 0;
+    }
     return isAN(n) ? Math.round(n * 100) / 100 : '';
 }
 

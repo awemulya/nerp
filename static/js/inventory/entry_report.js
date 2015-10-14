@@ -84,9 +84,7 @@ function EntryReportRow(row) {
     self.remarks = ko.observable();
     self.other_expenses = ko.observable();
 
-    self.vat_amount = function () {
-        return round2(self.rate() * 0.13);
-    }
+
 
     self.amount = function () {
         return round2(parseFloat(self.rate()) + parseFloat(self.vat_amount()));
@@ -99,5 +97,15 @@ function EntryReportRow(row) {
     for (var k in row) {
         if (row[k] != null)
             self[k] = ko.observable(row[k]);
+    }
+
+    self.vat_amount = function () {
+        var vat_rate;
+        if (self.vattable()){
+            vat_rate = 0.13;
+        }else{
+            vat_rate = 0;
+        }
+        return round2(self.rate() * vat_rate);
     }
 }
