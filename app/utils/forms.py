@@ -132,11 +132,17 @@ class KOModelForm(forms.ModelForm):
 
     def refine(self):
         for (name, field) in self.fields.items():
-            # add HTML5 required attribute for required fields
+            widget = field.widget
+            widget.attrs['data-bind'] = 'value: ' + name
+            exclude_form_control = ['CheckboxInput', 'RadioSelect']
+            if widget.__class__.__name__ in exclude_form_control:
+                continue
             if field.required:
                 field.widget.attrs['required'] = 'required'
-            field.widget.attrs['data-bind'] = 'value: ' + name
-            field.widget.attrs['class'] = 'form-control'
+            if 'class' in widget.attrs:
+                widget.attrs['class'] += ' form-control'
+            else:
+                widget.attrs['class'] = 'form-control'
 
 
 class UserModelChoiceField(forms.ModelChoiceField):

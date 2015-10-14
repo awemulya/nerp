@@ -630,12 +630,15 @@ def item_form(request, id=None):
             # other_properties_json = json.dumps(other_properties, sort_keys=True, indent=4)
             item.other_properties = other_properties
             item.depreciation = dep
-            item.save(account_no=form.cleaned_data['account_no'], opening_balance=form.cleaned_data['opening_balance'], opening_rate=form.cleaned_data['opening_rate'])
             opening_balance = form.cleaned_data['opening_balance']
             opening_rate = form.cleaned_data['opening_rate']
+            opening_rate_vattable = form.cleaned_data['opening_rate_vattable']
+            item.save(account_no=form.cleaned_data['account_no'], opening_balance=opening_balance,
+                      opening_rate=opening_rate, opening_rate_vattable=opening_rate_vattable)
+
             if int(opening_balance) > 0:
                 entry_report_row = EntryReportRow(sn=1, item=item, quantity=opening_balance, unit=item.unit, rate=opening_rate,
-                                                  remarks="Opening Balance")
+                                                  vattable=opening_rate_vattable, remarks="Opening Balance")
                 date = datetime.datetime.now()
                 entry_report_row.save()
                 set_transactions(entry_report_row, date,

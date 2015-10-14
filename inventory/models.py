@@ -98,6 +98,7 @@ class InventoryAccount(models.Model):
     # current_cr = models.FloatField(null=True, blank=True)
     opening_balance = models.FloatField(default=0)
     opening_rate = models.FloatField(default=0)
+    opening_rate_vattable = models.BooleanField(default=True)
 
     def __unicode__(self):
         return str(self.account_no) + ' [' + self.name + ']'
@@ -183,6 +184,7 @@ class Item(models.Model):
         account_no = kwargs.pop('account_no')
         opening_balance = kwargs.pop('opening_balance')
         opening_rate = kwargs.pop('opening_rate')
+        opening_rate_vattable = kwargs.pop('opening_rate_vattable')
         if account_no:
             if self.account:
                 account = self.account
@@ -190,7 +192,7 @@ class Item(models.Model):
             else:
                 account = InventoryAccount(code=self.code, name=self.name, account_no=account_no,
                                            opening_balance=opening_balance, current_balance=opening_balance,
-                                           opening_rate=opening_rate)
+                                           opening_rate=opening_rate, opening_rate_vattable=opening_rate_vattable)
             account.save()
             self.account = account
         super(Item, self).save(*args, **kwargs)
