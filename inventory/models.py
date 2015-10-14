@@ -10,12 +10,12 @@ from django.db.models import F
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import ugettext as _
 from jsonfield import JSONField
+from njango.utils import ne2en
+from njango.fields import BSDateField, today
 
 from app.utils.helpers import zero_for_none, none_for_zero
-from njango.utils import ne2en
 from users.models import User
 from core.models import FiscalYear, Party
-from njango.fields import BSDateField, today
 
 
 def alter(account, date, diff):
@@ -531,6 +531,25 @@ class InventoryAccountRow(models.Model):
     # inventory_account = models.ForeignKey(InventoryAccount, related_name='rows')
     journal_entry = models.OneToOneField(JournalEntry, related_name='account_row')
 
+    @property
+    def expense_total(self):
+        if self.expense_total_cost_price:
+            return self.expense_total_cost_price
+        total = 0
+        if self.journal_entry.creator.__class__.__name__ == 'DemandRow':
+            try:
+                for release in self.journal_entry.creator.releases.all():
+                    total += release.item_instance.rate
+                return total
+            except Exception as e:
+                import ipdb
+
+                ipdb.set_trace()
+        return 0
+
+    def __str__(self):
+        return str(self.journal_entry)
+
 
 @receiver(pre_delete, sender=EntryReportRow)
 def _entry_report_row_delete(sender, instance, **kwargs):
@@ -638,6 +657,10 @@ class ItemInstance(models.Model):
     location = models.ForeignKey(ItemLocation)
     other_properties = JSONField(null=True, blank=True)
     source = models.ForeignKey(EntryReportRow, null=True, blank=True)
+
+    @property
+    def rate(self):
+        return self.item_rate
 
     def __unicode__(self):
         return unicode(self.item) + u' at ' + unicode(self.location)

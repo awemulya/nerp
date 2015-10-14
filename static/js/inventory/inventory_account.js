@@ -23,7 +23,7 @@ function InventoryAccountVM(data) {
                     alert.success('Saved!');
                 }
             },
-            error: function(XMLHttpRequest, textStatus, errorThrown) {
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
                 alert.error(textStatus);
             }
         });
@@ -31,11 +31,15 @@ function InventoryAccountVM(data) {
 
 }
 
-function InventoryAccountRow(data){
+function InventoryAccountRow(data) {
     var self = this;
 
-    for (var i in data){
+    for (var i in data) {
         self[i] = ko.observable(data[i]);
+    }
+
+    if (self.income_quantity()) {
+        self.expense_total(null);
     }
 
 }

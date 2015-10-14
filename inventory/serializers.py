@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 
 from core.serializers import PartySerializer
@@ -119,11 +120,33 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
     income_rate = serializers.SerializerMethodField()
     income_total = serializers.SerializerMethodField()
     expense_quantity = serializers.SerializerMethodField()
-    expense_total_cost_price = serializers.SerializerMethodField()
+    # expense_total_cost_price = serializers.SerializerMethodField()
     remaining_total_cost_price = serializers.SerializerMethodField()
     remarks = serializers.SerializerMethodField()
     current_balance = serializers.SerializerMethodField()
     date = serializers.DateField(format=None)
+
+    # expense_total = serializers.ReadOnlyField(source='account_row.expense_total')
+
+    expense_total = serializers.SerializerMethodField()
+
+    def get_expense_total(self, obj):
+        try:
+            if obj.account_row.expense_total_cost_price:
+                return obj.account_row.expense_total_cost_price
+        except ObjectDoesNotExist:
+            pass
+        total = 0
+        if obj.creator.__class__.__name__ == 'DemandRow':
+            try:
+                for release in obj.creator.releases.all():
+                    total += release.item_instance.rate
+                return total
+            except Exception as e:
+                import ipdb
+
+                ipdb.set_trace()
+        return 0
 
     class Meta:
         model = JournalEntry
@@ -174,11 +197,11 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
             return ''
         return obj.creator.release_quantity
 
-    def get_expense_total_cost_price(self, obj):
-        try:
-            return obj.account_row.expense_total_cost_price or ''
-        except:
-            return ''
+    # def get_expense_total_cost_price(self, obj):
+    #     try:
+    #         return obj.account_row.expense_total_cost_price or ''
+    #     except:
+    #         return ''
 
     def get_remaining_total_cost_price(self, obj):
         try:

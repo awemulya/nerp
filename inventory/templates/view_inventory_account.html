@@ -99,7 +99,7 @@
 
 
             <td data-bind="text: expense_quantity(), localize: 1"></td>
-            <td data-bind="editableText: expense_total_cost_price, localize: 1"></td>
+            <td data-bind="editableText: expense_total, localize: 1, disable_content_editable: income_quantity()"></td>
             <td data-bind="text: current_balance(), localize: 1"></td>
             <td data-bind="editableText: remaining_total_cost_price, localize: 1"></td>
             <td data-bind="editableText: remarks"></td>

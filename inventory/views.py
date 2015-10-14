@@ -1373,7 +1373,7 @@ def save_account(request):
             row['remaining_total_cost_price'] = None
         values = {'country_of_production_or_company_name': row.get('country_or_company'), 'size': row.get('size'),
                   'expected_life': row.get('expected_life'), 'source': row.get('source'), 'remarks': row.get('remarks'),
-                  'expense_total_cost_price': row.get('expense_total_cost_price'),
+                  'expense_total_cost_price': row.get('expense_total'),
                   'remaining_total_cost_price': row.get('remaining_total_cost_price')}
         account_row = save_model(account_row, values)
     return JsonResponse(dct)
