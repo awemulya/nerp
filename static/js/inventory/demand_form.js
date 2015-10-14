@@ -220,7 +220,6 @@ function DemandRow(row, demand_vm) {
             }
             var match = null;
             var release_vm;
-            console.log(release.location);
             for (var k in self.release_vms()) {
                 release_vm = self.release_vms()[k];
                 if (release_vm.id == id && release_vm.location_id == release.location) {
@@ -236,8 +235,7 @@ function DemandRow(row, demand_vm) {
                 release_vm = new ReleaseVM(group, release.item_instance.id, release.location);
                 self.release_vms.push(release_vm);
             }
-
-            //}
+            get_by_id(self.groups(), release_vm.id).instances.remove(release.item_instance.id);
         }
     }
 

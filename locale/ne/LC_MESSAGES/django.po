@@ -653,7 +653,7 @@ msgstr "मालसामान बुझिलेनेको दस्तख�
 
 #: inventory/templates/demand_form.html:261
 msgid "Export as XLS"
-msgstr ""
+msgstr "XLSमा निर्यात गर्नुहोस"
 
 #: inventory/templates/demand_form.html:263
 #: inventory/templates/entry_report.html:109

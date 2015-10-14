@@ -983,10 +983,11 @@ def fulfill_demand(request):
         return JsonResponse(dct)
 
     for release in row.releases.all():
-        pass
-    import ipdb
-
-    ipdb.set_trace()
+        release.item_instance.location_id = release.location_id
+        release.item_instance.save()
+    # import ipdb
+    #
+    # ipdb.set_trace()
     set_transactions(row, row.demand.date,
                      ['cr', row.item.account, row.release_quantity],
                      )
@@ -1019,11 +1020,13 @@ def unfulfill_demand(request):
     journal_entry = JournalEntry.get_for(row)
     journal_entry.delete()
 
-    items = ItemInstance.objects.filter(item_id=row.item_id, location_id=int(params.get('location')))
-    for item in items:
-        item.location = ItemLocation.objects.get(name='Store')
-        item.save()
+    row_releases = row.releases.all()
 
+    if row_releases:
+        store = ItemLocation.objects.get(name='Store')
+        for release in row_releases:
+            release.item_instance.location_id = store.id
+            release.item_instance.save()
     row.status = 'Approved'
     row.save()
     dct['id'] = row.id
