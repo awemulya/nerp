@@ -23,6 +23,7 @@ function ReleaseVM(group, instance_id, location) {
     self.property = group.property;
     self.property_str = group.property_str;
     self.rate = group.rate;
+    self.location = ko.observable(location);
 
     self.count = function () {
         return self.instances().length;
@@ -217,23 +218,22 @@ function DemandRow(row, demand_vm) {
                 var group = new GroupVM(group_data);
                 self.groups.push(group);
             }
-            //var release_vm = new ReleaseVM(group, release.item_instance.id, release.item_instance.location);
-            //self.release_vms.push(release_vm);
-            //} else {
             var match = null;
             var release_vm;
+            console.log(release.location);
             for (var k in self.release_vms()) {
                 release_vm = self.release_vms()[k];
-                if (release_vm.id == id && release_vm.location_id == release.item_instance.location) {
+                if (release_vm.id == id && release_vm.location_id == release.location) {
                     match = release_vm;
                     break;
                 }
             }
+
             if (match) {
                 release_vm.instances.push(release.item_instance.id);
             }
-            else {
-                release_vm = new ReleaseVM(group, release.item_instance.id, release.item_instance.location);
+            else if (group){
+                release_vm = new ReleaseVM(group, release.item_instance.id, release.location);
                 self.release_vms.push(release_vm);
             }
 

@@ -30,7 +30,7 @@ def set_transactions(model, date, *args):
         defaults={
             'date': date
         })
-    
+
     for arg in args:
         matches = journal_entry.transactions.filter(account=arg[1])
         diff = 0
@@ -646,7 +646,7 @@ class ItemInstance(models.Model):
 class Release(models.Model):
     demand_row = models.ForeignKey(DemandRow, related_name='releases')
     item_instance = models.ForeignKey(ItemInstance)
-    # location = models.ForeignKey(ItemLocation)
+    location = models.ForeignKey(ItemLocation)
 
     def __unicode__(self):
         return unicode(self.item_instance)

@@ -1,11 +1,12 @@
 from rest_framework import serializers
-from core.models import Party
-from core.serializers import PartySerializer
 
-from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Demand, DemandRow, Item, PurchaseOrder, PurchaseOrderRow, HandoverRow, Handover, \
+from core.serializers import PartySerializer
+from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Demand, DemandRow, Item, PurchaseOrder, \
+    PurchaseOrderRow, HandoverRow, Handover, \
     EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction, ItemLocation, Depreciation, \
     ItemInstance, \
     Release
+
 
 class ItemInstanceSerializer(serializers.ModelSerializer):
     properties = serializers.SerializerMethodField()
@@ -17,13 +18,16 @@ class ItemInstanceSerializer(serializers.ModelSerializer):
     def get_properties(self, obj):
         return obj.other_properties
 
+
 class ItemLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemLocation
 
+
 class DepreciationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Depreciation
+
 
 class ItemSerializer(serializers.ModelSerializer):
     account_no = serializers.ReadOnlyField(source='account.account_no')
@@ -33,16 +37,18 @@ class ItemSerializer(serializers.ModelSerializer):
         model = Item
         exclude = ['depreciation']
 
+
 class ReleaseSerializer(serializers.ModelSerializer):
     item_instance = ItemInstanceSerializer()
 
     class Meta:
         model = Release
-        
+
+
 class DemandRowSerializer(serializers.ModelSerializer):
     item_id = serializers.ReadOnlyField(source='item.id')
     releases = ReleaseSerializer(many=True)
-    
+
     class Meta:
         model = DemandRow
         exclude = ['item']
@@ -180,7 +186,6 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         except:
             return ''
 
-
     def get_remarks(self, obj):
         try:
             return obj.account_row.remarks
@@ -194,7 +199,8 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
 class InspectionRowSerializer(serializers.ModelSerializer):
     item_name = serializers.ReadOnlyField(source="transaction.account.item.name")
     item_account_number = serializers.ReadOnlyField(source="transaction.account.account_no")
-    item_property_classification_reference_number = serializers.ReadOnlyField(source="transaction.account.item.property_classification_reference_number")
+    item_property_classification_reference_number = serializers.ReadOnlyField(
+        source="transaction.account.item.property_classification_reference_number")
     item_unit = serializers.ReadOnlyField(source="transaction.account.item.unit")
     item_quantity = serializers.ReadOnlyField(source="transaction.dr_amount")
 
@@ -202,16 +208,19 @@ class InspectionRowSerializer(serializers.ModelSerializer):
         model = InspectionRow
         exclude = ['transaction']
 
+
 class InspectionSerializer(serializers.ModelSerializer):
     rows = InspectionRowSerializer(many=True)
 
     class Meta:
         model = Inspection
 
+
 class TransactionSerializer(serializers.ModelSerializer):
     account_no = serializers.ReadOnlyField(source="account.account_no")
     current_balance = serializers.ReadOnlyField(source="account.current_balance")
-    inventory_classification_reference_no = serializers.ReadOnlyField(source="account.item.property_classification_reference_number")
+    inventory_classification_reference_no = serializers.ReadOnlyField(
+        source="account.item.property_classification_reference_number")
     item_name = serializers.ReadOnlyField(source="account.item.name")
     unit = serializers.ReadOnlyField(source="account.item.unit")
     rate = serializers.ReadOnlyField(source="journal_entry.creator.rate")
@@ -223,6 +232,7 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = Transaction
         exclude = ['dr_amount', 'cr_amount', 'current_balance', 'account', 'journal_entry']
 
+
 class PartyQuotationSerializer(serializers.ModelSerializer):
     party = PartySerializer()
 
@@ -233,12 +243,12 @@ class PartyQuotationSerializer(serializers.ModelSerializer):
 class QuotationComparisonRowSerializer(serializers.ModelSerializer):
     bidder_quote = PartyQuotationSerializer(many=True)
     item_id = serializers.ReadOnlyField(source='item.id')
-    
 
     class Meta:
         model = QuotationComparisonRow
         exclude = ['item']
-        
+
+
 class QuotationComparisonSerializer(serializers.ModelSerializer):
     rows = QuotationComparisonRowSerializer(many=True)
 

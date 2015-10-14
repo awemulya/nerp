@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-import json, datetime
+import json
+import datetime
 # from datetime import date
 
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.contrib import messages
 from django.utils.translation import ugettext as _
 
 from openpyxl import Workbook
@@ -29,10 +29,10 @@ from inventory.models import PartyQuotation, QuotationComparison, QuotationCompa
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
     InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release
 
-from inventory.serializers import PartyQuotationSerializer, QuotationComparisonSerializer, QuotationComparisonRowSerializer, \
-    DepreciationSerializer, DemandSerializer, ItemSerializer, PurchaseOrderSerializer, \
+from inventory.serializers import QuotationComparisonSerializer, DepreciationSerializer, DemandSerializer, ItemSerializer, \
+    PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
-    TransactionSerializer, ItemLocationSerializer, ItemInstanceSerializer
+    TransactionSerializer, ItemLocationSerializer
 
 
 def list_transactions(request):
@@ -903,9 +903,9 @@ def save_demand(request):
                 for release in row['release_vms']:
                     for instance in release['instances']:
                         instance_model = ItemInstance.objects.get(id=instance)
-                        instance_model.location_id = release['location_id']
-                        instance_model.save()
-                        rel = Release(item_instance=instance_model, demand_row=submodel)
+                        # release.location_id = release['location_id']
+                        # instance_model.save()
+                        rel = Release(item_instance=instance_model, demand_row=submodel, location_id=release['location_id'])
                         rel.save()
 
                 # set_transactions(submodel, request.POST.get('date'),
@@ -923,6 +923,110 @@ def save_demand(request):
             dct['error_message'] = str(e)
         else:
             dct['error_message'] = 'Error in form data!'
+    return JsonResponse(dct)
+
+
+@group_required('Store Keeper', 'Chief')
+def approve_demand(request):
+    params = json.loads(request.body)
+    dct = {'rows': {}}
+    if params.get('id'):
+        row = DemandRow.objects.get(id=params.get('id'))
+    else:
+        dct['error_message'] = 'Row needs to be saved before being approved!'
+        return JsonResponse(dct)
+        # invalid_check = invalid(params, ['item_id', 'quantity', 'unit', 'release_quantity', 'purpose', 'location'])
+        # invalid_check = invalid(params, ['item_id', 'quantity', 'unit'])
+
+        # if invalid_check:
+        #     dct['error_message'] = 'Fill out following fields: ' + ', '.join(invalid_check)
+        #     return JsonResponse(dct)
+        # else:
+        # if row.item.account.current_balance < float(params.get('release_quantity')):
+        # dct['error_message'] = 'We dont have this item in stock. Purchase Item'
+        # values = {'item_id': params.get('item_id'),
+        #           'specification': params.get('specification'),
+        #           'quantity': params.get('quantity'), 'unit': params.get('unit'),
+        #           'release_quantity': params.get('release_quantity'), 'remarks': params.get('remarks'),
+        #           'purpose': params.get('purpose'), 'location': ItemLocation.objects.get(id=params.get('location'))}
+        # row = save_model(row, values)
+    row.status = 'Approved'
+    row.save()
+    return JsonResponse(dct)
+
+
+@group_required('Store Keeper', 'Chief')
+def disapprove_demand(request):
+    params = json.loads(request.body)
+    dct = {}
+    if params.get('id'):
+        row = DemandRow.objects.get(id=params.get('id'))
+    else:
+        dct['error_message'] = 'Voucher needs to be saved before being disapproved!'
+        return JsonResponse(dct)
+    row.status = 'Requested'
+    row.save()
+    return JsonResponse(dct)
+
+
+@group_required('Store Keeper', 'Chief')
+def fulfill_demand(request):
+    params = json.loads(request.body)
+    dct = {}
+    if params.get('id'):
+        row = DemandRow.objects.get(id=params.get('id'))
+    else:
+        dct['error_message'] = 'Row needs to be saved before being fulfilled!'
+        return JsonResponse(dct)
+    if params['status'] == 'Requested':
+        dct['error_message'] = 'Row needs to be approved before being fulfilled!'
+        return JsonResponse(dct)
+
+    for release in row.releases.all():
+        pass
+    import ipdb
+
+    ipdb.set_trace()
+    set_transactions(row, row.demand.date,
+                     ['cr', row.item.account, row.release_quantity],
+                     )
+
+    # Search items in the stock
+    # items = ItemInstance.objects.filter(item_id=row.item_id, location_id=STORE_LOCATION_ID)
+    # release_quantity = int(row.release_quantity)
+    # for item, i in zip(items, range(0, release_quantity)):
+    #     item.location = row.location
+    #     item.save()
+
+    row.status = 'Fulfilled'
+    row.save()
+    dct['id'] = row.id
+    return JsonResponse(dct)
+
+
+@group_required('Store Keeper', 'Chief')
+def unfulfill_demand(request):
+    params = json.loads(request.body)
+    dct = {}
+    if params.get('id'):
+        row = DemandRow.objects.get(id=params.get('id'))
+    else:
+        dct['error_message'] = 'Row needs to be saved before being unfulfilled!'
+        return JsonResponse(dct)
+    if params['status'] != 'Fulfilled':
+        dct['error_message'] = 'Row needs to be fulfilled before being unfulfilled!'
+        return JsonResponse(dct)
+    journal_entry = JournalEntry.get_for(row)
+    journal_entry.delete()
+
+    items = ItemInstance.objects.filter(item_id=row.item_id, location_id=int(params.get('location')))
+    for item in items:
+        item.location = ItemLocation.objects.get(name='Store')
+        item.save()
+
+    row.status = 'Approved'
+    row.save()
+    dct['id'] = row.id
     return JsonResponse(dct)
 
 
@@ -1248,104 +1352,6 @@ def delete_entry_report(request, id):
     obj = get_object_or_404(EntryReport, id=id)
     obj.delete()
     return redirect(reverse('list_entry_reports'))
-
-
-@group_required('Store Keeper', 'Chief')
-def approve_demand(request):
-    params = json.loads(request.body)
-    dct = {'rows': {}}
-    if params.get('id'):
-        row = DemandRow.objects.get(id=params.get('id'))
-    else:
-        dct['error_message'] = 'Row needs to be saved before being approved!'
-        return JsonResponse(dct)
-        # invalid_check = invalid(params, ['item_id', 'quantity', 'unit', 'release_quantity', 'purpose', 'location'])
-        # invalid_check = invalid(params, ['item_id', 'quantity', 'unit'])
-
-        # if invalid_check:
-        #     dct['error_message'] = 'Fill out following fields: ' + ', '.join(invalid_check)
-        #     return JsonResponse(dct)
-        # else:
-        # if row.item.account.current_balance < float(params.get('release_quantity')):
-        # dct['error_message'] = 'We dont have this item in stock. Purchase Item'
-        # values = {'item_id': params.get('item_id'),
-        #           'specification': params.get('specification'),
-        #           'quantity': params.get('quantity'), 'unit': params.get('unit'),
-        #           'release_quantity': params.get('release_quantity'), 'remarks': params.get('remarks'),
-        #           'purpose': params.get('purpose'), 'location': ItemLocation.objects.get(id=params.get('location'))}
-        # row = save_model(row, values)
-    row.status = 'Approved'
-    row.save()
-    return JsonResponse(dct)
-
-
-@group_required('Store Keeper', 'Chief')
-def disapprove_demand(request):
-    params = json.loads(request.body)
-    dct = {}
-    if params.get('id'):
-        row = DemandRow.objects.get(id=params.get('id'))
-    else:
-        dct['error_message'] = 'Voucher needs to be saved before being disapproved!'
-        return JsonResponse(dct)
-    row.status = 'Requested'
-    row.save()
-    return JsonResponse(dct)
-
-
-@group_required('Store Keeper', 'Chief')
-def fulfill_demand(request):
-    params = json.loads(request.body)
-    dct = {}
-    if params.get('id'):
-        row = DemandRow.objects.get(id=params.get('id'))
-    else:
-        dct['error_message'] = 'Row needs to be saved before being fulfilled!'
-        return JsonResponse(dct)
-    if params['status'] == 'Requested':
-        dct['error_message'] = 'Row needs to be approved before being fulfilled!'
-        return JsonResponse(dct)
-    set_transactions(row, row.demand.date,
-                     ['cr', row.item.account, row.release_quantity],
-                     )
-
-    # Search items in the stock
-    # items = ItemInstance.objects.filter(item_id=row.item_id, location_id=STORE_LOCATION_ID)
-    # release_quantity = int(row.release_quantity)
-    # for item, i in zip(items, range(0, release_quantity)):
-    #     item.location = row.location
-    #     item.save()
-
-    row.status = 'Fulfilled'
-    row.save()
-    dct['id'] = row.id
-    return JsonResponse(dct)
-
-
-@group_required('Store Keeper', 'Chief')
-def unfulfill_demand(request):
-    params = json.loads(request.body)
-    dct = {}
-    if params.get('id'):
-        row = DemandRow.objects.get(id=params.get('id'))
-    else:
-        dct['error_message'] = 'Row needs to be saved before being unfulfilled!'
-        return JsonResponse(dct)
-    if params['status'] != 'Fulfilled':
-        dct['error_message'] = 'Row needs to be fulfilled before being unfulfilled!'
-        return JsonResponse(dct)
-    journal_entry = JournalEntry.get_for(row)
-    journal_entry.delete()
-
-    items = ItemInstance.objects.filter(item_id=row.item_id, location_id=int(params.get('location')))
-    for item in items:
-        item.location = ItemLocation.objects.get(name='Store')
-        item.save()
-
-    row.status = 'Approved'
-    row.save()
-    dct['id'] = row.id
-    return JsonResponse(dct)
 
 
 @group_required('Store Keeper', 'Chief')
