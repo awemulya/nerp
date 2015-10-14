@@ -1166,6 +1166,9 @@ Object.size = function (obj) {
 };
 
 get_by_id = function (array, id) {
+    if (!array){
+        return null;
+    }
     if (typeof(array) == 'function') {
         array = array()
     }

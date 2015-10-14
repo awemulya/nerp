@@ -38,8 +38,4 @@ function InventoryAccountRow(data){
         self[i] = ko.observable(data[i]);
     }
 
-    self.remaining_quantity= function(){
-        return 12;
-    }
-
 }

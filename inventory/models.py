@@ -30,7 +30,7 @@ def set_transactions(model, date, *args):
         defaults={
             'date': date
         })
-
+    
     for arg in args:
         matches = journal_entry.transactions.filter(account=arg[1])
         diff = 0

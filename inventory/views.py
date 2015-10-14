@@ -1318,6 +1318,7 @@ def fulfill_demand(request):
 
     row.status = 'Fulfilled'
     row.save()
+    dct['id'] = row.id
     return JsonResponse(dct)
 
 
@@ -1343,6 +1344,7 @@ def unfulfill_demand(request):
 
     row.status = 'Approved'
     row.save()
+    dct['id'] = row.id
     return JsonResponse(dct)
 
 
