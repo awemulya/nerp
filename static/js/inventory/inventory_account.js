@@ -8,7 +8,11 @@ function InventoryAccountVM(data) {
 
     var self = this;
 
-    self.table_vm = new TableViewModel({rows: data, auto_add_first: false}, InventoryAccountRow);
+    self.get_rows = function () {
+        return self.table_vm.rows();
+    }
+
+    self.table_vm = new TableViewModel({rows: data, auto_add_first: false, argument: self.get_rows}, InventoryAccountRow);
 
     self.save = function (item, event) {
         $.ajax({
@@ -31,7 +35,8 @@ function InventoryAccountVM(data) {
 
 }
 
-function InventoryAccountRow(data) {
+function InventoryAccountRow(data, get_all_rows) {
+
     var self = this;
 
     for (var i in data) {
@@ -42,4 +47,27 @@ function InventoryAccountRow(data) {
         self.expense_total(null);
     }
 
+    self.wrapper = ko.observable(0);
+
+    self.wrapper.remaining_total = function (root, index) {
+        return ko.computed({
+            read: function () {
+                var root_vm = root;
+                if (self.remaining_total_cost_price()) {
+                    return self.remaining_total_cost_price();
+                }
+                if (index() == 0) {
+                    ret = r2z(self.income_total()) - r2z(self.expense_total());
+                } else {
+                    ret = root_vm.table_vm.rows()[index() - 1].remaining_total_cost_price() + r2z(self.income_total()) - r2z(self.expense_total());
+
+                }
+                self.remaining_total_cost_price(ret);
+                return ret;
+            },
+            write: function (value) {
+                self.remaining_total_cost_price(value);
+            },
+        }, self);
+    }.bind(self.flags);
 }
