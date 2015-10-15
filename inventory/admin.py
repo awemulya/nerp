@@ -134,7 +134,7 @@ class ItemInstanceAdmin(admin.ModelAdmin):
     list_display = ('item', 'item_rate', 'location')
     list_display_links = ('item',)
     list_filter = ('location',)
-    search_fields = ('item', 'item_rate', 'location')
+    search_fields = ('item_rate', 'item__name', 'location__name')
 
 
 class ItemLocationAdmin(admin.ModelAdmin):

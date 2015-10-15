@@ -2,7 +2,7 @@
 import json
 import datetime
 # from datetime import date
-from django.db.models import Count
+from django.db.models import Count, Sum
 
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -1401,7 +1401,9 @@ class LocationDetail(DetailView):
         context = super(LocationDetail, self).get_context_data()
         all_instances = ItemInstance.objects.filter(location=self.object)
         instances = all_instances.values('item', 'item__name').annotate(
-            total=Count('item')).order_by('total')
+            total_count=Count('item')).annotate(total_value=Sum('item_rate')).order_by('total_value')
+        grand_total = sum(item['total_value'] for item in instances)
         context['instances'] = instances
+        context['grand_total'] = grand_total
         context['all_instances'] = all_instances
         return context
