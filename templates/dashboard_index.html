@@ -27,64 +27,7 @@
                 </div>
                 <div id="inventory" class="panel-collapse collapse in">
                     <div class="panel-body">
-                        {% ifusergroup 'Store Keeper' %}
-                            <a href="{% url 'list_inventory_items' %}">{% trans 'Inventory Items' %}</a>
-                            <br/>
-                            <a href="{% url 'create_inventory_item' %}">{% trans 'Create Inventory Item' %}</a>
-                            <br/>
-                            <a href="{% url 'list_parties' %}">{% trans 'Parties' %}</a>
-                            <br/>
-                            <a href="{% url 'create_party' %}">{% trans 'New' %} {% trans 'Party' %}</a>
-                            <br/>
-                            {#                        <a href="{% url 'list_inventory_categories' %}">{% trans 'Inventory Categories' %}</a>#}
-                            {#                        <br/>#}
-                            {#                        <a href="{% url 'create_inventory_category' %}">{% trans 'Create' %} {% trans 'Inventory' %} {% trans 'Category' %}</a>#}
-                            {#                        <br/>#}
-                            <a href="{% url 'create_demand_form' %}">{% trans 'New Demand Form' %}</a>
-                            <br/>
-                            <a href="{% url 'list_demand_forms' %}">{% trans 'Demand Forms' %}</a>
-                            <br/>
-                            <a href="{% url 'create_purchase_order' %}">{% trans 'New' %} {% trans 'Purchase Order' %}</a>
-                            <br/>
-                            <a href="{% url 'list_purchase_orders' %}">{% trans 'Purchase Orders' %}</a>
-                            <br/>
-                            <a href="{% url 'create_incoming_handover' %}">{% trans 'New' %} {% trans 'Incoming Handover' %}</a>
-                            <br/>
-                            <a href="{% url 'create_outgoing_handover' %}">{% trans 'Create' %} {% trans 'Outgoing Handover' %}</a>
-                            <br/>
-                            <a href="{% url 'list_incoming_handovers' %}">{% trans 'Incoming Handovers' %}</a>
-                            <br/>
-                            <a href="{% url 'list_outgoing_handovers' %}">{% trans 'Outgoing Handovers' %}</a>
-                            <br/>
-                            <a href="{% url 'list_entry_reports' %}">{% trans 'Entry Reports' %}</a>
-                            <br/>
-                            <a href="{% url 'list_handover_entry_reports' %}">{% trans 'Entry Reports for Handovers' %}</a>
-                            <br/>
-                            <a href="{% url 'list_purchase_entry_reports' %}">{% trans 'Entry Reports for Purchase Orders' %}</a>
-                            <br/>
-                            <a href="{% url 'list_inventory_accounts' %}">{% trans 'Inventory' %} {% trans 'Accounts' %}</a>
-                            <br/>
-                            <a href="{% url 'list_consumable_inventory_accounts' %}">{% trans 'Consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}</a>
-                            <br/>
-                            <a href="{% url 'list_non_consumable_inventory_accounts' %}">{% trans 'Non-Consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}</a>
-                            <br/>
-                            <a href="{% url 'inspection_report_list' %}">{% trans 'Inspection Report' %}</a>
-                            <br>
-                            <a href="{% url 'yearly_report_list' %}">{% trans 'Yearly Report' %}</a>
-                            <br/>
-                            <a href="{% url 'inventory_transactions_list' %}">{% trans 'View Transactions' %}</a>
-                            <br/>
-                            <a href="{% url 'depreciation_report' %}">{% trans 'Depreciation Report' %}</a>
-                            <br/>
-                            <a href="{% url 'list_quotation_forms' %}">{% trans 'Quotation Comparison' %}</a>
-                            <br/>
-
-                        {% else %}
-                            <a href="{% url 'create_demand_form' %}">{% trans 'New Demand Form' %}</a>
-                            <br/>
-                            <a href="{% url 'list_demand_forms' %}">{% trans 'Demand Forms' %}</a>
-                            <br/>
-                        {% endifusergroup %}
+                        {% include '_dashboard_inventory.html' %}
                     </div>
                 </div>
             {% endifappexists %}
