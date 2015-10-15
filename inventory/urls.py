@@ -99,6 +99,11 @@ urlpatterns = patterns('',
                        url(r'^depreciation-report/$', views.depreciation_report,
                            name='depreciation_report'),
 
+                       url(r'^locations/$', views.LocationList.as_view(),
+                           name='itemlocation_list'),
+                       url(r'^locations/(?P<pk>[0-9]+)$', views.LocationDetail.as_view(),
+                           name='itemlocation_detail'),
+
                        #url(r'^entry-report/$', views.entry_report, name='create_entry_report'),
                        #url(r'^purchase-order/(?P<id>[0-9]+)/$', views.purchase_order, name='update_purchase_order'),
                        #url(r'^save/purchase_order/$', views.save_purchase_order, name='save_purchase_order'),

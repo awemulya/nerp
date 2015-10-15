@@ -1,0 +1,41 @@
+{% extends "inventory_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Locations' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "itemlocation_list" %}">{% trans 'Locations' %}</a></li>
+{% endblock %}
+
+{% block content %}
+
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+    {% load filters %}
+
+    {% autosort object_list as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+
+    <table class="table table-striped table-bordered">
+        <thead>
+        <th>{% anchor name _('Name') %}</th>
+        <th>{% trans 'Remarks' %}</th>
+        {#        <th>{% anchor date _('Date') %}</th>#}
+        {#        <th>{% anchor purpose _('Purpose') %}</th>#}
+        </thead>
+        <tbody>
+        {% for item in paginated_objects %}
+            <tr>
+                <td>
+                    <a href="{% url 'itemlocation_detail' item.id %}">{{ item }}</a>
+                </td>
+                <td>{{ item.remarks }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% paginate %}
+
+{% endblock %}

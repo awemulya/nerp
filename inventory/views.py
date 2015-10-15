@@ -2,12 +2,14 @@
 import json
 import datetime
 # from datetime import date
+from django.db.models import Count
 
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
+from django.views.generic import ListView, DetailView
 
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
@@ -1386,3 +1388,20 @@ def save_account(request):
 
 def index(request):
     return render(request, 'inventory_index.html')
+
+
+class LocationList(ListView):
+    model = ItemLocation
+
+
+class LocationDetail(DetailView):
+    model = ItemLocation
+
+    def get_context_data(self, **kwargs):
+        context = super(LocationDetail, self).get_context_data()
+        all_instances = ItemInstance.objects.filter(location=self.object)
+        instances = all_instances.values('item', 'item__name').annotate(
+            total=Count('item')).order_by('total')
+        context['instances'] = instances
+        context['all_instances'] = all_instances
+        return context
