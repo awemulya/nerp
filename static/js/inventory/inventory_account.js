@@ -8,11 +8,7 @@ function InventoryAccountVM(data) {
 
     var self = this;
 
-    self.get_rows = function () {
-        return self.table_vm.rows();
-    }
-
-    self.table_vm = new TableViewModel({rows: data, auto_add_first: false, argument: self.get_rows}, InventoryAccountRow);
+    self.table_vm = new TableViewModel({rows: data, auto_add_first: false}, InventoryAccountRow);
 
     self.save = function (item, event) {
         $.ajax({
@@ -35,7 +31,7 @@ function InventoryAccountVM(data) {
 
 }
 
-function InventoryAccountRow(data, get_all_rows) {
+function InventoryAccountRow(data) {
 
     var self = this;
 
