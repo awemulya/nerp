@@ -5,7 +5,8 @@ from njango.models import TranslatableNumberModel
 FISCAL_YEARS = (
     (2069, "2069/70"),
     (2070, "2070/71"),
-    (2071, "2071/72")
+    (2071, "2071/72"),
+    (2072, "2072/73"),
 )
 
 SOURCES = [('nepal_government', 'Nepal Government'), ('foreign_cash_grant', 'Foreign Cash Grant'),
