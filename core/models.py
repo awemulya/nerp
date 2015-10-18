@@ -1,6 +1,8 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from njango.models import TranslatableNumberModel
-
+from njango.nepdate import bs, bs2ad, tuple_from_string
+from njango.utils import get_calendar
 
 FISCAL_YEARS = (
     (2069, "2069/70"),
@@ -28,12 +30,14 @@ class FiscalYear(models.Model):
 
 import dbsettings
 
+
 class AppSetting(dbsettings.Group):
     site_name = dbsettings.StringValue(default='NERP')
     # fiscal_year = dbsettings.MultipleChoiceValue(choices=[('13+', '13-19'), ('19+', '19-25'), ('25+', '25-40')])
     fiscal_year = dbsettings.StringValue(
         choices=FISCAL_YEARS)
     header_for_forms = dbsettings.TextValue()
+
 
 app_setting = AppSetting()
 
@@ -45,12 +49,12 @@ class Language(models.Model):
     def __unicode__(self):
         return self.name + ' (' + self.code + ')'
 
-    # def save(self, *args, **kwargs):
-    #     if len(self.code) is not 0 and len(self.name) is 0:
-    #         self.name = 'default'
-    #     elif len(self.code) is 0 and len(self.name) is not 0:
-    #         self.code = 'default'
-    #     super(Language, self).save(*args, **kwargs)
+        # def save(self, *args, **kwargs):
+        #     if len(self.code) is not 0 and len(self.name) is 0:
+        #         self.name = 'default'
+        #     elif len(self.code) is 0 and len(self.name) is not 0:
+        #         self.code = 'default'
+        #     super(Language, self).save(*args, **kwargs)
 
 
 class Account(models.Model):
@@ -174,3 +178,17 @@ class TaxScheme(models.Model):
 
     def __unicode__(self):
         return self.name + ' (' + str(self.percent) + '%)'
+
+
+def validate_in_fy(value):
+    fiscal_year = app_setting.fiscal_year
+    fiscal_year_start = fiscal_year + '-04-01'
+    bs[int(fiscal_year) + 1][2]
+    calendar = get_calendar()
+    if calendar == 'bs':
+        value_tuple = bs2ad(value)
+    else:
+        value_tuple = tuple_from_string(value)
+    fiscal_year_end = str(int(fiscal_year) + 1) + '-03-' + str(bs[int(fiscal_year) + 1][2])
+    if not bs2ad(fiscal_year_start) <= value_tuple <= bs2ad(fiscal_year_end):
+        raise ValidationError('%s is not in current fiscal year.' % value)

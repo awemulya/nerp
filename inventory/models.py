@@ -15,7 +15,7 @@ from njango.fields import BSDateField, today
 
 from app.utils.helpers import zero_for_none, none_for_zero
 from users.models import User
-from core.models import FiscalYear, Party
+from core.models import FiscalYear, Party, validate_in_fy
 
 
 def alter(account, date, diff):
@@ -357,7 +357,7 @@ class Demand(models.Model):
     release_no = models.IntegerField()
     fiscal_year = models.ForeignKey(FiscalYear)
     demandee = models.ForeignKey(User, related_name='demands')
-    date = BSDateField(default=today)
+    date = BSDateField(default=today, validators=[validate_in_fy])
     purpose = models.CharField(max_length=254)
 
     def get_voucher_no(self):
