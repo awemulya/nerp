@@ -356,7 +356,7 @@ def get_next_voucher_no(cls, attr):
 class Demand(models.Model):
     release_no = models.IntegerField()
     fiscal_year = models.ForeignKey(FiscalYear)
-    demandee = models.ForeignKey(User)
+    demandee = models.ForeignKey(User, related_name='demands')
     date = BSDateField(default=today)
     purpose = models.CharField(max_length=254)
 
