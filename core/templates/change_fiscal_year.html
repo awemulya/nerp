@@ -1,0 +1,35 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n filters %}
+
+{% block title %} {% trans 'Change Fiscal Year' %}{{ block.super }}{% endblock %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans "Home" %}</a> &rsaquo;
+        {% trans "Change Fiscal Year" %}
+    </div>
+{% endif %}{% endblock %}
+
+{% block content %}
+
+    <h1>
+        {# {% trans 'Current' %} {% trans 'Fiscal Year' %} : {{ 'core.models.app_setting.fiscal_year'|setting|localize }} #}
+        {% trans 'Current' %} {% trans 'Fiscal Year' %} : {{ current_fiscal_year|localize }}
+    </h1>
+
+    <form method="post">
+    {% csrf_token %}
+        {% trans 'New' %} {% trans 'Fiscal Year' %} :<br/>
+        <select name="fiscal_year">
+            {% for fiscal_year in fiscal_years %}
+                {# {% if not 'core.models.app_setting.fiscal_year'|setting|str_equals:fiscal_year.0 %} #}
+                {% if not 'core.models.app_setting.fiscal_year'|setting|add:"0" == fiscal_year.0 %}
+                    <option value="{{ fiscal_year.0 }}">{{ fiscal_year.1|localize }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <br/>
+        <input type="submit" value="{% trans 'Change' %}">
+    </form>
+
+{% endblock %}

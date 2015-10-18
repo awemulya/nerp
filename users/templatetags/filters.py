@@ -3,6 +3,7 @@
 import json
 from datetime import date, timedelta
 import importlib
+
 from django.core import serializers
 from django.db.models.query import QuerySet
 from django.template import Library
@@ -57,6 +58,11 @@ def if_not_none(obj):
     if obj is None:
         return ''
     return obj
+
+
+@register.filter
+def str_equals(value, arg):
+    return str(value) == str(arg)
 
 
 @register.filter
@@ -148,9 +154,6 @@ def setting(path):
     attr_name = path.split('.')[-1]
     val = getattr(group, attr_name)
     return val
-
-
-
 
 
 @register.tag

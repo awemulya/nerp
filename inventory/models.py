@@ -16,7 +16,7 @@ from njango.fields import BSDateField, today
 from app.utils.helpers import zero_for_none, none_for_zero
 from users.models import User
 from core.models import FiscalYear, Party, validate_in_fy
-
+from core.signals import fiscal_year_signal
 
 def alter(account, date, diff):
     Transaction.objects.filter(journal_entry__date__gt=date, account=account).update(
@@ -682,3 +682,10 @@ class Release(models.Model):
 
     def __unicode__(self):
         return unicode(self.item_instance)
+
+
+def fiscal_year_changed(sender, **kwargs):
+    import ipdb
+    ipdb.set_trace()
+
+fiscal_year_signal.connect(fiscal_year_changed)

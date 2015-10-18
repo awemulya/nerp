@@ -3,13 +3,16 @@ from django.core.urlresolvers import reverse
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.http import is_safe_url
+from django.contrib.auth.decorators import user_passes_test
+
 from account.serializers import AccountSerializer
 from app.utils.forms import form_view
 from core.forms import PartyForm, EmployeeForm
-from core.models import Party, Employee, BudgetHead, Donor, Activity, Account, TaxScheme, Language
+from core.models import Party, Employee, BudgetHead, Donor, Activity, Account, TaxScheme, Language, FISCAL_YEARS, FiscalYear
 from core.serializers import PartySerializer, EmployeeSerializer, BudgetSerializer, ActivitySerializer, DonorSerializer, \
     TaxSchemeSerializer, LanguageSerializer
 from users.models import group_required
+from .signals import fiscal_year_signal
 
 
 @group_required('Store Keeper', 'Chief', 'Accountant')
@@ -128,6 +131,7 @@ def languages_as_json(request):
     objects_data = LanguageSerializer(objects, many=True).data
     return JsonResponse(objects_data, safe=False)
 
+
 def change_calendar(request):
     nxt = request.POST.get('next', request.GET.get('next'))
     if not is_safe_url(url=nxt, host=request.get_host()):
@@ -140,3 +144,27 @@ def change_calendar(request):
         if cal_code and hasattr(request, 'session'):
             request.session['sess_cal'] = cal_code
     return response
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def change_fiscal_year(request):
+    if request.POST:
+        new_fiscal_year_str = request.POST.get('fiscal_year')
+
+        # app_setting.fiscal_year = new_fiscal_year_str
+        from dbsettings.models import Setting
+
+        fiscal_year_setting = Setting.objects.get(module_name='core.models', attribute_name='fiscal_year')
+        fiscal_year_setting.value = new_fiscal_year_str
+        fiscal_year_setting.save()
+
+        old_fiscal_year = FiscalYear.get()
+        new_fiscal_year = FiscalYear.get(new_fiscal_year_str)
+        fiscal_year_signal.send(sender=None, new_fiscal_year_str=new_fiscal_year_str, old_fiscal_year=old_fiscal_year,
+                                new_fiscal_year=new_fiscal_year)
+
+    context = {
+        'fiscal_years': FISCAL_YEARS,
+        'current_fiscal_year': FiscalYear.get()
+    }
+    return render(request, 'change_fiscal_year.html', context)

@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url
+
 import views
 
 urlpatterns = patterns('',
@@ -11,7 +12,7 @@ urlpatterns = patterns('',
                            name='delete_yearly_report'),
                        url(r'^list_transactions$', views.list_transactions,
                            name='inventory_transactions_list'),
-                       url(r'^iteminstance/(?P<id>[0-9]+)/$', views.item_instance_form, 
+                       url(r'^iteminstance/(?P<id>[0-9]+)/$', views.item_instance_form,
                            name='item_instance_detail'),
                        url(r'^quotation/list$', views.quotation_report_list, name='list_quotation_forms'),
                        url(r'^quotation/detail/(?P<id>[0-9]+)/$', views.quotation_report, name='detail_quotation_forms'),
@@ -25,7 +26,6 @@ urlpatterns = patterns('',
                        url(r'^inspection/(?P<id>[0-9]+)/delete$', views.delete_inspection_report,
                            name='delete_inspection_report'),
                        url(r'^save/quotation-comparison/$', views.save_quotation_comparison, name='save_quotation_comparison'),
-
 
                        url(r'^items/$', views.list_inventory_items, name='list_inventory_items'),
                        url(r'^create/$', views.item_form, name='create_inventory_item'),
@@ -104,12 +104,11 @@ urlpatterns = patterns('',
                        url(r'^locations/(?P<pk>[0-9]+)$', views.LocationDetail.as_view(),
                            name='itemlocation_detail'),
 
-                       #url(r'^entry-report/$', views.entry_report, name='create_entry_report'),
-                       #url(r'^purchase-order/(?P<id>[0-9]+)/$', views.purchase_order, name='update_purchase_order'),
-                       #url(r'^save/purchase_order/$', views.save_purchase_order, name='save_purchase_order'),
-                       #url(r'^purchase-order/(?P<id>[0-9]+)/delete$', views.delete_purchase_order,
+                       # url(r'^entry-report/$', views.entry_report, name='create_entry_report'),
+                       # url(r'^purchase-order/(?P<id>[0-9]+)/$', views.purchase_order, name='update_purchase_order'),
+                       # url(r'^save/purchase_order/$', views.save_purchase_order, name='save_purchase_order'),
+                       # url(r'^purchase-order/(?P<id>[0-9]+)/delete$', views.delete_purchase_order,
                        #    name='delete_purchase_order'),
-                       #url(r'^purchase-orders/$', views.list_purchase_orders, name='list_purchase_orders'),
+                       # url(r'^purchase-orders/$', views.list_purchase_orders, name='list_purchase_orders'),
 
-)
-
+                       )

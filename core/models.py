@@ -21,7 +21,9 @@ class FiscalYear(models.Model):
     year = models.IntegerField(choices=FISCAL_YEARS, unique=True)
 
     @staticmethod
-    def get(year):
+    def get(year=None):
+        if not year:
+            year = app_setting.fiscal_year
         return FiscalYear.objects.get(year=year)
 
     def __unicode__(self):
