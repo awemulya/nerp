@@ -1,7 +1,12 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n filters %}
 
 {% block breadcrumbs %}
     {{ block.super }}
     <a href="{% url 'inventory_index' %}">{% trans 'Inventory' %}</a>
+{% endblock %}
+
+{% block breadcrumbs_before_print %}
+    {% trans 'Fiscal Year' %}:
+    {{ 'core.models.app_setting.fiscal_year'|setting|localize }}
 {% endblock %}

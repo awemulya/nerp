@@ -81,9 +81,13 @@
             <li>
         {% endblock %}
         {% block breadcrumbs_right %}
-            <li class='pull-right'>
+            <li class="pull-right">
                 <a href="javascript: window.print();">{% trans 'Print' %}</a>
             </li>
+            <div class="pull-right">
+                {% block breadcrumbs_before_print %}
+                {% endblock %}
+            </div>
         {% endblock %}
     </ol>
 
