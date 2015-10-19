@@ -486,6 +486,22 @@ class HandoverRow(models.Model):
     condition = models.TextField(null=True, blank=True)
     handover = models.ForeignKey(Handover, related_name='rows')
 
+    @property
+    def rate(self):
+        return self.total_amount / self.quantity
+
+    def total_entry_cost(self):
+        if self.handover.type == 'Incoming':
+            return self.total_amount
+
+    @property
+    def release_quantity(self):
+        if self.handover.type == 'Outgoing':
+            return self.total_amount
+
+    def get_voucher_no(self):
+        return self.handover.voucher_no
+
 
 class UnsavedForeignKey(models.ForeignKey):
     # A ForeignKey which can point to an unsaved object
@@ -693,5 +709,6 @@ def fiscal_year_changed(sender, **kwargs):
     # import ipdb
     # ipdb.set_trace()
     pass
+
 
 fiscal_year_signal.connect(fiscal_year_changed)

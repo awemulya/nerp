@@ -183,6 +183,11 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
     def get_income_total(self, obj):
         if obj.creator.__class__ == DemandRow:
             return ''
+
+        # if obj.creator.__class__.__name__ == 'HandoverRow':
+        #     if obj.creator.handover
+        #     return obj.creator.total_amount
+
         import math
 
         return math.ceil(obj.creator.total_entry_cost() * 100) / 100
@@ -190,6 +195,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
     def get_expense_quantity(self, obj):
         if obj.creator.__class__ == EntryReportRow:
             return ''
+
         return obj.creator.release_quantity
 
     # def get_expense_total_cost_price(self, obj):

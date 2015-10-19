@@ -990,13 +990,13 @@ def fulfill_demand(request):
 
     for release in row.releases.all():
         release.item_instance.location_id = release.location_id
+        release.item_instance.user_id = row.demand.demandee_id
         release.item_instance.save()
-    # import ipdb
-    #
-    # ipdb.set_trace()
-    set_transactions(row, row.demand.date,
-                     ['cr', row.item.account, row.release_quantity],
-                     )
+
+    if row.item.type == 'consumable':
+        set_transactions(row, row.demand.date,
+                         ['cr', row.item.account, row.release_quantity],
+                         )
 
     # Search items in the stock
     # items = ItemInstance.objects.filter(item_id=row.item_id, location_id=STORE_LOCATION_ID)
@@ -1114,6 +1114,13 @@ def delete_purchase_order(request, id):
 
 
 @group_required('Store Keeper', 'Chief')
+def delete_handover(request, id):
+    obj = get_object_or_404(Handover, id=id)
+    obj.delete()
+    return redirect(reverse('list_handovers'))
+
+
+@group_required('Store Keeper', 'Chief')
 def list_inventory_accounts(request):
     objects = InventoryAccount.objects.all()
     return render(request, 'list_inventory_accounts.html', {'objects': objects})
@@ -1133,7 +1140,6 @@ def list_non_consumable_accounts(request):
 
 @group_required('Store Keeper', 'Chief')
 def view_inventory_account(request, id, year=None):
-
     obj = get_object_or_404(InventoryAccount, id=id)
     le_data = {}
     if obj.item.type == 'consumable' and not year == '0000':
@@ -1227,6 +1233,14 @@ def save_handover(request):
         if not created:
             submodel = save_model(submodel, values)
         dct['rows'][index] = submodel.id
+
+        if submodel.handover.type == 'Incoming':
+            tr_type = 'dr'
+        else:
+            tr_type = 'cr'
+        set_transactions(submodel, submodel.handover.date,
+                         [tr_type, submodel.item.account, submodel.quantity]
+                         , )
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
 
@@ -1235,6 +1249,12 @@ def save_handover(request):
 def list_incoming_handovers(request):
     objects = Handover.objects.filter(type='Incoming')
     return render(request, 'list_incoming_handovers.html', {'objects': objects})
+
+
+@group_required('Store Keeper', 'Chief')
+def list_handovers(request):
+    objects = Handover.objects.all()
+    return render(request, 'list_handovers.html', {'objects': objects})
 
 
 @group_required('Store Keeper', 'Chief')

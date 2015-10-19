@@ -67,12 +67,15 @@ urlpatterns = patterns('',
 
                        url(r'^demand-forms/$', views.list_demand_forms, name='list_demand_forms'),
 
+                        url(r'^handovers/$', views.list_handovers, name='list_handovers'),
                        url(r'^handover/incoming/$', views.handover_incoming, name='create_incoming_handover'),
                        url(r'^handover/outgoing/$', views.handover_outgoing, name='create_outgoing_handover'),
                        url(r'^save/handover/$', views.save_handover, name='save_handover'),
                        url(r'^handover/(?P<id>[0-9]+)/$', views.handover_incoming, name='update_handover'),
                        url(r'^handovers/incoming/$', views.list_incoming_handovers, name='list_incoming_handovers'),
                        url(r'^handovers/outgoing/$', views.list_outgoing_handovers, name='list_outgoing_handovers'),
+                       url(r'^handover/(?P<id>[0-9]+)/delete$', views.delete_handover,
+                           name='delete_handover'),
 
                        url(r'^purchase-order/$', views.purchase_order, name='create_purchase_order'),
                        url(r'^purchase-order/(?P<id>[0-9]+)/$', views.purchase_order, name='update_purchase_order'),
