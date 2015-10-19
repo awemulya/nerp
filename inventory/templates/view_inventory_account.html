@@ -40,8 +40,7 @@
         <div class="col-md-6">
             <table class="table table-bordered table-responsive">
                 <tr>
-                    <th>{% trans "Inventory Item's Name" %}</th>
-                    <td>{{ obj.item.name }}</td>
+                    <th colspan="2" class="text-center"><h2>{{ obj.item.name }}</h2></th>
                 </tr>
                 <tr>
                     <th>{% trans 'Unit' %}</th>
@@ -62,20 +61,21 @@
 
             </table>
         </div>
-
-        <div class="col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-heading"><h4>{% trans 'Year' %} : {{ year|localize }}</h4></div>
-                <div class="panel-body">
-                    <a href="{% url 'view_inventory_account' obj.id %}">{% trans 'Current' %} {% trans 'Fiscal Year' %}</a><br/>
-                    <a href="{% url 'view_inventory_account_by_year' obj.id '0000' %}">{% trans 'All' %} {% trans 'Fiscal Years' %}</a><br/>
-                    {% for fiscal_year in fiscal_years %}
-                        <a href="{% url 'view_inventory_account_by_year' obj.id fiscal_year.0 %}">{{ fiscal_year.1|localize }}</a>
-                        {% if not forloop.last %} | {% endif %}
-                    {% endfor %}
+        {% if obj.item.type == 'consumable' %}
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><h4>{% trans 'Year' %} : {{ year|localize }}</h4></div>
+                    <div class="panel-body">
+                        <a href="{% url 'view_inventory_account' obj.id %}">{% trans 'Current' %} {% trans 'Fiscal Year' %}</a><br/>
+                        <a href="{% url 'view_inventory_account_by_year' obj.id '0000' %}">{% trans 'All' %} {% trans 'Fiscal Years' %}</a><br/>
+                        {% for fiscal_year in fiscal_years %}
+                            <a href="{% url 'view_inventory_account_by_year' obj.id fiscal_year.0 %}">{{ fiscal_year.1|localize }}</a>
+                            {% if not forloop.last %} | {% endif %}
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
-        </div>
+        {% endif %}
 
     </div>
 
