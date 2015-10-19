@@ -18,6 +18,7 @@ from users.models import User
 from core.models import FiscalYear, Party, validate_in_fy
 from core.signals import fiscal_year_signal
 
+
 def alter(account, date, diff):
     Transaction.objects.filter(journal_entry__date__gt=date, account=account).update(
         current_balance=none_for_zero(zero_for_none(F('current_balance')) + zero_for_none(diff)))
@@ -450,7 +451,7 @@ class EntryReportRow(models.Model):
 class Handover(models.Model):
     voucher_no = models.PositiveIntegerField(blank=True, null=True)
     addressee = models.CharField(max_length=254)
-    date = BSDateField(default=today)
+    date = BSDateField(default=today, validators=[validate_in_fy])
     office = models.CharField(max_length=254)
     designation = models.CharField(max_length=254)
     handed_to = models.CharField(max_length=254)
@@ -494,7 +495,7 @@ class UnsavedForeignKey(models.ForeignKey):
 class PurchaseOrder(models.Model):
     party = models.ForeignKey(Party)
     order_no = models.IntegerField(blank=True, null=True)
-    date = BSDateField(default=today)
+    date = BSDateField(default=today, validators=[validate_in_fy])
     due_days = models.IntegerField(default=3)
     fiscal_year = models.ForeignKey(FiscalYear)
     entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
@@ -642,6 +643,7 @@ class YearlyReportRow(models.Model):
 class QuotationComparison(models.Model):
     fiscal_year = models.ForeignKey(FiscalYear)
     report_no = models.IntegerField()
+    date = BSDateField(default=today, validators=[validate_in_fy], blank=True, null=True)
 
 
 class QuotationComparisonRow(models.Model):
@@ -686,6 +688,8 @@ class Release(models.Model):
 
 def fiscal_year_changed(sender, **kwargs):
     import ipdb
+
     ipdb.set_trace()
+
 
 fiscal_year_signal.connect(fiscal_year_changed)

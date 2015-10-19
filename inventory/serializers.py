@@ -138,14 +138,9 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
             pass
         total = 0
         if obj.creator.__class__.__name__ == 'DemandRow':
-            try:
-                for release in obj.creator.releases.all():
-                    total += release.item_instance.rate
-                return total
-            except Exception as e:
-                import ipdb
-
-                ipdb.set_trace()
+            for release in obj.creator.releases.all():
+                total += release.item_instance.rate
+            return total
         return 0
 
     class Meta:

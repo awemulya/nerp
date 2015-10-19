@@ -26,6 +26,28 @@ class FiscalYear(models.Model):
             year = app_setting.fiscal_year
         return FiscalYear.objects.get(year=year)
 
+    @staticmethod
+    def start(year=None):
+        if not year:
+            year = app_setting.fiscal_year
+        fiscal_year_start = year + '-04-01'
+        tuple_value = tuple_from_string(fiscal_year_start)
+        calendar = get_calendar()
+        if calendar == 'ad':
+            tuple_value = bs2ad(tuple_value)
+        return tuple_value
+
+    @staticmethod
+    def end(year=None):
+        if not year:
+            year = app_setting.fiscal_year
+        fiscal_year_end = str(int(year) + 1) + '-03-' + str(bs[int(year) + 1][2])
+        tuple_value = tuple_from_string(fiscal_year_end)
+        calendar = get_calendar()
+        if calendar == 'ad':
+            tuple_value = bs2ad(tuple_value)
+        return tuple_value
+
     def __unicode__(self):
         return str(self.year) + '/' + str(self.year - 1999)
 
@@ -183,14 +205,15 @@ class TaxScheme(models.Model):
 
 
 def validate_in_fy(value):
+    return True
     fiscal_year = app_setting.fiscal_year
     fiscal_year_start = fiscal_year + '-04-01'
-    bs[int(fiscal_year) + 1][2]
+    fiscal_year_end = str(int(fiscal_year) + 1) + '-03-' + str(bs[int(fiscal_year) + 1][2])
     calendar = get_calendar()
     if calendar == 'bs':
         value_tuple = bs2ad(value)
     else:
         value_tuple = tuple_from_string(value)
-    fiscal_year_end = str(int(fiscal_year) + 1) + '-03-' + str(bs[int(fiscal_year) + 1][2])
+
     if not bs2ad(fiscal_year_start) <= value_tuple <= bs2ad(fiscal_year_end):
         raise ValidationError('%s is not in current fiscal year.' % value)

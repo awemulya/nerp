@@ -951,8 +951,8 @@ $(document).ready(function () {
 
 //    apply_select2();
 
-        $('.button.alert').click(function (e) {
-            if (confirm('Are you sure you want to delete?')) {
+        $('.btn-danger').click(function (e) {
+            if (confirm('Are you sure?')) {
                 return true;
             } else return false;
         });
