@@ -17,7 +17,7 @@ from openpyxl.styles import Style, Font, Alignment
 from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 from openpyxl.cell import get_column_letter
 
-from core.models import app_setting, FiscalYear, Party
+from core.models import app_setting, FiscalYear, Party, FISCAL_YEARS
 from app.utils.helpers import invalid, save_model, empty_to_none
 from users.models import group_required
 
@@ -1160,7 +1160,7 @@ def view_inventory_account(request, id, year=None):
         year = FiscalYear.get()
     else:
         year = FiscalYear.get(year)
-    context = {'obj': obj, 'entries': journal_entries, 'data': data, 'year': year}
+    context = {'obj': obj, 'entries': journal_entries, 'data': data, 'year': year, 'fiscal_years': FISCAL_YEARS}
     return render(request, 'view_inventory_account.html', context)
 
 

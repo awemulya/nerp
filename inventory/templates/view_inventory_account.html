@@ -32,24 +32,52 @@
         <br/>
 
         <h5 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h5>
+    </div>
 
+
+    <div class="row">
+
+        <div class="col-md-6">
+            <table class="table table-bordered table-responsive">
+                <tr>
+                    <th>{% trans "Inventory Item's Name" %}</th>
+                    <td>{{ obj.item.name }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans 'Unit' %}</th>
+                    <td>{{ obj.item.unit }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans "Inventory Item's Property Classification Reference Number" %}</th>
+                    <td>{{ obj.item.property_classification_reference_number|localize }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans 'Type' %}</th>
+                    <td>{% if obj.item.type == 'non-consumable' %}
+                        {% trans 'Non-Consumable' %}
+                    {% else %}
+                        {% trans 'Consumable' %}
+                    {% endif %}</td>
+                </tr>
+
+            </table>
+        </div>
+
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4>{% trans 'Year' %} : {{ year|localize }}</h4></div>
+                <div class="panel-body">
+                    <a href="{% url 'view_inventory_account' obj.id %}">{% trans 'Current' %} {% trans 'Fiscal Year' %}</a><br/>
+                    <a href="{% url 'view_inventory_account_by_year' obj.id '0000' %}">{% trans 'All' %} {% trans 'Fiscal Years' %}</a><br/>
+                    {% for fiscal_year in fiscal_years %}
+                        <a href="{% url 'view_inventory_account_by_year' obj.id fiscal_year.0 %}">{{ fiscal_year.1|localize }}</a>
+                        {% if not forloop.last %} | {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
 
     </div>
-    {% trans "Inventory Item's Name" %} : {{ obj.item.name }}
-    <br>
-    {% trans 'Unit' %} : {{ obj.item.unit }}
-    <br>
-    {% trans 'Year' %} : {{ year|localize }}
-    <br>
-    {% trans "Inventory Item's Property Classification Reference Number" %} :
-    {{ obj.item.property_classification_reference_number|localize }}
-    <br>
-    {% trans 'Type' %} :
-    {% if obj.item.type == 'non-consumable' %}
-        {% trans 'Non-Consumable' %}
-    {% else %}
-        {% trans 'Consumable' %}
-    {% endif %}<br><br>
 
     <table class="table table-striped table-bordered">
         <thead>
