@@ -19,7 +19,7 @@ from openpyxl.cell import get_column_letter
 
 from core.models import app_setting, FiscalYear, Party, FISCAL_YEARS
 from app.utils.helpers import invalid, save_model, empty_to_none
-from users.models import group_required
+from users.models import group_required, User
 
 from inventory.filters import InventoryItemFilter
 
@@ -1441,11 +1441,62 @@ class LocationDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(LocationDetail, self).get_context_data()
+
+        return context
+
+    def get_context_data(self, **kwargs):
+        context = super(LocationDetail, self).get_context_data()
         all_instances = ItemInstance.objects.filter(location=self.object)
         instances = all_instances.values('item', 'item__name').annotate(
             total_count=Count('item')).annotate(total_value=Sum('item_rate')).order_by('total_value')
         grand_total = sum(item['total_value'] for item in instances)
+        non_consumable_all_instances = ItemInstance.objects.filter(location=self.object, item__type='non-consumable')
+        non_consumable_instances = non_consumable_all_instances.values('item', 'item__name').annotate(
+            total_count=Count('item')).annotate(total_value=Sum('item_rate')).order_by('total_value')
+        non_consumable_grand_total = sum(item['total_value'] for item in non_consumable_instances)
+        consumable_all_instances = ItemInstance.objects.filter(location=self.object, item__type='consumable')
+        consumable_instances = consumable_all_instances.values('item', 'item__name').annotate(total_count=Count('item')).annotate(
+            total_value=Sum('item_rate')).order_by('total_value')
+        consumable_grand_total = sum(item['total_value'] for item in consumable_instances)
+
+
         context['instances'] = instances
         context['grand_total'] = grand_total
         context['all_instances'] = all_instances
+        context['non_consumable_instances'] = non_consumable_instances
+        context['non_consumable_grand_total'] = non_consumable_grand_total
+        context['non_consumable_all_instances'] = non_consumable_all_instances
+        context['consumable_instances'] = consumable_instances
+        context['consumable_grand_total'] = consumable_grand_total
+        context['consumable_all_instances'] = consumable_all_instances
         return context
+
+
+def user_ledgers(request):
+    users = User.objects.all()
+    context = {
+        'users': users,
+    }
+    return render(request, 'user_ledger_list.html', context)
+
+
+def user_ledger_detail(request, pk):
+    user = User.objects.get(pk=pk)
+    non_consumable_all_instances = ItemInstance.objects.filter(user=user, item__type='non-consumable')
+    non_consumable_instances = non_consumable_all_instances.values('item', 'item__name').annotate(
+        total_count=Count('item')).annotate(total_value=Sum('item_rate')).order_by('total_value')
+    non_consumable_grand_total = sum(item['total_value'] for item in non_consumable_instances)
+    consumable_all_instances = ItemInstance.objects.filter(user=user, item__type='consumable')
+    consumable_instances = consumable_all_instances.values('item', 'item__name').annotate(
+        total_count=Count('item')).annotate(total_value=Sum('item_rate')).order_by('total_value')
+    consumable_grand_total = sum(item['total_value'] for item in consumable_instances)
+    context = {
+        'user': user,
+        'non_consumable_instances': non_consumable_instances,
+        'non_consumable_grand_total': non_consumable_grand_total,
+        'non_consumable_all_instances': non_consumable_all_instances,
+        'consumable_instances': consumable_instances,
+        'consumable_grand_total': consumable_grand_total,
+        'consumable_all_instances': consumable_all_instances,
+    }
+    return render(request, 'user_ledger_detail.html', context)

@@ -1,54 +1,26 @@
 {% extends "inventory_base.html" %}
-{% load i18n %}
+{% load i18n staticfiles %}
+{% load filters %}
 
-{% block title %}{{ object }}{% endblock %}
+{% block title %}{% trans 'User' %} {% trans 'Ledger' %}: {{ user }}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url "itemlocation_list" %}">{% trans 'Locations' %}</a></li>
-    <li>{{ object }}</li>
+    <li><a href="{% url 'user_ledger_list' %}">{% trans 'User' %} {% trans 'Ledgers' %}</a></li>
+    <li><span>{{ user }}</span></li>
 {% endblock %}
 
 {% block content %}
+    <h1>{% trans 'User' %} {% trans 'Ledger' %}: {{ user }}</h1>
 
     {% load pagination_tags %}
     {% load sorting_tags %}
     {% load filters %}
 
-    <h1>{% trans 'All' %}</h1>
-
-    <table class="table table-striped table-bordered">
-        <thead>
-        <tr>
-            <th class="text-center" colspan="2">{{ object }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <th>Total Items</th>
-            <td>{{ all_instances.count }}</td>
-        </tr>
-        <tr>
-            <th>Unique Items</th>
-            <td> {{ instances.count }}</td>
-        </tr>
-        <tr>
-            <th>Total Worth</th>
-            <td> {{ grand_total }}</td>
-        </tr>
-        </tbody>
-
-    </table>
-
 
     <h1>{% trans 'Non-consumable' %}</h1>
 
     <table class="table table-striped table-bordered">
-        <thead>
-        <tr>
-            <th class="text-center" colspan="2">{{ object }}</th>
-        </tr>
-        </thead>
         <tbody>
         <tr>
             <th>Total Items</th>
@@ -92,11 +64,6 @@
     <h1>{% trans 'Consumable' %}</h1>
 
     <table class="table table-striped table-bordered">
-        <thead>
-        <tr>
-            <th class="text-center" colspan="2">{{ object }}</th>
-        </tr>
-        </thead>
         <tbody>
         <tr>
             <th>Total Items</th>
