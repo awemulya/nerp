@@ -1,0 +1,21 @@
+{% extends "inventory_base.html" %}
+{% load i18n %}
+
+{% block title %}{{ object }}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li>{{ object }}</li>
+{% endblock %}
+
+{% block content %}
+
+    <h1>{{ object }}</h1>
+
+    <form>
+        {{ form.as_p }}
+        <input type="submit" value="{% trans 'Save' %}" class="btn">
+
+    </form>
+
+{% endblock %}

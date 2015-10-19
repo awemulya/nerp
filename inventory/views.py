@@ -9,7 +9,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, UpdateView
 
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
@@ -24,7 +24,7 @@ from users.models import group_required, User
 from inventory.filters import InventoryItemFilter
 
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, \
-    ItemLocationForm, DepreciationForm, ItemInstanceForm
+    ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm
 
 from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Depreciation, Demand, ItemInstance, \
     DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, \
@@ -1500,3 +1500,8 @@ def user_ledger_detail(request, pk):
         'consumable_all_instances': consumable_all_instances,
     }
     return render(request, 'user_ledger_detail.html', context)
+
+
+class ItemInstanceView(UpdateView):
+    model = ItemInstance
+    form_class = ItemInstanceEditForm

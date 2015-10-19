@@ -25,7 +25,8 @@ class ItemForm(KOModelForm):
     account_no = forms.Field(widget=forms.TextInput(), label=_('Inventory Account No.'))
     opening_balance = forms.Field(widget=forms.TextInput(), initial=0, label=_('Opening Balance'))
     opening_rate = forms.Field(widget=forms.TextInput(), initial=0, label=_('Opening Rate'))
-    opening_rate_vattable = forms.Field(widget=forms.CheckboxInput(attrs={'class': 'inline'}), initial=True, label=_('Opening Rate Vattable?'), )
+    opening_rate_vattable = forms.Field(widget=forms.CheckboxInput(attrs={'class': 'inline'}), initial=True,
+                                        label=_('Opening Rate Vattable?'), )
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
@@ -110,8 +111,15 @@ class ItemLocationForm(KOModelForm):
         model = ItemLocation
         fields = '__all__'
 
+
 class ItemInstanceForm(KOModelForm):
     class Meta:
         model = ItemInstance
         fields = '__all__'
         exclude = ['source', 'other_properties']
+
+
+class ItemInstanceEditForm(KOModelForm):
+    class Meta:
+        model = ItemInstance
+        exclude = ['item', 'source', 'other_properties']

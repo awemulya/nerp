@@ -112,11 +112,7 @@ urlpatterns = patterns('',
                        url(r'^user_ledgers/$', views.user_ledgers, name='user_ledger_list'),
                        url(r'^user_ledger/(?P<pk>[0-9]+)/$', views.user_ledger_detail, name='user_ledger_detail'),
 
-                       # url(r'^entry-report/$', views.entry_report, name='create_entry_report'),
-                       # url(r'^purchase-order/(?P<id>[0-9]+)/$', views.purchase_order, name='update_purchase_order'),
-                       # url(r'^save/purchase_order/$', views.save_purchase_order, name='save_purchase_order'),
-                       # url(r'^purchase-order/(?P<id>[0-9]+)/delete$', views.delete_purchase_order,
-                       #    name='delete_purchase_order'),
-                       # url(r'^purchase-orders/$', views.list_purchase_orders, name='list_purchase_orders'),
+                       url(r'^instance/(?P<pk>[0-9]+)/$', views.ItemInstanceView.as_view(), name='iteminstance_form'),
+
 
                        )
