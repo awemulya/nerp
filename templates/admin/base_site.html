@@ -17,6 +17,7 @@
     {% endif %}
     <a href="/">{% trans 'App Home' %}</a> /
     <a href={% url 'site_settings' %}>{% trans 'Settings' %}</a> /
+    <a href={% url 'change_fiscal_year' %}>{% trans 'Change Fiscal Year' %}</a> /
     {#    <a href={% url 'clear_cache' %}>{% trans 'Clear Cache' %}</a> /#}
     {% if user.has_usable_password %}
         <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /

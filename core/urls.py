@@ -24,6 +24,6 @@ urlpatterns = patterns('',
 
                        url(r'^change_calendar/$', views.change_calendar, name='change_calendar'),
 
-                       url(r'^change_fiscal_year/$', views.change_fiscal_year, name='change_fiscal_year'),
+                       url(r'^admin/change_fiscal_year/$', views.change_fiscal_year, name='change_fiscal_year'),
 
 )

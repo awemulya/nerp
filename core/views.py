@@ -164,6 +164,7 @@ def change_fiscal_year(request):
                                 new_fiscal_year=new_fiscal_year)
 
     context = {
+        'has_permission': True, # required for user tools to show at admin
         'fiscal_years': FISCAL_YEARS,
         'current_fiscal_year': FiscalYear.get()
     }
