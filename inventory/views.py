@@ -1212,6 +1212,25 @@ def save_handover(request):
         obj = Handover()
     try:
         obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = HandoverRow
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['quantity', 'unit', 'item_id', 'total_amount']):
+                continue
+            values = {'sn': index + 1, 'item_id': row.get('item_id'),
+                      'specification': row.get('specification'),
+                      'quantity': row.get('quantity'), 'unit': row.get('unit'), 'received_date': row.get('received_date'),
+                      'total_amount': row.get('total_amount'), 'condition': row.get('condition'),
+                      'handover': obj}
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['rows'][index] = submodel.id
+
+            if submodel.handover.type == 'Outgoing':
+                set_transactions(submodel, submodel.handover.date,
+                                 ['cr', submodel.item.account, submodel.quantity]
+                                 , )
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
@@ -1219,28 +1238,6 @@ def save_handover(request):
             dct['error_message'] = str(e)
         else:
             dct['error_message'] = 'Error in form data!'
-    dct['id'] = obj.id
-    model = HandoverRow
-    for index, row in enumerate(params.get('table_view').get('rows')):
-        if invalid(row, ['quantity', 'unit', 'item_id', 'total_amount']):
-            continue
-        values = {'sn': index + 1, 'item_id': row.get('item_id'),
-                  'specification': row.get('specification'),
-                  'quantity': row.get('quantity'), 'unit': row.get('unit'), 'received_date': row.get('received_date'),
-                  'total_amount': row.get('total_amount'), 'condition': row.get('condition'),
-                  'handover': obj}
-        submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-        if not created:
-            submodel = save_model(submodel, values)
-        dct['rows'][index] = submodel.id
-
-        if submodel.handover.type == 'Incoming':
-            tr_type = 'dr'
-        else:
-            tr_type = 'cr'
-        set_transactions(submodel, submodel.handover.date,
-                         [tr_type, submodel.item.account, submodel.quantity]
-                         , )
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
 
@@ -1281,6 +1278,7 @@ def handover_entry_report(request, id=None):
             row.item = r.item
             row.specification = r.specification
             row.quantity = r.quantity
+            row.vattable = False
             row.unit = r.unit
             row.rate = r.total_amount / r.quantity
             row.remarks = r.condition

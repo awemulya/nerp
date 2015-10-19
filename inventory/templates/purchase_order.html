@@ -149,7 +149,7 @@
 
         {% if scenario == 'Update' %}
             <a href="{% url 'convert_purchase_order' form.instance.id %}"
-               class="btn btn-primary btn-lg">{% trans 'Converter to excel' %}</a>
+               class="btn btn-primary btn-lg">{% trans 'Export as XLS' %}</a>
             <a class="btn btn-danger btn-lg"
                href="{% url 'delete_purchase_order' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}

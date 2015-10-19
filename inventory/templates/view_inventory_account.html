@@ -113,7 +113,9 @@
         <!-- ko foreach:rows -->
         <tr>
             <td data-bind="text: date(), localize: 1"></td>
-            <td data-bind="text: voucher_no(), localize: 1"></td>
+            <td>
+                <span data-bind="text: voucher_no(), localize: 1, attr:{title: creator_type()}"></span>
+            </td>
             <td data-bind="text: specification()"></td>
             {% if obj.item.type == 'non-consumable' %}
                 <td data-bind="editableText: country_or_company"></td>

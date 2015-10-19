@@ -125,10 +125,14 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
     remarks = serializers.SerializerMethodField()
     current_balance = serializers.SerializerMethodField()
     date = serializers.DateField(format=None)
+    creator_type = serializers.SerializerMethodField()
 
     # expense_total = serializers.ReadOnlyField(source='account_row.expense_total')
 
     expense_total = serializers.SerializerMethodField()
+
+    def get_creator_type(self, obj):
+        return obj.creator.__class__.__name__.replace('Row', '')
 
     def get_expense_total(self, obj):
         try:
@@ -187,10 +191,7 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         # if obj.creator.__class__.__name__ == 'HandoverRow':
         #     if obj.creator.handover
         #     return obj.creator.total_amount
-
-        import math
-
-        return math.ceil(obj.creator.total_entry_cost() * 100) / 100
+        return obj.creator.total_entry_cost()
 
     def get_expense_quantity(self, obj):
         if obj.creator.__class__ == EntryReportRow:
