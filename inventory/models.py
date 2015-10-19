@@ -686,6 +686,12 @@ class ItemInstance(models.Model):
     source = models.ForeignKey(EntryReportRow, null=True, blank=True)
     user = models.ForeignKey(User, blank=True, null=True)
 
+    def transfer(self, to_location, to_user):
+        history = InstanceHistory.objects.create(instance=self, from_location=self.location, to_location=to_location,
+                                                 from_user=self.user,
+                                                 to_user=to_user)
+        return history
+
     @property
     def rate(self):
         return self.item_rate
@@ -699,7 +705,7 @@ class InstanceHistory(models.Model):
     date = BSDateField(default=today, validators=[validate_in_fy])
     from_location = models.ForeignKey(ItemLocation, related_name='from_history')
     to_location = models.ForeignKey(ItemLocation, related_name='to_history')
-    from_user = models.ForeignKey(User, related_name='from_history')
+    from_user = models.ForeignKey(User, related_name='from_history', null=True, blank=True)
     to_user = models.ForeignKey(User, related_name='to_history')
 
     def save(self, *args, **kwargs):

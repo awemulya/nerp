@@ -990,8 +990,9 @@ def fulfill_demand(request):
         return JsonResponse(dct)
 
     for release in row.releases.all():
-        release.item_instance.location_id = release.location_id
-        release.item_instance.user_id = row.demand.demandee_id
+        # release.item_instance.location_id = release.location_id
+        # release.item_instance.user_id = row.demand.demandee_id
+        release.item_instance.transfer(release.location, row.demand.demandee)
         release.item_instance.save()
 
     if row.item.type == 'consumable':
