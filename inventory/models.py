@@ -668,6 +668,7 @@ class ItemInstance(models.Model):
     location = models.ForeignKey(ItemLocation)
     other_properties = JSONField(null=True, blank=True)
     source = models.ForeignKey(EntryReportRow, null=True, blank=True)
+    user = models.ForeignKey(User, blank=True, null=True)
 
     @property
     def rate(self):
