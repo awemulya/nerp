@@ -2,6 +2,7 @@
 import json
 import datetime
 # from datetime import date
+from django.core.exceptions import ValidationError
 from django.db.models import Count, Sum
 
 from django.http import JsonResponse, HttpResponse
@@ -1509,6 +1510,13 @@ class ItemInstanceView(UpdateView):
 class InstanceHistoryView(CreateView):
     model = InstanceHistory
     form_class = InstanceHistoryForm
+
+    def get_context_data(self, **kwargs):
+        context_data = super(InstanceHistoryView, self).get_context_data(**kwargs)
+        item_instance = ItemInstance.objects.get(pk=self.kwargs.get('instance_pk'))
+        all_history = InstanceHistory.objects.filter(instance=item_instance)
+        context_data['history'] = all_history
+        return context_data
 
     def get_success_url(self):
         return reverse_lazy('view_inventory_account', kwargs={'id': self.object.instance.item.account.id})

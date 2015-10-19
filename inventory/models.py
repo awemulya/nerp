@@ -702,6 +702,13 @@ class InstanceHistory(models.Model):
     from_user = models.ForeignKey(User, related_name='from_history')
     to_user = models.ForeignKey(User, related_name='to_history')
 
+    def save(self, *args, **kwargs):
+        ret = super(InstanceHistory, self).save(*args, **kwargs)
+        self.instance.location_id = self.to_location_id
+        self.instance.user_id = self.to_user_id
+        self.instance.save()
+        return ret
+
     def __str__(self):
         return str(self.instance)
 

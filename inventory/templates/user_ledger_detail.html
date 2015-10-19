@@ -39,6 +39,8 @@
 
     <h4>{% trans 'Items' %}</h4>
 
+    {% autopaginate non_consumable_instances 25 as paginated_non_consumable_instances %}
+
     <table class="table table-striped table-bordered">
         <thead>
         <th>{% trans 'Name' %}</th>
@@ -46,7 +48,7 @@
         <th>{% trans 'Worth' %}</th>
         </thead>
         <tbody>
-        {% for instance in non_consumable_instances %}
+        {% for instance in paginated_non_consumable_instances %}
             <tr>
                 <td>
                     <a href="{% url 'update_inventory_item' instance.item %}">{{ instance.item__name }}</a>
@@ -62,6 +64,7 @@
 
     <h4>{% trans 'Instances' %}</h4>
 
+    {% autopaginate non_consumable_all_instances 25 as paginated_non_consumable_all_instances %}
 
     <table class="table table-striped table-bordered">
         <thead>
@@ -69,7 +72,7 @@
         <th>{% trans 'Rate' %}</th>
         </thead>
         <tbody>
-        {% for instance in non_consumable_all_instances %}
+        {% for instance in paginated_non_consumable_all_instances %}
             <tr>
                 <td>
                     <a href="{% url 'iteminstance_history' instance.id %}">{{ instance.item }}</a>
@@ -102,7 +105,7 @@
 
     </table>
 
-
+    {% autopaginate consumable_instances 25 as paginated_consumable_instances %}
 
     <table class="table table-striped table-bordered">
         <thead>
@@ -111,7 +114,7 @@
         <th>{% trans 'Worth' %}</th>
         </thead>
         <tbody>
-        {% for instance in consumable_instances %}
+        {% for instance in paginated_consumable_instances %}
             <tr>
                 <td>
                     <a href="{% url 'update_inventory_item' instance.item %}">{{ instance.item__name }}</a>

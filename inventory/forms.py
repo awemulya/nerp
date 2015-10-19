@@ -126,11 +126,16 @@ class ItemInstanceEditForm(KOModelForm):
 
 
 class InstanceHistoryForm(KOModelForm):
-
     # def save(self, commit=True):
     #     import ipdb
     #     ipdb.set_trace()
     #     ret = super(InstanceHistoryForm, self).save()
+
+    def clean(self):
+        cleaned_data = super(InstanceHistoryForm, self).clean()
+        if self.instance.from_location == cleaned_data.get('to_location') and self.instance.from_user == cleaned_data.get(
+                'to_user'):
+            raise forms.ValidationError('Item location and user unchanged.')
 
     class Meta:
         model = InstanceHistory
