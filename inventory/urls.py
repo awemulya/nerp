@@ -43,6 +43,7 @@ urlpatterns = patterns('',
                        url(r'^accounts/non-consumable/$', views.list_non_consumable_accounts,
                            name='list_non_consumable_inventory_accounts'),
                        url(r'^account/(?P<id>[0-9]+)/$', views.view_inventory_account, name='view_inventory_account'),
+                       url(r'^account/(?P<id>[0-9]+)/(?P<year>[0-9]{4})/$', views.view_inventory_account, name='view_inventory_account'),
                        url(r'^save/account/$', views.save_account, name='save_inventory_account'),
 
                        url(r'^categories/$', views.list_categories, name='list_inventory_categories'),

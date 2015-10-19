@@ -149,6 +149,7 @@ def change_calendar(request):
 @user_passes_test(lambda u: u.is_superuser)
 def change_fiscal_year(request):
     if request.POST:
+        old_fiscal_year = FiscalYear.get()
         new_fiscal_year_str = request.POST.get('fiscal_year')
 
         # app_setting.fiscal_year = new_fiscal_year_str
@@ -157,8 +158,6 @@ def change_fiscal_year(request):
         fiscal_year_setting = Setting.objects.get(module_name='core.models', attribute_name='fiscal_year')
         fiscal_year_setting.value = new_fiscal_year_str
         fiscal_year_setting.save()
-
-        old_fiscal_year = FiscalYear.get()
         new_fiscal_year = FiscalYear.get(new_fiscal_year_str)
         fiscal_year_signal.send(sender=None, new_fiscal_year_str=new_fiscal_year_str, old_fiscal_year=old_fiscal_year,
                                 new_fiscal_year=new_fiscal_year)

@@ -1132,17 +1132,21 @@ def list_non_consumable_accounts(request):
 
 
 @group_required('Store Keeper', 'Chief')
-def view_inventory_account(request, id):
+def view_inventory_account(request, id, year=None):
+
     obj = get_object_or_404(InventoryAccount, id=id)
     le_data = {}
-    if obj.item.type == 'consumable':
-        last_entry = JournalEntry.objects.filter(transactions__account_id=obj.id, date__lt=FiscalYear.start()).order_by('date', 'id').last()
-        le_data = InventoryAccountRowSerializer(last_entry).data
-        le_data['income_quantity'] = le_data['current_balance']
-        le_data['expense_quantity'] = None
-        le_data['voucher_no'] = 'Last FY'
-        journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id, date__gte=FiscalYear.start(),
-                                                      date__lte=FiscalYear.end()).order_by('date', 'id') \
+    if obj.item.type == 'consumable' and not year == '0000':
+        last_entry = JournalEntry.objects.filter(transactions__account_id=obj.id, date__lt=FiscalYear.start(year)).order_by(
+            'date', 'id').last()
+        if last_entry:
+            le_data = InventoryAccountRowSerializer(last_entry).data
+            le_data['income_quantity'] = le_data['current_balance']
+            le_data['income_rate'] = None
+            le_data['expense_quantity'] = None
+            le_data['voucher_no'] = 'Last FY'
+        journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id, date__gte=FiscalYear.start(year),
+                                                      date__lte=FiscalYear.end(year)).order_by('date', 'id') \
             .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
     else:
         journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('date', 'id') \
@@ -1150,7 +1154,14 @@ def view_inventory_account(request, id):
     data = InventoryAccountRowSerializer(journal_entries, many=True).data
     if le_data:
         data.insert(0, le_data)
-    return render(request, 'view_inventory_account.html', {'obj': obj, 'entries': journal_entries, 'data': data})
+    if year == '0000':
+        year = 'All Years'
+    elif not year:
+        year = FiscalYear.get()
+    else:
+        year = FiscalYear.get(year)
+    context = {'obj': obj, 'entries': journal_entries, 'data': data, 'year': year}
+    return render(request, 'view_inventory_account.html', context)
 
 
 @group_required('Store Keeper', 'Chief')

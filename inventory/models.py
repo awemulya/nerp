@@ -687,9 +687,10 @@ class Release(models.Model):
 
 
 def fiscal_year_changed(sender, **kwargs):
-    import ipdb
-
-    ipdb.set_trace()
-
+    # old_fiscal_year = kwargs.get('old_fiscal_year')
+    # year_end = FiscalYear.end(old_fiscal_year.year)
+    # import ipdb
+    # ipdb.set_trace()
+    pass
 
 fiscal_year_signal.connect(fiscal_year_changed)
