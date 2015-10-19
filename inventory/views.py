@@ -7,9 +7,9 @@ from django.db.models import Count, Sum
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
-from django.views.generic import ListView, DetailView, UpdateView
+from django.views.generic import ListView, DetailView, UpdateView, CreateView
 
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
@@ -24,10 +24,10 @@ from users.models import group_required, User
 from inventory.filters import InventoryItemFilter
 
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, \
-    ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm
+    ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm, InstanceHistoryForm
 
 from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Depreciation, Demand, ItemInstance, \
-    DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, \
+    DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InstanceHistory, \
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
     InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release
 
@@ -1459,7 +1459,6 @@ class LocationDetail(DetailView):
             total_value=Sum('item_rate')).order_by('total_value')
         consumable_grand_total = sum(item['total_value'] for item in consumable_instances)
 
-
         context['instances'] = instances
         context['grand_total'] = grand_total
         context['all_instances'] = all_instances
@@ -1505,3 +1504,20 @@ def user_ledger_detail(request, pk):
 class ItemInstanceView(UpdateView):
     model = ItemInstance
     form_class = ItemInstanceEditForm
+
+
+class InstanceHistoryView(CreateView):
+    model = InstanceHistory
+    form_class = InstanceHistoryForm
+
+    def get_success_url(self):
+        return reverse_lazy('view_inventory_account', kwargs={'id': self.object.instance.item.account.id})
+
+    def get_form(self, form_class):
+        form = super(InstanceHistoryView, self).get_form(form_class)
+        item_instance = ItemInstance.objects.get(pk=self.kwargs.get('instance_pk'))
+        form.instance.instance_id = item_instance.id
+        form.instance.from_location_id = item_instance.location_id
+        form.instance.from_user_id = item_instance.user_id
+        return form
+

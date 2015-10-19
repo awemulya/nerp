@@ -3,7 +3,7 @@ from django.contrib import admin
 from models import Item, InventoryAccount, EntryReport, EntryReportRow, Demand, Inspection, DemandRow, InspectionRow, \
     YearlyReport, YearlyReportRow, \
     ItemLocation, ItemInstance, PartyQuotation, Release, Transaction, JournalEntry, QuotationComparison, QuotationComparisonRow, \
-    PurchaseOrder, PurchaseOrderRow, Depreciation, InventoryAccountRow
+    PurchaseOrder, PurchaseOrderRow, Depreciation, InventoryAccountRow, InstanceHistory
 
 
 class DemandRowInline(admin.TabularInline):
@@ -170,3 +170,4 @@ admin.site.register(JournalEntry)
 admin.site.register(QuotationComparison, QuotationComparisonAdmin)
 admin.site.register(QuotationComparisonRow, QuotationComparisonRowAdmin)
 admin.site.register(InventoryAccountRow)
+admin.site.register(InstanceHistory)

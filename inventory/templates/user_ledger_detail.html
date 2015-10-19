@@ -72,7 +72,7 @@
         {% for instance in non_consumable_all_instances %}
             <tr>
                 <td>
-                    <a href="{% url 'iteminstance_form' instance.id %}">{{ instance.item }}</a>
+                    <a href="{% url 'iteminstance_history' instance.id %}">{{ instance.item }}</a>
                 </td>
                 <td>{{ instance.item_rate }}</td>
             </tr>

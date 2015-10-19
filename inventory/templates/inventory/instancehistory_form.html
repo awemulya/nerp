@@ -10,12 +10,17 @@
 
 {% block content %}
 
-    <h1>{{ object }}</h1>
+    <h1>{{ form.instance.instance }}</h1>
 
-    <form method="post">
+    <div>
+    {% trans 'Current' %} {% trans 'User' %} : {{ form.instance.from_user }}
+    </div>
+    <div>
+    {% trans 'Current' %} {% trans 'Location' %} : {{ form.instance.from_location }}
+    </div>
+
+<form method="post">
         {% csrf_token %}
-        {{ form.errors }}
-
         {{ form.as_p }}
         <input type="submit" value="{% trans 'Save' %}" class="btn">
 

@@ -694,6 +694,21 @@ class ItemInstance(models.Model):
         return unicode(self.item) + u' at ' + unicode(self.location)
 
 
+class InstanceHistory(models.Model):
+    instance = models.ForeignKey(ItemInstance)
+    date = BSDateField(default=today, validators=[validate_in_fy])
+    from_location = models.ForeignKey(ItemLocation, related_name='from_history')
+    to_location = models.ForeignKey(ItemLocation, related_name='to_history')
+    from_user = models.ForeignKey(User, related_name='from_history')
+    to_user = models.ForeignKey(User, related_name='to_history')
+
+    def __str__(self):
+        return str(self.instance)
+
+    class Meta:
+        verbose_name_plural = 'Instance History'
+
+
 class Release(models.Model):
     demand_row = models.ForeignKey(DemandRow, related_name='releases')
     item_instance = models.ForeignKey(ItemInstance)
