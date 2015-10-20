@@ -721,7 +721,7 @@ class InstanceHistory(models.Model):
         return str(self.instance)
 
     class Meta:
-        verbose_name_plural = 'Instance History'
+        verbose_name_plural = _('Instance History')
 
 
 class Release(models.Model):
@@ -731,6 +731,20 @@ class Release(models.Model):
 
     def __unicode__(self):
         return unicode(self.item_instance)
+
+
+class Expense(models.Model):
+    voucher_no = models.PositiveIntegerField()
+    date = BSDateField(default=today, validators=[validate_in_fy])
+    instance = models.ForeignKey(ItemInstance)
+    types = (('Waive', _('Waive')), ('Handover', _('Handover')), ('Auction', _('Auction')))
+    type = models.CharField(choices=types, max_length=20)
+    rate = models.PositiveIntegerField(blank=True, null=True)
+
+    def __init__(self, *args, **kwargs):
+        super(Expense, self).__init__(*args, **kwargs)
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no(Expense, 'voucher_no')
 
 
 def fiscal_year_changed(sender, **kwargs):
