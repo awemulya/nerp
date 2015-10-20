@@ -1,4 +1,5 @@
 import os
+from django.contrib import messages
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -113,3 +114,7 @@ HAYSTACK_CONNECTIONS = {
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger'
+}

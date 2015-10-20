@@ -2,6 +2,7 @@
 import json
 import datetime
 # from datetime import date
+from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Sum
 
@@ -1530,3 +1531,13 @@ class InstanceHistoryView(CreateView):
         form.instance.from_user_id = item_instance.user_id
         return form
 
+
+def return_to_store(request, pk):
+    instance = ItemInstance.objects.get(pk=pk)
+    instance_location_id = instance.location_id
+    instance.transfer('Store', None)
+    messages.info(request, instance.item.name + ' ' + _('returned to store.'))
+    if request.GET.get('next'):
+        return redirect(request.GET.get('next'))
+    else:
+        return redirect(reverse_lazy('itemlocation_detail', kwargs={'pk': instance_location_id}))

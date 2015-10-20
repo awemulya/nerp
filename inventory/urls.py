@@ -116,5 +116,7 @@ urlpatterns = patterns('',
 
                        url(r'^history/(?P<instance_pk>[0-9]+)/$', views.InstanceHistoryView.as_view(), name='iteminstance_history'),
 
+                       url(r'^return/(?P<pk>[0-9]+)/$', views.return_to_store, name='return_to_store'),
+
 
                        )

@@ -687,6 +687,8 @@ class ItemInstance(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
 
     def transfer(self, to_location, to_user):
+        if type(to_location) == unicode or type(to_location) == str:
+            to_location = ItemLocation.objects.get(name=to_location)
         history = InstanceHistory.objects.create(instance=self, from_location=self.location, to_location=to_location,
                                                  from_user=self.user,
                                                  to_user=to_user)
@@ -706,7 +708,7 @@ class InstanceHistory(models.Model):
     from_location = models.ForeignKey(ItemLocation, related_name='from_history')
     to_location = models.ForeignKey(ItemLocation, related_name='to_history')
     from_user = models.ForeignKey(User, related_name='from_history', null=True, blank=True)
-    to_user = models.ForeignKey(User, related_name='to_history')
+    to_user = models.ForeignKey(User, related_name='to_history', null=True, blank=True)
 
     def save(self, *args, **kwargs):
         ret = super(InstanceHistory, self).save(*args, **kwargs)
