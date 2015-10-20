@@ -881,7 +881,7 @@ def save_demand(request):
     if params.get('release_no') == '':
         params['release_no'] = None
     object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
-                     'date': params.get('date'), 'purpose': params.get('purpose'), 'status': 'Requested'}
+                     'demandee_id': params.get('demandee'), 'date': params.get('date'), 'purpose': params.get('purpose'), 'status': 'Requested'}
     if params.get('id'):
         obj = Demand.objects.get(id=params.get('id'))
     else:
@@ -991,10 +991,7 @@ def fulfill_demand(request):
         return JsonResponse(dct)
 
     for release in row.releases.all():
-        # release.item_instance.location_id = release.location_id
-        # release.item_instance.user_id = row.demand.demandee_id
         release.item_instance.transfer(release.location, row.demand.demandee)
-        release.item_instance.save()
 
     if row.item.type == 'consumable':
         set_transactions(row, row.demand.date,
@@ -1026,16 +1023,17 @@ def unfulfill_demand(request):
     if params['status'] != 'Fulfilled':
         dct['error_message'] = 'Row needs to be fulfilled before being unfulfilled!'
         return JsonResponse(dct)
-    journal_entry = JournalEntry.get_for(row)
-    journal_entry.delete()
+
+    if row.item.type == 'consumable':
+        journal_entry = JournalEntry.get_for(row)
+        journal_entry.delete()
 
     row_releases = row.releases.all()
 
     if row_releases:
-        store = ItemLocation.objects.get(name='Store')
         for release in row_releases:
-            release.item_instance.location_id = store.id
-            release.item_instance.save()
+            release.item_instance.transfer('Store', None)
+
     row.status = 'Approved'
     row.save()
     dct['id'] = row.id
