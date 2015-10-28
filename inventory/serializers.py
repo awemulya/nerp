@@ -110,8 +110,8 @@ class EntryReportSerializer(serializers.ModelSerializer):
 
 class InventoryAccountRowSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
-    voucher_no = serializers.ReadOnlyField(source='creator.get_voucher_no')
-    specification = serializers.ReadOnlyField(source='creator.specification')
+    voucher_no = serializers.SerializerMethodField()
+    specification = serializers.SerializerMethodField()
     country_or_company = serializers.SerializerMethodField()
     size = serializers.SerializerMethodField()
     expected_life = serializers.SerializerMethodField()
@@ -131,10 +131,26 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
 
     expense_total = serializers.SerializerMethodField()
 
+    def get_voucher_no(self, obj):
+        if hasattr(obj.creator, 'voucher_no'):
+            return obj.creator.voucher_no
+        elif hasattr(obj.creator, 'get_voucher_no'):
+            return obj.creator.get_voucher_no()
+        else:
+            return ''
+
+    def get_specification(self, obj):
+        if hasattr(obj.creator, 'specification'):
+            return obj.creator.specification
+        else:
+            return ''
+
     def get_creator_type(self, obj):
         return obj.creator.__class__.__name__.replace('Row', '')
 
     def get_expense_total(self, obj):
+        if obj.creator.__class__.__name__ == 'Expense':
+            return obj.creator.rate
         try:
             if obj.account_row.expense_total_cost_price:
                 return obj.account_row.expense_total_cost_price
@@ -175,17 +191,19 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
             return ''
 
     def get_income_quantity(self, obj):
-        if obj.creator.__class__ == DemandRow:
+        if obj.creator.__class__.__name__ in ['DemandRow', 'Expense']:
             return ''
         return obj.creator.quantity
 
     def get_income_rate(self, obj):
-        if obj.creator.__class__ == DemandRow:
+        if obj.creator.__class__.__name__ in ['DemandRow', 'Expense']:
             return ''
         return obj.creator.rate
 
     def get_income_total(self, obj):
         if obj.creator.__class__ == DemandRow:
+            return ''
+        if obj.creator.__class__.__name__ == 'Expense':
             return ''
 
         # if obj.creator.__class__.__name__ == 'HandoverRow':
@@ -194,8 +212,10 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         return obj.creator.total_entry_cost()
 
     def get_expense_quantity(self, obj):
-        if obj.creator.__class__ == EntryReportRow:
+        if obj.creator.__class__.__name__ in ['EntryReportRow']:
             return ''
+        if obj.creator.__class__.__name__ in ['Expense']:
+            return 1
 
         return obj.creator.release_quantity
 
@@ -218,7 +238,11 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
             return ''
 
     def get_current_balance(self, obj):
-        return obj.transactions.filter(account=obj.creator.item.account)[0].current_balance
+        if obj.creator.__class__.__name__ in ['Expense']:
+            account = obj.creator.instance.item.account
+        else:
+            account = obj.creator.item.account
+        return obj.transactions.filter(account=account)[0].current_balance
 
 
 class InspectionRowSerializer(serializers.ModelSerializer):

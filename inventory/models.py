@@ -681,7 +681,7 @@ class PartyQuotation(models.Model):
 class ItemInstance(models.Model):
     item = models.ForeignKey(Item, related_name='instances')
     item_rate = models.FloatField(null=True)
-    location = models.ForeignKey(ItemLocation)
+    location = models.ForeignKey(ItemLocation, null=True)
     other_properties = JSONField(null=True, blank=True)
     source = models.ForeignKey(EntryReportRow, null=True, blank=True)
     user = models.ForeignKey(User, blank=True, null=True)
@@ -755,14 +755,11 @@ class Expense(models.Model):
         created = False
         if not self.id:
             created = True
-        ret = super(Expense, self).save(*args, **kwargs)
+        super(Expense, self).save(*args, **kwargs)
         if created:
             self.instance.transfer(None, None)
             set_transactions(self, self.date,
                              ['cr', self.instance.item.account, 1])
-        import ipdb
-        ipdb.set_trace()
-        return ret
 
     def __str__(self):
         ret = _('Expense')

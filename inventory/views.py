@@ -652,7 +652,7 @@ def item_form(request, id=None):
                 for i in range(0, int(opening_balance)):
                     item_instance = ItemInstance()
                     item_instance.item = Item.objects.get(id=item.id)
-                    item_instance.item_rate = 0
+                    item_instance.item_rate = opening_rate
                     item_instance.location = store
                     item_instance.source = entry_report_row
                     item_instance.other_properties = item.other_properties
