@@ -26,12 +26,12 @@ from users.models import group_required, User
 from inventory.filters import InventoryItemFilter
 
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, \
-    ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm, InstanceHistoryForm
+    ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm, InstanceHistoryForm, ExpenseForm
 
 from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Depreciation, Demand, ItemInstance, \
     DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InstanceHistory, \
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
-    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release
+    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release, Expense
 
 from inventory.serializers import QuotationComparisonSerializer, DepreciationSerializer, DemandSerializer, ItemSerializer, \
     PurchaseOrderSerializer, \
@@ -881,7 +881,8 @@ def save_demand(request):
     if params.get('release_no') == '':
         params['release_no'] = None
     object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
-                     'demandee_id': params.get('demandee'), 'date': params.get('date'), 'purpose': params.get('purpose'), 'status': 'Requested'}
+                     'demandee_id': params.get('demandee'), 'date': params.get('date'), 'purpose': params.get('purpose'),
+                     'status': 'Requested'}
     if params.get('id'):
         obj = Demand.objects.get(id=params.get('id'))
     else:
@@ -1539,3 +1540,27 @@ def return_to_store(request, pk):
         return redirect(request.GET.get('next'))
     else:
         return redirect(reverse_lazy('itemlocation_detail', kwargs={'pk': instance_location_id}))
+
+
+class ExpenseCreate(CreateView):
+    model = Expense
+    form_class = ExpenseForm
+
+    def get_success_url(self):
+        item_instance = ItemInstance.objects.get(pk=self.kwargs.get('instance_pk'))
+        if self.request.GET.get('next'):
+            return self.request.GET.get('next')
+        else:
+            return reverse_lazy('itemlocation_detail', kwargs={'pk': item_instance.location_id})
+
+    def get_form(self, form_class):
+        form = super(ExpenseCreate, self).get_form(form_class=form_class)
+        item_instance = ItemInstance.objects.get(pk=self.kwargs.get('instance_pk'))
+        form.fields['voucher_no'].initial = form.instance.voucher_no
+        form.instance.instance_id = item_instance.id
+        return form
+
+
+class ExpenseUpdate(CreateView):
+    model = Expense
+    form_class = ExpenseForm

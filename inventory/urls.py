@@ -118,5 +118,8 @@ urlpatterns = patterns('',
 
                        url(r'^return/(?P<pk>[0-9]+)/$', views.return_to_store, name='return_to_store'),
 
+                       url(r'^instance/(?P<instance_pk>[0-9]+)/expense/$', views.ExpenseCreate.as_view(), name='iteminstance_expense'),
+
+                       # url(r'^expense/(?P<pk>[0-9]+)/$', views.ExpenseCreate.as_view(), name='expense_update'),
 
                        )

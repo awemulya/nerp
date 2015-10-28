@@ -108,7 +108,10 @@
                     <a href="{% url 'iteminstance_history' instance.id %}">{{ instance.item }}</a>
                 </td>
                 <td>{{ instance.item_rate }}</td>
-            <td><a class="btn btn-danger" href="{% url 'return_to_store' instance.id %}?next={% url 'itemlocation_detail' object.id %}">{% trans 'Return to Store' %}</a></td>
+            <td>
+                <a class="btn btn-danger" href="{% url 'return_to_store' instance.id %}?next={% url 'itemlocation_detail' object.id %}">{% trans 'Return to Store' %}</a>
+                <a class="btn btn-primary" href="{% url 'iteminstance_expense' instance.id %}?next={% url 'itemlocation_detail' object.id %}">{% trans 'Expense' %}</a>
+            </td>
             </tr>
         {% endfor %}
         </tbody>

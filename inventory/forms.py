@@ -3,7 +3,7 @@ from django import forms
 from app.utils.forms import KOModelForm, UserModelChoiceField
 
 from models import Item, Category, Demand, PurchaseOrder, InventoryAccount, Handover, EntryReport, Depreciation, \
-    ItemLocation, ItemInstance, InstanceHistory
+    ItemLocation, ItemInstance, InstanceHistory, Expense
 
 from users.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -141,3 +141,8 @@ class InstanceHistoryForm(KOModelForm):
         model = InstanceHistory
         exclude = ['instance', 'from_location', 'from_user']
         fields = '__all__'
+
+class ExpenseForm(KOModelForm):
+    class Meta:
+        model = Expense
+        exclude = ['instance',]

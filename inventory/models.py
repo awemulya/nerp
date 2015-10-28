@@ -706,7 +706,7 @@ class InstanceHistory(models.Model):
     instance = models.ForeignKey(ItemInstance)
     date = BSDateField(default=today, validators=[validate_in_fy])
     from_location = models.ForeignKey(ItemLocation, related_name='from_history')
-    to_location = models.ForeignKey(ItemLocation, related_name='to_history')
+    to_location = models.ForeignKey(ItemLocation, related_name='to_history', null=True, blank=True)
     from_user = models.ForeignKey(User, related_name='from_history', null=True, blank=True)
     to_user = models.ForeignKey(User, related_name='to_history', null=True, blank=True)
 
@@ -738,13 +738,37 @@ class Expense(models.Model):
     date = BSDateField(default=today, validators=[validate_in_fy])
     instance = models.ForeignKey(ItemInstance)
     types = (('Waive', _('Waive')), ('Handover', _('Handover')), ('Auction', _('Auction')))
-    type = models.CharField(choices=types, max_length=20)
+    type = models.CharField(choices=types, max_length=20, default='Waive')
     rate = models.PositiveIntegerField(blank=True, null=True)
+
+    def get_next_voucher_no(self):
+        if not self.pk and not self.voucher_no:
+            return get_next_voucher_no(Expense, 'voucher_no')
 
     def __init__(self, *args, **kwargs):
         super(Expense, self).__init__(*args, **kwargs)
+
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no(Expense, 'voucher_no')
+
+    def save(self, *args, **kwargs):
+        created = False
+        if not self.id:
+            created = True
+        ret = super(Expense, self).save(*args, **kwargs)
+        if created:
+            self.instance.transfer(None, None)
+            set_transactions(self, self.date,
+                             ['cr', self.instance.item.account, 1])
+        import ipdb
+        ipdb.set_trace()
+        return ret
+
+    def __str__(self):
+        ret = _('Expense')
+        if self.pk:
+            ret += ': ' + str(self.voucher_no)
+        return ret
 
 
 def fiscal_year_changed(sender, **kwargs):
