@@ -34,17 +34,12 @@
         {% csrf_token %}
 
 
-        <span class="visible-print-block">श्री प्रमुख,</span>
+        <span class="visible-print-block">
+        श्री प्रमुख,<br/>
+        भण्डार शाखा
+        </span>
 
-        <div class="one-line row">
-            <span class="col-lg-3 col-sm-3 visible-print-block">
-    भण्डार शाखा
-            </span>
-
-        <span class="right col-lg-3 col-sm-3 visible-print-block pull-right">
-                {% trans 'Fiscal Year' %}:
-                {{ 'core.models.app_setting.fiscal_year'|setting|localize }}
-            </span>
+        <div class="row">
 
                 <span class="col-lg-6 col-sm-6">
                     {% ifusergroup 'Store Keeper' 'Chief' %}
@@ -54,9 +49,14 @@
                         {{ form.release_no.errors }}
                         <br>
                     {% else %}
-                        <div class="visible-print-block">{% trans 'Release No.' %}: <span data-bind="text: release_no"></span>
+                        <div class="visible-print-inline">{% trans 'Release No.' %}: <span data-bind="text: release_no"></span>
                         </div>
                     {% endifusergroup %}
+                </span>
+
+                <span class="col-sm-6 visible-print-inline pull-right text-right">
+                        {% trans 'Fiscal Year' %}:
+                        {{ 'core.models.app_setting.fiscal_year'|setting|localize }}
                 </span>
 
         </div>
@@ -89,7 +89,7 @@
                 <!-- ko foreach: rows -->
                 <tr>
                     <td>
-                        <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: true"> </span>
+                        <span data-bind="text:  $index()+1, localize: true"> </span>
                     </td>
                     <td>
                         <select data-bind="selectize: $root.items, value: item_id, object: item"
@@ -106,7 +106,8 @@
                         <div class="btn-group">
 
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                    data-bind="text: total_release(), event: {focus: release_focused}, localize: 1" aria-haspopup="true">
+                                    data-bind="text: total_release(), event: {focus: release_focused}, localize: 1"
+                                    aria-haspopup="true">
                             </button>
 
 
@@ -144,7 +145,8 @@
                                     <thead>
                                     <th>{% trans 'Properties' %}</th>
                                     <th>{% trans 'Rate' %}</th>
-                                    <th>{% trans 'Quantity' %} / <span data-bind="text: total_quantity(), localize: 1"></span></th>
+                                    <th>{% trans 'Quantity' %} / <span data-bind="text: total_quantity(), localize: 1"></span>
+                                    </th>
                                     <th>{% trans 'Location' %}</th>
                                     <th></th>
                                     </thead>
@@ -221,7 +223,7 @@
 
         <div class="row">
             <div class="col-lg-6 col-sm-6 col-xs-6">
-                <div class="visible-print-inline-block">{% trans "Demandee's Signature" %}:-</div>
+                <div class="visible-print-block">{% trans "Demandee's Signature" %}:-</div>
                 <div class="inline-fields">
                     {% trans "Name" %}:-
                     {% ifusergroup 'Store Keeper' 'Chief' %}
@@ -243,9 +245,10 @@
                 <div class="visible-print-block">{% trans "Date" %}:-</div>
             </div>
 
-            <div class="col-lg-6 col-sm-6 col-xs-6 visible-print-inline-block">
-                <div>{% trans "(a)" %} {% trans "Buy from market" %}</div>
-                <div>{% trans "(b)" %} {% trans "Lend from store" %}</div>
+            <div class="col-lg-6 col-sm-6 col-xs-6 visible-print-block">
+                <span>{% trans "(a)" %} {% trans "Buy from market" %}</span><br/>
+                <span>{% trans "(b)" %} {% trans "Lend from store" %}</span>
+
                 <div>{% trans "Signature of the orderer" %}:-</div>
                 <div>{% trans "Date" %}:-</div>
                 <div>{% trans "Signature of the receiver" %}:-</div>

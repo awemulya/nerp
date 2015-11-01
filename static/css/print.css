@@ -1,3 +1,5 @@
+@import "bootstrap/bootstrap.print.css";
+
 /*App Template*/
 
 .header, footer, .left-sidebar, .breadcrumbs, .breadcrumb, a.button, input[type="submit"], #alert_placeholder {
@@ -12,8 +14,8 @@
     padding: 0 !important;
 }
 
-.no-print{
-    display: none !important;
+* {
+    line-height: 1.5 !important;
 }
 
 /*Generic*/
@@ -42,6 +44,12 @@ input, textarea, select {
 
 a.btn {
     display: none;
+}
+
+.form-control {
+    transition: none !important;
+    height: auto;
+    padding: 0;
 }
 
 /*Browser specific*/
@@ -74,12 +82,21 @@ th.only-on-print, td.only-on-print {
     display: table-cell !important;
 }
 
+td, tr, th {
+    vertical-align: middle !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    text-align: center !important;
+    width: auto !important;
+}
+
 /*Selectize*/
 
 .selectize-input {
     border: none;
     display: none;
     padding: 0;
+    min-height: 0;
 }
 
 .selectize-input.has-items {
@@ -92,12 +109,4 @@ th.only-on-print, td.only-on-print {
 
 .selectize-control.single .selectize-input:after {
     border: none !important;
-}
-
-/*.col-sm-6 {*/
-    /*float: left;*/
-/*}*/
-
-* {
-    border: none;
 }
