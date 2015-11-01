@@ -81,7 +81,7 @@
                     <th rowspan="2" class="span2">{% trans 'Total Cost Price' %}</th>
                     <th rowspan="2" class="span2">{% trans 'Start Received Date' %}</th>
                     <th rowspan="2" class="span2">{% trans 'Physical Condition of Item' %}</th>
-                    <th rowspan="2" class="hide-on-print"></th>
+                    <th rowspan="2" class="hidden-print"></th>
                 </tr>
                 </thead>
 
@@ -105,7 +105,7 @@
                     <td data-bind="editableText: total_amount, numeric: true"></td>
                     <td data-bind="editableText: received_date"></td>
                     <td class="remarks-cell" data-bind="editableText: condition"></td>
-                    <td class="hide-on-print">
+                    <td class="hidden-print">
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
                     </td>
                 </tr>

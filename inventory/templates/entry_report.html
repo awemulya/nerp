@@ -52,11 +52,11 @@
                     <th rowspan="2" class="span3">{% trans 'Quantity' %}</th>
                     <th colspan="6" class="span2">{% trans 'Price' %} ({% trans 'As per Invoice' %})</th>
                     <th rowspan="2" class="span2">{% trans 'Remarks' %}</th>
-                    <th rowspan="2" class="hide-on-print"></th>
+                    <th rowspan="2" class="hidden-print"></th>
                 </tr>
                 <tr>
                     <th>{% trans 'Rate per Unit' %}</th>
-                    <th class="span3 hide-on-print">{% trans 'Vattable' %}</th>
+                    <th class="span3 hidden-print">{% trans 'Vattable' %}</th>
                     <th>{% trans 'VAT' %} {% trans 'per' %} {% trans 'Unit' %}</th>
                     <th>{% trans 'Unit' %} {% trans 'Price' %}</th>
                     <th>{% trans 'Other' %} {% trans 'Expenses' %}</th>
@@ -82,7 +82,7 @@
                     <td data-bind="editableText: unit"></td>
                     <td data-bind="editableText: quantity, localize: 1"></td>
                     <td data-bind="editableText: rate, localize: 1"></td>
-                    <td class="hide-on-print">
+                    <td class="hidden-print">
                         <input type="checkbox" data-bind="checked: vattable">
                     </td>
                     <td data-bind="text: vat_amount(), localize: 1"></td>
@@ -90,7 +90,7 @@
                     <td data-bind="editableText: other_expenses, localize: 1"></td>
                     <td data-bind="text: total(), localize: 1"></td>
                     <td class="remarks-cell" data-bind="editableText: remarks"></td>
-                    <td class="hide-on-print">
+                    <td class="hidden-print">
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
                     </td>
                 </tr>

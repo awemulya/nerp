@@ -26,10 +26,10 @@
     <h1>Training Report</h1>
 
     <form class="center">
-        <span {% if not request.GET.from %}class="hide-on-print"{% endif %}>From:</span>
+        <span {% if not request.GET.from %}class="hidden-print"{% endif %}>From:</span>
         <input type="text" id="from" name="from" data-date-format="yyyy-mm-dd"
                {% if request.GET.from %}value="{{ request.GET.from }}"{% endif %}>
-        <span {% if not request.GET.to %}class="hide-on-print"{% endif %}>To:</span>
+        <span {% if not request.GET.to %}class="hidden-print"{% endif %}>To:</span>
         <input type="text" id="to" name="to" data-date-format="yyyy-mm-dd"
                {% if request.GET.to %}value="{{ request.GET.to }}"{% endif %}>
         <input type="submit" value="Go!">
