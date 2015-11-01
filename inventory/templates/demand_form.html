@@ -20,7 +20,7 @@
 
 {% block content %}
     <div class="visible-print-block">
-        <span class="right">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '5' %}{% trans '1' %}</span>
+        <span class="pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '5' %}{% trans '1' %}</span>
         <br>
 
         <h5 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h5>
@@ -41,11 +41,15 @@
     भण्डार शाखा
             </span>
 
+        <span class="right col-lg-3 col-sm-3 visible-print-block pull-right">
+                {% trans 'Fiscal Year' %}:
+                {{ 'core.models.app_setting.fiscal_year'|setting|localize }}
+            </span>
 
                 <span class="col-lg-6 col-sm-6">
                     {% ifusergroup 'Store Keeper' 'Chief' %}
                         {% trans 'Release No.' %}:
-                        <input type="text" class="form-control" name="release_no" id="id_release_no"
+                        <input type="text" class="inline form-control" name="release_no" id="id_release_no"
                                data-bind="value: release_no, localize: true" required>
                         {{ form.release_no.errors }}
                         <br>
@@ -55,11 +59,6 @@
                     {% endifusergroup %}
                 </span>
 
-
-            <span class="right col-lg-3 col-sm-3 visible-print-block">
-                {% trans 'Fiscal Year' %}:
-                {{ 'core.models.app_setting.fiscal_year'|setting|localize }}
-            </span>
         </div>
 
         <div data-bind="with:table_view">
@@ -72,7 +71,7 @@
                     <th class="span2">{% trans 'Specification' %}</th>
                     <th class="span3">{% trans 'Item Quantity' %}</th>
                     <th class="span3">{% trans 'Unit' %}</th>
-                    <th class="span3">{% trans 'Purpose' %}</th>
+                    <th class="span3 hidden-print">{% trans 'Purpose' %}</th>
 
                     <th
                             {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>{% trans 'Released Item Quantity' %}</th>
@@ -100,25 +99,27 @@
                     <td data-bind="editableText: specification, disable_content_editable: status() != 'Requested'"></td>
                     <td data-bind="editableText: quantity, localize: true, disable_content_editable: status() != 'Requested'"></td>
                     <td data-bind="editableText: unit, disable_content_editable: status() != 'Requested'"></td>
-                    <td data-bind="editableText: purpose, disable_content_editable: status() != 'Requested'"></td>
+                    <td class="hidden-print"
+                        data-bind="editableText: purpose, disable_content_editable: status() != 'Requested'"></td>
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>
                         <div class="btn-group">
 
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                    data-bind="text: total_release, event: {focus: release_focused}" aria-haspopup="true">
+                                    data-bind="text: total_release(), event: {focus: release_focused}, localize: 1" aria-haspopup="true">
                             </button>
 
 
                             <div class="dropdown-menu release-dropdown pad">
                                 <!-- ko if: release_vms().length -->
-                                <h2>वर्तमान निकासी </h2>
+                                {#                                <h2>वर्तमान निकासी </h2>#}
+                                <h2>{% trans 'Current Release' %}</h2>
                                 <table id="release-table" class="table table-bordered table-striped">
                                     <thead>
-                                    <th>Properties</th>
-                                    <th>Rate</th>
-                                    <th>Quantity</th>
-                                    <th>Location</th>
+                                    <th>{% trans 'Properties' %}</th>
+                                    <th>{% trans 'Rate' %}</th>
+                                    <th>{% trans 'Quantity' %}</th>
+                                    <th>{% trans 'Location' %}</th>
                                     <th></th>
                                     </thead>
 
@@ -126,8 +127,8 @@
                                     <!-- ko foreach: release_vms -->
                                     <tr>
                                         <td data-bind="text:property_str"></td>
-                                        <td data-bind="text:rate"></td>
-                                        <td data-bind="text:count()"></td>
+                                        <td data-bind="text:rate, localize: 1"></td>
+                                        <td data-bind="text:count(), localize: 1"></td>
                                         <td data-bind="text:get_location_name($root.item_locations)"></td>
                                         <td>
                                             <button data-bind="click: $parent.remove">x</button>
@@ -137,13 +138,14 @@
                                     </tbody>
                                 </table>
                                 <!-- /ko -->
-                                <h2>मौज्दात सामान</h2>
+                                {#                                <h2>मौज्दात सामान</h2>#}
+                                <h2>{% trans 'Items in Stock' %}</h2>
                                 <table id="group-table" class="table table-bordered table-striped">
                                     <thead>
-                                    <th>Properties</th>
-                                    <th>Rate</th>
-                                    <th>Quantity/<span data-bind="text: total_quantity()"></span></th>
-                                    <th>Location</th>
+                                    <th>{% trans 'Properties' %}</th>
+                                    <th>{% trans 'Rate' %}</th>
+                                    <th>{% trans 'Quantity' %} / <span data-bind="text: total_quantity(), localize: 1"></span></th>
+                                    <th>{% trans 'Location' %}</th>
                                     <th></th>
                                     </thead>
 
@@ -152,10 +154,10 @@
                                     <!-- ko if: count()>0 -->
                                     <tr>
                                         <td data-bind="text:property_str"></td>
-                                        <td data-bind="text:rate"></td>
+                                        <td data-bind="text:rate, localize: 1"></td>
                                         <td><input type="number" class="form-control"
-                                                   data-bind="value:quantity, max: count()"/>/<span
-                                                data-bind="text: count()"></span></td>
+                                                   data-bind="value:quantity, max: count(), localize: 1"/>/<span
+                                                data-bind="text: count(), localize: 1"></span></td>
                                         <td>
                                             <select data-bind="selectize: $root.item_locations_sans_store, value: location_id"></select>
                                         </td>
@@ -192,11 +194,11 @@
                                     data-bind="click: disapprove, visible: status() == 'Approved'">
                                 Disapprove
                             </button>
-{#                            <button class="btn btn-default"#}
-{#                                    data-bind="click: function(data, event) { fulfill($root, data, event) }, visible: status() == 'Approved'">#}
-{#                                Set as#}
-{#                                Fulfilled#}
-{#                            </button>#}
+                            {#                            <button class="btn btn-default"#}
+                            {#                                    data-bind="click: function(data, event) { fulfill($root, data, event) }, visible: status() == 'Approved'">#}
+                            {#                                Set as#}
+                            {#                                Fulfilled#}
+                            {#                            </button>#}
                             <button class="btn btn-default"
                                     data-bind="click: fulfill, visible: status() == 'Approved'">
                                 Set as Fulfilled
@@ -211,7 +213,7 @@
                 <!-- /ko -->
                 </tbody>
             </table>
-            <a class="btn btn-default hidden-p" data-bind="click: addRow">
+            <a class="btn btn-default" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>
         </div>
@@ -220,7 +222,7 @@
         <div class="row">
             <div class="col-lg-6 col-sm-6 col-xs-6">
                 <div class="visible-print-inline-block">{% trans "Demandee's Signature" %}:-</div>
-                <div>
+                <div class="inline-fields">
                     {% trans "Name" %}:-
                     {% ifusergroup 'Store Keeper' 'Chief' %}
                         {{ form.demandee }}
@@ -237,8 +239,8 @@
                            data-bind="value: date, localize: true">
                 </div>
                 <div>{% trans "Purpose" %}:- {{ form.purpose }}</div>
-                <div class="visible-print-inline-block">{% trans "Signature of the one who enters in Inventory Account" %}:-</div>
-                <div class="visible-print-inline-block">{% trans "Date" %}:-</div>
+                <div class="visible-print-block">{% trans "Signature of the one who enters in Inventory Account" %}:-</div>
+                <div class="visible-print-block">{% trans "Date" %}:-</div>
             </div>
 
             <div class="col-lg-6 col-sm-6 col-xs-6 visible-print-inline-block">

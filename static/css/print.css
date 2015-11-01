@@ -1,4 +1,4 @@
-@import url("print.foundation.css") print;
+/*App Template*/
 
 .header, footer, .left-sidebar, .breadcrumbs, .breadcrumb, a.button, input[type="submit"], #alert_placeholder {
     display: none !important;
@@ -8,22 +8,15 @@
     border: none;
 }
 
-th.only-on-print, td.only-on-print {
-    display: table-cell !important;
+.inline-fields div {
+    padding: 0 !important;
 }
 
-input {
-    border: none !important;
-    box-shadow: none !important;
-    margin-bottom: 0 !important;
-    display: inline !important;
+.no-print{
+    display: none !important;
 }
 
-select {
-    border: none;
-    background: none;
-    -webkit-appearance: none;
-}
+/*Generic*/
 
 a[href]:after {
     content: none;
@@ -32,6 +25,37 @@ a[href]:after {
 a {
     text-decoration: none;
 }
+
+button {
+    display: none !important;
+}
+
+input, textarea, select {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    -webkit-appearance: none;
+    background: none;
+}
+
+/*Bootstrap*/
+
+a.btn {
+    display: none;
+}
+
+/*Browser specific*/
+
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+/*Tables*/
 
 table {
     width: 100% !important;
@@ -46,15 +70,14 @@ table.table-bordered {
     border-color: #000000;
 }
 
+th.only-on-print, td.only-on-print {
+    display: table-cell !important;
+}
+
+/*Selectize*/
+
 .selectize-input {
     border: none;
-}
-
-.selectize-control.single .selectize-input:after {
-    border: none !important;
-}
-
-.selectize-input {
     display: none;
     padding: 0;
 }
@@ -67,23 +90,14 @@ table.table-bordered {
     display: none !important;
 }
 
-.inline-fields div {
-    padding: 0 !important;
+.selectize-control.single .selectize-input:after {
+    border: none !important;
 }
 
-input[type='number'] {
-    -moz-appearance: textfield;
-}
+/*.col-sm-6 {*/
+    /*float: left;*/
+/*}*/
 
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-}
-
-select {
-    background-image: none;
-}
-
-[class*="column"] + [class*="column"]:last-child {
-    float: right;
+* {
+    border: none;
 }

@@ -60,7 +60,7 @@ td .select2-container {
     width: 100%
 }
 
-.inline-fields input {
+.inline-fields input, .inline-fields select {
     display: inline;
     margin: 0;
 }
@@ -339,10 +339,6 @@ form p select.form-control, form div select.form-control {
 
 label {
     font-weight: normal;
-}
-
-input[type=text] {
-    display: block;
 }
 
 .width-auto, input[type=url] {
