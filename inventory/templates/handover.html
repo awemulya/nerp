@@ -18,9 +18,8 @@
 {% endblock %}
 
 {% block content %}
-    <div class="visible-print-block">
-        <span class="right">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '4' %}{% trans '8' %}</span>
-        <br>
+    <div class="visible-print-block form-header">
+        <span class="pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '4' %}{% trans '8' %}</span>
 
         <h3 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h3>
 
@@ -31,7 +30,6 @@
         {% csrf_token %}
 
         <input type="hidden" name="table_model" data-bind="value: ko.toJSON($data.demand_rows, null, 2)">
-
 
         {% trans 'Handover' %} {% trans 'Form No.' %}
         <input type="text" class="form-control input-inline" name="voucher_no" id="id_voucher_no"
@@ -135,26 +133,36 @@
     </form>
     <br>
     <div class="visible-print-block">
-        माथि लेखिए बमोजिमका मालसामानहरु
-        ...............................................................मन्त्रालय/विभाग/कार्यालय/आयोजनामा दाखिला गर्ने गरी
-        दुई प्रति हस्तान्तरण फाराम समेत बुझिलिँए ।
+        <div class="text-center">
+            माथि लेखिए बमोजिमका मालसामानहरु
+            ...............................................................मन्त्रालय
+            /विभाग/कार्यालय/आयोजनामा दाखिला गर्ने गरी
+            दुई प्रति हस्तान्तरण फाराम समेत बुझिलिँए ।
+        </div>
 
-        <div class="col-lg-6 col-sm-6 col-xs-6"></div>
-        <div class="col-lg-6 col-sm-6 col-xs-6">
-            सामान बुझिलिनेको :<br>
-            {% trans 'Name' %}:<br>
-            {% trans 'Designation' %}:<br>
-            {% trans 'Office' %}:<br>
-            {% trans 'Date' %}:<br>
+        <div class="row">
+
+            <div class="col-sm-6">
+            </div>
+            <div class="col-sm-6">
+                सामान बुझिलिनेको :<br>
+                {% trans 'Name' %}:<br>
+                {% trans 'Designation' %}:<br>
+                {% trans 'Office' %}:<br>
+                {% trans 'Date' %}:<br>
+            </div>
+
         </div>
 
         <u><b>सामान बुझिलिने कार्यालयले भर्ने ।–</b></u><br>
 
-        माथि लेखिए बमोजिमका मालसामानहरु कार्यालयका........................................श्री हस्ते यस कार्यालयमा प्राप्त
-        भएको प्रमाणित गर्दछु ।<br>
+        <div class="text-center">
+            माथि लेखिए बमोजिमका मालसामानहरु कार्यालयका........................................श्री हस्ते यस कार्यालयमा प्राप्त
+            भएको प्रमाणित गर्दछु ।
+        </div>
 
-        <div class="col-lg-6 col-sm-6 col-xs-6"></div>
-        <div class="col-lg-6 col-sm-6 col-xs-6">
+        <div class="col-sm-6"></div>
+        <div class="col-sm-6">
             प्रमाणित गर्ने:<br>
             {% trans 'Name' %}:<br>
             {% trans 'Designation' %}:<br>
