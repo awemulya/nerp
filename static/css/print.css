@@ -86,7 +86,7 @@ td, tr, th {
     vertical-align: middle !important;
     padding: 0 !important;
     margin: 0 !important;
-    text-align: center !important;
+    text-align: center;
     width: auto !important;
 }
 
@@ -109,4 +109,8 @@ td, tr, th {
 
 .selectize-control.single .selectize-input:after {
     border: none !important;
+}
+
+.selectize-inline .selectize-input{
+    display: inline !important;
 }

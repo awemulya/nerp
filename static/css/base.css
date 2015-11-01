@@ -174,10 +174,6 @@ td .selectize-input {
     width: 100%;
 }
 
-.marginless-inputs input, .marginless-inputs select {
-    margin: 0;
-}
-
 .selectize-input > input {
     position: absolute;
 }
@@ -387,7 +383,7 @@ footer {
     margin-top: 5em;
 }
 
-.pad{
+.pad {
     padding: 1em;
 }
 
@@ -395,6 +391,10 @@ footer {
     min-height: 36px;
 }
 
-.release-dropdown{
+.release-dropdown {
     /*min-width: 40%;*/
+}
+
+.bordered {
+    border: 1px solid black;
 }
