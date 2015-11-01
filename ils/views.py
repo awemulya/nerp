@@ -30,7 +30,6 @@ from ils.forms import LibrarySearchForm
 
 
 from django.http import HttpResponseRedirect
-import pdb
 
 
 @group_required('Librarian')
@@ -165,7 +164,7 @@ def isbn_to_record(request):
             record = Record.objects.get(isbn13=isbn)
         except Record.DoesNotExist:
             messages.error(request, 'Book not added yet, add it first!')
-            return redirect(reverse_lazy('acquisition') + '?isbn=' + isbn)
+            return redirect(reverse_lazy('acq') + '?isbn13=' + isbn)
         return redirect(reverse_lazy('view_record', kwargs={'pk': record.id}))
     else:
         messages.error(request, 'Invalid ISBN!')
@@ -237,7 +236,6 @@ class RecordView(View):
 
     @method_decorator(group_required('Librarian'))
     def dispatch(self, request, *args, **kwargs):
-        # pdb.set_trace()
         if request.method == 'GET':
             if request.GET.get('isbn13'):
                 self.isbn = request.GET.get('isbn13')
@@ -528,7 +526,7 @@ class RecordView(View):
                            form_fields=['name'],
                            ),
                            }
-        # pdb.set_trace()
+
         pub_initial_gapi = {'name': self.get_from_api(
                              data=google_data,
                              lookup_path=['items', 0, 'volumeInfo'],
@@ -545,7 +543,7 @@ class RecordView(View):
         self.rr_initial = self.get_dict_union(rr_initial_gapi, rr_initial_olapi)
         self.b_initial = self.get_dict_union(b_initial_gapi, b_initial_olapi)
         self.pub_initial = self.get_dict_union(pub_initial_gapi, pub_initial_olapi)
-        # pdb.set_trace()
+
         pass
 
     def populate_cover(self, google_data, ol_data, cover_check):
@@ -658,12 +656,7 @@ class RecordView(View):
             ol_data = request.session.get('od', {})
             self.populate(google_data, ol_data)
             self.populate_cover(google_data, ol_data, True)
-            # isbn = request.GET['isbn13']
-            # if isbnpy.isValid(isbn):
-            #     if isbnpy.isI10(isbn):
-            #         isbn = isbnpy.convert(isbn)
-            #     self.populate(isbn)
-            #     self.populate_cover(True)
+
         if 'record_id' in self.kwargs:
             rec_id = int(self.kwargs['record_id'])
             record_instance = Record.objects.get(id=rec_id)
@@ -679,14 +672,14 @@ class RecordView(View):
             rr_form = self.record_form(initial=self.rr_initial)
             b_form = self.book_form(initial=self.b_initial)
             pub_form = self.publisher_form(initial=self.pub_initial)
-        # pdb.set_trace()
+
         context = {'rr_form': rr_form,
                    'b_form': b_form,
                    'pub_form': pub_form,
                    'api_has_cover': self.api_has_cover,
                    'record_id': self.kwargs.get('record_id', None),
                    }
-        # pdb.set_trace()
+
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
@@ -718,7 +711,7 @@ class RecordView(View):
             # Later dictionary will be of high priority in conflict during merge.
             files_combo = dict(files_from_api.items() + files_from_request.items())
             record = RecordForm(post_data, files_combo)
-        # pdb.set_trace()
+
         if record.is_valid():
             record.save()
         else:
