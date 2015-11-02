@@ -739,7 +739,7 @@ class Expense(models.Model):
     instance = models.ForeignKey(ItemInstance)
     types = (('Waive', _('Waive')), ('Handover', _('Handover')), ('Auction', _('Auction')))
     type = models.CharField(choices=types, max_length=20, default='Waive')
-    rate = models.PositiveIntegerField(blank=True, null=True)
+    rate = models.FloatField(blank=True, null=True)
 
     def get_next_voucher_no(self):
         if not self.pk and not self.voucher_no:

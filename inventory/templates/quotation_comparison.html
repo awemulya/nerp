@@ -18,8 +18,13 @@
 {% endblock %}
 
 {% block content %}
-<h1 class='center'>Quotation Report</h1>
-<h4>Report no:<input data-bind="value: report_no" class="form-control width-auto input-inline"></h4>
+
+    <div class="visible-print-block form-header">
+        <h4 class="text-center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>
+        <h4 class="text-center">{% trans 'Quotation' %} {% trans 'Reports' %}</h4>
+    </div>
+
+<h4>{% trans 'Report' %} {% trans 'No.' %}<input data-bind="value: report_no" class="form-control width-auto input-inline"></h4>
 
 <div class="row">
 	<div class="col-md-3">
@@ -35,9 +40,7 @@
 {% csrf_token %}
 
 <div data-bind="with: table_view">
-	<br>
-	<button data-bind="click: $root.add_party" class="btn btn-default" id="add_party">Add Party</button>
-	<br>
+	<button data-bind="click: $root.add_party" class="btn btn-default" id="add_party">{% trans 'Add Party' %}</button>
 	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>

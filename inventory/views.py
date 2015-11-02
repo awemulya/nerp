@@ -1374,7 +1374,10 @@ def save_entry_report(request):
         for i in range(0, int(row.get('quantity'))):
             item_instance = ItemInstance()
             item_instance.item = Item.objects.get(id=int(row.get('item_id')))
-            item_instance.item_rate = row.get('rate')
+            multiplier = 1
+            if row.get('vattable'):
+                multiplier = 1.13
+            item_instance.item_rate = row.get('rate') * multiplier
             item_instance.location = ItemLocation.objects.get(name='Store')
             item_instance.source = submodel
             item_instance.other_properties = item_instance.item.other_properties
@@ -1558,6 +1561,7 @@ class ExpenseCreate(CreateView):
         item_instance = ItemInstance.objects.get(pk=self.kwargs.get('instance_pk'))
         form.fields['voucher_no'].initial = form.instance.voucher_no
         form.instance.instance_id = item_instance.id
+        form.fields['rate'].initial = form.instance.instance.item_rate
         return form
 
 

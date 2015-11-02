@@ -1,16 +1,16 @@
 {% extends "inventory_base.html" %}
 {% load i18n %}
 
-{% block title %} {{ form.instance }}{% endblock %}
+{#{% block title %} {{ form.instance }}{% endblock %}#}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li>{{ form.instance }}</li>
+{#    <li>{{ form.instance }}</li>#}
 {% endblock %}
 
 {% block content %}
 
-    <h1>{{ form.instance }}: {{ form.instance.instance }}</h1>
+{#    <h1>{{ form.instance }}: {{ form.instance.instance }}</h1>#}
 
     <form method="post">
         {% csrf_token %}

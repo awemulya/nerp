@@ -147,14 +147,11 @@
             <td data-bind="text: income_rate(), localize: 1"></td>
             <td data-bind="text: income_total(), localize: 1"></td>
 
-
             <td data-bind="text: expense_quantity(), localize: 1"></td>
             <td data-bind="editableText: expense_total, localize: 1, disable_content_editable: income_quantity()"></td>
             <td data-bind="text: current_balance(), localize: 1"></td>
             <td data-bind="editableText: wrapper.remaining_total($root, $index), localize: 1"></td>
             <td data-bind="editableText: remarks"></td>
-
-
         </tr>
         <!-- /ko -->
         </tbody>
