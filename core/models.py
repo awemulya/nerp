@@ -3,6 +3,7 @@ from django.db import models
 from njango.models import TranslatableNumberModel
 from njango.nepdate import bs, bs2ad, tuple_from_string
 from njango.utils import get_calendar
+from django.utils.translation import ugettext_lazy as _
 
 FISCAL_YEARS = (
     (2069, "2069/70"),
@@ -89,7 +90,7 @@ class Account(models.Model):
 
 
 class Party(models.Model):
-    name = models.CharField(max_length=254)
+    name = models.CharField(max_length=254, verbose_name=_('Name'))
     address = models.CharField(max_length=254, blank=True, null=True)
     phone_no = models.CharField(max_length=100, blank=True, null=True)
     pan_no = models.CharField(max_length=50, blank=True, null=True)
