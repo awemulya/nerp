@@ -18,6 +18,15 @@ from app import settings
 register = Library()
 
 
+@register.filter
+def bsdate(value, arg=None):
+    if type(value) in [str, unicode]:
+        return value
+    from django.template.defaultfilters import date
+
+    return date(value, arg)
+
+
 def handler(obj):
     if hasattr(obj, 'isoformat'):
         return obj.isoformat()
