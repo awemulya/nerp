@@ -20,11 +20,11 @@
 
 {% block content %}
     <div class="visible-print-block form-header">
-        <span class="right visible-print-inline pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %}
+        <span class="right pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %}
             {% trans '4' %}{% trans '5' %}</span>
         <br>
-        <h5 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h5>
-        <h6 class="center visible-print-block">{% trans 'Purchase Order' %}</h6>
+        <h3 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h3>
+        <h3 class="center">{% trans 'Purchase Order' %}</h3>
     </div>
 
     <form method="post" data-bind="submit: save">
