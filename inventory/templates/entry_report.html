@@ -19,11 +19,12 @@
 {% endblock %}
 
 {% block content %}
-
-    <span class="right visible-print-block">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '4' %}{% trans '6' %}</span>
-    <br>
-    <h3 class="center visible-print-block">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h3>
-    <h3 class="center visible-print-block">{% trans 'Entry Report' %}</h3>
+    <div class="form-header text-center visible-print-block">
+        <span class="pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '4' %}{% trans '6' %}</span>
+        <br>
+        <h3 class="text-center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h3>
+        <h3 class="text-center">{% trans 'Entry Report' %}</h3>
+    </div>
 
     <form method="post" data-bind="submit: save">
         {% csrf_token %}
@@ -56,7 +57,7 @@
                 </tr>
                 <tr>
                     <th>{% trans 'Rate per Unit' %}</th>
-                    <th class="span3 hidden-print">{% trans 'Vattable' %}</th>
+                    <th><span class="hidden-print">{% trans 'Vattable' %}</span></th>
                     <th>{% trans 'VAT' %} {% trans 'per' %} {% trans 'Unit' %}</th>
                     <th>{% trans 'Unit' %} {% trans 'Price' %}</th>
                     <th>{% trans 'Other' %} {% trans 'Expenses' %}</th>
@@ -82,8 +83,8 @@
                     <td data-bind="editableText: unit"></td>
                     <td data-bind="editableText: quantity, localize: 1"></td>
                     <td data-bind="editableText: rate, localize: 1"></td>
-                    <td class="hidden-print">
-                        <input type="checkbox" data-bind="checked: vattable">
+                    <td>
+                        <input class="hidden-print" type="checkbox" data-bind="checked: vattable">
                     </td>
                     <td data-bind="text: vat_amount(), localize: 1"></td>
                     <td data-bind="text: amount(), localize: 1"></td>
