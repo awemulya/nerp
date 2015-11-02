@@ -1035,7 +1035,7 @@ def unfulfill_demand(request):
 
     if row_releases:
         for release in row_releases:
-            release.item_instance.transfer('Store', None)
+            release.item_instance.undo_transfer()
 
     row.status = 'Approved'
     row.save()

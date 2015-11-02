@@ -230,11 +230,13 @@ function DemandRow(row, demand_vm) {
             if (match) {
                 release_vm.instances.push(release.item_instance.id);
             }
-            else if (group){
+            else if (group) {
                 release_vm = new ReleaseVM(group, release.item_instance.id, release.location);
                 self.release_vms.push(release_vm);
             }
-            get_by_id(self.groups(), release_vm.id).instances.remove(release.item_instance.id);
+            if (release_vm) {
+                get_by_id(self.groups(), release_vm.id).instances.remove(release.item_instance.id);
+            }
         }
     }
 
@@ -273,7 +275,7 @@ function DemandRow(row, demand_vm) {
     };
 
     self.fulfill = function (item, event) {
-    //self.fulfill = function (root, item, event) {
+        //self.fulfill = function (root, item, event) {
         //if (root.release_no() == '' || !root.release_no()) {
         //    alert.error('Release No. is required!');
         //    return false;

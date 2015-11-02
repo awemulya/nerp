@@ -698,6 +698,15 @@ class ItemInstance(models.Model):
                                                  to_user=to_user)
         return history
 
+    def undo_transfer(self):
+        history = InstanceHistory.objects.filter(instance=self, to_location=self.location, to_user=self.user).order_by(
+            '-id').last()
+        self.user = history.from_user
+        self.location = history.from_location
+        self.save()
+        history.delete()
+        return self
+
     @property
     def rate(self):
         return self.item_rate
