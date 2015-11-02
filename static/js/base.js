@@ -6,6 +6,8 @@ function localize(txt, lang_code, reverse) {
     txt = txt + '';
     if (txt == 'undefined')
         return;
+    if (lang_code == 'undefined')
+        lang_code = 'ne';
     var replace = [];
     replace['ne'] = {
         '1': '१',

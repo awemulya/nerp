@@ -203,12 +203,17 @@ ko.bindingHandlers.focus = {
 
 ko.bindingHandlers.max = {
     init: function (element, valueAccessor) {
-        $(element).attr('max', valueAccessor());
+        //$(element).attr('max', valueAccessor());
     },
-    update: function (element, valueAccessor) {
+    update: function (element, valueAccessor, allBindingsAccessor) {
 
         $(element).on('change', function(e){
-            if ($(element).val()> valueAccessor()){
+            if (allBindingsAccessor().hasOwnProperty('localize')){
+                var val = localize($(element).val(), window.lang, true)
+            }else{
+                val = $(element).val()
+            }
+            if (val> valueAccessor()){
                 $(element).val(null);
             }
         });
