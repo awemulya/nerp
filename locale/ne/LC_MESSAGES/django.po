@@ -1354,12 +1354,9 @@ msgstr "मूल्य"
 msgid "Instances"
 msgstr ""
 
-#: inventory/templates/inventory/itemlocation_detail.html:112
-#: inventory/templates/user_ledger_detail.html:83
-#, fuzzy
-#| msgid "Lend from store"
+
 msgid "Return to Store"
-msgstr "मौज्दातबाट दिनु"
+msgstr "स्टोरमा फिर्ता"
 
 #: inventory/templates/inventory_category_create_form.html:4
 #: inventory/templates/inventory_category_create_form.html:9
