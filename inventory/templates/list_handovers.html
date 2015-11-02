@@ -1,5 +1,5 @@
 {% extends "inventory_base.html" %}
-{% load i18n %}
+{% load i18n filters %}
 
 {% block title %}{% trans 'Handovers' %}{% endblock %}
 
@@ -27,13 +27,13 @@
         {% for item in paginated_objects %}
             <tr>
                 <td>
-                    <a href="{% url 'update_handover' item.id %}">{{ item.voucher_no }}</a>
+                    <a href="{% url 'update_handover' item.id %}">{{ item.voucher_no|localize }}</a>
                 </td>
                 <td>
                     {{ item.office }}
                 </td>
                 <td>
-                    {{ item.type }}
+                    {% trans item.type %}
                 </td>
                 <td>
                     {{ item.date|date:"Y-m-d" }}

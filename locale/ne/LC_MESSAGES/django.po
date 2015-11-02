@@ -392,7 +392,7 @@ msgstr "अधिग्रहण"
 
 #: ils/templates/incoming.html:7 ils/templates/incoming.html.py:13
 msgid "Incoming"
-msgstr "आगमन"
+msgstr "आएको"
 
 #: ils/templates/library_index.html:6
 msgid "Integrated Library System"
