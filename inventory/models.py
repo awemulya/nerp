@@ -8,7 +8,7 @@ from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from django.db.models import F
 from mptt.models import MPTTModel, TreeForeignKey
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from jsonfield import JSONField
 from njango.utils import ne2en
 from njango.fields import BSDateField, today
@@ -704,11 +704,11 @@ class ItemInstance(models.Model):
 
 class InstanceHistory(models.Model):
     instance = models.ForeignKey(ItemInstance)
-    date = BSDateField(default=today, validators=[validate_in_fy])
-    from_location = models.ForeignKey(ItemLocation, related_name='from_history')
-    to_location = models.ForeignKey(ItemLocation, related_name='to_history', null=True, blank=True)
-    from_user = models.ForeignKey(User, related_name='from_history', null=True, blank=True)
-    to_user = models.ForeignKey(User, related_name='to_history', null=True, blank=True)
+    date = BSDateField(default=today, validators=[validate_in_fy], verbose_name=_('Date'))
+    from_location = models.ForeignKey(ItemLocation, related_name='from_history', verbose_name=_('From Location'))
+    to_location = models.ForeignKey(ItemLocation, related_name='to_history', null=True, blank=True, verbose_name=_('To Location'))
+    from_user = models.ForeignKey(User, related_name='from_history', null=True, blank=True, verbose_name=_('From User'))
+    to_user = models.ForeignKey(User, related_name='to_history', null=True, blank=True, verbose_name=_('To User'))
 
     def save(self, *args, **kwargs):
         ret = super(InstanceHistory, self).save(*args, **kwargs)
@@ -734,12 +734,12 @@ class Release(models.Model):
 
 
 class Expense(models.Model):
-    voucher_no = models.PositiveIntegerField()
-    date = BSDateField(default=today, validators=[validate_in_fy])
+    voucher_no = models.PositiveIntegerField(verbose_name=_('Voucher No.'))
+    date = BSDateField(default=today, validators=[validate_in_fy], verbose_name=_('Date'))
     instance = models.ForeignKey(ItemInstance)
     types = (('Waive', _('Waive')), ('Handover', _('Handover')), ('Auction', _('Auction')))
-    type = models.CharField(choices=types, max_length=20, default='Waive')
-    rate = models.FloatField(blank=True, null=True)
+    type = models.CharField(choices=types, max_length=20, default='Waive', verbose_name=_('Type'))
+    rate = models.FloatField(blank=True, null=True, verbose_name=_('Rate'))
 
     def get_next_voucher_no(self):
         if not self.pk and not self.voucher_no:
@@ -761,11 +761,11 @@ class Expense(models.Model):
             set_transactions(self, self.date,
                              ['cr', self.instance.item.account, 1])
 
-    def __str__(self):
+    def __unicode__(self):
         ret = _('Expense')
         if self.pk:
             ret += ': ' + str(self.voucher_no)
-        return ret
+        return unicode(ret)
 
 
 def fiscal_year_changed(sender, **kwargs):

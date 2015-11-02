@@ -115,10 +115,6 @@ tbody > tr > td[contenteditable="true"] {
     display: none;
 }
 
-input[type="text"] {
-    display: inline;
-}
-
 .width-4 {
     width: 4em;
 }

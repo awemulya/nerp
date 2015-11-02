@@ -1,12 +1,11 @@
 {% extends "inventory_base.html" %}
-{% load i18n %}
-{% load pagination_tags %}
+{% load i18n pagination_tags filters%}
 
 {% block title %}{{ object }}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li>{{ object }}</li>
+    <li>{{ form.instance.instance }}</li>
 {% endblock %}
 
 {% block content %}
@@ -43,7 +42,7 @@
         <tbody>
         {% for history_instance in paginated_history %}
             <tr>
-                <td>{{ history_instance.date }}</td>
+                <td>{{ history_instance.date|localize }}</td>
                 <td>
                     {{ history_instance.instance.item }}
                 </td>
