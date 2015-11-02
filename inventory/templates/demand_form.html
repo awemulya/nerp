@@ -110,8 +110,7 @@
 
                             <div class="dropdown-menu release-dropdown pad">
                                 <!-- ko if: release_vms().length -->
-                                {#                                <h2>वर्तमान निकासी </h2>#}
-                                <h2>{% trans 'Current Release' %}</h2>
+                                <h2>{% trans 'Current' %} {% trans 'Release' %}</h2>
                                 <table id="release-table" class="table table-bordered table-striped">
                                     <thead>
                                     <th>{% trans 'Properties' %}</th>
@@ -136,7 +135,6 @@
                                     </tbody>
                                 </table>
                                 <!-- /ko -->
-                                {#                                <h2>मौज्दात सामान</h2>#}
                                 <h2>{% trans 'Items in Stock' %}</h2>
                                 <table id="group-table" class="table table-bordered table-striped">
                                     <thead>
