@@ -635,7 +635,7 @@ def item_form(request, id=None):
             item.other_properties = other_properties
             item.depreciation = dep
             opening_balance = form.cleaned_data['opening_balance']
-            opening_rate = form.cleaned_data['opening_rate']
+            opening_rate = float(form.cleaned_data['opening_rate'])
             opening_rate_vattable = form.cleaned_data['opening_rate_vattable']
             item.save(account_no=form.cleaned_data['account_no'], opening_balance=opening_balance,
                       opening_rate=opening_rate, opening_rate_vattable=opening_rate_vattable)
@@ -884,8 +884,7 @@ def save_demand(request):
     if params.get('release_no') == '':
         params['release_no'] = None
     object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
-                     'demandee_id': params.get('demandee'), 'date': params.get('date'), 'purpose': params.get('purpose'),
-                     'status': 'Requested'}
+                     'demandee_id': params.get('demandee'), 'date': params.get('date'), 'purpose': params.get('purpose'),}
     if params.get('id'):
         obj = Demand.objects.get(id=params.get('id'))
     else:
@@ -1380,7 +1379,7 @@ def save_entry_report(request):
             multiplier = 1
             if row.get('vattable'):
                 multiplier = 1.13
-            item_instance.item_rate = row.get('rate') * multiplier
+            item_instance.item_rate = float(row.get('rate')) * multiplier
             item_instance.location = ItemLocation.objects.get(name='Store')
             item_instance.source = submodel
             item_instance.other_properties = item_instance.item.other_properties

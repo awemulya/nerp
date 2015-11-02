@@ -372,6 +372,10 @@ class Demand(models.Model):
     def __str__(self):
         return unicode(self.release_no)
 
+    @property
+    def status(self):
+        return 'Approved'
+
 
 class DemandRow(models.Model):
     sn = models.PositiveIntegerField()
