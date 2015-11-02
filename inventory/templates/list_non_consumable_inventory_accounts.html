@@ -1,11 +1,11 @@
 {% extends "inventory_base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Non-Consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}{% endblock %}
+{% block title %}{% trans 'Non-consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url "list_non_consumable_inventory_accounts" %}">{% trans 'Non-Consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}</a></li>
+    <li><a href="{% url "list_non_consumable_inventory_accounts" %}">{% trans 'Non-consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}</a></li>
 {% endblock %}
 
 {% block content %}
