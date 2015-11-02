@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-02 17:47+0545\n"
+"POT-Creation-Date: 2015-11-02 17:54+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -416,9 +416,11 @@ msgstr "पुस्तकहरू"
 
 #: ils/templates/list_transactions.html:8
 #: ils/templates/list_transactions.html:13
+#: inventory/templates/_dashboard_inventory.html:50
+#: inventory/templates/transaction_list.html:4
 #: inventory/templates/transaction_list.html:8
 msgid "Transactions"
-msgstr "कारोबार"
+msgstr "कारोबारहरु"
 
 #: ils/templates/outgoing.html:6 ils/templates/outgoing.html.py:13
 msgid "Outgoing"
@@ -741,27 +743,76 @@ msgid "Accounts"
 msgstr "खाताहरु"
 
 #: inventory/templates/_dashboard_inventory.html:46
-#: inventory/templates/inspection_report.html:26
-msgid "Inspection Report"
-msgstr "निरीक्षण प्रतिवेदन"
+#: inventory/templates/inspection_detail.html:5
+#: inventory/templates/inspection_detail.html:9
+#: inventory/templates/inspection_list.html:9
+#: inventory/templates/inspection_list.html:43
+#: inventory/templates/inspection_report.html:9
+msgid "Inspection"
+msgstr "निरीक्षण"
+
+#: inventory/templates/_dashboard_inventory.html:46
+#: inventory/templates/_dashboard_inventory.html:48
+#: inventory/templates/_dashboard_inventory.html:52
+#: inventory/templates/depreciation_report.html:5
+#: inventory/templates/depreciation_report.html:17
+#: inventory/templates/entry_report.html:10
+#: inventory/templates/inspection_detail.html:5
+#: inventory/templates/inspection_detail.html:9
+#: inventory/templates/inspection_list.html:5
+#: inventory/templates/inspection_list.html:9
+#: inventory/templates/inspection_report.html:5
+#: inventory/templates/inspection_report.html:9
+#: inventory/templates/list_entry_reports.html:4
+#: inventory/templates/list_entry_reports.html:8
+#: inventory/templates/list_quotation_report.html:5
+#: inventory/templates/list_quotation_report.html:9
+#: inventory/templates/list_quotation_report.html:13
+#: inventory/templates/quotation_comparison.html:5
+#: inventory/templates/quotation_comparison.html:9
+#: inventory/templates/quotation_comparison.html:24
+#: inventory/templates/yearly_report.html:5
+#: inventory/templates/yearly_report.html:9
+#: inventory/templates/yearly_report_detail.html:5
+#: inventory/templates/yearly_report_detail.html:9
+#: inventory/templates/yearly_report_list.html:5
+#: inventory/templates/yearly_report_list.html:9
+msgid "Reports"
+msgstr "प्रतिवेदनहरु"
 
 #: inventory/templates/_dashboard_inventory.html:48
-msgid "Yearly Report"
-msgstr "वार्षिक प्रतिवेदन"
-
-#: inventory/templates/_dashboard_inventory.html:50
-#: inventory/templates/transaction_list.html:4
-msgid "View Transactions"
-msgstr "कारोवार हेर्नुहोस"
+#: inventory/templates/yearly_report.html:5
+#: inventory/templates/yearly_report.html:9
+#: inventory/templates/yearly_report_detail.html:5
+#: inventory/templates/yearly_report_detail.html:9
+#: inventory/templates/yearly_report_list.html:5
+#: inventory/templates/yearly_report_list.html:9
+#: inventory/templates/yearly_report_list.html:43
+msgid "Yearly"
+msgstr "वार्षिक"
 
 #: inventory/templates/_dashboard_inventory.html:52
-msgid "Depreciation Report"
-msgstr "मूल्यह्रास प्रतिवेदन"
+#: inventory/templates/depreciation_report.html:5
+#: inventory/templates/depreciation_report.html:17
+#: inventory/templates/depreciation_report.html:21
+#: inventory/templates/depreciation_report.html:31
+msgid "Depreciation"
+msgstr "मूल्यह्रास"
 
 #: inventory/templates/_dashboard_inventory.html:54
-#: inventory/templates/quotation_comparison.html:10
-msgid "Quotation Comparison"
-msgstr "उद्धरण तुलना"
+#: inventory/templates/list_quotation_report.html:5
+#: inventory/templates/list_quotation_report.html:9
+#: inventory/templates/list_quotation_report.html:13
+#: inventory/templates/list_quotation_report.html:45
+#: inventory/templates/quotation_comparison.html:5
+#: inventory/templates/quotation_comparison.html:9
+#: inventory/templates/quotation_comparison.html:24
+msgid "Quotation"
+msgstr "उद्धरण"
+
+#: inventory/templates/_dashboard_inventory.html:54
+msgid "Comparisons"
+msgstr "तुलनाहरु"
 
 #: inventory/templates/_dashboard_inventory.html:56
 #: inventory/templates/inventory/itemlocation_detail.html:8
@@ -985,39 +1036,6 @@ msgstr "XLSमा निर्यात गर्नुहोस"
 #: inventory/templates/yearly_report_detail.html:51
 msgid "Delete!"
 msgstr "मेट्नुहोस!"
-
-#: inventory/templates/depreciation_report.html:5
-#: inventory/templates/depreciation_report.html:17
-#: inventory/templates/depreciation_report.html:21
-#: inventory/templates/depreciation_report.html:31
-msgid "Depreciation"
-msgstr "मूल्यह्रास"
-
-#: inventory/templates/depreciation_report.html:5
-#: inventory/templates/depreciation_report.html:17
-#: inventory/templates/entry_report.html:10
-#: inventory/templates/inspection_detail.html:5
-#: inventory/templates/inspection_detail.html:9
-#: inventory/templates/inspection_list.html:5
-#: inventory/templates/inspection_list.html:9
-#: inventory/templates/inspection_report.html:5
-#: inventory/templates/inspection_report.html:9
-#: inventory/templates/list_entry_reports.html:4
-#: inventory/templates/list_entry_reports.html:8
-#: inventory/templates/list_quotation_report.html:5
-#: inventory/templates/list_quotation_report.html:9
-#: inventory/templates/list_quotation_report.html:13
-#: inventory/templates/quotation_comparison.html:5
-#: inventory/templates/quotation_comparison.html:9
-#: inventory/templates/quotation_comparison.html:24
-#: inventory/templates/yearly_report.html:5
-#: inventory/templates/yearly_report.html:9
-#: inventory/templates/yearly_report_detail.html:5
-#: inventory/templates/yearly_report_detail.html:9
-#: inventory/templates/yearly_report_list.html:5
-#: inventory/templates/yearly_report_list.html:9
-msgid "Reports"
-msgstr "प्रतिवेदनहरु"
 
 #: inventory/templates/depreciation_report.html:21
 #: inventory/templates/inspection_list.html:43
@@ -1282,14 +1300,6 @@ msgstr "सामानको भौतिक अवस्था"
 msgid "Office"
 msgstr "कार्यालय"
 
-#: inventory/templates/inspection_detail.html:5
-#: inventory/templates/inspection_detail.html:9
-#: inventory/templates/inspection_list.html:9
-#: inventory/templates/inspection_list.html:43
-#: inventory/templates/inspection_report.html:9
-msgid "Inspection"
-msgstr "निरीक्षण"
-
 #: inventory/templates/inspection_detail.html:29
 #, fuzzy
 #| msgid "Inventory Account Page No."
@@ -1314,6 +1324,10 @@ msgstr "निरीक्षण"
 #: inventory/templates/inspection_report.html:23
 msgid "9"
 msgstr "९"
+
+#: inventory/templates/inspection_report.html:26
+msgid "Inspection Report"
+msgstr "निरीक्षण प्रतिवेदन"
 
 #: inventory/templates/inspection_report.html:41
 #: inventory/templates/transaction_list.html:35
@@ -1469,16 +1483,6 @@ msgstr "आदेशहरू"
 msgid "Order No."
 msgstr "आदेश न."
 
-#: inventory/templates/list_quotation_report.html:5
-#: inventory/templates/list_quotation_report.html:9
-#: inventory/templates/list_quotation_report.html:13
-#: inventory/templates/list_quotation_report.html:45
-#: inventory/templates/quotation_comparison.html:5
-#: inventory/templates/quotation_comparison.html:9
-#: inventory/templates/quotation_comparison.html:24
-msgid "Quotation"
-msgstr "उद्धरण"
-
 #: inventory/templates/list_quotation_report.html:45
 msgid "Comparison"
 msgstr "तुलना"
@@ -1521,6 +1525,10 @@ msgstr "लेखा"
 msgid "Firm's Name"
 msgstr "फर्मको नाम"
 
+#: inventory/templates/quotation_comparison.html:10
+msgid "Quotation Comparison"
+msgstr "उद्धरण तुलना"
+
 #: inventory/templates/quotation_comparison.html:43
 msgid "Add Party"
 msgstr "नयाँ पार्टी"
@@ -1536,10 +1544,6 @@ msgstr "प्रति एकाइ मूल्य"
 #: inventory/templates/quotation_comparison.html:61
 msgid "Total Price"
 msgstr "जम्मा मूल्य"
-
-#: inventory/templates/transaction_list.html:8
-msgid "View"
-msgstr "हेर्नुहोस"
 
 #: inventory/templates/transaction_list.html:15
 msgid "Start"
@@ -1626,16 +1630,6 @@ msgstr "सामान प्राप्त भएको स्रोत"
 #: inventory/templates/view_inventory_account.html:122
 msgid "Price per Unit"
 msgstr "प्रति इकाई मूल्य"
-
-#: inventory/templates/yearly_report.html:5
-#: inventory/templates/yearly_report.html:9
-#: inventory/templates/yearly_report_detail.html:5
-#: inventory/templates/yearly_report_detail.html:9
-#: inventory/templates/yearly_report_list.html:5
-#: inventory/templates/yearly_report_list.html:9
-#: inventory/templates/yearly_report_list.html:43
-msgid "Yearly"
-msgstr "वार्षिक"
 
 #: inventory/templates/yearly_report.html:32
 #: inventory/templates/yearly_report_detail.html:28
@@ -1835,6 +1829,18 @@ msgstr "समूह"
 #: users/models.py:120
 msgid "Groups"
 msgstr "समूहहरु"
+
+#~ msgid "Yearly Report"
+#~ msgstr "वार्षिक प्रतिवेदन"
+
+#~ msgid "View Transactions"
+#~ msgstr "कारोवार हेर्नुहोस"
+
+#~ msgid "Depreciation Report"
+#~ msgstr "मूल्यह्रास प्रतिवेदन"
+
+#~ msgid "View"
+#~ msgstr "हेर्नुहोस"
 
 #~ msgid "Status"
 #~ msgstr "स्थिति"

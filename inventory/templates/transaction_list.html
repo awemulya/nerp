@@ -1,11 +1,11 @@
 {% extends "inventory_base.html" %}
 {% load i18n staticfiles %}
 {% load filters %}
-{% block title %}{% trans scenario %} {% trans 'View Transactions' %}{% endblock %}
+{% block title %}{% trans 'Transactions' %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="#">{% trans 'View' %} {% trans 'Transactions' %}</a></li>
+    <li>{% trans 'Transactions' %}</li>
 {% endblock %}
 
 {% block content %}
