@@ -399,6 +399,6 @@ footer {
     border: 1px solid black;
 }
 
-.form-header h3{
+.form-header h3, .form-header h4{
     margin: 0 auto;
 }

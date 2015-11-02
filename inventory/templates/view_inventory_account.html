@@ -22,7 +22,7 @@
 {% block content %}
 
     <div class="visible-print-block">
-        <span class="right">{% trans 'FCGO' %} {% trans 'F.N.' %}
+        <span class="pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %}
             {% if obj.item.type == 'non-consumable' %}
                 {% trans '4' %}{% trans '7' %}
             {% else %}
@@ -30,12 +30,30 @@
             {% endif %}
         </span>
         <br/>
-
-        <h5 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h5>
+        <h4 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>
+        <h4 class="center">
+            {% if obj.item.type == 'non-consumable' %}
+                {% trans 'Inventory Account of Non-consumable Item' %}
+            {% else %}
+                {% trans 'Inventory Account of Consumable Item' %}
+            {% endif %}
+        </h4>
     </div>
 
+    <div class="visible-print-block">
+        {% trans 'Inventory item name' %}: {{ obj.item.name }}<br/>
 
-    <div class="row">
+        <div class="row">
+            <div class="col-md-5">
+                {% trans 'Unit' %}: {{ obj.item.unit }}
+            </div>
+            <div class="col-md-7">
+                {% trans "Inventory Item's Property Classification Reference Number" %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row hidden-print">
 
         <div class="col-md-6">
             <table class="table table-bordered table-responsive">
@@ -133,7 +151,7 @@
             <td data-bind="text: expense_quantity(), localize: 1"></td>
             <td data-bind="editableText: expense_total, localize: 1, disable_content_editable: income_quantity()"></td>
             <td data-bind="text: current_balance(), localize: 1"></td>
-            <td data-bind="editableText: wrapper.remaining_total($root, $index)"></td>
+            <td data-bind="editableText: wrapper.remaining_total($root, $index), localize: 1"></td>
             <td data-bind="editableText: remarks"></td>
 
 
@@ -146,19 +164,22 @@
 
     <div class="row visible-print-block">
         <div class="col-lg-4 col-sm-4 col-xs-4">
-            {% trans "Faantwaala's" %} {% trans 'Signature' %}
-            <br>
-            {% trans 'Date' %}
+            {% trans "Faantwaala's" %} {% trans 'Signature' %}:<br>
+            {% trans 'Name' %}:<br>
+            {% trans 'Designation' %}:<br>
+            {% trans 'Date' %}:
         </div>
         <div class="col-lg-4 col-sm-4 col-xs-4">
-            {% trans 'Section' %} {% trans "Head's" %} {% trans 'Signature' %}
-            <br>
-            {% trans 'Date' %}
+            {% trans 'Section' %} {% trans "Head's" %} {% trans 'Signature' %}:<br>
+            {% trans 'Name' %}:<br>
+            {% trans 'Designation' %}:<br>
+            {% trans 'Date' %}:
         </div>
         <div class="col-lg-4 col-sm-4 col-xs-4">
-            {% trans "Signature of Head of Office" %}
-            <br>
-            {% trans 'Date' %}
+            {% trans "Signature of Head of Office" %}:<br>
+            {% trans 'Name' %}:<br>
+            {% trans 'Designation' %}:<br>
+            {% trans 'Date' %}:
         </div>
     </div>
 
