@@ -1353,7 +1353,7 @@ msgstr "गणना"
 #: inventory/templates/inventory/itemlocation_detail.html:94
 #: inventory/templates/user_ledger_detail.html:65
 msgid "Instances"
-msgstr ""
+msgstr "इकाइहरु"
 
 #: inventory/templates/inventory/itemlocation_detail.html:113
 #: inventory/templates/user_ledger_detail.html:84
