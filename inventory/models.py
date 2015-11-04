@@ -387,7 +387,7 @@ class Demand(models.Model):
             return _('Empty')
         inv_hash = {v: k for k, v in hash.items()}
         status_text = _(inv_hash[min(status_codes)])
-        if len(set(status_codes)) > 1:
+        if len(set(status_codes))>1:
             status_text = "%s %s" % (_('Partially'), _(inv_hash[max(status_codes)]))
         return status_text
 
