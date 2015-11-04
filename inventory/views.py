@@ -10,7 +10,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView, DetailView, UpdateView, CreateView
 
 from openpyxl import Workbook
@@ -897,8 +897,8 @@ def save_demand(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = DemandRow
-        for ind, row in enumerate(params.get('table_view').get('rows')):
-            submodel = save_demand_row(row, obj, ind)
+        for ind, row_data in enumerate(params.get('table_view').get('rows')):
+            submodel = save_demand_row(row_data, obj, ind)
             if not submodel:
                 continue
             dct['rows'][ind] = submodel.id
@@ -909,36 +909,28 @@ def save_demand(request):
         elif str(e) != '':
             dct['error_message'] = str(e)
         else:
-            dct['error_message'] = 'Error in form data!'
+            dct['error_message'] = _('Error in form data!')
     return JsonResponse(dct)
 
-def save_demand_row(row, demand, ind):
-    invalid_check = invalid(row, ['item_id', 'quantity', 'unit'])
+
+def save_demand_row(row_data, demand, ind):
+    invalid_check = invalid(row_data, ['item_id', 'quantity', 'unit'])
     if invalid_check:
         return None
     else:
-        # if row.get('release_quantity') == '':
-        # row['release_quantity'] = 1
-        values = {'sn': ind + 1, 'item_id': row.get('item_id'),
-                  'specification': row.get('specification'),
-                  'quantity': row.get('quantity'), 'unit': row.get('unit'), 'remarks': row.get('remarks'),
-                  'purpose': row.get('purpose'), 'demand': demand}
+        values = {'sn': ind + 1, 'item_id': row_data.get('item_id'),
+                  'specification': row_data.get('specification'),
+                  'quantity': row_data.get('quantity'), 'unit': row_data.get('unit'), 'remarks': row_data.get('remarks'),
+                  'purpose': row_data.get('purpose'), 'demand': demand}
 
-        submodel, created = DemandRow.objects.get_or_create(id=row.get('id'), defaults=values)
+        submodel, created = DemandRow.objects.get_or_create(id=row_data.get('id'), defaults=values)
 
         submodel.releases.all().delete()
-        for release in row['release_vms']:
+        for release in row_data['release_vms']:
             for instance in release['instances']:
                 instance_model = ItemInstance.objects.get(id=instance)
-                # release.location_id = release['location_id']
-                # instance_model.save()
                 rel = Release(item_instance=instance_model, demand_row=submodel, location_id=release['location_id'])
                 rel.save()
-
-        # set_transactions(submodel, request.POST.get('date'),
-        #                  ['dr', bank_account, row.get('amount')],
-        #                  ['cr', benefactor, row.get('amount')],
-        # )
         if not created:
             submodel = save_model(submodel, values)
         return submodel
@@ -946,32 +938,20 @@ def save_demand_row(row, demand, ind):
 
 @group_required('Store Keeper', 'Chief')
 def approve_demand(request):
-    params = json.loads(request.body)
-    import ipdb
-    ipdb.set_trace()
-    dct = {'rows': {}}
-    if params.get('id'):
-        row = DemandRow.objects.get(id=params.get('id'))
+    row_data = json.loads(request.body)
+    dct = {}
+    if row_data.get('demand_id'):
+        demand = Demand.objects.get(id=row_data.get('demand_id'))
     else:
-        dct['error_message'] = 'Row needs to be saved before being approved!'
+        dct['error_message'] = _('Demand Form needs to be saved before this can be approved!')
         return JsonResponse(dct)
-        # invalid_check = invalid(params, ['item_id', 'quantity', 'unit', 'release_quantity', 'purpose', 'location'])
-        # invalid_check = invalid(params, ['item_id', 'quantity', 'unit'])
-
-        # if invalid_check:
-        #     dct['error_message'] = 'Fill out following fields: ' + ', '.join(invalid_check)
-        #     return JsonResponse(dct)
-        # else:
-        # if row.item.account.current_balance < float(params.get('release_quantity')):
-        # dct['error_message'] = 'We dont have this item in stock. Purchase Item'
-        # values = {'item_id': params.get('item_id'),
-        #           'specification': params.get('specification'),
-        #           'quantity': params.get('quantity'), 'unit': params.get('unit'),
-        #           'release_quantity': params.get('release_quantity'), 'remarks': params.get('remarks'),
-        #           'purpose': params.get('purpose'), 'location': ItemLocation.objects.get(id=params.get('location'))}
-        # row = save_model(row, values)
-    row.status = 'Approved'
-    row.save()
+    row = save_demand_row(row_data, demand, row_data.get('index'))
+    if row:
+        row.status = 'Approved'
+        row.save()
+        dct['id'] = row.id
+    else:
+        dct['error_message'] = unicode(_('Invalid or incomplete data in row'))
     return JsonResponse(dct)
 
 
