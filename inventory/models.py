@@ -374,7 +374,22 @@ class Demand(models.Model):
 
     @property
     def status(self):
-        return 'Approved'
+        hash = {
+            'Requested': 0,
+            'Approved': 1,
+            'Fulfilled': 2,
+        }
+        status_codes = []
+        rows = self.rows.all()
+        for row in rows:
+            status_codes.append(hash[row.status])
+        if not status_codes:
+            return _('Empty')
+        inv_hash = {v: k for k, v in hash.items()}
+        status_text = _(inv_hash[min(status_codes)])
+        if len(set(status_codes)) > 1:
+            status_text = "%s %s" % (_('Partially'), _(inv_hash[max(status_codes)]))
+        return status_text
 
 
 class DemandRow(models.Model):
@@ -386,7 +401,7 @@ class DemandRow(models.Model):
     # release_quantity = models.FloatField(null=True, blank=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
     demand = models.ForeignKey(Demand, related_name='rows')
-    statuses = [('Requested', 'Requested'), ('Approved', 'Approved'), ('Fulfilled', 'Fulfilled')]
+    statuses = [('Requested', _('Requested')), ('Approved', _('Approved')), ('Fulfilled', _('Fulfilled'))]
     status = models.CharField(max_length=9, choices=statuses, default='Requested')
     location = models.ForeignKey(ItemLocation, null=True, blank=True)
     purpose = models.CharField(max_length=100, null=True, blank=True)
