@@ -3,6 +3,10 @@
     margin: 1em 1em 0 0;
 }
 
+.fleft{
+	display: inline;
+}
+
 #circulation-detail {
     margin-top: 1em;
 }

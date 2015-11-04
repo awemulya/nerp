@@ -40,6 +40,9 @@
                     {{ record.book.subtitle }}
                 {% endif %}
                 </small>
+                {% ifusergroup 'Librarian' %}
+                    <a class="btn btn-default" href="{% url 'edit_book' record.id %}">EDIT</a>
+                {% endifusergroup %}
             </h1>
             <p id="text-by"><em>by</em>
                 {% for author in record.authors.all %}
