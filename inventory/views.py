@@ -720,6 +720,8 @@ def list_demand_forms(request):
         objects = Demand.objects.all()
     else:
         objects = Demand.objects.filter(demandee=request.user)
+    if request.GET.get('status'):
+        objects = objects.filter(rows__status=request.GET.get('status')).distinct()
     return render(request, 'list_demand_forms.html', {'objects': objects})
 
 
@@ -884,7 +886,7 @@ def save_demand(request):
     if params.get('release_no') == '':
         params['release_no'] = None
     object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
-                     'demandee_id': params.get('demandee'), 'date': params.get('date'), 'purpose': params.get('purpose'),}
+                     'demandee_id': params.get('demandee'), 'date': params.get('date'), 'purpose': params.get('purpose'), }
     if params.get('id'):
         obj = Demand.objects.get(id=params.get('id'))
     else:

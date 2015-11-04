@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-04 18:23+0545\n"
+"POT-Creation-Date: 2015-11-04 19:37+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,8 +27,8 @@ msgstr ""
 msgid "No."
 msgstr "न."
 
-#: account/templates/receipt.html:36 inventory/models.py:735
-#: inventory/models.py:766 inventory/templates/demand_form.html:233
+#: account/templates/receipt.html:36 inventory/models.py:753
+#: inventory/models.py:784 inventory/templates/demand_form.html:233
 #: inventory/templates/demand_form.html:240
 #: inventory/templates/demand_form.html:248
 #: inventory/templates/demand_form.html:250
@@ -287,8 +287,8 @@ msgstr "आर्थिक बर्ष"
 #: core/templates/change_fiscal_year.html:22
 #: core/templates/list_employees.html:49 core/templates/list_parties.html:49
 #: inventory/templates/_dashboard_inventory.html:10
-#: inventory/templates/_dashboard_inventory.html:20
-#: inventory/templates/_dashboard_inventory.html:26
+#: inventory/templates/_dashboard_inventory.html:32
+#: inventory/templates/_dashboard_inventory.html:38
 #: inventory/templates/inspection_list.html:43
 #: inventory/templates/inventory_category_create_form.html:4
 #: inventory/templates/inventory_category_create_form.html:9
@@ -416,7 +416,7 @@ msgstr "पुस्तकहरू"
 
 #: ils/templates/list_transactions.html:8
 #: ils/templates/list_transactions.html:13
-#: inventory/templates/_dashboard_inventory.html:50
+#: inventory/templates/_dashboard_inventory.html:62
 #: inventory/templates/transaction_list.html:4
 #: inventory/templates/transaction_list.html:8
 msgid "Transactions"
@@ -486,7 +486,7 @@ msgstr "प्रारम्भिक दर"
 msgid "Opening Rate Vattable?"
 msgstr "प्रारम्भिक दरमा VAT?"
 
-#: inventory/forms.py:35 inventory/models.py:769
+#: inventory/forms.py:35 inventory/models.py:787
 #: inventory/templates/list_handovers.html:23
 #: inventory/templates/list_inventory_accounts.html:27
 #: inventory/templates/view_inventory_account.html:72
@@ -517,7 +517,7 @@ msgstr "महिना(हरू)"
 msgid "Year(s)"
 msgstr "year(s)"
 
-#: inventory/models.py:176 inventory/templates/_dashboard_inventory.html:42
+#: inventory/models.py:176 inventory/templates/_dashboard_inventory.html:54
 #: inventory/templates/inventory/itemlocation_detail.html:126
 #: inventory/templates/list_consumable_inventory_accounts.html:4
 #: inventory/templates/list_consumable_inventory_accounts.html:8
@@ -526,7 +526,7 @@ msgstr "year(s)"
 msgid "Consumable"
 msgstr "खपत हुने"
 
-#: inventory/models.py:176 inventory/templates/_dashboard_inventory.html:44
+#: inventory/models.py:176 inventory/templates/_dashboard_inventory.html:56
 #: inventory/templates/inventory/itemlocation_detail.html:44
 #: inventory/templates/list_non_consumable_inventory_accounts.html:4
 #: inventory/templates/list_non_consumable_inventory_accounts.html:8
@@ -535,7 +535,7 @@ msgstr "खपत हुने"
 msgid "Non-consumable"
 msgstr "खप्ने"
 
-#: inventory/models.py:178 inventory/models.py:643
+#: inventory/models.py:178 inventory/models.py:661
 msgid "pieces"
 msgstr "थान"
 
@@ -547,26 +547,26 @@ msgstr "खाली"
 msgid "Partially"
 msgstr "आंशिक रुपमा"
 
-#: inventory/models.py:404
+#: inventory/models.py:422 inventory/templates/_dashboard_inventory.html:30
 msgid "Requested"
 msgstr "मागिएको"
 
-#: inventory/models.py:404
+#: inventory/models.py:422 inventory/templates/_dashboard_inventory.html:26
 msgid "Approved"
 msgstr "स्वीकृत"
 
-#: inventory/models.py:404
+#: inventory/models.py:422 inventory/templates/_dashboard_inventory.html:28
 msgid "Fulfilled"
 msgstr "पूर्ति गरिएको"
 
-#: inventory/models.py:494 inventory/models.py:768
+#: inventory/models.py:512 inventory/models.py:786
 #: inventory/templates/entry_report.html:122
 #: inventory/templates/handover.html:6 inventory/templates/handover.html:10
 #: inventory/templates/handover.html:24 inventory/templates/handover.html:32
 msgid "Handover"
 msgstr "हस्तान्तरण"
 
-#: inventory/models.py:552 inventory/templates/entry_report.html:119
+#: inventory/models.py:570 inventory/templates/entry_report.html:119
 #: inventory/templates/list_purchase_orders.html:50
 #: inventory/templates/purchase_order.html:6
 #: inventory/templates/purchase_order.html:11
@@ -575,43 +575,43 @@ msgstr "हस्तान्तरण"
 msgid "Purchase Order"
 msgstr "खरिद आदेश"
 
-#: inventory/models.py:736
+#: inventory/models.py:754
 #: inventory/templates/inventory/instancehistory_form.html:37
 msgid "From Location"
 msgstr "स्थानबाट"
 
-#: inventory/models.py:737
+#: inventory/models.py:755
 #: inventory/templates/inventory/instancehistory_form.html:38
 msgid "To Location"
 msgstr "स्थानका लागि"
 
-#: inventory/models.py:738
+#: inventory/models.py:756
 #: inventory/templates/inventory/instancehistory_form.html:39
 msgid "From User"
 msgstr "प्रयोगकर्ता देखि"
 
-#: inventory/models.py:739
+#: inventory/models.py:757
 #: inventory/templates/inventory/instancehistory_form.html:40
 msgid "To User"
 msgstr "प्रयोगकर्ताको लागि"
 
-#: inventory/models.py:752
+#: inventory/models.py:770
 msgid "Instance History"
 msgstr "Instance इतिहास"
 
-#: inventory/models.py:765
+#: inventory/models.py:783
 msgid "Voucher No."
 msgstr "भौचर न."
 
-#: inventory/models.py:768
+#: inventory/models.py:786
 msgid "Waive"
 msgstr "मिनाह"
 
-#: inventory/models.py:768
+#: inventory/models.py:786
 msgid "Auction"
 msgstr "लिलाम"
 
-#: inventory/models.py:770 inventory/templates/demand_form.html:117
+#: inventory/models.py:788 inventory/templates/demand_form.html:117
 #: inventory/templates/demand_form.html:142
 #: inventory/templates/depreciation_report.html:39
 #: inventory/templates/inspection_detail.html:38
@@ -625,7 +625,7 @@ msgstr "लिलाम"
 msgid "Rate"
 msgstr "दर"
 
-#: inventory/models.py:793
+#: inventory/models.py:811
 #: inventory/templates/inventory/itemlocation_detail.html:117
 #: inventory/templates/user_ledger_detail.html:86
 #: inventory/templates/view_inventory_account.html:110
@@ -643,78 +643,88 @@ msgid "Create Inventory Item"
 msgstr "नयाँ जिन्सी सामान"
 
 #: inventory/templates/_dashboard_inventory.html:16
-#: inventory/templates/_dashboard_inventory.html:61
+#: inventory/templates/_dashboard_inventory.html:73
 msgid "New Demand Form"
 msgstr "नयाँ माग फारम"
 
 #: inventory/templates/_dashboard_inventory.html:18
-#: inventory/templates/_dashboard_inventory.html:63
+#: inventory/templates/_dashboard_inventory.html:20
+#: inventory/templates/_dashboard_inventory.html:22
+#: inventory/templates/_dashboard_inventory.html:24
+#: inventory/templates/_dashboard_inventory.html:26
+#: inventory/templates/_dashboard_inventory.html:28
+#: inventory/templates/_dashboard_inventory.html:30
+#: inventory/templates/_dashboard_inventory.html:75
 msgid "Demand Forms"
 msgstr "माग फारमहरु"
 
-#: inventory/templates/_dashboard_inventory.html:20
+#: inventory/templates/_dashboard_inventory.html:24
+msgid "Unapproved"
+msgstr "अस्वीकृत"
+
+#: inventory/templates/_dashboard_inventory.html:32
 msgid "Purchase order"
 msgstr "खरिद आदेश"
 
-#: inventory/templates/_dashboard_inventory.html:22
+#: inventory/templates/_dashboard_inventory.html:34
 msgid "Purchase Orders"
 msgstr "खरिद आदेशहरु"
 
-#: inventory/templates/_dashboard_inventory.html:24
+#: inventory/templates/_dashboard_inventory.html:36
 #: inventory/templates/inventory/itemlocation_detail.html:18
 #: inventory/templates/view_inventory_account.html:88
 msgid "All"
 msgstr "सबै"
 
-#: inventory/templates/_dashboard_inventory.html:24
+#: inventory/templates/_dashboard_inventory.html:36
 #: inventory/templates/list_handovers.html:4
 #: inventory/templates/list_handovers.html:8
 msgid "Handovers"
 msgstr "हस्तान्तरण फारमहरु"
 
-#: inventory/templates/_dashboard_inventory.html:26
+#: inventory/templates/_dashboard_inventory.html:38
 #: inventory/templates/list_handovers.html:52
 #: inventory/templates/list_incoming_handovers.html:46
 msgid "Incoming Handover"
 msgstr "आएको  हस्तान्तरण फारम"
 
-#: inventory/templates/_dashboard_inventory.html:28
+#: inventory/templates/_dashboard_inventory.html:40
 msgid "Create"
 msgstr "नयाँ"
 
-#: inventory/templates/_dashboard_inventory.html:28
+#: inventory/templates/_dashboard_inventory.html:40
 #: inventory/templates/list_handovers.html:49
 #: inventory/templates/list_outgoing_handovers.html:46
 msgid "Outgoing Handover"
 msgstr "गएको हस्तान्तरण फारम"
 
-#: inventory/templates/_dashboard_inventory.html:30
+#: inventory/templates/_dashboard_inventory.html:42
 #: inventory/templates/list_incoming_handovers.html:4
 #: inventory/templates/list_incoming_handovers.html:8
 msgid "Incoming Handovers"
 msgstr "आएका  हस्तान्तरण फारमहरू"
 
-#: inventory/templates/_dashboard_inventory.html:32
+#: inventory/templates/_dashboard_inventory.html:44
 #: inventory/templates/list_outgoing_handovers.html:4
 #: inventory/templates/list_outgoing_handovers.html:8
 msgid "Outgoing Handovers"
 msgstr "गएका  हस्तान्तरण फारमहरू"
 
-#: inventory/templates/_dashboard_inventory.html:34
+#: inventory/templates/_dashboard_inventory.html:46
 msgid "Entry Reports"
 msgstr "दाखिला प्रतिवेदनहरु"
 
-#: inventory/templates/_dashboard_inventory.html:36
+#: inventory/templates/_dashboard_inventory.html:48
 msgid "Entry Reports for Handovers"
 msgstr "हस्तान्तरण फारमका दाखिला प्रतिवेदनहरु"
 
-#: inventory/templates/_dashboard_inventory.html:38
+#: inventory/templates/_dashboard_inventory.html:50
 msgid "Entry Reports for Purchase Orders"
 msgstr "खरिद आदेशका दाखिला प्रतिवेदनहरु"
 
-#: inventory/templates/_dashboard_inventory.html:40
-#: inventory/templates/_dashboard_inventory.html:42
-#: inventory/templates/_dashboard_inventory.html:44
+#: inventory/templates/_dashboard_inventory.html:52
+#: inventory/templates/_dashboard_inventory.html:54
+#: inventory/templates/_dashboard_inventory.html:56
 #: inventory/templates/create_item_location_form.html:8
 #: inventory/templates/inspection_report.html:26
 #: inventory/templates/inventory_base.html:6
@@ -749,9 +759,9 @@ msgstr "खरिद आदेशका दाखिला प्रतिवे
 msgid "Inventory"
 msgstr "जिन्सी"
 
-#: inventory/templates/_dashboard_inventory.html:40
-#: inventory/templates/_dashboard_inventory.html:42
-#: inventory/templates/_dashboard_inventory.html:44
+#: inventory/templates/_dashboard_inventory.html:52
+#: inventory/templates/_dashboard_inventory.html:54
+#: inventory/templates/_dashboard_inventory.html:56
 #: inventory/templates/list_consumable_inventory_accounts.html:4
 #: inventory/templates/list_consumable_inventory_accounts.html:8
 #: inventory/templates/list_inventory_accounts.html:4
@@ -762,7 +772,7 @@ msgstr "जिन्सी"
 msgid "Accounts"
 msgstr "खाताहरु"
 
-#: inventory/templates/_dashboard_inventory.html:46
+#: inventory/templates/_dashboard_inventory.html:58
 #: inventory/templates/inspection_detail.html:5
 #: inventory/templates/inspection_detail.html:9
 #: inventory/templates/inspection_list.html:9
@@ -771,9 +781,9 @@ msgstr "खाताहरु"
 msgid "Inspection"
 msgstr "निरीक्षण"
 
-#: inventory/templates/_dashboard_inventory.html:46
-#: inventory/templates/_dashboard_inventory.html:48
-#: inventory/templates/_dashboard_inventory.html:52
+#: inventory/templates/_dashboard_inventory.html:58
+#: inventory/templates/_dashboard_inventory.html:60
+#: inventory/templates/_dashboard_inventory.html:64
 #: inventory/templates/depreciation_report.html:5
 #: inventory/templates/depreciation_report.html:17
 #: inventory/templates/entry_report.html:10
@@ -800,7 +810,7 @@ msgstr "निरीक्षण"
 msgid "Reports"
 msgstr "प्रतिवेदनहरु"
 
-#: inventory/templates/_dashboard_inventory.html:48
+#: inventory/templates/_dashboard_inventory.html:60
 #: inventory/templates/yearly_report.html:5
 #: inventory/templates/yearly_report.html:9
 #: inventory/templates/yearly_report_detail.html:5
@@ -811,7 +821,7 @@ msgstr "प्रतिवेदनहरु"
 msgid "Yearly"
 msgstr "वार्षिक"
 
-#: inventory/templates/_dashboard_inventory.html:52
+#: inventory/templates/_dashboard_inventory.html:64
 #: inventory/templates/depreciation_report.html:5
 #: inventory/templates/depreciation_report.html:17
 #: inventory/templates/depreciation_report.html:21
@@ -819,7 +829,7 @@ msgstr "वार्षिक"
 msgid "Depreciation"
 msgstr "मूल्यह्रास"
 
-#: inventory/templates/_dashboard_inventory.html:54
+#: inventory/templates/_dashboard_inventory.html:66
 #: inventory/templates/list_quotation_report.html:5
 #: inventory/templates/list_quotation_report.html:9
 #: inventory/templates/list_quotation_report.html:13
@@ -830,18 +840,18 @@ msgstr "मूल्यह्रास"
 msgid "Quotation"
 msgstr "उद्धरण"
 
-#: inventory/templates/_dashboard_inventory.html:54
+#: inventory/templates/_dashboard_inventory.html:66
 msgid "Comparisons"
 msgstr "तुलनाहरु"
 
-#: inventory/templates/_dashboard_inventory.html:56
+#: inventory/templates/_dashboard_inventory.html:68
 #: inventory/templates/inventory/itemlocation_detail.html:8
 #: inventory/templates/inventory/itemlocation_list.html:4
 #: inventory/templates/inventory/itemlocation_list.html:8
 msgid "Locations"
 msgstr "स्थानहरु"
 
-#: inventory/templates/_dashboard_inventory.html:58
+#: inventory/templates/_dashboard_inventory.html:70
 #: inventory/templates/inventory/instancehistory_form.html:19
 #: inventory/templates/user_ledger_detail.html:5
 #: inventory/templates/user_ledger_detail.html:9
@@ -852,7 +862,7 @@ msgstr "स्थानहरु"
 msgid "User"
 msgstr "प्रयोगकर्ता"
 
-#: inventory/templates/_dashboard_inventory.html:58
+#: inventory/templates/_dashboard_inventory.html:70
 #: inventory/templates/user_ledger_detail.html:9
 #: inventory/templates/user_ledger_list.html:5
 #: inventory/templates/user_ledger_list.html:9
@@ -1674,7 +1684,7 @@ msgstr "१३% भ्याट"
 msgid "No.:- "
 msgstr "न.:-"
 
-#: inventory/views.py:1543
+#: inventory/views.py:1545
 msgid "returned to store."
 msgstr "मौज्दातमा फिर्ता"
 
