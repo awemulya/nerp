@@ -185,7 +185,8 @@
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
                         {% ifusergroup 'Store Keeper' 'Chief' %}
                             <button class="btn btn-default"
-                                    data-bind="click: approve, visible: $root.id() && status() == 'Requested'">Approve
+                                    data-bind="click: approve, visible: $root.id() && status() == 'Requested' && total_release() > 0">
+                                Approve
                             </button>
                             <button class="btn btn-default"
                                     data-bind="click: disapprove, visible: status() == 'Approved'">
@@ -197,7 +198,7 @@
                             {#                                Fulfilled#}
                             {#                            </button>#}
                             <button class="btn btn-default"
-                                    data-bind="click: fulfill, visible: status() == 'Approved'">
+                                    data-bind="click: fulfill, visible: status() == 'Approved' && total_release() > 0">
                                 Set as Fulfilled
                             </button>
                             <button class="btn btn-default"

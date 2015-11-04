@@ -897,37 +897,11 @@ def save_demand(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = DemandRow
-        for index, row in enumerate(params.get('table_view').get('rows')):
-            invalid_check = invalid(row, ['item_id', 'quantity', 'unit'])
-            if invalid_check:
-                # dct['error_message'] = 'These fields must be filled: ' + ', '.join(invalid_check)
+        for ind, row in enumerate(params.get('table_view').get('rows')):
+            submodel = save_demand_row(row, obj, ind)
+            if not submodel:
                 continue
-            else:
-                # if row.get('release_quantity') == '':
-                # row['release_quantity'] = 1
-                values = {'sn': index + 1, 'item_id': row.get('item_id'),
-                          'specification': row.get('specification'),
-                          'quantity': row.get('quantity'), 'unit': row.get('unit'), 'remarks': row.get('remarks'),
-                          'purpose': row.get('purpose'), 'demand': obj}
-
-                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-
-                submodel.releases.all().delete()
-                for release in row['release_vms']:
-                    for instance in release['instances']:
-                        instance_model = ItemInstance.objects.get(id=instance)
-                        # release.location_id = release['location_id']
-                        # instance_model.save()
-                        rel = Release(item_instance=instance_model, demand_row=submodel, location_id=release['location_id'])
-                        rel.save()
-
-                # set_transactions(submodel, request.POST.get('date'),
-                #                  ['dr', bank_account, row.get('amount')],
-                #                  ['cr', benefactor, row.get('amount')],
-                # )
-                if not created:
-                    submodel = save_model(submodel, values)
-            dct['rows'][index] = submodel.id
+            dct['rows'][ind] = submodel.id
         delete_rows(params.get('table_view').get('deleted_rows'), model)
     except Exception as e:
         if hasattr(e, 'messages'):
@@ -938,10 +912,43 @@ def save_demand(request):
             dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
 
+def save_demand_row(row, demand, ind):
+    invalid_check = invalid(row, ['item_id', 'quantity', 'unit'])
+    if invalid_check:
+        return None
+    else:
+        # if row.get('release_quantity') == '':
+        # row['release_quantity'] = 1
+        values = {'sn': ind + 1, 'item_id': row.get('item_id'),
+                  'specification': row.get('specification'),
+                  'quantity': row.get('quantity'), 'unit': row.get('unit'), 'remarks': row.get('remarks'),
+                  'purpose': row.get('purpose'), 'demand': demand}
+
+        submodel, created = DemandRow.objects.get_or_create(id=row.get('id'), defaults=values)
+
+        submodel.releases.all().delete()
+        for release in row['release_vms']:
+            for instance in release['instances']:
+                instance_model = ItemInstance.objects.get(id=instance)
+                # release.location_id = release['location_id']
+                # instance_model.save()
+                rel = Release(item_instance=instance_model, demand_row=submodel, location_id=release['location_id'])
+                rel.save()
+
+        # set_transactions(submodel, request.POST.get('date'),
+        #                  ['dr', bank_account, row.get('amount')],
+        #                  ['cr', benefactor, row.get('amount')],
+        # )
+        if not created:
+            submodel = save_model(submodel, values)
+        return submodel
+
 
 @group_required('Store Keeper', 'Chief')
 def approve_demand(request):
     params = json.loads(request.body)
+    import ipdb
+    ipdb.set_trace()
     dct = {'rows': {}}
     if params.get('id'):
         row = DemandRow.objects.get(id=params.get('id'))
