@@ -719,7 +719,7 @@ def list_demand_forms(request):
     if request.user.in_group('Store Keeper') or request.user.in_group('Chief'):
         objects = Demand.objects.all()
     else:
-        objects = Demand.objects.filter(demandee=request.user)
+        objects = Demand.objects.fiscal_year().filter(demandee=request.user)
     if request.GET.get('status'):
         objects = objects.filter(rows__status=request.GET.get('status')).distinct()
     return render(request, 'list_demand_forms.html', {'objects': objects})
