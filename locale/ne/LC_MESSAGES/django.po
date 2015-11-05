@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-11-05 19:04+0545\n"
+"POT-Creation-Date: 2015-11-05 19:33+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -254,6 +254,10 @@ msgstr "पान न."
 #: training/templates/print_training.html:119
 msgid "Name"
 msgstr "नाम"
+
+#: core/models.py:219
+msgid "is not in current fiscal year."
+msgstr "हालको आर्थिक वर्षको मिति नरहेको।"
 
 #: core/templates/change_fiscal_year.html:4
 #: core/templates/change_fiscal_year.html:9 templates/admin/base_site.html:20

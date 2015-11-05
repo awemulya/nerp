@@ -4,6 +4,7 @@ from njango.models import TranslatableNumberModel
 from njango.nepdate import bs, bs2ad, tuple_from_string
 from njango.utils import get_calendar
 from django.utils.translation import ugettext_lazy as _
+from users.templatetags.filters import localize
 
 FISCAL_YEARS = (
     (2069, "2069/70"),
@@ -206,7 +207,6 @@ class TaxScheme(models.Model):
 
 
 def validate_in_fy(value):
-    return True
     fiscal_year = app_setting.fiscal_year
     fiscal_year_start = fiscal_year + '-04-01'
     fiscal_year_end = str(int(fiscal_year) + 1) + '-03-' + str(bs[int(fiscal_year) + 1][2])
@@ -217,4 +217,5 @@ def validate_in_fy(value):
         value_tuple = tuple_from_string(value)
 
     if not bs2ad(fiscal_year_start) <= value_tuple <= bs2ad(fiscal_year_end):
-        raise ValidationError('%s is not in current fiscal year.' % value)
+        raise ValidationError('%s %s' % (localize(value), _('is not in current fiscal year.')))
+
