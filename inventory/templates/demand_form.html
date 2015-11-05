@@ -89,7 +89,7 @@
                         <span data-bind="text:  $index()+1, localize: true"> </span>
                     </td>
                     <td>
-                        <select data-bind="selectize: $root.items, value: item_id, object: item"
+                        <select data-bind="enable: status() == 'Requested', selectize: $root.items, value: item_id, object: item"
                                 data-url="{% url 'create_inventory_item' %}"
                                 data-script="/static/js/inventory/item.js"></select>
                     </td>
@@ -117,7 +117,7 @@
                                     <th>{% trans 'Rate' %}</th>
                                     <th>{% trans 'Quantity' %}</th>
                                     <th>{% trans 'Location' %}</th>
-                                    <th></th>
+                                    <th data-bind="visible: status() == 'Requested'"></th>
                                     </thead>
 
                                     <tbody>
@@ -127,7 +127,7 @@
                                         <td data-bind="text:rate, localize: 1"></td>
                                         <td data-bind="text:count(), localize: 1"></td>
                                         <td data-bind="text:get_location_name($root.item_locations)"></td>
-                                        <td>
+                                        <td data-bind="visible: $parent.status() == 'Requested'">
                                             <button data-bind="click: $parent.remove">x</button>
                                         </td>
                                     </tr>
@@ -143,7 +143,7 @@
                                     <th>{% trans 'Quantity' %} / <span data-bind="text: total_quantity(), localize: 1"></span>
                                     </th>
                                     <th>{% trans 'Location' %}</th>
-                                    <th></th>
+                                    <th data-bind="visible: status() == 'Requested'"></th>
                                     </thead>
 
                                     <tbody>
@@ -153,12 +153,12 @@
                                         <td data-bind="text:property_str"></td>
                                         <td data-bind="text:rate, localize: 1"></td>
                                         <td><input type="text" class="form-control"
-                                                   data-bind="value:quantity, max: count(), localize: 1"/>/<span
+                                                   data-bind="enable: $parent.status() == 'Requested', value:quantity, max: count(), localize: 1"/>/<span
                                                 data-bind="text: count(), localize: 1"></span></td>
                                         <td>
-                                            <select data-bind="selectize: $root.item_locations_sans_store, value: location_id"></select>
+                                            <select data-bind="enable: $parent.status() == 'Requested', selectize: $root.item_locations_sans_store, value: location_id"></select>
                                         </td>
-                                        <td>
+                                        <td data-bind="visible: $parent.status() == 'Requested'">
                                             <button data-bind="click: $parent.add, enable: valid()">+</button>
                                         </td>
                                     </tr>

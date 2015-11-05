@@ -266,6 +266,7 @@ function DemandRow(row, demand_vm) {
                     alert.success('Approved!')
                     self.status('Approved');
                     $($("#tbody > tr")[self.ind()]).removeClass('invalid-row');
+                    $(document).trigger('reload-selectize');
                 }
             }
         });
@@ -283,6 +284,7 @@ function DemandRow(row, demand_vm) {
                 else {
                     alert.success('Disapproved!');
                     self.status('Requested');
+                    $(document).trigger('reload-selectize');
                 }
             }
         });
