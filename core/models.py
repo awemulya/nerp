@@ -57,16 +57,18 @@ class FiscalYear(models.Model):
 class FYManager(models.Manager):
     def fiscal_year(self, year=None):
         if year:
-            original_fiscal_year= app_setting.fiscal_year
-            app_setting.fiscal_year = year # bypasses validation
+            original_fiscal_year = app_setting.fiscal_year
+            app_setting.fiscal_year = year  # bypasses validation
             lookup_year = year
         else:
             lookup_year = app_setting.fiscal_year
-        result = super(FYManager, self).get_queryset().filter(date__gte=FiscalYear.start(lookup_year), date__lte=FiscalYear.end(lookup_year))
+        result = super(FYManager, self).get_queryset().filter(date__gte=FiscalYear.start(lookup_year),
+                                                              date__lte=FiscalYear.end(lookup_year))
         # return super(FYManager, self).get_queryset().filter(Q(date__year__range=(FiscalYear.start(year)[0], FiscalYear.end(year)[0])))
         if year:
             app_setting.fiscal_year = original_fiscal_year
         return result
+
 
 import dbsettings
 
