@@ -717,12 +717,29 @@ def list_inventory_items(request):
 @login_required
 def list_demand_forms(request):
     if request.user.in_group('Store Keeper') or request.user.in_group('Chief'):
-        objects = Demand.objects.all()
+        objects = Demand.objects.fiscal_year('2069')
     else:
         objects = Demand.objects.fiscal_year().filter(demandee=request.user)
     if request.GET.get('status'):
         objects = objects.filter(rows__status=request.GET.get('status')).distinct()
     return render(request, 'list_demand_forms.html', {'objects': objects})
+
+# @login_required
+# def list_demand_forms(request):
+#     if request.GET.get('year'):
+#         if request.GET.get('year')=='all':
+#             query = Demand.objects.fiscal_year()
+#         else:
+#             query = Demand.objects.fiscal_year(request.GET.get('year'))
+#     else:
+#         query = Demand.objects.fiscal_year()
+#     if request.user.in_group('Store Keeper') or request.user.in_group('Chief'):
+#         objects = query
+#     else:
+#         objects = query.filter(demandee=request.user)
+#     if request.GET.get('status'):
+#         objects = objects.filter(rows__status=request.GET.get('status')).distinct()
+#     return render(request, 'list_demand_forms.html', {'objects': objects})
 
 
 @login_required

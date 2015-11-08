@@ -62,6 +62,8 @@ class FYManager(models.Manager):
             lookup_year = year
         else:
             lookup_year = app_setting.fiscal_year
+        # import ipdb
+        # ipdb.set_trace()
         result = super(FYManager, self).get_queryset().filter(date__gte=FiscalYear.start(lookup_year),
                                                               date__lte=FiscalYear.end(lookup_year))
         # return super(FYManager, self).get_queryset().filter(Q(date__year__range=(FiscalYear.start(year)[0], FiscalYear.end(year)[0])))
@@ -124,7 +126,7 @@ class Party(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = 'Parties'
+        verbose_name_plural = _('Parties')
 
 
 class Employee(models.Model):
@@ -156,7 +158,7 @@ class Activity(models.Model):
         return str(self.no) + ' - ' + self.name
 
     class Meta:
-        verbose_name_plural = 'Activities'
+        verbose_name_plural = _('Activities')
 
 
 class BudgetHead(TranslatableNumberModel):
@@ -230,7 +232,9 @@ def validate_in_fy(value):
     if calendar == 'bs':
         value_tuple = bs2ad(value)
     else:
-        value_tuple = tuple_from_string(value)
-
+        if type(value)==tuple:
+            value_tuple = value
+        else:
+            value_tuple = tuple_from_string(value)
     if not bs2ad(fiscal_year_start) <= value_tuple <= bs2ad(fiscal_year_end):
         raise ValidationError('%s %s' % (localize(value), _('is not in current fiscal year.')))
