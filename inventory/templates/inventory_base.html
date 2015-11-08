@@ -8,5 +8,5 @@
 
 {% block breadcrumbs_before_print %}
     {% trans 'Fiscal Year' %}:
-    {{ 'core.models.app_setting.fiscal_year'|setting|localize }}
+    {{ 'core.models.app_setting.fiscal_year'|setting|fiscal_year|localize }}
 {% endblock %}
