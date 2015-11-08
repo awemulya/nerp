@@ -480,7 +480,7 @@ def save_quotation_comparison(request):
     dct = {'rows': {}}
     if params.get('release_no') == '':
         params['release_no'] = None
-    object_values = {'report_no': params.get('report_no')}
+    object_values = {'report_no': params.get('report_no'), 'date': params.get('date')}
     if params.get('id'):
         obj = QuotationComparison.objects.get(id=params.get('id'))
     else:
@@ -490,20 +490,22 @@ def save_quotation_comparison(request):
         dct['id'] = obj.id
         model = QuotationComparisonRow
         dct['party'] = {}
-        for index, row in enumerate(params.get('table_view').get('rows')):
+        for ind, row in enumerate(params.get('table_view').get('rows')):
             invalid_check = invalid(row, ['item_id', 'quantity', 'estimated_cost'])
             if invalid_check:
                 # dct['error_message'] = 'These feilds must be filled: ' + ', '.join(invalid_check)
                 continue
             else:
-                values = {'sn': index + 1, 'specification': empty_to_none(row.get('specification')),
+                values = {'sn': ind + 1, 'specification': empty_to_none(row.get('specification')),
                           'quantity': row.get('quantity'),
                           'estimated_cost': row.get('estimated_cost'), 'quotation': obj, 'item_id': row.get('item_id')}
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
-                dct['rows'][index] = submodel.id
-                for index, party in enumerate(row.get('bidder_quote')):
+                dct['rows'][ind] = submodel.id
+                for ind, party in enumerate(row.get('bidder_quote')):
+                    import ipdb
+                    ipdb.set_trace()
                     party_object = Party.objects.get(name=party.get('bidder_name'))
                     if party.get('id'):
                         party_quotation = PartyQuotation.objects.get(pk=party.get('id'))
@@ -516,17 +518,17 @@ def save_quotation_comparison(request):
                                                          quotation_comparison_row=submodel)
                         party_quotation.save()
 
-                    dct['party'][index] = party_quotation.id
+                    dct['party'][ind] = party_quotation.id
 
                 party_quotation_remove = PartyQuotation.objects.filter(quotation_comparison_row__id=submodel.id)
                 all_party_id_list = [all_party.id for all_party in party_quotation_remove]
                 save_party_id = [dct['party'][i] for i in dct['party']]
                 party_to_delete = list(set(all_party_id_list).difference(save_party_id))
-                if party_to_delete != []:
+                if party_to_delete:
                     for i in party_to_delete:
                         party_to_remove = PartyQuotation.objects.get(id=i)
                         party_to_remove.delete()
-            dct['rows'][index] = submodel.id
+            dct['rows'][ind] = submodel.id
         delete_rows(params.get('table_view').get('deleted_rows'), model)
 
     except Exception as e:
