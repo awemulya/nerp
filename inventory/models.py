@@ -660,8 +660,12 @@ def _transaction_delete(sender, instance, **kwargs):
 
 class Inspection(models.Model):
     report_no = models.IntegerField()
-    fiscal_year = models.ForeignKey(FiscalYear)
+    date = BSDateField(default=today, validators=[validate_in_fy])
     # transaction = models.ForeignKey(Transaction, related_name='inspection')
+
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.date)
 
     def __str__(self):
         return unicode(self.report_no)

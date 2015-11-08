@@ -480,7 +480,7 @@ def save_quotation_comparison(request):
     dct = {'rows': {}}
     if params.get('release_no') == '':
         params['release_no'] = None
-    object_values = {'report_no': params.get('report_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
+    object_values = {'report_no': params.get('report_no')}
     if params.get('id'):
         obj = QuotationComparison.objects.get(id=params.get('id'))
     else:
@@ -543,7 +543,7 @@ def save_inspection_report(request):
     if request.is_ajax():
         params = json.loads(request.body)
     dct = {'rows': {}}
-    object_values = {'report_no': params.get('report_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
+    object_values = {'report_no': params.get('report_no')}
     if params.get('id'):
         obj = Inspection.objects.get(id=params.get('id'))
     else:
@@ -892,8 +892,8 @@ def save_demand(request):
     dct = {'rows': {}}
     if params.get('release_no') == '':
         params['release_no'] = None
-    object_values = {'release_no': params.get('release_no'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
-                     'demandee_id': params.get('demandee'), 'date': params.get('date'), 'purpose': params.get('purpose'), }
+    object_values = {'release_no': params.get('release_no'), 'demandee_id': params.get('demandee'), 'date': params.get('date'),
+                     'purpose': params.get('purpose'), }
     if params.get('id'):
         obj = Demand.objects.get(id=params.get('id'))
     else:
@@ -1058,7 +1058,6 @@ def save_purchase_order(request):
     params = json.loads(request.body)
     dct = {'rows': {}}
     object_values = {'order_no': empty_to_none(params.get('order_no')),
-                     'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
                      'date': params.get('date'), 'party_id': params.get('party'),
                      'due_days': params.get('due_days')}
     if params.get('id'):
@@ -1202,10 +1201,10 @@ def handover_outgoing(request, id=None):
 def save_handover(request):
     params = json.loads(request.body)
     dct = {'rows': {}}
-    object_values = {'addressee': params.get('addressee'), 'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
-                     'date': params.get('date'), 'office': params.get('office'), 'type': params.get('type'),
-                     'designation': params.get('designation'), 'voucher_no': empty_to_none(params.get('voucher_no')),
-                     'due_days': params.get('due_days'), 'handed_to': params.get('handed_to')}
+    object_values = {'addressee': params.get('addressee'), 'date': params.get('date'), 'office': params.get('office'),
+                     'type': params.get('type'), 'designation': params.get('designation'),
+                     'voucher_no': empty_to_none(params.get('voucher_no')), 'due_days': params.get('due_days'),
+                     'handed_to': params.get('handed_to')}
     if params.get('id'):
         obj = Handover.objects.get(id=params.get('id'))
     else:
@@ -1332,9 +1331,7 @@ def save_entry_report(request):
         source = Handover.objects.get(id=params.get('source_id'))
     else:
         source = PurchaseOrder.objects.get(id=params.get('source_id'))
-    object_values = {'entry_report_no': empty_to_none(params.get('entry_report_no')),
-                     'fiscal_year': FiscalYear.get(app_setting.fiscal_year),
-                     'source': source}
+    object_values = {'entry_report_no': empty_to_none(params.get('entry_report_no')), 'source': source}
     if params.get('id'):
         obj = EntryReport.objects.get(id=params.get('id'))
     else:

@@ -237,12 +237,12 @@ def validate_in_fy(value):
     fiscal_year_start = fiscal_year + '-04-01'
     fiscal_year_end = str(int(fiscal_year) + 1) + '-03-' + str(bs[int(fiscal_year) + 1][2])
     calendar = get_calendar()
-    if calendar == 'bs':
-        value_tuple = bs2ad(value)
-    else:
+    if calendar == 'ad':
         if type(value) == tuple:
             value_tuple = value
         else:
             value_tuple = tuple_from_string(value)
+    else:
+        value_tuple = bs2ad(value)
     if not bs2ad(fiscal_year_start) <= value_tuple <= bs2ad(fiscal_year_end):
         raise ValidationError('%s %s' % (localize(value), _('is not in current fiscal year.')))
