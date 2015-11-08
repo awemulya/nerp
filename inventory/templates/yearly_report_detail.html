@@ -37,14 +37,14 @@
         <tbody>
         {% for o in rows %}
             <tr>
-                <td>{{ o.sn }}</td>
-                <td>{{ o.account_no}}</td>
-                <td>{{ o.property_classification_reference_number}}</td>
+                <td>{{ o.sn|localize }}</td>
+                <td>{{ o.account_no|localize }}</td>
+                <td>{{ o.property_classification_reference_number|localize }}</td>
                 <td>{{ o.item_name }}</td>
-                <td>{{ o.income }}</td>
-                <td>{{ o.expense }}</td>
-                <td>{{ o.remaining }}</td>
-                <td>{{ o.remarks }}</td>
+                <td>{{ o.income|localize }}</td>
+                <td>{{ o.expense|localize }}</td>
+                <td>{{ o.remaining|localize }}</td>
+                <td>{{ o.remarks|default:'' }}</td>
         {% endfor %}
         </tbody>
         </table>

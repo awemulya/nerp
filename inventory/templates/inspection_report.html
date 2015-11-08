@@ -26,8 +26,14 @@
         <h4 class="center">{% trans 'Inventory' %} {% trans 'Inspection Report' %}</h4>
     </div>
 
-    <h4>{% trans 'Report' %} {% trans 'No.' %}: <input data-bind="value: report_no" class="form-control width-auto input-inline"
-                                                       required></h4>
+    <div class="pull-right">
+        {% trans 'Date' %}: <input class="form-control inline" type="text" required="required" name="date" id="id_date"
+                                   data-bind="value: date, localize: true">
+    </div>
+
+    {% trans 'Report' %} {% trans 'No.' %}:
+    <input data-bind="value: report_no, localize: true" class="form-control width-auto input-inline">
+
     <form method="POST" data-bind="submit: save">
         {% csrf_token %}
         <div data-bind="with: table_view">

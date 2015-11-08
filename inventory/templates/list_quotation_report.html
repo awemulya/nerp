@@ -6,11 +6,11 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url 'list_quotation_forms' %}">{% trans 'Quotation' %} {% trans 'Reports' %}</a></li>
+    <li><a href="{% url 'list_quotation_forms' %}">{% trans 'Quotation' %} {% trans 'Comparisons' %}</a></li>
 {% endblock %}
 
 {% block content %}
-<h1>{% trans 'Quotation' %} {% trans 'Reports' %}</h1>
+<h1>{% trans 'Quotation' %} {% trans 'Comparisons' %}</h1>
 
     {% load pagination_tags %}
     {% load sorting_tags %}
@@ -22,8 +22,8 @@
     <table class="table table-striped table-bordered">
         <thead>
         <th>{% anchor report_no _('No.') %}</th>
-        <th>{% anchor demandee _('Date') %}</th>
-        <th>{% anchor demandee _('Fiscal Year') %}</th>
+        <th>{% anchor date _('Date') %}</th>
+        <th>{% anchor fiscal_year _('Fiscal Year') %}</th>
         </thead>
         <tbody>
         {% for quotation_comparison in paginated_objects %}
@@ -32,7 +32,7 @@
                     <a href="{% url 'detail_quotation_forms' quotation_comparison.pk %}">{{ quotation_comparison.report_no|localize }}</a>
                 </td>
                 <td>
-                    {{ quotation_comparison.date|localize }}
+                    <a href="{% url 'detail_quotation_forms' quotation_comparison.pk %}">{{ quotation_comparison.date|localize }}</a>
                 </td>
                 <td>
                     {{ quotation_comparison.fiscal_year|localize }}

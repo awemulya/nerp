@@ -5,10 +5,15 @@ $(document).ready(function () {
 });
 
 function InspectionVM(data) {
-
+    console.log(data);
     var self = this;
-    self.report_no = ko.observable()
-    self.id = ko.observable()
+    self.report_no = ko.observable();
+    self.id = ko.observable();
+    //if (data.date){
+    //    self.date = ko.observable(data.date);
+    //}else{
+    //    self.date = ko.observable();
+    //}
 	self.table_view = new TableViewModel({rows: data}, InspectionRow);
 
 
