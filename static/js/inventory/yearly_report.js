@@ -7,8 +7,7 @@ $(document).ready(function () {
 function YearlyReportVM(data) {
 
     var self = this;
-    self.report_no = ko.observable();
-    self.id = ko.observable()
+    self.id = ko.observable();
 
     self.table_view = new TableViewModel({rows: data}, YearlyReportRow);
 
@@ -19,13 +18,7 @@ function YearlyReportVM(data) {
             url: '/inventory/save/yearly_report/',
             data: ko.toJSON(self),
             success: function (msg) {
-                if (!self.report_no()) {
-                    alert.error('Report No. is required!');
-                    return false;
-                }
                 if (typeof (msg.error_message) != 'undefined') {
-//                    $('#message').html(msg.error_message);
-//                    self.msg();
                     alert.error(msg.error_message);
                     self.status('errorlist');
                 }
@@ -59,7 +52,7 @@ function YearlyReportRow(row) {
             self[k] = ko.observable(row[k]);
     }
     self.expense = ko.computed(function() {
-        return self.total_dr_amount_without_rate() - self.current_balance()
+        return localize(self.total_dr_amount_without_rate() - self.current_balance());
     });
 
     self.remarks = ko.observable()

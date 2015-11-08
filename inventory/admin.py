@@ -98,7 +98,7 @@ class YearlyReportRowAdmin(admin.ModelAdmin):
 
 
 class YearlyReportAdmin(admin.ModelAdmin):
-    list_display = ('report_no', 'fiscal_year')
+    list_display = ('fiscal_year', )
     inlines = [
         YearlyReportRowInline,
     ]
