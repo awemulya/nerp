@@ -356,7 +356,6 @@ def get_next_voucher_no(cls, attr):
 
 class Demand(models.Model):
     release_no = models.IntegerField()
-    fiscal_year = models.ForeignKey(FiscalYear)
     demandee = models.ForeignKey(User, related_name='demands')
     date = BSDateField(default=today, validators=[validate_in_fy])
     purpose = models.CharField(max_length=254)
@@ -373,6 +372,10 @@ class Demand(models.Model):
 
     def __str__(self):
         return unicode(self.release_no)
+
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.date)
 
     @property
     def status(self):
@@ -444,10 +447,13 @@ class DemandRow(models.Model):
 
 class EntryReport(models.Model):
     entry_report_no = models.PositiveIntegerField(blank=True, null=True)
-    fiscal_year = models.ForeignKey(FiscalYear)
     source_content_type = models.ForeignKey(ContentType)
     source_object_id = models.PositiveIntegerField()
     source = GenericForeignKey('source_content_type', 'source_object_id')
+
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.source.date)
 
     def get_absolute_url(self):
         if self.source.__class__.__name__ == 'Handover':
@@ -495,11 +501,14 @@ class Handover(models.Model):
     designation = models.CharField(max_length=254)
     handed_to = models.CharField(max_length=254)
     due_days = models.PositiveIntegerField(default=7)
-    fiscal_year = models.ForeignKey(FiscalYear)
     types = [('Incoming', 'Incoming'), ('Outgoing', 'Outgoing')]
     type = models.CharField(max_length=9, choices=types, default='Incoming')
     entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
                                     object_id_field='source_object_id')
+
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.date)
 
     def get_entry_report(self):
         entry_reports = self.entry_reports.all()
@@ -552,9 +561,12 @@ class PurchaseOrder(models.Model):
     order_no = models.IntegerField(blank=True, null=True)
     date = BSDateField(default=today, validators=[validate_in_fy])
     due_days = models.IntegerField(default=3)
-    fiscal_year = models.ForeignKey(FiscalYear)
     entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
                                     object_id_field='source_object_id')
+
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.date)
 
     def get_entry_report(self):
         entry_reports = self.entry_reports.all()
@@ -696,9 +708,12 @@ class YearlyReportRow(models.Model):
 
 
 class QuotationComparison(models.Model):
-    fiscal_year = models.ForeignKey(FiscalYear)
     report_no = models.IntegerField()
     date = BSDateField(default=today, validators=[validate_in_fy], blank=True, null=True)
+
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.date)
 
 
 class QuotationComparisonRow(models.Model):
@@ -789,6 +804,10 @@ class Expense(models.Model):
     type = models.CharField(choices=types, max_length=20, default='Waive', verbose_name=_('Type'))
     rate = models.FloatField(blank=True, null=True, verbose_name=_('Rate'))
 
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.date)
+
     def get_next_voucher_no(self):
         if not self.pk and not self.voucher_no:
             return get_next_voucher_no(Expense, 'voucher_no')
@@ -819,9 +838,6 @@ class Expense(models.Model):
 def fiscal_year_changed(sender, **kwargs):
     # old_fiscal_year = kwargs.get('old_fiscal_year')
     # year_end = FiscalYear.end(old_fiscal_year.year)
-    # import ipdb
-    # ipdb.set_trace()
     pass
 
-
-fiscal_year_signal.connect(fiscal_year_changed)
+# fiscal_year_signal.connect(fiscal_year_changed)

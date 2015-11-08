@@ -23,6 +23,14 @@ class FiscalYear(models.Model):
     year = models.IntegerField(choices=FISCAL_YEARS, unique=True)
 
     @staticmethod
+    def from_date(date):
+        month = int(date.split('-')[1])
+        year = int(date.split('-')[0])
+        if month < 4:
+            year -= 1
+        return FiscalYear.get(year)
+
+    @staticmethod
     def get(year=None):
         if not year:
             year = app_setting.fiscal_year
@@ -232,7 +240,7 @@ def validate_in_fy(value):
     if calendar == 'bs':
         value_tuple = bs2ad(value)
     else:
-        if type(value)==tuple:
+        if type(value) == tuple:
             value_tuple = value
         else:
             value_tuple = tuple_from_string(value)

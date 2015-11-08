@@ -1269,7 +1269,7 @@ def handover_entry_report(request, id=None):
     else:
         report = EntryReport()
         object_data = EntryReportSerializer(report).data
-        report.fiscal_year = source.fiscal_year
+        # report.fiscal_year = source.fiscal_year
         report.source = source
         all_rows = []
         for r in source.rows.all():
@@ -1301,7 +1301,7 @@ def purchase_entry_report(request, id=None):
     else:
         report = EntryReport()
         object_data = EntryReportSerializer(report).data
-        report.fiscal_year = source.fiscal_year
+        # report.fiscal_year = source.fiscal_year
         report.source = source
         all_rows = []
         for r in source.rows.all():
