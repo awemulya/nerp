@@ -286,3 +286,8 @@ def mailto(email, linktext=None):
 @register.filter
 def to_class_name(value):
     return value.__class__.__name__
+
+@register.assignment_tag()
+def get_fiscal_years():
+    from core.models import FiscalYear
+    return FiscalYear.objects.all()
