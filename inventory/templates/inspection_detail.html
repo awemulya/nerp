@@ -54,9 +54,9 @@
                 <td>{{ o.property_classification_reference_number|localize }}</td>
                 <td>{{ o.item_name }}</td>
                 <td>{{ o.unit }}</td>
-                <td>{{ o.quantity|localize }}</td>
-                <td>{{ o.rate|localize }}</td>
-                <td>{{ o.price|localize }}</td>
+                <td>{{ o.quantity|floatformat:2|localize }}</td>
+                <td>{{ o.rate|floatformat:2|localize }}</td>
+                <td>{{ o.price|floatformat:2|localize }}</td>
                 {% if o.matched_number %}
                     <td>{{ o.matched_number|localize }}</td>
                 {% else %}
