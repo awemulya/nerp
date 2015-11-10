@@ -34,7 +34,7 @@
 
         {% trans 'Entry Report' %} {% trans 'No.' %}:
         <input type="text" name="entry_report_no" min="0" class="form-control input-inline" id="id_entry_report_no"
-               required data-bind="value: entry_report_no, localize: 1">
+               required data-bind="value: entry_report_no, localize: true">
         {{ form.entry_report.errors }}
 
         <br><br>
@@ -69,10 +69,10 @@
                 <!-- ko foreach: rows -->
                 <tr>
                     <td>
-                        <span data-bind="text:  $index()+1, localize: 1"> </span>
+                        <span data-bind="text:  $index()+1, localize: true"> </span>
                     </td>
-                    <td data-bind="text: account_no(), localize: 1"></td>
-                    <td data-bind="text: inventory_classification_reference_no(), localize: 1"></td>
+                    <td data-bind="text: account_no(), localize: true"></td>
+                    <td data-bind="text: inventory_classification_reference_no(), localize: true"></td>
                     <td>
                         {#                        <input type="hidden" data-url="{% url 'create_inventory_item' %}" class="change-on-ready"#}
                         {#                               data-bind="value: item_id, select2: $root.items, event: {change: $root.item_changed}">#}
@@ -81,15 +81,15 @@
                     </td>
                     <td data-bind="editableText: specification"></td>
                     <td data-bind="editableText: unit"></td>
-                    <td data-bind="editableText: quantity, localize: 1"></td>
-                    <td data-bind="editableText: rate, localize: 1"></td>
+                    <td data-bind="editableText: quantity, localize: true"></td>
+                    <td data-bind="editableText: rate, localize: true"></td>
                     <td>
                         <input class="hidden-print" type="checkbox" data-bind="checked: vattable">
                     </td>
-                    <td data-bind="text: vat_amount(), localize: 1"></td>
-                    <td data-bind="text: amount(), localize: 1"></td>
-                    <td data-bind="editableText: other_expenses, localize: 1"></td>
-                    <td data-bind="text: total(), localize: 1"></td>
+                    <td data-bind="text: vat_amount(), localize: true"></td>
+                    <td data-bind="text: amount(), localize: true"></td>
+                    <td data-bind="editableText: other_expenses, localize: true"></td>
+                    <td data-bind="text: total(), localize: true"></td>
                     <td class="remarks-cell" data-bind="editableText: remarks"></td>
                     <td class="hidden-print">
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>

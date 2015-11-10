@@ -50,13 +50,13 @@
                 <div class="pull-right text-right">
                     {% trans 'Purchase Order' %} {% trans 'No.' %}:
                     <input type="text" class="pull-right text-right form-control" name="order_no" id="id_order_no" required
-                           data-bind="value: order_no, localize: 1, autosize:3">
+                           data-bind="value: order_no, localize: true, autosize:3">
                     {{ form.order_no.errors }}
                 </div>
                 <div class="pull-right text-right clear">
                     {% trans 'Date' %}: <input type="text" class="pull-right text-right form-control" required="required"
                                                name="date" id="id_date"
-                                               data-bind="value: date, localize: 1, autosize:3">
+                                               data-bind="value: date, localize: true, autosize:3">
                     {{ form.date.errors }}
                 </div>
             </div>
@@ -104,9 +104,9 @@
                 <!-- ko foreach: rows -->
                 <tr>
                     <td>
-                        <span data-bind="text:  $index()+1, localize: 1"> </span>
+                        <span data-bind="text:  $index()+1, localize: true"> </span>
                     </td>
-                    <td data-bind="editableText: budget_title_no, localize: 1"></td>
+                    <td data-bind="editableText: budget_title_no, localize: true"></td>
                     <td>
                         {#                        <select class="span12 item-selector"#}
                         {#                                data-bind="options: $root.items, optionsText: 'name', optionsValue: 'id', value: item_id, optionsCaption: 'Choose an item...', select2: {},  event: {change: $root.item_changed}"></select>#}
@@ -121,8 +121,8 @@
                     <td class="hidden-print">
                         <input type="checkbox" data-bind="checked: vattable">
                     </td>
-                    <td data-bind="editableText: rate, localize: true"></td>
-                    <td data-bind="text: total_amount(), localize: 1"></td>
+                    <td data-bind="editableText: rate, localize: 2"></td>
+                    <td data-bind="text: total_amount(), localize: 2"></td>
                     <td class="remarks-cell" data-bind="editableText: remarks"></td>
                     <td class="hidden-print">
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
@@ -131,15 +131,15 @@
                 <!-- /ko -->
                 <tr class="dont-validate">
                     <td colspan="7" class="text-right"><span>{% trans 'Total' %}</span></td>
-                    <td colspan="3" data-bind="text: $root.sub_total(), localize: 1"></td>
+                    <td colspan="3" data-bind="text: $root.sub_total(), localize: 2"></td>
                 </tr>
                 <tr class="dont-validate">
                     <td colspan="7" class="text-right"><span>{% trans '1' %}{% trans '3' %}% {% trans 'VAT' %}</span></td>
-                    <td colspan="3" data-bind="text: $root.vat_amount(), localize: 1"></td>
+                    <td colspan="3" data-bind="text: $root.vat_amount(), localize: 2"></td>
                 </tr>
                 <tr class="dont-validate">
                     <td colspan="7" class="text-right"><span>{% trans 'Grand Total' %}</span></td>
-                    <td colspan="3" data-bind="text: $root.grand_total(), localize: 1"></td>
+                    <td colspan="3" data-bind="text: $root.grand_total(), localize: 2"></td>
                 </tr>
 
                 </tbody>

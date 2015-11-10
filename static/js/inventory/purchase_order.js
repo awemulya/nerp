@@ -129,10 +129,11 @@ function PurchaseOrderViewModel(data) {
 function PurchaseRow(row) {
 
     var self = this;
+
     self.budget_title_no = ko.observable();
     self.item_id = ko.observable();
     self.specification = ko.observable();
-    self.quantity = ko.observable().extend({ required: true });
+    self.quantity = ko.observable().extend({required: true});
     self.unit = ko.observable();
     self.rate = ko.observable();
     self.remarks = ko.observable();
@@ -143,7 +144,7 @@ function PurchaseRow(row) {
     }
 
     for (var k in row) {
-        if (row[k] != null)
-            self[k] = ko.observable(row[k]);
+        if (ko.isObservable(self[k]))
+            self[k](row[k]);
     }
 }

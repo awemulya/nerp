@@ -130,9 +130,9 @@
         <tbody data-bind="with: table_vm">
         <!-- ko foreach:rows -->
         <tr>
-            <td data-bind="text: date(), localize: 1"></td>
+            <td data-bind="text: date(), localize: true"></td>
             <td>
-                <span data-bind="text: voucher_no(), localize: 1, attr:{title: creator_type()}"></span>
+                <span data-bind="text: voucher_no(), localize: true, attr:{title: creator_type()}"></span>
             </td>
             <td data-bind="text: specification()"></td>
             {% if obj.item.type == 'non-consumable' %}
@@ -143,14 +143,14 @@
             {% endif %}
 
 
-            <td data-bind="text: income_quantity(), localize: 1"></td>
-            <td data-bind="text: income_rate(), localize: 1"></td>
-            <td data-bind="text: income_total(), localize: 1"></td>
+            <td data-bind="text: income_quantity(), localize: true"></td>
+            <td data-bind="text: income_rate(), localize: true"></td>
+            <td data-bind="text: income_total(), localize: true"></td>
 
-            <td data-bind="text: expense_quantity(), localize: 1"></td>
-            <td data-bind="editableText: expense_total, localize: 1, disable_content_editable: income_quantity()"></td>
-            <td data-bind="text: current_balance(), localize: 1"></td>
-            <td data-bind="editableText: wrapper.remaining_total($root, $index), localize: 1"></td>
+            <td data-bind="text: expense_quantity(), localize: true"></td>
+            <td data-bind="editableText: expense_total, localize: true, disable_content_editable: income_quantity()"></td>
+            <td data-bind="text: current_balance(), localize: true"></td>
+            <td data-bind="editableText: wrapper.remaining_total($root, $index), localize: true"></td>
             <td data-bind="editableText: remarks"></td>
         </tr>
         <!-- /ko -->

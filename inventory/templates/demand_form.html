@@ -103,7 +103,7 @@
                         <div class="btn-group">
 
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                    data-bind="text: total_release(), event: {focus: release_focused}, localize: 1"
+                                    data-bind="text: total_release(), event: {focus: release_focused}, localize: true"
                                     aria-haspopup="true">
                             </button>
 
@@ -124,8 +124,8 @@
                                     <!-- ko foreach: release_vms -->
                                     <tr>
                                         <td data-bind="text:property_str"></td>
-                                        <td data-bind="text:rate, localize: 1"></td>
-                                        <td data-bind="text:count(), localize: 1"></td>
+                                        <td data-bind="text:rate, localize: true"></td>
+                                        <td data-bind="text:count(), localize: true"></td>
                                         <td data-bind="text:get_location_name($root.item_locations)"></td>
                                         <td data-bind="visible: $parent.status() == 'Requested'">
                                             <button data-bind="click: $parent.remove">x</button>
@@ -140,7 +140,7 @@
                                     <thead>
                                     <th>{% trans 'Properties' %}</th>
                                     <th>{% trans 'Rate' %}</th>
-                                    <th>{% trans 'Quantity' %} / <span data-bind="text: total_quantity(), localize: 1"></span>
+                                    <th>{% trans 'Quantity' %} / <span data-bind="text: total_quantity(), localize: true"></span>
                                     </th>
                                     <th>{% trans 'Location' %}</th>
                                     <th data-bind="visible: status() == 'Requested'"></th>
@@ -151,10 +151,10 @@
                                     <!-- ko if: count()>0 -->
                                     <tr>
                                         <td data-bind="text:property_str"></td>
-                                        <td data-bind="text:rate, localize: 1"></td>
+                                        <td data-bind="text:rate, localize: true"></td>
                                         <td><input type="text" class="form-control"
-                                                   data-bind="enable: $parent.status() == 'Requested', value:quantity, max: count(), localize: 1"/>/<span
-                                                data-bind="text: count(), localize: 1"></span></td>
+                                                   data-bind="enable: $parent.status() == 'Requested', value:quantity, max: count(), localize: true"/>/<span
+                                                data-bind="text: count(), localize: true"></span></td>
                                         <td>
                                             <select data-bind="enable: $parent.status() == 'Requested', selectize: $root.item_locations_sans_store, value: location_id"></select>
                                         </td>

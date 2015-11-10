@@ -190,6 +190,11 @@ ko.bindingHandlers.localize = {
                 accessor(value);
             }
         }
+        if (typeof valueAccessor() == 'number'){
+            if (isAN(value)){
+                original_text = parseFloat(value).toFixed(valueAccessor());
+            }
+        }
 
         var txt = localize(original_text, lang_code);
 
@@ -277,33 +282,20 @@ ko.bindingHandlers.numeric = {
 
 //Custom Observable Extensions
 ko.extenders.numeric = function (target, precision) {
-    //create a writeable computed observable to intercept writes to our observable
-    var result = ko.computed({
-        read: target,  //always return the original observables value
-        write: function (newValue) {
-            var current = target(),
-                roundingMultiplier = Math.pow(10, precision),
-                newValueAsNum = isNaN(newValue) ? current : parseFloat(+newValue),
-                valueToWrite = Math.round(newValueAsNum * roundingMultiplier) / roundingMultiplier;
-
-            //only write if it changed
-            if (valueToWrite !== current) {
-                target(valueToWrite);
-            } else {
-                //if the rounded value is the same, but a different value was written, force a notification for the current field
-                if (newValue !== current) {
-                    target.notifySubscribers(valueToWrite);
-                }
+    var result = ko.dependentObservable({
+        read: function () {
+            if (typeof target() == 'undefined') {
+                return null;
             }
-        }
+            return target().toFixed(precision);
+        },
+        write: target
     });
 
-    //initialize with current value to make sure it is rounded appropriately
-    result(target());
-
-    //return the new computed observable
+    result.raw = target;
     return result;
 };
+
 
 //Other useful KO-related functions
 function setBinding(id, value) {

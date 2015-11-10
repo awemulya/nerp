@@ -31,7 +31,7 @@
 
         {% trans 'Handover' %} {% trans 'Form No.' %}
         <input type="text" class="form-control input-inline" name="voucher_no" id="id_voucher_no"
-               data-bind="value: voucher_no, localize: 1">
+               data-bind="value: voucher_no, localize: true">
         <br>
         श्री
         <input type="text" required="required" name="addressee" maxlength="254" id="id_addressee" class="form-control "
@@ -39,7 +39,7 @@
         {{ form.addressee.errors }}<br>
         निम्नांकित मालसामानहरु मिति
         <input type="text" required="required" name="date" id="id_date" class="input-inline form-control"
-               data-bind="value: date, localize: 1, autosize: 7">
+               data-bind="value: date, localize: true, autosize: 7">
         को निर्णयानुसार
         <input type="text" required="required" name="office" maxlength="254" id="id_office" class="input-inline form-control"
                data-bind="value: office, autosize: 12">
@@ -58,7 +58,7 @@
         {{ form.handed_to.errors }}
         को हस्ते पठाएको छु । सो सामान भण्डार दाखिला गरी
         <input type="text" required="required" name="due_days" id="id_due_days" class="input-inline form-control"
-               data-bind="value: due_days, localize: 1, autosize: 0">
+               data-bind="value: due_days, localize: true, autosize: 0">
         दिनभित्र दाखिला प्रतिवेदन समेत पठाईदिनुहुन
         अनुरोध छ ।
         {{ form.due_days.errors }}
