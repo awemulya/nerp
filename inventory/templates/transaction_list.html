@@ -52,12 +52,12 @@
                 <td>{{ o.account.item.unit }}</td>
                 <td>
                     {% if o.dr_amount == None %}
-                        {{ o.cr_amount|localize }}
+                        {{ o.cr_amount|floatformat:2 |localize }}
                     {% else %}
-                        {{ o.dr_amount|localize }}
+                        {{ o.dr_amount|floatformat:2 |localize }}
                     {% endif %}
                 </td>
-                <td>{{ o.journal_entry.creator.rate|localize }}</td>
+                <td>{{ o.journal_entry.creator.rate|floatformat:2 |localize }}</td>
                 <td>
                     {% if o.dr_amount == None %}
                         <span style="color: Red">{% trans 'Release' %}</span>

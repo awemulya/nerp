@@ -45,9 +45,9 @@
                 <td>{{ o.account_no|localize }}</td>
                 <td>{{ o.property_classification_reference_number|localize }}</td>
                 <td>{{ o.item_name }}</td>
-                <td>{{ o.income|localize }}</td>
-                <td>{{ o.expense|localize }}</td>
-                <td>{{ o.remaining|localize }}</td>
+                <td>{{ o.income|floatformat:2 |localize }}</td>
+                <td>{{ o.expense|floatformat:2 |localize }}</td>
+                <td>{{ o.remaining|floatformat:2 |localize }}</td>
                 <td>{{ o.remarks|default:'' }}</td>
         {% endfor %}
         </tbody>
