@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from njango.models import TranslatableNumberModel
-from njango.nepdate import bs, bs2ad, tuple_from_string
+from njango.nepdate import bs, bs2ad, tuple_from_string, ad2bs, string_from_tuple
 from njango.utils import get_calendar
 from django.utils.translation import ugettext_lazy as _
 from users.templatetags.filters import localize
@@ -24,6 +24,11 @@ class FiscalYear(models.Model):
 
     @staticmethod
     def from_date(date):
+        calendar = get_calendar()
+        if calendar == 'ad':
+            date = ad2bs(date)
+        if type(date) == tuple:
+            date = string_from_tuple(date)
         month = int(date.split('-')[1])
         year = int(date.split('-')[0])
         if month < 4:
@@ -59,7 +64,11 @@ class FiscalYear(models.Model):
         return tuple_value
 
     def __unicode__(self):
-        return str(self.year) + '/' + str(self.year - 1999)
+        calendar = get_calendar()
+        if calendar == 'bs':
+            return str(self.year) + '/' + str(self.year - 1999)
+        else:
+            return str(self.year - 57) + '/' + str(self.year - 2056)
 
 
 class FYManager(models.Manager):
