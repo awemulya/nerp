@@ -1,0 +1,27 @@
+@import "print.css";
+
+.hidden-print {
+    display: none !important;
+}
+
+.visible-print-inline-block {
+    display: inline-block !important;
+}
+
+.visible-print-block {
+    display: block !important;
+}
+
+.visible-print-inline {
+    display: inline !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd), tbody > tr > td[contenteditable="true"] {
+    background: none;
+}
+
+.selectize-control.single .selectize-input {
+    background: none;
+    box-shadow: none;
+    border: none;
+}

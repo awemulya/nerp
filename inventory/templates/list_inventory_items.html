@@ -1,5 +1,5 @@
 {% extends "inventory_base.html" %}
-{% load i18n %}
+{% load i18n filters %}
 
 {% block title %}{% trans 'Inventory' %} {% trans 'Items' %}{% endblock %}
 
@@ -56,7 +56,7 @@
                 <td>
                     {% if item.account %}
                     <a href="{% url 'view_inventory_account' item.account.id %}">
-                        {{ item.account.account_no }}
+                        {{ item.account.account_no|localize }}
                     </a>
                     {% endif %}
                 </td>

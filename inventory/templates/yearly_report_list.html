@@ -20,17 +20,13 @@
 
     <table class="table table-striped table-bordered">
         <thead>
-        <th>{% anchor report_no _('No.') %}</th>
         <th>{% anchor demandee _('Fiscal Year') %}</th>
         </thead>
         <tbody>
         {% for yearly_report in paginated_objects %}
             <tr>
                 <td>
-                    <a href="{% url 'yearly_report_detail' yearly_report.pk %}">{{ yearly_report.report_no }}</a>
-                </td>
-                <td>
-                    {{ yearly_report.fiscal_year }}
+                    <a href="{% url 'yearly_report_detail' yearly_report.pk %}">{{ yearly_report.fiscal_year|localize }}</a>
                 </td>
             </tr>
         {% endfor %}

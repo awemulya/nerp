@@ -60,7 +60,7 @@ td .select2-container {
     width: 100%
 }
 
-.inline-fields input {
+.inline-fields input, .inline-fields select {
     display: inline;
     margin: 0;
 }
@@ -113,10 +113,6 @@ tbody > tr > td[contenteditable="true"] {
 
 .only-on-print {
     display: none;
-}
-
-input[type="text"] {
-    display: inline;
 }
 
 .width-4 {
@@ -172,10 +168,6 @@ input[type="text"] {
 
 td .selectize-input {
     width: 100%;
-}
-
-.marginless-inputs input, .marginless-inputs select {
-    margin: 0;
 }
 
 .selectize-input > input {
@@ -341,10 +333,6 @@ label {
     font-weight: normal;
 }
 
-input[type=text] {
-    display: block;
-}
-
 .width-auto, input[type=url] {
     width: auto;
 }
@@ -376,10 +364,6 @@ form {
     padding: 0px 12px;
 }
 
-#add_party {
-    margin-top: -24px;
-}
-
 .inline {
     display: inline !important;
 }
@@ -391,7 +375,7 @@ footer {
     margin-top: 5em;
 }
 
-.pad{
+.pad {
     padding: 1em;
 }
 
@@ -399,6 +383,14 @@ footer {
     min-height: 36px;
 }
 
-.release-dropdown{
+.release-dropdown {
     /*min-width: 40%;*/
+}
+
+.bordered {
+    border: 1px solid black;
+}
+
+.form-header h3, .form-header h4{
+    margin: 0 auto;
 }

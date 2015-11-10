@@ -12,10 +12,20 @@ from django.db.models import Model
 from django import template
 from django.contrib.auth.models import Group
 from django.utils.translation import get_language
+from njango.utils import get_calendar
 
 from app import settings
 
 register = Library()
+
+
+@register.filter
+def bsdate(value, arg=None):
+    if type(value) in [str, unicode]:
+        return value
+    from django.template.defaultfilters import date
+
+    return date(value, arg)
 
 
 def handler(obj):
@@ -277,3 +287,19 @@ def mailto(email, linktext=None):
 @register.filter
 def to_class_name(value):
     return value.__class__.__name__
+
+
+@register.assignment_tag
+def get_fiscal_years():
+    from core.models import FiscalYear
+
+    return FiscalYear.objects.all()
+
+
+@register.filter
+def fiscal_year(year):
+    year = int(year)
+    calendar = get_calendar()
+    if calendar == 'ad':
+        year -= 57
+    return str(year) + '/' + str(year - 1999)

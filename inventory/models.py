@@ -8,14 +8,14 @@ from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from django.db.models import F
 from mptt.models import MPTTModel, TreeForeignKey
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from jsonfield import JSONField
 from njango.utils import ne2en
 from njango.fields import BSDateField, today
 
 from app.utils.helpers import zero_for_none, none_for_zero
 from users.models import User
-from core.models import FiscalYear, Party, validate_in_fy
+from core.models import FiscalYear, Party, validate_in_fy, FYManager
 from core.signals import fiscal_year_signal
 
 
@@ -173,7 +173,7 @@ class Item(models.Model):
     description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(Category, null=True, blank=True)
     account = models.OneToOneField(InventoryAccount, related_name='item', null=True)
-    type_choices = [('consumable', _('Consumable')), ('non-consumable', _('Non-Consumable'))]
+    type_choices = [('consumable', _('Consumable')), ('non-consumable', _('Non-consumable'))]
     type = models.CharField(choices=type_choices, max_length=15, default='consumable')
     unit = models.CharField(max_length=50, default=_('pieces'))
     # vattable = models.BooleanField(default=True)
@@ -356,10 +356,11 @@ def get_next_voucher_no(cls, attr):
 
 class Demand(models.Model):
     release_no = models.IntegerField()
-    fiscal_year = models.ForeignKey(FiscalYear)
     demandee = models.ForeignKey(User, related_name='demands')
     date = BSDateField(default=today, validators=[validate_in_fy])
     purpose = models.CharField(max_length=254)
+
+    objects = FYManager()
 
     def get_voucher_no(self):
         return self.release_no
@@ -372,6 +373,47 @@ class Demand(models.Model):
     def __str__(self):
         return unicode(self.release_no)
 
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.date)
+
+    @property
+    def status(self):
+        status_hash = {
+            'Requested': 0,
+            'Approved': 1,
+            'Fulfilled': 2,
+        }
+        status_codes = []
+        rows = self.rows.all()
+        for row in rows:
+            status_codes.append(status_hash[row.status])
+        if not status_codes:
+            return _('Empty')
+        inv_hash = {v: k for k, v in status_hash.items()}
+        status_text = _(inv_hash[min(status_codes)])
+        if len(set(status_codes)) > 1:
+            status_text = "%s %s" % (_('Partially'), _(inv_hash[max(status_codes)]))
+        return status_text
+
+    @property
+    def status_code(self):
+        status_hash = {
+            'Requested': 0,
+            'Approved': 1,
+            'Fulfilled': 2,
+        }
+        status_codes = []
+        rows = self.rows.all()
+        for row in rows:
+            status_codes.append(status_hash[row.status])
+        if not status_codes:
+            return None
+        status_code = str(min(status_codes))
+        if len(set(status_codes)) > 1:
+            status_code = "%s%s" % ('0', str(max(status_codes)))
+        return status_code
+
 
 class DemandRow(models.Model):
     sn = models.PositiveIntegerField()
@@ -382,7 +424,7 @@ class DemandRow(models.Model):
     # release_quantity = models.FloatField(null=True, blank=True)
     remarks = models.CharField(max_length=254, blank=True, null=True)
     demand = models.ForeignKey(Demand, related_name='rows')
-    statuses = [('Requested', 'Requested'), ('Approved', 'Approved'), ('Fulfilled', 'Fulfilled')]
+    statuses = [('Requested', _('Requested')), ('Approved', _('Approved')), ('Fulfilled', _('Fulfilled'))]
     status = models.CharField(max_length=9, choices=statuses, default='Requested')
     location = models.ForeignKey(ItemLocation, null=True, blank=True)
     purpose = models.CharField(max_length=100, null=True, blank=True)
@@ -405,10 +447,13 @@ class DemandRow(models.Model):
 
 class EntryReport(models.Model):
     entry_report_no = models.PositiveIntegerField(blank=True, null=True)
-    fiscal_year = models.ForeignKey(FiscalYear)
     source_content_type = models.ForeignKey(ContentType)
     source_object_id = models.PositiveIntegerField()
     source = GenericForeignKey('source_content_type', 'source_object_id')
+
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.source.date)
 
     def get_absolute_url(self):
         if self.source.__class__.__name__ == 'Handover':
@@ -456,11 +501,14 @@ class Handover(models.Model):
     designation = models.CharField(max_length=254)
     handed_to = models.CharField(max_length=254)
     due_days = models.PositiveIntegerField(default=7)
-    fiscal_year = models.ForeignKey(FiscalYear)
     types = [('Incoming', 'Incoming'), ('Outgoing', 'Outgoing')]
     type = models.CharField(max_length=9, choices=types, default='Incoming')
     entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
                                     object_id_field='source_object_id')
+
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.date)
 
     def get_entry_report(self):
         entry_reports = self.entry_reports.all()
@@ -513,9 +561,12 @@ class PurchaseOrder(models.Model):
     order_no = models.IntegerField(blank=True, null=True)
     date = BSDateField(default=today, validators=[validate_in_fy])
     due_days = models.IntegerField(default=3)
-    fiscal_year = models.ForeignKey(FiscalYear)
     entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
                                     object_id_field='source_object_id')
+
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.date)
 
     def get_entry_report(self):
         entry_reports = self.entry_reports.all()
@@ -609,8 +660,12 @@ def _transaction_delete(sender, instance, **kwargs):
 
 class Inspection(models.Model):
     report_no = models.IntegerField()
-    fiscal_year = models.ForeignKey(FiscalYear)
+    date = BSDateField(default=today, validators=[validate_in_fy])
     # transaction = models.ForeignKey(Transaction, related_name='inspection')
+
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.date)
 
     def __str__(self):
         return unicode(self.report_no)
@@ -640,7 +695,6 @@ class InspectionRow(models.Model):
 
 
 class YearlyReport(models.Model):
-    report_no = models.IntegerField()
     fiscal_year = models.ForeignKey(FiscalYear)
 
 
@@ -657,9 +711,12 @@ class YearlyReportRow(models.Model):
 
 
 class QuotationComparison(models.Model):
-    fiscal_year = models.ForeignKey(FiscalYear)
     report_no = models.IntegerField()
     date = BSDateField(default=today, validators=[validate_in_fy], blank=True, null=True)
+
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.date)
 
 
 class QuotationComparisonRow(models.Model):
@@ -694,6 +751,15 @@ class ItemInstance(models.Model):
                                                  to_user=to_user)
         return history
 
+    def undo_transfer(self):
+        history = InstanceHistory.objects.filter(instance=self, to_location=self.location, to_user=self.user).order_by(
+            '-id').last()
+        self.user = history.from_user
+        self.location = history.from_location
+        self.save()
+        history.delete()
+        return self
+
     @property
     def rate(self):
         return self.item_rate
@@ -704,11 +770,11 @@ class ItemInstance(models.Model):
 
 class InstanceHistory(models.Model):
     instance = models.ForeignKey(ItemInstance)
-    date = BSDateField(default=today, validators=[validate_in_fy])
-    from_location = models.ForeignKey(ItemLocation, related_name='from_history')
-    to_location = models.ForeignKey(ItemLocation, related_name='to_history', null=True, blank=True)
-    from_user = models.ForeignKey(User, related_name='from_history', null=True, blank=True)
-    to_user = models.ForeignKey(User, related_name='to_history', null=True, blank=True)
+    date = BSDateField(default=today, validators=[validate_in_fy], verbose_name=_('Date'))
+    from_location = models.ForeignKey(ItemLocation, related_name='from_history', verbose_name=_('From Location'))
+    to_location = models.ForeignKey(ItemLocation, related_name='to_history', null=True, blank=True, verbose_name=_('To Location'))
+    from_user = models.ForeignKey(User, related_name='from_history', null=True, blank=True, verbose_name=_('From User'))
+    to_user = models.ForeignKey(User, related_name='to_history', null=True, blank=True, verbose_name=_('To User'))
 
     def save(self, *args, **kwargs):
         ret = super(InstanceHistory, self).save(*args, **kwargs)
@@ -734,12 +800,16 @@ class Release(models.Model):
 
 
 class Expense(models.Model):
-    voucher_no = models.PositiveIntegerField()
-    date = BSDateField(default=today, validators=[validate_in_fy])
+    voucher_no = models.PositiveIntegerField(verbose_name=_('Voucher No.'))
+    date = BSDateField(default=today, validators=[validate_in_fy], verbose_name=_('Date'))
     instance = models.ForeignKey(ItemInstance)
     types = (('Waive', _('Waive')), ('Handover', _('Handover')), ('Auction', _('Auction')))
-    type = models.CharField(choices=types, max_length=20, default='Waive')
-    rate = models.PositiveIntegerField(blank=True, null=True)
+    type = models.CharField(choices=types, max_length=20, default='Waive', verbose_name=_('Type'))
+    rate = models.FloatField(blank=True, null=True, verbose_name=_('Rate'))
+
+    @property
+    def fiscal_year(self):
+        return FiscalYear.from_date(self.date)
 
     def get_next_voucher_no(self):
         if not self.pk and not self.voucher_no:
@@ -761,19 +831,16 @@ class Expense(models.Model):
             set_transactions(self, self.date,
                              ['cr', self.instance.item.account, 1])
 
-    def __str__(self):
+    def __unicode__(self):
         ret = _('Expense')
         if self.pk:
             ret += ': ' + str(self.voucher_no)
-        return ret
+        return unicode(ret)
 
 
 def fiscal_year_changed(sender, **kwargs):
     # old_fiscal_year = kwargs.get('old_fiscal_year')
     # year_end = FiscalYear.end(old_fiscal_year.year)
-    # import ipdb
-    # ipdb.set_trace()
     pass
 
-
-fiscal_year_signal.connect(fiscal_year_changed)
+# fiscal_year_signal.connect(fiscal_year_changed)

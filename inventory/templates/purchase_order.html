@@ -19,11 +19,13 @@
 {% endblock %}
 
 {% block content %}
-
-    <span class="right visible-print-block">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '4' %}{% trans '5' %}</span>
-    <br>
-    <h5 class="center visible-print-block">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h5>
-    <h6 class="center visible-print-block">{% trans 'Purchase Order' %}</h6>
+    <div class="visible-print-block form-header">
+        <span class="right pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %}
+            {% trans '4' %}{% trans '5' %}</span>
+        <br>
+        <h4 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>
+        <h4 class="center">{% trans 'Purchase Order' %}</h4>
+    </div>
 
     <form method="post" data-bind="submit: save">
         {% csrf_token %}
@@ -44,15 +46,19 @@
                 <br/>
             </div>
 
-            <div class="col-lg-6 col-sm-6 marginless-inputs">
-                {% trans 'Purchase Order' %} {% trans 'No.' %}:
-                <input type="text" class="form-control" name="order_no" id="id_order_no" required
-                       data-bind="value: order_no, localize: 1">
-                {{ form.order_no.errors }}
-                <br>
-                {% trans 'Date' %}: <input type="text" class="form-control" required="required" name="date" id="id_date"
-                                           data-bind="value: date, localize: 1">
-                {{ form.date.errors }}
+            <div class="col-lg-6 col-sm-6 pull-right text-right">
+                <div class="pull-right text-right">
+                    {% trans 'Purchase Order' %} {% trans 'No.' %}:
+                    <input type="text" class="pull-right text-right form-control" name="order_no" id="id_order_no" required
+                           data-bind="value: order_no, localize: true, autosize:3">
+                    {{ form.order_no.errors }}
+                </div>
+                <div class="pull-right text-right clear">
+                    {% trans 'Date' %}: <input type="text" class="pull-right text-right form-control" required="required"
+                                               name="date" id="id_date"
+                                               data-bind="value: date, localize: true, autosize:3">
+                    {{ form.date.errors }}
+                </div>
             </div>
         </div>
 
@@ -83,10 +89,10 @@
                     <th rowspan="2" class="span2">{% trans 'Specification' %}</th>
                     <th rowspan="2" class="span3">{% trans 'Item Quantity' %}</th>
                     <th rowspan="2" class="span3">{% trans 'Unit' %}</th>
-                    <th rowspan="2" class="span3 hide-on-print">{% trans 'Vattable' %}</th>
+                    <th rowspan="2" class="span3 hidden-print">{% trans 'Vattable' %}</th>
                     <th colspan="2" class="span2">{% trans 'Price' %}</th>
                     <th rowspan="2" class="span2">{% trans 'Remarks' %}</th>
-                    <th rowspan="2" class="hide-on-print"></th>
+                    <th rowspan="2" class="hidden-print"></th>
                 </tr>
                 <tr>
                     <th>{% trans 'Rate' %}</th>
@@ -98,9 +104,9 @@
                 <!-- ko foreach: rows -->
                 <tr>
                     <td>
-                        <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: 1"> </span>
+                        <span data-bind="text:  $index()+1, localize: true"> </span>
                     </td>
-                    <td data-bind="editableText: budget_title_no, localize: 1"></td>
+                    <td data-bind="editableText: budget_title_no, localize: true"></td>
                     <td>
                         {#                        <select class="span12 item-selector"#}
                         {#                                data-bind="options: $root.items, optionsText: 'name', optionsValue: 'id', value: item_id, optionsCaption: 'Choose an item...', select2: {},  event: {change: $root.item_changed}"></select>#}
@@ -112,28 +118,28 @@
                     <td data-bind="editableText: specification"></td>
                     <td data-bind="editableText: quantity, localize: true"></td>
                     <td data-bind="editableText: unit"></td>
-                    <td class="hide-on-print">
+                    <td class="hidden-print">
                         <input type="checkbox" data-bind="checked: vattable">
                     </td>
-                    <td data-bind="editableText: rate, localize: true"></td>
-                    <td data-bind="text: total_amount(), localize: 1"></td>
+                    <td data-bind="editableText: rate, localize: 2"></td>
+                    <td data-bind="text: total_amount(), localize: 2"></td>
                     <td class="remarks-cell" data-bind="editableText: remarks"></td>
-                    <td class="hide-on-print">
+                    <td class="hidden-print">
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
                     </td>
                 </tr>
                 <!-- /ko -->
                 <tr class="dont-validate">
-                    <td colspan="7"><span class="right">{% trans 'Total' %}</span></td>
-                    <td colspan="3" data-bind="text: $root.sub_total(), localize: 1"></td>
+                    <td colspan="7" class="text-right"><span>{% trans 'Total' %}</span></td>
+                    <td colspan="3" data-bind="text: $root.sub_total(), localize: 2"></td>
                 </tr>
                 <tr class="dont-validate">
-                    <td colspan="7"><span class="right">{% trans '1' %}{% trans '3' %}% {% trans 'VAT' %}</span></td>
-                    <td colspan="3" data-bind="text: $root.vat_amount(), localize: 1"></td>
+                    <td colspan="7" class="text-right"><span>{% trans '1' %}{% trans '3' %}% {% trans 'VAT' %}</span></td>
+                    <td colspan="3" data-bind="text: $root.vat_amount(), localize: 2"></td>
                 </tr>
                 <tr class="dont-validate">
-                    <td colspan="7"><span class="right">{% trans 'Grand Total' %}</span></td>
-                    <td colspan="3" data-bind="text: $root.grand_total(), localize: 1"></td>
+                    <td colspan="7" class="text-right"><span>{% trans 'Grand Total' %}</span></td>
+                    <td colspan="3" data-bind="text: $root.grand_total(), localize: 2"></td>
                 </tr>
 
                 </tbody>
@@ -173,38 +179,37 @@
         </div>
     </div>
 
-    <table class="table table-bordered visible-print-block">
-        <tr>
-            <td><u>{% trans 'To be filled by financial administration section' %}</u>:-<br><br>
-                माथि उल्लेखि सामानहरु बजट उपशिर्षक न. .............. को खर्च शिर्षक न. .......... बाट भुक्तानी दिन बजेट
-                बाँकी देखिन्छ / देखिदैंन ।
+    <div class="visible-print-block bordered">
+
+        <div><u>{% trans 'To be filled by financial administration section' %}</u>:</div>
+        <div>
+            माथि उल्लेखि सामानहरु बजट उपशिर्षक न. .............. को खर्च शिर्षक न. .......... बाट भुक्तानी दिन बजेट
+            बाँकी देखिन्छ / देखिदैंन ।
+        </div>
+
+        <div class="row">
+            <span class="col-lg-6 col-sm-6"></span>
+
+            <div class="col-lg-6 col-sm-6">
+                {% trans 'Accounting' %} {% trans "Head's" %} {% trans 'Signature' %}:-
                 <br>
+                {% trans 'Date' %}:-
+            </div>
+        </div>
+    </div>
+    <br/>
 
-                <div class="row">
-                    <span class="col-lg-6 col-sm-6"></span>
+    <div class="container-fluid visible-print-block ">
+        <div class="row bordered">
+            <span class="col-lg-6 col-sm-6"></span>
 
-                    <div class="col-lg-6 col-sm-6">
-                        {% trans 'Accounting' %} {% trans "Head's" %} {% trans 'Signature' %}:-
-                        <br>
-                        {% trans 'Date' %}:-
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row">
-                    <span class="col-lg-6 col-sm-6"></span>
-
-                    <div class="col-lg-6 col-sm-6">
-                        {% trans "Signature of Head of Office" %}:-
-                        <br>
-                        {% trans 'Date' %}:-
-                    </div>
-                </div>
-            </td>
-        </tr>
-    </table>
+            <div class="col-lg-6 col-sm-6">
+                {% trans "Signature of Head of Office" %}:-
+                <br>
+                {% trans 'Date' %}:-
+            </div>
+        </div>
+    </div>
 
     <div class="visible-print-block">
 

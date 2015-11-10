@@ -23,9 +23,9 @@ class DemandRowAdmin(admin.ModelAdmin):
 
 
 class DemandAdmin(admin.ModelAdmin):
-    list_display = ('release_no', 'fiscal_year', 'demandee', 'date')
+    list_display = ('release_no', 'demandee', 'date')
     list_display_links = ('release_no',)
-    list_filter = ('fiscal_year', 'demandee')
+    list_filter = ('demandee',)
     inlines = [
         DemandRowInline,
     ]
@@ -98,7 +98,7 @@ class YearlyReportRowAdmin(admin.ModelAdmin):
 
 
 class YearlyReportAdmin(admin.ModelAdmin):
-    list_display = ('report_no', 'fiscal_year')
+    list_display = ('fiscal_year', )
     inlines = [
         YearlyReportRowInline,
     ]

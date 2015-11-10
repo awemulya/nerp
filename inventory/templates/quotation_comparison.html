@@ -6,7 +6,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url 'list_quotation_forms' %}">{% trans 'Quotation' %} {% trans 'Reports' %}</a></li>
+    <li><a href="{% url 'list_quotation_forms' %}">{% trans 'Quotation' %} {% trans 'Comparisons' %}</a></li>
     <li><span> {% trans scenario %} {% trans 'Quotation Comparison' %}</span></li>
 {% endblock %}
 
@@ -18,95 +18,110 @@
 {% endblock %}
 
 {% block content %}
-<h1 class='center'>Quotation Report</h1>
-<h4>Report no:<input data-bind="value: report_no" class="form-control width-auto input-inline"></h4>
 
-<div class="row">
-	<div class="col-md-3">
-		<select id='party-select' data-bind="selectize: parties, value: selected_party" data-url="{% url 'create_party' %}"></select>
-		
-	</div>
-	<div class="col-md-9">
-		
-	</div>
-</div>
-<br>
-<form method="post" enctype="multipart/form-data" data-bind="submit: save" name="demand-form" novalidate>
-{% csrf_token %}
+    <div class="visible-print-block form-header">
+        <h4 class="text-center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>
+        <h4 class="text-center">{% trans 'Quotation' %} {% trans 'Comparison' %} {% trans 'Report' %}</h4>
+    </div>
 
-<div data-bind="with: table_view">
-	<br>
-	<button data-bind="click: $root.add_party" class="btn btn-default" id="add_party">Add Party</button>
-	<br>
-	<table class="table table-bordered table-striped">
-		<thead>
-			<tr>
-				<th rowspan='3'>{% trans 'SN' %}</th>
-				<th rowspan='3'>{% trans 'Item Name' %}</th>
-				<th rowspan='3'>{% trans 'Specification' %}</th>
-				<th rowspan='3'>{% trans 'Item Quantity' %}</th>
-				<th rowspan='3'>{% trans 'Estimated Cost' %}</th>
-			</tr>
-			<tr>
-				<!-- ko foreach: $root.parties_to_display -->
-				<th colspan='2'><span data-bind="text: name"></span> <span><a href="#" class="close tiny secondary" data-bind="click: $root.removeParty">x</a></span></th>
-				<!-- /ko -->
-			</tr>
-			<tr>
-				<!-- ko foreach: $root.parties_to_display -->
-				<th>{% trans "Per Unit Price" %}</th>
-				<th>{% trans "Total Price" %}</th>
-				<!-- /ko -->
-				<th rowspan='3'>{% trans "Remarks" %}</th>
-			</tr>
+    <form method="post" enctype="multipart/form-data" data-bind="submit: save" name="demand-form" novalidate>
+        {% csrf_token %}
 
-		</thead>
-		<tbody>
-            <!-- ko foreach: rows -->
+        <div class="pull-right">
+            {% trans 'Date' %}: <input class="form-control inline" type="text" required="required" name="date" id="id_date"
+                                       data-bind="value: date, localize: true">
+        </div>
 
-			<tr>
-				<td>
-	                <span class="wid-pad pull-left" data-bind="text:  $index()+1, localize: true"> </span>
-				</td>
-				<td>
-                <select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}"
+        {% trans 'Report' %} {% trans 'No.' %}:
+        <input data-bind="value: report_no, localize: true" class="form-control width-auto input-inline">
+
+        <br/>
+
+        <div data-bind="with: table_view">
+            <div class="row hidden-print">
+                <div class="col-md-1">{% trans 'Party' %}:</div>
+                <div class="col-md-3">
+
+                    <select id='party-select' data-bind="selectize: $parent.parties, value: $parent.selected_party"
+                            data-name="{% trans 'Party' %}"
+                            data-url="{% url 'create_party' %}"></select>
+                </div>
+                <div class="col-md-8">
+                    <button data-bind="click: $root.add_party"
+                            class="btn btn-default"> + {% trans 'Add selected party for comparison' %}</button>
+                </div>
+            </div>
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th rowspan='3'>{% trans 'SN' %}</th>
+                    <th rowspan='3'>{% trans 'Item Name' %}</th>
+                    <th rowspan='3'>{% trans 'Specification' %}</th>
+                    <th rowspan='3'>{% trans 'Item Quantity' %}</th>
+                    <th rowspan='3'>{% trans 'Estimated Cost' %}</th>
+                </tr>
+                <tr>
+                    <!-- ko foreach: $root.parties_to_display -->
+                    <th colspan='2'><span data-bind="text: name"></span> <span><a href="#" class="close tiny secondary hidden-print"
+                                                                                  data-bind="click: $root.removeParty">x</a></span>
+                    </th>
+                    <!-- /ko -->
+                </tr>
+                <tr>
+                    <!-- ko foreach: $root.parties_to_display -->
+                    <th>{% trans "Per Unit Price" %}</th>
+                    <th>{% trans "Total Price" %}</th>
+                    <!-- /ko -->
+                    <th rowspan='3'>{% trans "Remarks" %}</th>
+                </tr>
+
+                </thead>
+                <tbody>
+                <!-- ko foreach: rows -->
+
+                <tr>
+                    <td>
+                        <span data-bind="text:  $index()+1, localize: true"> </span>
+                    </td>
+                    <td>
+                        <select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}"
                                 data-url="{% url 'create_inventory_item' %}"
                                 data-script="/static/js/inventory/item.js"></select>
                         {#                                                <select class="span12 item-selector"#}
                         {#                                                        data-bind="options: $root.items, optionsText: 'name', optionsValue: 'id', value: item_id, optionsCaption: ' ', event: {change: $root.item_changed}"></select>#}
                         {#                        <input type="hidden" data-url="{% url 'create_inventory_item' %}" class="change-on-ready"#}
                         {#                               data-bind="value: item_id, select2: $root.items, event: {change: $root.item_changed}, readOnly: status() != 'Requested'">#}
-            	</td>
-           		<td data-bind="editableText: specification"></td>
-           		<td data-bind="editableText: quantity, numeric: true"></td>
-           		<td data-bind="editableText: estimated_cost, numeric: true"></td>
-				<!-- ko foreach: bidder_quote -->
-           		<td data-bind="editableText: per_unit_price, numeric: true"></td>
-           		<td data-bind="text: total($parent.quantity)"></td>
-				<!-- /ko -->
-				<td data-bind="editableText: remarks"></td>
-				<td class="hide-on-print">
+                    </td>
+                    <td data-bind="editableText: specification"></td>
+                    <td data-bind="editableText: quantity, numeric: true, localize: true"></td>
+                    <td data-bind="editableText: estimated_cost, numeric: true, localize: true"></td>
+                    <!-- ko foreach: bidder_quote -->
+                    <td data-bind="editableText: per_unit_price, numeric: true, localize: true"></td>
+                    <td data-bind="text: total($parent.quantity), localize: true"></td>
+                    <!-- /ko -->
+                    <td data-bind="editableText: remarks"></td>
+                    <td class="hidden-print">
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
-                </td>
+                    </td>
 
-			</tr>
-            <!-- /ko -->
-		
-		</tbody>
+                </tr>
+                <!-- /ko -->
 
-	</table>
-	<a class="btn btn-default hidden-p" data-bind="click: addRow">
+                </tbody>
+
+            </table>
+            <a class="btn btn-default hidden-p" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>
 
-</div>	
-<br>
-<input class="btn btn-primary btn-lg" type="submit" value="Save">
-{% if scenario == 'Update' %}
-    <a class="btn btn-danger btn-lg"
-       href="{% url 'delete_quotation_comparison' quotation.id %}">{% trans 'Delete!' %}</a>
-{% endif %}
+        </div>
+        <br>
+        <input class="btn btn-primary btn-lg" type="submit" value="Save">
+        {% if scenario == 'Update' %}
+            <a class="btn btn-danger btn-lg"
+               href="{% url 'delete_quotation_comparison' quotation.id %}">{% trans 'Delete!' %}</a>
+        {% endif %}
 
-</form>
+    </form>
 
 {% endblock %}

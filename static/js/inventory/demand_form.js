@@ -113,10 +113,10 @@ function DemandViewModel(data) {
     self.msg = ko.observable('');
     self.status = ko.observable('standby');
 
-    self.table_view = new TableViewModel({rows: data.rows, argument: self}, DemandRow);
-
     for (var k in data)
         self[k] = ko.observable(data[k]);
+
+    self.table_view = new TableViewModel({rows: data.rows, argument: self}, DemandRow);
 
     self.id.subscribe(function (id) {
         history.pushState(id, id, window.location.href + id + '/');
@@ -175,12 +175,19 @@ function DemandRow(row, demand_vm) {
     self.purpose = ko.observable();
     self.groups = ko.observableArray();
     self.release_vms = ko.observableArray();
+    self.demand_id = demand_vm.id();
 
 
     for (var k in row) {
         if (row[k] != null)
             self[k] = ko.observable(row[k]);
     }
+
+    self.ind = function () {
+        if (demand_vm.table_view) {
+            return demand_vm.table_view.rows().indexOf(self);
+        }
+    };
 
     self.item.subscribe(function (item) {
         if (!item) return;
@@ -230,26 +237,36 @@ function DemandRow(row, demand_vm) {
             if (match) {
                 release_vm.instances.push(release.item_instance.id);
             }
-            else if (group){
+            else if (group) {
                 release_vm = new ReleaseVM(group, release.item_instance.id, release.location);
                 self.release_vms.push(release_vm);
             }
-            get_by_id(self.groups(), release_vm.id).instances.remove(release.item_instance.id);
+            if (release_vm) {
+                get_by_id(self.groups(), release_vm.id).instances.remove(release.item_instance.id);
+            }
         }
+    }
+
+    self.to_json = function(){
+        self.index = self.ind();
+        return ko.toJSON(self);
     }
 
     self.approve = function (item, event) {
         $.ajax({
             type: "POST",
             url: '/inventory/approve/demand_form/',
-            data: ko.toJSON(self),
+            data: self.to_json(),
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {
                     alert.error(msg.error_message);
+                    $($("#tbody > tr")[self.ind()]).addClass('invalid-row');
                 }
                 else {
                     alert.success('Approved!')
                     self.status('Approved');
+                    $($("#tbody > tr")[self.ind()]).removeClass('invalid-row');
+                    $(document).trigger('reload-selectize');
                 }
             }
         });
@@ -267,13 +284,14 @@ function DemandRow(row, demand_vm) {
                 else {
                     alert.success('Disapproved!');
                     self.status('Requested');
+                    $(document).trigger('reload-selectize');
                 }
             }
         });
     };
 
     self.fulfill = function (item, event) {
-    //self.fulfill = function (root, item, event) {
+        //self.fulfill = function (root, item, event) {
         //if (root.release_no() == '' || !root.release_no()) {
         //    alert.error('Release No. is required!');
         //    return false;

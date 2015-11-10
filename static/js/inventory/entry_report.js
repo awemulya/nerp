@@ -77,12 +77,13 @@ function EntryReportRow(row) {
     self.account_no = ko.observable();
     self.inventory_classification_reference_no = ko.observable();
     self.item_id = ko.observable();
+    self.vattable = ko.observable(true);
     self.specification = ko.observable();
     self.quantity = ko.observable().extend({ required: true });
     self.unit = ko.observable();
     self.rate = ko.observable();
     self.remarks = ko.observable();
-    self.other_expenses = ko.observable();
+    self.other_expenses = ko.observable(0);
 
 
 

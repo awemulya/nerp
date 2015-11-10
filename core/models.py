@@ -1,8 +1,10 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from njango.models import TranslatableNumberModel
-from njango.nepdate import bs, bs2ad, tuple_from_string
+from njango.nepdate import bs, bs2ad, tuple_from_string, ad2bs, string_from_tuple
 from njango.utils import get_calendar
+from django.utils.translation import ugettext_lazy as _
+from users.templatetags.filters import localize
 
 FISCAL_YEARS = (
     (2069, "2069/70"),
@@ -19,6 +21,19 @@ SOURCES = [('nepal_government', 'Nepal Government'), ('foreign_cash_grant', 'For
 
 class FiscalYear(models.Model):
     year = models.IntegerField(choices=FISCAL_YEARS, unique=True)
+
+    @staticmethod
+    def from_date(date):
+        calendar = get_calendar()
+        if calendar == 'ad':
+            date = ad2bs(date)
+        if type(date) == tuple:
+            date = string_from_tuple(date)
+        month = int(date.split('-')[1])
+        year = int(date.split('-')[0])
+        if month < 4:
+            year -= 1
+        return FiscalYear.get(year)
 
     @staticmethod
     def get(year=None):
@@ -49,7 +64,29 @@ class FiscalYear(models.Model):
         return tuple_value
 
     def __unicode__(self):
-        return str(self.year) + '/' + str(self.year - 1999)
+        calendar = get_calendar()
+        if calendar == 'bs':
+            return str(self.year) + '/' + str(self.year - 1999)
+        else:
+            return str(self.year - 57) + '/' + str(self.year - 2056)
+
+
+class FYManager(models.Manager):
+    def fiscal_year(self, year=None):
+        if year:
+            original_fiscal_year = app_setting.fiscal_year
+            app_setting.fiscal_year = year  # bypasses validation
+            lookup_year = year
+        else:
+            lookup_year = app_setting.fiscal_year
+        # import ipdb
+        # ipdb.set_trace()
+        result = super(FYManager, self).get_queryset().filter(date__gte=FiscalYear.start(lookup_year),
+                                                              date__lte=FiscalYear.end(lookup_year))
+        # return super(FYManager, self).get_queryset().filter(Q(date__year__range=(FiscalYear.start(year)[0], FiscalYear.end(year)[0])))
+        if year:
+            app_setting.fiscal_year = original_fiscal_year
+        return result
 
 
 import dbsettings
@@ -89,7 +126,7 @@ class Account(models.Model):
 
 
 class Party(models.Model):
-    name = models.CharField(max_length=254)
+    name = models.CharField(max_length=254, verbose_name=_('Name'))
     address = models.CharField(max_length=254, blank=True, null=True)
     phone_no = models.CharField(max_length=100, blank=True, null=True)
     pan_no = models.CharField(max_length=50, blank=True, null=True)
@@ -106,7 +143,7 @@ class Party(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = 'Parties'
+        verbose_name_plural = _('Parties')
 
 
 class Employee(models.Model):
@@ -138,7 +175,7 @@ class Activity(models.Model):
         return str(self.no) + ' - ' + self.name
 
     class Meta:
-        verbose_name_plural = 'Activities'
+        verbose_name_plural = _('Activities')
 
 
 class BudgetHead(TranslatableNumberModel):
@@ -205,15 +242,16 @@ class TaxScheme(models.Model):
 
 
 def validate_in_fy(value):
-    return True
     fiscal_year = app_setting.fiscal_year
     fiscal_year_start = fiscal_year + '-04-01'
     fiscal_year_end = str(int(fiscal_year) + 1) + '-03-' + str(bs[int(fiscal_year) + 1][2])
     calendar = get_calendar()
-    if calendar == 'bs':
-        value_tuple = bs2ad(value)
+    if calendar == 'ad':
+        if type(value) == tuple:
+            value_tuple = value
+        else:
+            value_tuple = tuple_from_string(value)
     else:
-        value_tuple = tuple_from_string(value)
-
+        value_tuple = bs2ad(value)
     if not bs2ad(fiscal_year_start) <= value_tuple <= bs2ad(fiscal_year_end):
-        raise ValidationError('%s is not in current fiscal year.' % value)
+        raise ValidationError('%s %s' % (localize(value), _('is not in current fiscal year.')))

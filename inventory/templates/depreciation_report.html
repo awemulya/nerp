@@ -18,10 +18,10 @@
 {% endblock %}
 
 {% block content %}
-	<h1 class="center">Depreciation Report</h1>
+    <h1 class="center">{% trans 'Depreciation' %} {% trans 'Report' %}</h1>
     <div data-bind="with: table_view">
-	<table class="table table-striped table-bordered"> 
-        <thead>
+        <table class="table table-striped table-bordered">
+            <thead>
             <tr>
                 <th rowspan='2'>{% trans 'SN' %}</th>
                 <th rowspan='2'>{% trans 'Inventory Account Page No.' %}</th>
@@ -29,9 +29,9 @@
                 <th rowspan="2">{% trans "Item's Name" %}</th>
                 <th colspan='4'>{% trans "Description" %}</th>
                 <th colspan='2'>{% trans "Depreciation" %}</th>
-                <th colspan='3'>{% trans "Reviewed physical state" %}</th>
+                <th colspan='3'>{% trans "While reviewing physical state" %}</th>
                 <th colspan='2'>{% trans "Physical condition" %}</th>
-                <th rowspan='2'>{% trans "Remark" %}</th>
+                <th rowspan='2'>{% trans "Remarks" %}</th>
             </tr>
             <tr>
                 <th>{% trans "Unit" %}</th>
@@ -46,9 +46,9 @@
                 <th>{% trans "Good" %}</th>
                 <th>{% trans "Bad" %}</th>
             </tr>
-        </thead>
-        <tbody>
-                <!-- ko foreach: rows -->
+            </thead>
+            <tbody>
+            <!-- ko foreach: rows -->
             <tr>
                 <td data-bind="text: $index()+1, localize: true"></td>
 
@@ -64,11 +64,15 @@
                 <td data-bind="text: depreciate_value"></td>
                 <td data-bind="text: time"></td>
                 <td data-bind="text: time_type"></td>
+                <td data-bind="text: time_type"></td>
+                <td data-bind="text: time_type"></td>
+                <td data-bind="text: time_type"></td>
+                <td data-bind="text: time_type"></td>
                 <!-- /ko -->
             </tr>
-                <!-- /ko -->
+            <!-- /ko -->
 
-        </tbody>
+            </tbody>
         </table>
-		</div>	
+    </div>
 {% endblock %}
