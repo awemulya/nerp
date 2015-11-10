@@ -239,7 +239,7 @@ class Transaction(models.Model):
     @staticmethod
     def new():
         transaction = Transaction()
-        transaction.borrow_date = datetime.datetime.today()
+        transaction.borrow_date = datetime.datetime.today().date()
         from ils.models import library_setting as setting
 
         transaction.due_date = transaction.borrow_date + \
