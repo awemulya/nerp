@@ -12,6 +12,9 @@
 
 
 {% block content %}
+    <div class="visible-print-block form-header">
+        <h4 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>
+    </div>
     <h1 class='center'>Inspection Detail</h1>
     <h4>Fiscal Year: {{ obj.fiscal_year }} </h4>
     {% if obj.report_no %}

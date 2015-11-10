@@ -17,7 +17,11 @@
 {% endblock %}
 
 {% block content %}
-    <h1 class='center'>{% trans 'Yearly' %} {% trans 'Report' %}</h1>
+    <div class="form-header text-center visible-print-block">
+        <h4 class="text-center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>
+    </div>
+
+    <h4 class='center'>{% trans 'Yearly' %} {% trans 'Report' %}</h4>
     <form method="POST" data-bind="submit: save">
         {% csrf_token %}
         <div data-bind="with: table_view">
