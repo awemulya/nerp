@@ -51,7 +51,7 @@ function QuotationComparisonVM(data){
 			if (self.parties()[o].id == self.selected_party()) {
 				self.parties_to_display.push(self.parties()[o]);
 				for ( qr in row.rows()){
-					row.rows()[qr].bidder_quote.push(new PartyQuotationVM().bidder_name(self.parties()[o].name))
+					row.rows()[qr].bidder_quote.push(new PartyQuotationVM().bidder_name(self.parties()[o].name).bidder_id(self.parties()[o].id))
 				}
 			}
 		}
@@ -63,7 +63,7 @@ function QuotationComparisonVM(data){
 		self.parties.push(party)
 		for ( o in self.table_view.rows()){
 			self.table_view.rows()[o].bidder_quote.remove( function(item) {
-				return item.bidder_name() === party.name
+				return item.bidder_id() === party.id
 			});
 		}
 	}
@@ -119,6 +119,7 @@ function PartyQuotationVM() {
 	var self = this;
 	self.id = ko.observable()
 	self.bidder_name = ko.observable();
+	self.bidder_id = ko.observable();
 	self.per_unit_price = ko.observable();
 	self.total = function(quantity) {
 		var result = parseInt(quantity()) * self.per_unit_price()
@@ -143,7 +144,8 @@ function QuotationRow(row, argument) {
     self.bidder_quote = ko.observableArray()
     if ( argument ){
     	for (o in argument) {
-    		self.bidder_quote.push(new PartyQuotationVM().bidder_name(argument[o].name))
+    		debugger;
+    		self.bidder_quote.push(new PartyQuotationVM().bidder_name(argument[o].name).bidder_id(argument[o].id))
     	}
     }
 
@@ -151,7 +153,7 @@ function QuotationRow(row, argument) {
         if (row[k] != null)
         	if (k == 'bidder_quote'){
         		for ( var j in row[k] ){
-        			self.bidder_quote.push(new PartyQuotationVM().bidder_name(row[k][j].party.name).id(row[k][j].id).per_unit_price(row[k][j].per_unit_price))
+        			self.bidder_quote.push(new PartyQuotationVM().bidder_name(row[k][j].party.name).bidder_id(row[k][j].party.id).id(row[k][j].id).per_unit_price(row[k][j].per_unit_price))
         		}
         	} else {
             	self[k] = ko.observable(row[k]);

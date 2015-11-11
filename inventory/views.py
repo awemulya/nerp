@@ -502,9 +502,7 @@ def save_quotation_comparison(request):
                     submodel = save_model(submodel, values)
                 dct['rows'][ind] = submodel.id
                 for ind, party in enumerate(row.get('bidder_quote')):
-                    import ipdb
-                    ipdb.set_trace()
-                    party_object = Party.objects.get(name=party.get('bidder_name'))
+                    party_object = Party.objects.get(id=party.get('bidder_id'))
                     if party.get('id'):
                         party_quotation = PartyQuotation.objects.get(pk=party.get('id'))
                         party_quotation.party = party_object
