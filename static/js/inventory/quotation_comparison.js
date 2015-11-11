@@ -144,7 +144,6 @@ function QuotationRow(row, argument) {
     self.bidder_quote = ko.observableArray()
     if ( argument ){
     	for (o in argument) {
-    		debugger;
     		self.bidder_quote.push(new PartyQuotationVM().bidder_name(argument[o].name).bidder_id(argument[o].id))
     	}
     }

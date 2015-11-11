@@ -27,24 +27,25 @@
     <form method="post" enctype="multipart/form-data" data-bind="submit: save" name="demand-form" novalidate>
         {% csrf_token %}
 
-        <div class="pull-right">
-            {% trans 'Date' %}: <input class="form-control inline" type="text" required="required" name="date" id="id_date"
-                                       data-bind="value: date, localize: true">
+        <div class="row">
+            <div class="col-md-1"><h6>{% trans 'Report' %} {% trans 'No.' %}:</h6></div>
+            <div class="col-md-3">
+                <input data-bind="value: report_no, localize: true" class="form-control width-auto input-inline">
+            </div>
+            <div class="col-md-8">
+                <div class="pull-right">
+                    {% trans 'Date' %}: <input class="form-control inline" type="text" required="required" name="date" id="id_date"
+                                               data-bind="value: date, localize: true">
+                </div>
+            </div>
         </div>
-
-        {% trans 'Report' %} {% trans 'No.' %}:
-        <input data-bind="value: report_no, localize: true" class="form-control width-auto input-inline">
-
-        <br/>
-
+        <br>
         <div data-bind="with: table_view">
             <div class="row hidden-print">
                 <div class="col-md-1">{% trans 'Party' %}:</div>
                 <div class="col-md-3">
-
-                    <select id='party-select' data-bind="selectize: $parent.parties, value: $parent.selected_party"
-                            data-name="{% trans 'Party' %}"
-                            data-url="{% url 'create_party' %}"></select>
+                    <select data-bind="selectize: $root.parties, value: $root.selected_party"
+                        data-url="{% url 'create_party' %}" class="change-on-ready"></select>
                 </div>
                 <div class="col-md-8">
                     <button data-bind="click: $root.add_party"
