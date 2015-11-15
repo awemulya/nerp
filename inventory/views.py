@@ -5,7 +5,8 @@ import datetime
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Sum
-
+from njango.utils import get_calendar
+from njango.nepdate import bs, bs2ad, tuple_from_string, ad2bs, string_from_tuple
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -460,9 +461,14 @@ def inspection_report_detail(request, id):
 
 def inspection_report(request):
     obj = Transaction.objects.filter(cr_amount=None)
+    calendar = get_calendar()
+    date = datetime.date.today()
+    if calendar == 'bs':
+        date = ad2bs(datetime.datetime.today())
+        date = string_from_tuple(date)
     transaction_without_duplication = remove_transaction_duplicate(obj)
     data = TransactionSerializer(transaction_without_duplication, many=True).data
-    return render(request, 'inspection_report.html', {'obj': transaction_without_duplication, 'data': data})
+    return render(request, 'inspection_report.html', {'obj': transaction_without_duplication, 'data': data, 'inspection_date': date})
 
 
 @group_required('Store Keeper', 'Chief')
@@ -541,7 +547,7 @@ def save_inspection_report(request):
     if request.is_ajax():
         params = json.loads(request.body)
     dct = {'rows': {}}
-    object_values = {'report_no': params.get('report_no')}
+    object_values = {'report_no': params.get('report_no'), 'date': params.get('date')}
     if params.get('id'):
         obj = Inspection.objects.get(id=params.get('id'))
     else:

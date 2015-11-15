@@ -1,19 +1,16 @@
 $(document).ready(function () {
-    vm = new InspectionVM(ko_data);
+    vm = new InspectionVM(ko_data, inspection_date);
     ko.applyBindings(vm);
     $('.change-on-ready').trigger('change');
 });
 
-function InspectionVM(data) {
+function InspectionVM(data, date) {
     console.log(data);
     var self = this;
     self.report_no = ko.observable();
     self.id = ko.observable();
-    //if (data.date){
-    //    self.date = ko.observable(data.date);
-    //}else{
-    //    self.date = ko.observable();
-    //}
+    self.date = ko.observable(date);
+
 	self.table_view = new TableViewModel({rows: data}, InspectionRow);
 
 
