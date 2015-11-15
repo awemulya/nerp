@@ -151,6 +151,7 @@ class ItemAdmin(admin.ModelAdmin):
 
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Depreciation)
+admin.site.register(PartyQuotation)
 admin.site.register(InventoryAccount, InventoryAccountAdmin)
 admin.site.register(Demand, DemandAdmin)
 admin.site.register(DemandRow, DemandRowAdmin)
