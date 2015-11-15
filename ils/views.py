@@ -79,7 +79,7 @@ def incoming(request, transaction_pk):
         form = IncomingForm(data=request.POST, instance=transaction)
         transaction = form.save()
         if not request.POST.get('return_date'):
-            transaction.return_date = datetime.today()
+            transaction.return_date = datetime.datetime.today()
         transaction.save()
         messages.success(request, 'Book Returned!')
         return redirect(
@@ -725,7 +725,10 @@ class RecordView(View):
                        'record_id': self.kwargs.get('record_id', None),
                        }
             return render(request, self.template_name, context)
-        request.session.clear()
+        if 'google_api_data' in request.session:
+            del request.session['google_api_data']
+        if 'od' in request.session:
+            del request.session['od']
         return HttpResponseRedirect('/library/records/')
 
     def change_post_data(self, cls, fields, data, field_to_alter):
