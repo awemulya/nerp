@@ -1,5 +1,5 @@
 {% extends "inventory_base.html" %}
-{% load i18n %}
+{% load i18n filters %}
 
 {% block title %}{% trans 'Incoming Handovers' %}{% endblock %}
 
@@ -33,7 +33,7 @@
                 </td>
 
                 <td>
-                    {{ item.date|date:"Y-m-d" }}
+                    {{ item.date|bsdate:"Y-m-d" }}
                 </td>
             </tr>
         {% endfor %}

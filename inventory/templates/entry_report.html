@@ -128,14 +128,14 @@
     <div class="visible-print-block">
         {% if form.instance.source|get_class == 'PurchaseOrder' %}
             माथि उल्लेखित सामानहरु खरिद आदेश नम्बर <b>{{ form.instance.source.order_no|localize }}</b> मिति
-            <b>{{ form.instance.source.date|date:"Y-m-d"|localize }}</b>
+            <b>{{ form.instance.source.date|localize }}</b>
             अनुसार श्री
             {{ form.instance.source.party }} बाट प्राप्त हुन आएको हुँदा जाँची गन्ती गरी हेर्दा ठीक दुरुस्त भएकोले खातामा
             आम्दानी
             बाँधेको प्रमाणित गर्दछु ।
         {% else %}
             माथि उल्लेखित सामानहरु हस्तान्तरण फारम नम्बर<b>{{ form.instance.source.voucher_no|localize }}</b> मिति
-            <b>{{ form.instance.source.date|date:"Y-m-d"|localize }}</b>
+            <b>{{ form.instance.source.date|localize }}</b>
             अनुसार श्री
             .................................................. बाट प्राप्त हुन आएको हुँदा जाँची गन्ती गरी हेर्दा ठीक दुरुस्त
             भएकोले खातामा
