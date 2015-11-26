@@ -1434,23 +1434,45 @@ alert = function () {
 alert.clear = function () {
     $('#alert_placeholder').html('');
 }
+//
+//alert.warning = function (message) {
+//    // $('#alert_placeholder').html('<div data-alert class="alert-box warning radius">' + message + '<a href="#" class="close">&times;</a></div>')
+//    $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible">' + message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+//}
+//
+//alert.success = function (message) {
+//    // $('#alert_placeholder').html('<div data-alert class="alert-box success radius">' + message + '<a href="#" class="close">&times;</a></div>')
+//    $('#alert_placeholder').html('<div class="alert alert-success alert-dismissible">' + message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+//}
+//
+//alert.info = function (message) {
+//    // $('#alert_placeholder').html('<div data-alert class="alert-box info radius">' + message + '<a href="#" class="close">&times;</a></div>')
+//    $('#alert_placeholder').html('<div class="alert alert-info alert-dismissible">' + message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+//}
+
+alert.message = function (message, type) {
+    $.notify({
+        message: message
+    }, {
+        type: type
+    });
+}
 
 alert.warning = function (message) {
-    // $('#alert_placeholder').html('<div data-alert class="alert-box warning radius">' + message + '<a href="#" class="close">&times;</a></div>')
-    $('#alert_placeholder').html('<div class="alert alert-warning alert-dismissible">' + message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+    alert.message(message, 'warning');
 }
 
 alert.success = function (message) {
-    // $('#alert_placeholder').html('<div data-alert class="alert-box success radius">' + message + '<a href="#" class="close">&times;</a></div>')
-    $('#alert_placeholder').html('<div class="alert alert-success alert-dismissible">' + message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+    alert.message(message, 'success');
 }
 
 alert.info = function (message) {
-    // $('#alert_placeholder').html('<div data-alert class="alert-box info radius">' + message + '<a href="#" class="close">&times;</a></div>')
-    $('#alert_placeholder').html('<div class="alert alert-info alert-dismissible">' + message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>')
+    alert.message(message, 'info');
 }
 
-alert.error = alert.warning;
+alert.error = function (message) {
+    alert.message(message, 'danger');
+}
 
 modal = function () {
 }
