@@ -157,10 +157,11 @@ class InventoryAccount(models.Model):
 
 class Depreciation(models.Model):
     depreciation_choices = [('Fixed percentage', _('Fixed percentage')),
-                            ('Compound percentage', _('Compound percentage')), ('Fixed price', _('Fixed price'))]
+                            # ('Compound percentage', _('Compound percentage')),
+                            ('Fixed price', _('Fixed price'))]
     depreciate_type = models.CharField(choices=depreciation_choices, max_length=25, default="Fixed percentage")
-    depreciate_value = models.PositiveIntegerField(default=0)
-    time = models.PositiveIntegerField(default=0)
+    depreciate_value = models.FloatField(default=0)
+    time = models.FloatField(default=0)
     time_choices = [('days', _('Day(s)')), ('months', _('Month(s)')), ('years', _('Year(s)'))]
     time_type = models.CharField(choices=time_choices, max_length=8, default='years')
 
