@@ -23,10 +23,8 @@
     <script type="text/javascript" src="{% static 'froala_editor/js/froala_editor.min.js' %}"></script>
 
     <script>
-        participants =
-        {{ participants }};
-        vm_files =
-        {{ files|jsonify }};
+        participants = {{ participants }};
+        vm_files = {{ files|jsonify }};
     </script>
 
 {% endblock %}
@@ -87,8 +85,8 @@
                 <label for="id_ends">Ends:</label>
                 {#                <input type="text" name="ends" id="id_ends" data-date-format="yyyy-mm-dd">#}
                 {{ form.ends }}
-                    <br>
-            
+                <br>
+
                 <div class="inline-add">
 
                     <label for="id_categories">Categories:</label><br>
@@ -127,16 +125,16 @@
                 {{ form.curriculum }}
 
 
-                </div>
-    <br>
+            </div>
+            <br>
 
             <div class="content tab-pane" id="participants">
-            <br>
-                  <select id="available"
+                <br>
+                <select id="available"
                         data-bind="options: $root.participants_available, value: selected_participant, optionsText: 'name', optionsValue: 'id'"></select>
                 <button class="btn btn-default" data-bind="click: add_participant">↓ Add</button>
                 <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-participant">+ Create New</a>
-            <br><br>
+                <br><br>
                 <table class="table table-bordered">
                     <thead>
                     <th>Name</th>
@@ -173,11 +171,11 @@
 
                 <input type="hidden" name="selected_participants" data-bind="value: participants">
 
-                </div>
+            </div>
 
-               <div class="content tab-pane" id="files">
+            <div class="content tab-pane" id="files">
                 <br>
-                    <table class="table table-striped table-bordered">
+                <table class="table table-striped table-bordered">
                     <thead>
                     <tr>
                         <th>File</th>
@@ -208,19 +206,20 @@
                     </tr>
                     <!-- /ko -->
                     </tbody>
-                    </table>
-                    <button class="btn btn-default" data-bind="click: add_row">+ Add File</button>
-                    <input type="hidden" name="deleted_files" data-bind="value: deleted_rows()">
-                </div>
-
+                </table>
+                <button class="btn btn-default" data-bind="click: add_row">+ Add File</button>
+                <input type="hidden" name="deleted_files" data-bind="value: deleted_rows()">
             </div>
+
+        </div>
     </form>
 
     <div id="add-category" class="modal fade" data-reveal>
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                     <h2>Add Category</h2>
                 </div>
                 <div class="modal-body">
@@ -231,14 +230,15 @@
                     </form>
                 </div>
             </div>
-        </div>  
+        </div>
     </div>
 
     <div id="add-target-group" class="modal fade" data-reveal>
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                     <h2>Add Target Group</h2>
                 </div>
                 <div class="modal-body">
@@ -249,14 +249,15 @@
                     </form>
                 </div>
             </div>
-        </div>  
+        </div>
     </div>
 
     <div id="add-resource-person" class="modal fade" data-reveal>
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                     <h2>Add Resource Person</h2>
                 </div>
                 <div class="modal-body">
@@ -267,14 +268,15 @@
                     </form>
                 </div>
             </div>
-        </div>  
+        </div>
     </div>
 
     <div id="add-participant" class="modal fade" data-reveal>
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
                     <h2>dd Participant</h2>
                 </div>
                 <div class="modal-body">
@@ -285,19 +287,19 @@
                     </form>
                 </div>
             </div>
-        </div> 
+        </div>
 
-    <div id="add-organization" class="modal" data-reveal><h2>Add Organization</h2>
-        <a class="close-reveal-modal">&#215;</a>
+        <div id="add-organization" class="modal" data-reveal><h2>Add Organization</h2>
+            <a class="close-reveal-modal">&#215;</a>
 
-        <form method="post" action="{% url 'add_organization' %}">
-            {% csrf_token %}
-            {{ organization_form.as_p }}
-            <input type="submit" value="Add" class="tiny button">
-        </form>
-    </div>
-<script>
-        $('.datepicker').datepicker()
-    
-</script>
+            <form method="post" action="{% url 'add_organization' %}">
+                {% csrf_token %}
+                {{ organization_form.as_p }}
+                <input type="submit" value="Add" class="tiny button">
+            </form>
+        </div>
+        <script>
+            $('.datepicker').datepicker()
+
+        </script>
 {% endblock %}
