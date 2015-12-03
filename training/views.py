@@ -149,6 +149,7 @@ def resource_person_form(request, pk=None):
                 return JsonResponse({'id': item.id, 'name': item.name})
             return redirect(reverse('list_resource_persons'))
         elif request.is_ajax():
+            # TODO
             import ipdb
 
             ipdb.set_trace()
