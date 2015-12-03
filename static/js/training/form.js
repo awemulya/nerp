@@ -42,7 +42,7 @@ $(document).ready(function () {
                     value: obj.id
                 });
                 $selectized[key].addItem(obj.id);
-                $form.closest('.reveal-modal').foundation('reveal', 'close');
+                //$form.closest('.modal').modal('hide')
 //                $categories.refreshItems();
             }
         });

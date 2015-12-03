@@ -41,8 +41,11 @@
         {#        el.select2('val', obj.id);#}
     }
     {#    el.select2('close');#}
+{#    debugger;#}
     if ($select.$input.closest('.reveal-modal').length) {
-        $select.$input.closest('.reveal-modal').foundation('reveal', 'close');
+        $select.$input.closest('.reveal-modal').modal('hide');
         $select.$input.closest('.reveal-modal').foundation('reveal', 'open');
+    } else {
+        $('.modal').modal('hide');
     }
 </script>

@@ -142,11 +142,16 @@ def resource_person_form(request, pk=None):
         scenario = 'Create'
     if request.POST:
         form = ResourcePersonForm(data=request.POST, instance=item)
+
         if form.is_valid():
             item = form.save()
             if request.is_ajax():
                 return JsonResponse({'id': item.id, 'name': item.name})
             return redirect(reverse('list_resource_persons'))
+        elif request.is_ajax():
+            import ipdb
+
+            ipdb.set_trace()
     else:
         form = ResourcePersonForm(instance=item)
     return render(request, 'resource_person_form.html', {

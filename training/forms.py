@@ -2,13 +2,17 @@ from django import forms
 from app.utils.forms import KOModelForm
 from django.core.urlresolvers import reverse_lazy
 from models import Training, Category, TargetGroup, ResourcePerson, Participant, Organization
+from app.utils.forms import HTML5BootstrapModelForm
+
 
 class TrainingForm(forms.ModelForm):
-    #category = TreeNodeChoiceField(queryset=Category.objects.all(), required=False)
+    # category = TreeNodeChoiceField(queryset=Category.objects.all(), required=False)
     title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}), required=False)
-    starts = forms.CharField(widget=forms.TextInput(attrs={'data-date-format': 'yyyy-mm-dd', 'class': 'form-control'}), required=False)
-    ends = forms.CharField(widget=forms.TextInput(attrs={'data-date-format': 'yyyy-mm-dd', 'class': 'form-control'}), required=False)
+    starts = forms.CharField(widget=forms.TextInput(attrs={'data-date-format': 'yyyy-mm-dd', 'class': 'form-control'}),
+                             required=False)
+    ends = forms.CharField(widget=forms.TextInput(attrs={'data-date-format': 'yyyy-mm-dd', 'class': 'form-control'}),
+                           required=False)
 
     class Meta:
         model = Training
@@ -21,11 +25,7 @@ class CategoryForm(KOModelForm):
         exclude = ()
 
 
-class ResourcePersonForm(forms.ModelForm):
-    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    address = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}))
-    phone_no = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    email = forms.CharField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
+class ResourcePersonForm(HTML5BootstrapModelForm):
     organization = forms.ModelChoiceField(Organization.objects.all(), widget=forms.Select(
         attrs={'class': 'selectize', 'data-url': reverse_lazy('add_organization')}), required=False)
 

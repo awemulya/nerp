@@ -50,6 +50,8 @@ function init_selectize($select) {
             } else {
                 name = 'Object';
             }
+        }else if ($select.$input[0].name) {
+            name = $select.$input[0].name.toTitleCase();
         } else {
             name = 'Object';
         }
@@ -96,7 +98,7 @@ appended_link_clicked = function (e) {
         var old_forms = $('form');
         $.get(url, function (data) {
             the_modal.html(data);
-            the_modal.find('#item_modal').modal('toggle');
+            the_modal.find('.modal').modal('toggle');
         }).success(function () {
             var new_forms = $('form').not(old_forms).get();
             $(new_forms).submit({url: url}, override_form);
