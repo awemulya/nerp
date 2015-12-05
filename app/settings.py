@@ -96,7 +96,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
     'njango.middleware.CalendarMiddleware',
