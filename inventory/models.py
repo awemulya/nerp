@@ -2,6 +2,7 @@
 
 import datetime
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
@@ -379,7 +380,12 @@ class Demand(models.Model):
     def __init__(self, *args, **kwargs):
         super(Demand, self).__init__(*args, **kwargs)
         if not self.pk and not self.release_no:
-            self.release_no = get_next_voucher_no_for_fy(Demand, 'release_no')
+            self.release_no = get_next_voucher_no_for_fy(self.__class__, 'release_no')
+
+    def save(self, *args, **kwargs):
+        if self.__class__.objects.fiscal_year().filter(release_no=self.release_no).exclude(pk=self.pk):
+            raise ValidationError(_('Voucher no. exists!'))
+        super(Demand, self).save(*args, **kwargs)
 
     def __str__(self):
         return unicode(self.release_no)
