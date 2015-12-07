@@ -6,7 +6,19 @@ from inventory.models import PartyQuotation, QuotationComparison, QuotationCompa
     PurchaseOrderRow, HandoverRow, Handover, \
     EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction, ItemLocation, Depreciation, \
     ItemInstance, \
-    Release
+    Release, YearlyReport, YearlyReportRow
+
+
+class YearlyReportRowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = YearlyReportRow
+
+
+class YearlyReportSerializer(serializers.ModelSerializer):
+    rows = YearlyReportRowSerializer(many=True)
+
+    class Meta:
+        model = YearlyReport
 
 
 class ItemInstanceSerializer(serializers.ModelSerializer):

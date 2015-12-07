@@ -37,7 +37,7 @@ from inventory.models import PartyQuotation, QuotationComparison, QuotationCompa
 from inventory.serializers import QuotationComparisonSerializer, DepreciationSerializer, DemandSerializer, ItemSerializer, \
     PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
-    TransactionSerializer, ItemLocationSerializer
+    TransactionSerializer, ItemLocationSerializer, YearlyReportSerializer
 from django.db import IntegrityError
 
 
@@ -386,7 +386,8 @@ def yearly_report_list(request):
 def yearly_report_detail(request, id):
     obj = YearlyReport.objects.get(pk=id)
     rows = obj.rows.order_by("sn")
-    return render(request, 'yearly_report_detail.html', {'obj': obj, 'rows': rows})
+    data = YearlyReportSerializer(obj).data
+    return render(request, 'yearly_report_detail.html', {'obj': obj, 'data': data})
 
 
 def quotation_report_list(request):
@@ -434,8 +435,42 @@ def save_yearly_report(request):
         for index, row in enumerate(params.get('table_view').get('rows')):
             values = {'sn': index + 1, 'account_no': row.get('account_no'),
                       'property_classification_reference_number': row.get('inventory_classification_reference_no'),
-                      'item_name': row.get('item_name'), 'income': row.get('total_dr_amount'),
+                      'item_name': row.get('item_name'), 'income': row.get('total_dr_amount_without_rate'),
                       'expense': row.get('expense'), 'remaining': row.get('current_balance'),
+                      'remarks': row.get('remarks'), 'yearly_report': obj}
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            if not created:
+                submodel = save_model(submodel, values)
+            dct['rows'][index] = submodel.id
+        delete_rows(params.get('table_view').get('deleted_rows'), model)
+    except IntegrityError as e:
+        dct['error_message'] = 'Yearly report with this fiscal year already exists'
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+    return JsonResponse(dct)
+
+
+def save_yearly_report_detail(request):
+    if request.is_ajax():
+        params = json.loads(request.body)
+    dct = {'rows': {}}
+    object_values = {'fiscal_year_id': params.get('fiscal_year_id')}
+    if params.get('id'):
+        obj = YearlyReport.objects.get(id=params.get('id'))
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        model = YearlyReportRow
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            values = {'sn': index + 1, 'account_no': row.get('account_no'),
+                      'property_classification_reference_number': row.get('property_classification_reference_number'),
+                      'item_name': row.get('item_name'), 'income': row.get('income'),
+                      'expense': row.get('expense'), 'remaining': row.get('remaining'),
                       'remarks': row.get('remarks'), 'yearly_report': obj}
             submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
             if not created:
