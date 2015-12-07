@@ -355,6 +355,16 @@ def get_next_voucher_no(cls, attr):
         return 1
 
 
+def get_next_voucher_no_for_fy(cls, attr):
+    from django.db.models import Max
+
+    max_voucher_no = cls.objects.fiscal_year().aggregate(Max(attr))[attr + '__max']
+    if max_voucher_no:
+        return max_voucher_no + 1
+    else:
+        return 1
+
+
 class Demand(models.Model):
     release_no = models.IntegerField()
     demandee = models.ForeignKey(User, related_name='demands')
@@ -369,7 +379,7 @@ class Demand(models.Model):
     def __init__(self, *args, **kwargs):
         super(Demand, self).__init__(*args, **kwargs)
         if not self.pk and not self.release_no:
-            self.release_no = get_next_voucher_no(Demand, 'release_no')
+            self.release_no = get_next_voucher_no_for_fy(Demand, 'release_no')
 
     def __str__(self):
         return unicode(self.release_no)
