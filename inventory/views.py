@@ -369,12 +369,13 @@ def remove_transaction_duplicate_for_yearly_report(object):
 
 
 def yearly_report(request):
-    fiscal_year = request.GET.get('year')
+    year = request.GET.get('year')
+    fiscal_year = FiscalYear.get(year)
     obj = Transaction.objects.filter(cr_amount=None, \
-        journal_entry__date__gte=FiscalYear.start(fiscal_year), journal_entry__date__lte=FiscalYear.end(fiscal_year))
+        journal_entry__date__gte=FiscalYear.start(year), journal_entry__date__lte=FiscalYear.end(year))
     transaction_without_duplication = remove_transaction_duplicate_for_yearly_report(obj)
     data = TransactionSerializer(transaction_without_duplication, many=True).data
-    return render(request, 'yearly_report.html', {'data': data, 'fiscal_year': fiscal_year})
+    return render(request, 'yearly_report.html', {'data': data, 'fiscal_year': fiscal_year, 'year': year})
 
 
 def yearly_report_list(request):
