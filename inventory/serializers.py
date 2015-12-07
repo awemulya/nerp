@@ -288,6 +288,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     total_dr_amount = serializers.ReadOnlyField()
     total_dr_amount_without_rate = serializers.ReadOnlyField()
     depreciation = DepreciationSerializer(source="account.item.depreciation")
+    entry_date = serializers.ReadOnlyField(source='journal_entry.date')
 
     class Meta:
         model = Transaction

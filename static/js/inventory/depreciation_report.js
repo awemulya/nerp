@@ -6,7 +6,7 @@ $(document).ready(function () {
 
 function DepreciationVM(data) {
     var self = this;
-	self.table_view = new TableViewModel({rows: data}, DepreciationRow);
+    self.table_view = new TableViewModel({rows: data}, DepreciationRow);
 
 
     self.save = function (item, event) {
@@ -48,8 +48,12 @@ function DepreciationRow(row) {
         if (row[k] != null)
             self[k] = ko.observable(row[k]);
     }
-    self.price = ko.computed(function() {
+    self.price = ko.computed(function () {
         return self.total_dr_amount() * self.rate()
     });
     self.depreciate = ko.toJS(self.depreciation())
+
+    self.current_value = ko.computed(function () {
+        return 123;
+    });
 }
