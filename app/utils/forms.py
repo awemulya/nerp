@@ -143,6 +143,13 @@ class KOModelForm(forms.ModelForm):
                 widget.attrs['class'] += ' form-control'
             else:
                 widget.attrs['class'] = 'form-control'
+            if hasattr(self.Meta, 'localize'):
+                if name in self.Meta.localize:
+                    widget.attrs['data-bind'] += ', localize: true'
+                    if 'class' in widget.attrs:
+                        widget.attrs['class'] += ' localize'
+                    else:
+                        widget.attrs['class'] = 'localize'
 
 
 class UserModelChoiceField(forms.ModelChoiceField):
@@ -187,6 +194,7 @@ def form_view(some_func):
         })
 
     return inner
+
 
 class HTML5ModelForm(forms.ModelForm):
     required_css_class = 'required'

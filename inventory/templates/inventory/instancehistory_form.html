@@ -1,7 +1,7 @@
 {% extends "inventory_base.html" %}
 {% load i18n pagination_tags filters %}
 
-{% block title %}{{ object }}{% endblock %}
+{% block title %}{{ form.instance.instance }}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}

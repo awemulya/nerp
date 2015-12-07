@@ -50,7 +50,7 @@ function init_selectize($select) {
             } else {
                 name = 'Object';
             }
-        }else if ($select.$input[0].name) {
+        } else if ($select.$input[0].name) {
             name = $select.$input[0].name.toTitleCase();
         } else {
             name = 'Object';
@@ -1146,7 +1146,7 @@ function empty_to_zero(o) {
 }
 
 function round2(n) {
-    if (n == 0){
+    if (n == 0) {
         return 0;
     }
     return isAN(n) ? Math.round(n * 100) / 100 : '';
@@ -1173,7 +1173,7 @@ Object.size = function (obj) {
 };
 
 get_by_id = function (array, id) {
-    if (!array){
+    if (!array) {
         return null;
     }
     if (typeof(array) == 'function') {
@@ -1561,3 +1561,12 @@ function HashTable() {
     }
 
 }
+
+$(document).ready(function () {
+    $('.localize').each(function (el) {
+        $(this).val(localize($(this).val(), window.lang));
+        $(this).on('change', function () {
+            $(this).val(localize($(this).val(), window.lang));
+        });
+    })
+});

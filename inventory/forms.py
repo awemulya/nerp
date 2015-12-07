@@ -60,6 +60,7 @@ class ItemForm(KOModelForm):
     class Meta:
         model = Item
         exclude = ['account', 'code', 'category', 'other_properties', 'depreciation']
+        localize= ['property_classification_reference_number', 'account_no']
 
 
 class CategoryForm(KOModelForm):
@@ -141,6 +142,10 @@ class InstanceHistoryForm(KOModelForm):
         model = InstanceHistory
         exclude = ['instance', 'from_location', 'from_user']
         fields = '__all__'
+        localize = ['date']
+        # widgets = {
+        #     'date': forms.TextInput(attrs={'data-bind': 'value:date, localize: true'})
+        # }
 
 class ExpenseForm(KOModelForm):
     class Meta:

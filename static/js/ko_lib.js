@@ -190,8 +190,8 @@ ko.bindingHandlers.localize = {
                 accessor(value);
             }
         }
-        if (typeof valueAccessor() == 'number'){
-            if (isAN(value)){
+        if (typeof valueAccessor() == 'number') {
+            if (isAN(value)) {
                 original_text = parseFloat(value).toFixed(valueAccessor());
             }
         }
