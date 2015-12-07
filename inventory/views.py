@@ -372,7 +372,8 @@ def yearly_report(request):
     year = request.GET.get('year')
     fiscal_year = FiscalYear.get(year)
     obj = Transaction.objects.filter(cr_amount=None, \
-        journal_entry__date__gte=FiscalYear.start(year), journal_entry__date__lte=FiscalYear.end(year))
+                                     journal_entry__date__gte=FiscalYear.start(year),
+                                     journal_entry__date__lte=FiscalYear.end(year))
     transaction_without_duplication = remove_transaction_duplicate_for_yearly_report(obj)
     data = TransactionSerializer(transaction_without_duplication, many=True).data
     return render(request, 'yearly_report.html', {'data': data, 'fiscal_year': fiscal_year, 'year': year})
@@ -509,7 +510,8 @@ def inspection_report(request):
         date = string_from_tuple(date)
     transaction_without_duplication = remove_transaction_duplicate(obj)
     data = TransactionSerializer(transaction_without_duplication, many=True).data
-    return render(request, 'inspection_report.html', {'obj': transaction_without_duplication, 'data': data, 'inspection_date': date})
+    return render(request, 'inspection_report.html',
+                  {'obj': transaction_without_duplication, 'data': data, 'inspection_date': date})
 
 
 @group_required('Store Keeper', 'Chief')
@@ -626,7 +628,8 @@ def save_inspection_report(request):
 
 
 def depreciation_report(request):
-    obj = Transaction.objects.filter(account__item__depreciation__depreciate_value__gte=0, cr_amount=None)
+    obj = Transaction.objects.filter(account__item__depreciation__depreciate_value__gt=0, cr_amount=None,
+                                     account__item__type='non-consumable')
     transaction_without_duplication = remove_transaction_duplicate(obj)
     # depreciate_object_list = []
     # for depreciate in transaction_without_duplication:

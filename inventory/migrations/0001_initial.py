@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
             name='Depreciation',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('depreciate_type', models.CharField(default=b'Fixed percentage', max_length=25, choices=[(b'Fixed percentage', 'Fixed percentage'), (b'Compounded percentage', 'Compounded percentage'), (b'Fixed price', 'Fixed price')])),
+                ('depreciate_type', models.CharField(default=b'Fixed percentage', max_length=25, choices=[(b'Fixed percentage', 'Fixed percentage'), (b'Compound percentage', 'Compound percentage'), (b'Fixed price', 'Fixed price')])),
                 ('depreciate_value', models.PositiveIntegerField(default=0)),
                 ('time', models.PositiveIntegerField(default=0)),
                 ('time_type', models.CharField(default=b'years', max_length=8, choices=[(b'days', 'Day(s)'), (b'months', 'Month(s)'), (b'years', 'Year(s)')])),

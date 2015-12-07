@@ -511,7 +511,7 @@ msgid "Fixed percentage"
 msgstr "निर्धारित प्रतिशत"
 
 #: inventory/models.py:158
-msgid "Compounded percentage"
+msgid "Compound percentage"
 msgstr "संयुक्त प्रतिशत"
 
 #: inventory/models.py:158

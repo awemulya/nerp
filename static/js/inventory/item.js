@@ -34,7 +34,7 @@ function DepreciationVM(data) {
         self.id = ko.observable('')
     } 
     self.postfix = ko.computed( function () {
-            if (self.depreciate_type() == 'Fixed percentage' || self.depreciate_type() == 'Compounded percentage'){
+            if (self.depreciate_type() == 'Fixed percentage' || self.depreciate_type() == 'Compound percentage'){
                 return '%'
             } else {
                 return '/-'

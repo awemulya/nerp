@@ -1570,3 +1570,7 @@ $(document).ready(function () {
         });
     })
 });
+
+var unilarize = function (str) {
+    return str.substring(0, str.length - 1) + '(s)';
+}

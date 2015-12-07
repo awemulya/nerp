@@ -23,51 +23,56 @@
         <table class="table table-striped table-bordered">
             <thead>
             <tr>
+                <th rowspan="2">{% trans "Item's Name" %}</th>
                 <th rowspan='2'>{% trans 'SN' %}</th>
                 <th rowspan='2'>{% trans 'Inventory Account Page No.' %}</th>
                 <th rowspan="2">{% trans 'Inventory Classification Reference No.' %}</th>
-                <th rowspan="2">{% trans "Item's Name" %}</th>
                 <th colspan='4'>{% trans "Description" %}</th>
-                <th colspan='2'>{% trans "Depreciation" %}</th>
-                <th colspan='3'>{% trans "While reviewing physical state" %}</th>
-                <th colspan='2'>{% trans "Physical condition" %}</th>
-                <th rowspan='2'>{% trans "Remarks" %}</th>
+                <th colspan='3'>{% trans "Depreciation" %}</th>
+                <th>{% trans "Current Value" %}</th>
+{#                <th colspan='2'>{% trans "Physical condition" %}</th>#}
+{#                <th rowspan='2'>{% trans "Remarks" %}</th>#}
             </tr>
             <tr>
                 <th>{% trans "Unit" %}</th>
                 <th>{% trans "Quantity" %}</th>
                 <th>{% trans "Rate" %}</th>
                 <th>{% trans "Price" %}</th>
-                <th>{% trans "Depreciation Type" %}</th>
-                <th>{% trans "Depreciation Value" %}</th>
+                <th>{% trans "Type" %}</th>
+                <th>{% trans "Value" %}</th>
                 <th>{% trans "Time" %}</th>
-                <th>{% trans "Time value" %}</th>
-                <th>{% trans "Decrement" %}/{% trans "Increment" %} {% trans "Price" %}</th>
-                <th>{% trans "Good" %}</th>
-                <th>{% trans "Bad" %}</th>
+                <th>{% trans "Current Value" %}</th>
+{#                <th>{% trans "Decrement" %}/{% trans "Increment" %} {% trans "Price" %}</th>#}
+{#                <th>{% trans "Good" %}</th>#}
+{#                <th>{% trans "Bad" %}</th>#}
             </tr>
             </thead>
             <tbody>
             <!-- ko foreach: rows -->
             <tr>
                 <td data-bind="text: $index()+1, localize: true"></td>
-
+                <td data-bind="text: item_name" class="item_name"></td>
                 <td data-bind="text: account_no"></td>
                 <td data-bind="text: inventory_classification_reference_no"></td>
-                <td data-bind="text: item_name" class="item_name"></td>
+
                 <td data-bind="text: unit"></td>
                 <td data-bind="text: total_dr_amount"></td>
                 <td data-bind="text: rate"></td>
                 <td data-bind="text: price"></td>
                 <!-- ko with: depreciation -->
                 <td data-bind="text: depreciate_type"></td>
-                <td data-bind="text: depreciate_value"></td>
-                <td data-bind="text: time"></td>
-                <td data-bind="text: time_type"></td>
-                <td data-bind="text: time_type"></td>
-                <td data-bind="text: time_type"></td>
-                <td data-bind="text: time_type"></td>
-                <td data-bind="text: time_type"></td>
+                <td>
+                    <span data-bind="text: depreciate_value"></span>
+                    <span data-bind="visible: (depreciate_type == 'Fixed percentage' || depreciate_type == 'Compound percentage')">%</span>
+                </td>
+                <td>
+                    <span data-bind="text: time"></span>
+                    <span data-bind="text: unilarize(time_type)"></span>
+                </td>
+                <td data-bind="text: current_value"></td>
+{#                <td data-bind="text: time_type"></td>#}
+{#                <td data-bind="text: time_type"></td>#}
+{#                <td data-bind="text: time_type"></td>#}
                 <!-- /ko -->
             </tr>
             <!-- /ko -->
