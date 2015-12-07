@@ -12,6 +12,13 @@
 
 
 {% block content %}
+
+    {% trans "Yearly report according to fiscal year" %} 
+    {% get_fiscal_years as fiscal_years %}
+    {% for fiscal_year in fiscal_years %}
+        | <a href="{% url "yearly_report" %}?year={{ fiscal_year.year }}">{{ fiscal_year }}</a>
+    {% endfor %}
+    <br><br>
  {% load pagination_tags %}
     {% load sorting_tags %}
    
@@ -35,7 +42,7 @@
 
     {% paginate %}
  
-  <a class="btn btn-default btn-lg"
-       href="{% url 'yearly_report' %}">{% trans 'New' %} {% trans 'Yearly' %} {% trans 'Report' %}</a>
+  <!--a class="btn btn-default btn-lg"
+       href="{% url 'yearly_report' %}">{% trans 'New' %} {% trans 'Yearly' %} {% trans 'Report' %}</a-->
 {% endblock %}
   

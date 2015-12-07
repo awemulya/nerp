@@ -38,6 +38,7 @@ from inventory.serializers import QuotationComparisonSerializer, DepreciationSer
     PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
     TransactionSerializer, ItemLocationSerializer
+from django.db import IntegrityError
 
 
 def list_transactions(request):
@@ -368,10 +369,12 @@ def remove_transaction_duplicate_for_yearly_report(object):
 
 
 def yearly_report(request):
-    obj = Transaction.objects.filter(cr_amount=None)
+    fiscal_year = request.GET.get('year')
+    obj = Transaction.objects.filter(cr_amount=None, \
+        journal_entry__date__gte=FiscalYear.start(fiscal_year), journal_entry__date__lte=FiscalYear.end(fiscal_year))
     transaction_without_duplication = remove_transaction_duplicate_for_yearly_report(obj)
     data = TransactionSerializer(transaction_without_duplication, many=True).data
-    return render(request, 'yearly_report.html', {'data': data})
+    return render(request, 'yearly_report.html', {'data': data, 'fiscal_year': fiscal_year})
 
 
 def yearly_report_list(request):
@@ -418,7 +421,7 @@ def save_yearly_report(request):
     if request.is_ajax():
         params = json.loads(request.body)
     dct = {'rows': {}}
-    object_values = {'fiscal_year': FiscalYear.get(app_setting.fiscal_year)}
+    object_values = {'fiscal_year': FiscalYear.get(params.get('fiscal_year'))}
     if params.get('id'):
         obj = YearlyReport.objects.get(id=params.get('id'))
     else:
@@ -438,6 +441,8 @@ def save_yearly_report(request):
                 submodel = save_model(submodel, values)
             dct['rows'][index] = submodel.id
         delete_rows(params.get('table_view').get('deleted_rows'), model)
+    except IntegrityError as e:
+        dct['error_message'] = 'Yearly report with this fiscal year already exists'
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
