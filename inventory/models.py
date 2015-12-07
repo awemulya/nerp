@@ -696,7 +696,7 @@ class InspectionRow(models.Model):
 
 
 class YearlyReport(models.Model):
-    fiscal_year = models.ForeignKey(FiscalYear)
+    fiscal_year = models.OneToOneField(FiscalYear)
 
 
 class YearlyReportRow(models.Model):

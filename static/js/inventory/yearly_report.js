@@ -1,12 +1,13 @@
 $(document).ready(function () {
-    vm = new YearlyReportVM(ko_data);
+    vm = new YearlyReportVM(ko_data, fiscal_year);
     ko.applyBindings(vm);
     $('.change-on-ready').trigger('change');
 });
 
-function YearlyReportVM(data) {
+function YearlyReportVM(data, fiscal_year) {
 
     var self = this;
+    self.fiscal_year = ko.observable(fiscal_year)
     self.id = ko.observable();
 
     self.table_view = new TableViewModel({rows: data}, YearlyReportRow);
