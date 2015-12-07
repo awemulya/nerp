@@ -772,8 +772,8 @@ class ItemInstance(models.Model):
 class InstanceHistory(models.Model):
     instance = models.ForeignKey(ItemInstance)
     date = BSDateField(default=today, validators=[validate_in_fy], verbose_name=_('Date'))
-    from_location = models.ForeignKey(ItemLocation, related_name='from_history', verbose_name=_('From Location'), null=True)
-    to_location = models.ForeignKey(ItemLocation, related_name='to_history', null=True, blank=True, verbose_name=_('To Location'))
+    from_location = models.ForeignKey(ItemLocation, related_name='from_history', verbose_name=_('From Location'))
+    to_location = models.ForeignKey(ItemLocation, related_name='to_history', null=True, verbose_name=_('To Location'))
     from_user = models.ForeignKey(User, related_name='from_history', null=True, blank=True, verbose_name=_('From User'))
     to_user = models.ForeignKey(User, related_name='to_history', null=True, blank=True, verbose_name=_('To User'))
 
