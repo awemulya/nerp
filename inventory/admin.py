@@ -3,8 +3,20 @@ from django.contrib import admin
 from models import Item, InventoryAccount, EntryReport, EntryReportRow, Demand, Inspection, DemandRow, InspectionRow, \
     YearlyReport, YearlyReportRow, \
     ItemLocation, ItemInstance, PartyQuotation, Release, Transaction, JournalEntry, QuotationComparison, QuotationComparisonRow, \
-    PurchaseOrder, PurchaseOrderRow, Depreciation, InventoryAccountRow, InstanceHistory
+    PurchaseOrder, PurchaseOrderRow, Depreciation, InventoryAccountRow, InstanceHistory, Handover, HandoverRow
 
+
+class HandoverRowInline(admin.TabularInline):
+    model = HandoverRow
+
+
+class HandoverAdmin(admin.ModelAdmin):
+    list_display = ('voucher_no', 'office', 'handed_to')
+    list_display_links = ('voucher_no',)
+    list_filter = ('office',)
+    inlines = [
+        HandoverRowInline,
+    ]
 
 class DemandRowInline(admin.TabularInline):
     model = DemandRow
@@ -172,3 +184,5 @@ admin.site.register(QuotationComparison, QuotationComparisonAdmin)
 admin.site.register(QuotationComparisonRow, QuotationComparisonRowAdmin)
 admin.site.register(InventoryAccountRow)
 admin.site.register(InstanceHistory)
+admin.site.register(Handover, HandoverAdmin)
+admin.site.register(HandoverRow)

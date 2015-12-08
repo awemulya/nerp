@@ -16,6 +16,15 @@
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
 
+    <a href="{% url "list_handovers" %}">{% trans "Current Fiscal Year's" %} {% trans 'Handover' %}</a>
+    |
+    <a href="{% url "list_handovers" %}?year=all">{% trans 'All' %} {% trans 'Handover' %}</a>
+    {% get_fiscal_years as fiscal_years %}
+    {% for fiscal_year in fiscal_years %}
+        | <a href="{% url "list_handovers" %}?year={{ fiscal_year.year }}">{{ fiscal_year }}</a>
+    {% endfor %}
+    <br/><br/>
+
     <table class="table table-striped table-bordered">
         <thead>
         <th>{% anchor voucher_no _('Form No.') %}</th>

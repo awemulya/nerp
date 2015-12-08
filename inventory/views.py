@@ -1149,7 +1149,13 @@ def save_purchase_order(request):
 
 @group_required('Store Keeper', 'Chief')
 def list_purchase_orders(request):
-    objects = PurchaseOrder.objects.all()
+    if request.GET.get('year'):
+        if request.GET.get('year') == 'all':
+            objects = PurchaseOrder.objects.all()
+        else:
+            objects = PurchaseOrder.objects.fiscal_year(request.GET.get('year'))
+    else:
+        objects = PurchaseOrder.objects.fiscal_year()
     return render(request, 'list_purchase_orders.html', {'objects': objects})
 
 
@@ -1297,7 +1303,13 @@ def list_incoming_handovers(request):
 
 @group_required('Store Keeper', 'Chief')
 def list_handovers(request):
-    objects = Handover.objects.all()
+    if request.GET.get('year'):
+        if request.GET.get('year') == 'all':
+            objects = Handover.objects.all()
+        else:
+            objects = Handover.objects.fiscal_year(request.GET.get('year'))
+    else:
+        objects = Handover.objects.fiscal_year()
     return render(request, 'list_handovers.html', {'objects': objects})
 
 
