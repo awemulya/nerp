@@ -392,8 +392,14 @@ def yearly_report_detail(request, id):
 
 
 def quotation_report_list(request):
-    obj = QuotationComparison.objects.all()
-    return render(request, 'list_quotation_report.html', {'objects': obj})
+    if request.GET.get('year'):
+        if request.GET.get('year') == 'all':
+            objects = QuotationComparison.objects.all()
+        else:
+            objects = QuotationComparison.objects.fiscal_year(request.GET.get('year'))
+    else:
+        objects = QuotationComparison.objects.fiscal_year()
+    return render(request, 'list_quotation_report.html', {'objects': objects})
 
 
 def quotation_report(request, id=None):
@@ -491,8 +497,14 @@ def save_yearly_report_detail(request):
 
 
 def inspection_report_list(request):
-    obj = Inspection.objects.all()
-    return render(request, 'inspection_list.html', {'obj': obj})
+    if request.GET.get('year'):
+        if request.GET.get('year') == 'all':
+            objects = Inspection.objects.all()
+        else:
+            objects = Inspection.objects.fiscal_year(request.GET.get('year'))
+    else:
+        objects = Inspection.objects.fiscal_year()
+    return render(request, 'inspection_list.html', {'obj': objects})
 
 
 def inspection_report_detail(request, id):

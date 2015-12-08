@@ -694,7 +694,9 @@ class Inspection(models.Model):
     report_no = models.IntegerField()
     date = BSDateField(default=today, validators=[validate_in_fy])
     # transaction = models.ForeignKey(Transaction, related_name='inspection')
-  
+    
+    objects = FYManager()
+    
     @property
     def fiscal_year(self):
         return FiscalYear.from_date(self.date)
