@@ -524,6 +524,13 @@ class Handover(models.Model):
     entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
                                     object_id_field='source_object_id')
 
+    objects = FYManager()
+
+    def __init__(self, *args, **kwargs):
+        super(Handover, self).__init__(*args, **kwargs)
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no_for_fy(self.__class__, 'voucher_no')
+
     @property
     def fiscal_year(self):
         return FiscalYear.from_date(self.date)
@@ -581,6 +588,13 @@ class PurchaseOrder(models.Model):
     due_days = models.IntegerField(default=3)
     entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
                                     object_id_field='source_object_id')
+
+    objects = FYManager()
+
+    def __init__(self, *args, **kwargs):
+        super(PurchaseOrder, self).__init__(*args, **kwargs)
+        if not self.pk and not self.order_no:
+            self.order_no = get_next_voucher_no_for_fy(self.__class__, 'order_no')
 
     @property
     def fiscal_year(self):
@@ -680,7 +694,7 @@ class Inspection(models.Model):
     report_no = models.IntegerField()
     date = BSDateField(default=today, validators=[validate_in_fy])
     # transaction = models.ForeignKey(Transaction, related_name='inspection')
-
+  
     @property
     def fiscal_year(self):
         return FiscalYear.from_date(self.date)
@@ -731,6 +745,13 @@ class YearlyReportRow(models.Model):
 class QuotationComparison(models.Model):
     report_no = models.IntegerField()
     date = BSDateField(default=today, validators=[validate_in_fy], blank=True, null=True)
+
+    objects = FYManager()
+
+    def __init__(self, *args, **kwargs):
+        super(QuotationComparison, self).__init__(*args, **kwargs)
+        if not self.pk and not self.report_no:
+            self.report_no = get_next_voucher_no_for_fy(self.__class__, 'report_no')
 
     @property
     def fiscal_year(self):
