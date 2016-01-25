@@ -241,7 +241,7 @@ class TaxScheme(models.Model):
 
 def validate_in_fy(value):
     fiscal_year = app_setting.fiscal_year
-    if fiscal_year == None:
+    if fiscal_year is None:
         return True
     fiscal_year_start = str(fiscal_year) + '-04-01'
     fiscal_year_end = str(int(fiscal_year) + 1) + '-03-' + str(bs[int(fiscal_year) + 1][2])

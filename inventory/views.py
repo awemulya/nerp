@@ -1116,13 +1116,13 @@ def save_purchase_order(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         model = PurchaseOrderRow
-        for index, row in enumerate(params.get('table_view').get('rows')):
+        for ind, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['quantity', 'unit', 'rate', 'item_id']):
                 continue
             # else:
             if row.get('budget_title_no') == '':
                 row['budget_title_no'] = None
-            values = {'sn': index + 1, 'item_id': row.get('item_id'),
+            values = {'sn': ind + 1, 'item_id': row.get('item_id'),
                       'specification': row.get('specification'), 'rate': row.get('rate'),
                       'quantity': row.get('quantity'), 'unit': row.get('unit'), 'vattable': row.get('vattable'),
                       'budget_title_no': row.get('budget_title_no'), 'remarks': row.get('remarks'),
@@ -1135,7 +1135,7 @@ def save_purchase_order(request):
             # )
             if not created:
                 submodel = save_model(submodel, values)
-            dct['rows'][index] = submodel.id
+            dct['rows'][ind] = submodel.id
         delete_rows(params.get('table_view').get('deleted_rows'), model)
     except Exception as e:
         if hasattr(e, 'messages'):
