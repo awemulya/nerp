@@ -117,3 +117,5 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
+
+FROALA_INCLUDE_JQUERY = False
