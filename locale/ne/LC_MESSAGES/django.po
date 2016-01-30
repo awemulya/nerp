@@ -651,9 +651,8 @@ msgstr "खर्च"
 msgid "Inventory Items"
 msgstr "जिन्सी सामानहरु"
 
-#: inventory/templates/_dashboard_inventory.html:6
-msgid "Create Inventory Item"
-msgstr "नयाँ जिन्सी सामान"
+msgid "Create Item"
+msgstr "नयाँ सामान"
 
 #: inventory/templates/_dashboard_inventory.html:16
 #: inventory/templates/_dashboard_inventory.html:67
