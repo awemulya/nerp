@@ -1615,3 +1615,17 @@ class ExpenseCreate(CreateView):
 class ExpenseUpdate(CreateView):
     model = Expense
     form_class = ExpenseForm
+
+
+from easy_pdf.views import PDFTemplateView
+
+
+class LedgersPDFView(PDFTemplateView):
+    template_name = "pdf/ledgers.html"
+
+    def get_context_data(self, **kwargs):
+        return super(LedgersPDFView, self).get_context_data(
+            pagesize="A4",
+            title= _('Inventory Ledgers'),
+                  ** kwargs
+        )

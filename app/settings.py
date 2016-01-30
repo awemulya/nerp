@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     'haystack',
     'dbsettings',
     'sorl.thumbnail',
+    'easy_pdf',
     'njango',
 
     'users',
