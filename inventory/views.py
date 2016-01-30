@@ -1349,7 +1349,7 @@ def purchase_entry_report(request, id=None):
         report = source.get_entry_report()
         object_data = EntryReportSerializer(report).data
     else:
-        report = EntryReport()
+        report = EntryReport(date=source.date)
         object_data = EntryReportSerializer(report).data
         # report.fiscal_year = source.fiscal_year
         report.source = source
@@ -1382,7 +1382,8 @@ def save_entry_report(request):
         source = Handover.objects.get(id=params.get('source_id'))
     else:
         source = PurchaseOrder.objects.get(id=params.get('source_id'))
-    object_values = {'entry_report_no': empty_to_none(params.get('entry_report_no')), 'source': source}
+    object_values = {'date': params.get('date'), 'entry_report_no': empty_to_none(params.get('entry_report_no')),
+                     'source': source}
     if params.get('id'):
         obj = EntryReport.objects.get(id=params.get('id'))
     else:

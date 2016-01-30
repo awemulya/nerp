@@ -465,6 +465,7 @@ class DemandRow(models.Model):
 
 class EntryReport(models.Model):
     entry_report_no = models.PositiveIntegerField(blank=True, null=True)
+    date = BSDateField(default=today, validators=[validate_in_fy])
     source_content_type = models.ForeignKey(ContentType)
     source_object_id = models.PositiveIntegerField()
     source = GenericForeignKey('source_content_type', 'source_object_id')
