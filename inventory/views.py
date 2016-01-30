@@ -923,7 +923,10 @@ def delete_category(request, id):
 @login_required
 def demand_form(request, id=None):
     if id:
-        obj = get_object_or_404(Demand, id=id)
+        if request.user.in_group('Store Keeper') or request.user.in_group('Chief'):
+            obj = get_object_or_404(Demand, id=id)
+        else:
+            obj = get_object_or_404(Demand, id=id, demandee=request.user)
         scenario = 'Update'
     else:
         obj = Demand(demandee=request.user)
