@@ -582,6 +582,13 @@ class PurchaseOrder(models.Model):
     entry_reports = GenericRelation(EntryReport, content_type_field='source_content_type_id',
                                     object_id_field='source_object_id')
 
+    objects = FYManager()
+
+    def __init__(self, *args, **kwargs):
+        super(PurchaseOrder, self).__init__(*args, **kwargs)
+        if not self.pk and not self.order_no:
+            self.order_no = get_next_voucher_no_for_fy(self.__class__, 'order_no')
+
     @property
     def fiscal_year(self):
         return FiscalYear.from_date(self.date)
