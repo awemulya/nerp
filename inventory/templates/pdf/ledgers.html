@@ -1,19 +1,62 @@
-{% extends "easy_pdf/base.html" %}
+{% extends "pdf_base.html" %}
+
+{% load i18n filters static %}
 
 {% block extra_style %}
     <style type="text/css">
-{#        @font-face { font-family: Lato; src: url(fonts/Lato-Reg.ttf); }#}
-        body {
-            font-family: "Lato", "Helvetica", "sans-serif";
-            color: #333333;
+        
+
+        *, html {
+            font-family: 'FreeSans';
         }
+        
+        @font-face {
+            font-family: CODE2000;
+            src: url({% static 'fonts/CODE2000.TTF' %})
+        }
+
+        @font-face {
+            font-family: FreeSans;
+            src: url({% static 'fonts/FreeSans.ttf' %});
+        }
+
+        @font-face {
+            font-family: "DejaVu Sans";
+            src: url({% static 'fonts/DejaVuSans.ttf' %});
+        }
+
+        @font-face {
+            font-family: "Mangal";
+            src: url({% static 'fonts/mangal.ttf' %});
+        }
+
     </style>
 {% endblock %}
 
 {% block content %}
-    <div id="content">
-        <div class="main">
-            <h1>Hi there!</h1>
-        </div>
-    </div>
+
+    <h1>गृह जिन्सी जिन्सी खाताहरु</h1>
+    <table class="table table-striped table-bordered">
+        <thead>
+        <th>{% trans 'Account No' %}</th>
+        <th>{% trans 'Name' %}</th>
+        <th>{% trans 'Type' %}</th>
+        </thead>
+        <tbody>
+        {% for obj in ledgers %}
+            <tr>
+                <td>
+                    {{ obj.account_no|localize }}
+                </td>
+                <td>
+                    {{ obj.item.name }}
+                </td>
+                <td>
+                    {{ obj.item.get_type_display }}
+                </td>
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
