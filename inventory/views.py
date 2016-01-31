@@ -1642,7 +1642,7 @@ class ExpenseUpdate(CreateView):
 
 
 from easy_pdf.views import PDFTemplateView
-from django.views.generic import TemplateView as PDFTemplateView
+from django.views.generic import TemplateView
 
 
 class LedgersPDFView(PDFTemplateView):
@@ -1650,6 +1650,17 @@ class LedgersPDFView(PDFTemplateView):
 
     def get_context_data(self, **kwargs):
         return super(LedgersPDFView, self).get_context_data(
+            pagesize="A4",
+            title=_('Inventory Ledgers'),
+            ledgers = InventoryAccount.objects.all(),
+            **kwargs
+        )
+
+class LedgersView(TemplateView):
+    template_name = "pdf/ledgers.html"
+
+    def get_context_data(self, **kwargs):
+        return super(LedgersView, self).get_context_data(
             pagesize="A4",
             title=_('Inventory Ledgers'),
             ledgers = InventoryAccount.objects.all(),
