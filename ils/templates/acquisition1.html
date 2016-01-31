@@ -17,7 +17,7 @@
 {% block content %}
 <form class="isbn-form" method="get" action="{% url 'acq' %}">
     
-    <label id="id_isbn13" class="record-isbn13">ISBN</label>
+    <label id="id_isbn13" class="record-isbn13">{% trans "ISBN" %}</label>
     {{ rr_form.isbn13 }}
     <input type="submit" class="btn btn-default" value="Get">
     
@@ -108,24 +108,24 @@
     </div>
     <div class="row">
         <div class="col-lg-4">
-            <label>LCC</label>
+            <label>{% trans "LCC" %}</label>
             {{ rr_form.lcc.errors }}
             {{ rr_form.lcc}}
         </div>
         <div class="col-lg-8">
-            <label>DDC</label>
+            <label>{% trans "DDC" %}</label>
             {{ rr_form.ddc.errors }}
             {{ rr_form.ddc}}
         </div>
     </div>
     <div class="row">
         <div class="col-lg-4">
-            <label>LCCN ID</label>
+            <label>{% trans "LCCN ID" %}</label>
             {{ rr_form.lccn_id.errors }}
             {{ rr_form.lccn_id}}
         </div>
         <div class="col-lg-8">
-            <label>OCLC ID</label>
+            <label>{% trans "OCLC ID" %}</label>
             {{ rr_form.oclc_id.errors }}
             {{ rr_form.oclc_id }}
         </div>
@@ -134,7 +134,7 @@
     {% if rr_form.isbn13.value %}
         <div class="row" hidden>
             <div class="col-lg-12">
-                <label>ISBN</label>
+                <label>{% trans "ISBN" %}</label>
                 {{ rr_form.isbn13.errors }}
                 {{ rr_form.isbn13 }}
             </div>
@@ -142,7 +142,7 @@
     {% else %}
         <div class="row">
             <div class="col-lg-12">
-                <label>ISBN</label>
+                <label>{% trans "ISBN" %}</label>
                 {{ rr_form.isbn13.errors }}
                 {{ rr_form.isbn13 }}
             </div>
@@ -187,7 +187,7 @@
     {% if api_has_cover%}
     <div class="row">
         <div data-alert class="alert-box success">
-            <label>Note: API has cover. If you specify your own cover, covers from the api will be replaced</label> 
+            <label>{% trans "Note: API has cover. If you specify your own cover, covers from the api will be replaced" %}</label> 
             <a href="#" class="close">&times;</a>
         </div>
     </div>

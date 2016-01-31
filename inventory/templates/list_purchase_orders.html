@@ -32,7 +32,6 @@
         <th>{% anchor order_no _('Order No.') %}</th>
         <th>{% anchor party _('Party') %}</th>
         <th>{% anchor date _('Date') %}</th>
-        {#        <th>{% anchor status %}</th>#}
         </thead>
         <tbody>
         {% for item in paginated_objects %}
@@ -47,8 +46,6 @@
                 <td>
                     {{ item.date|localize }}
                 </td>
-                {#                <td>{{ item.purpose }}</td>#}
-                {#                <td>{{ item.status }}</td>#}
             </tr>
         {% endfor %}
         </tbody>

@@ -35,14 +35,12 @@
             <div class="col-lg-6 col-sm-6 selectize-inline">
                 {% trans 'Shree' %} <input type="hidden" class="form-control" name="table_model"
                                            data-bind="value: ko.toJSON($data.demand_rows, null, 2)">
-                {#                <input type="hidden" data-url="{% url 'create_party' %}"#}
-                {#                       data-bind="value: party, select2: $root.parties">#}
                 <select data-bind="selectize: $root.parties, value: party, event: {change: $root.party_changed}"
                         data-url="{% url 'create_party' %}" class="change-on-ready"></select>
                 <br>
                 {% trans 'Address' %}: <span data-bind="text:party_address"></span>
                 <br>
-                VAT/PAN: <span data-bind="text:party_pan_no"></span>
+                {% trans "VAT/PAN" %}: <span data-bind="text:party_pan_no"></span>
                 <br/>
             </div>
 
@@ -108,10 +106,6 @@
                     </td>
                     <td data-bind="editableText: budget_title_no, localize: true"></td>
                     <td>
-                        {#                        <select class="span12 item-selector"#}
-                        {#                                data-bind="options: $root.items, optionsText: 'name', optionsValue: 'id', value: item_id, optionsCaption: 'Choose an item...', select2: {},  event: {change: $root.item_changed}"></select>#}
-                        {#                        <input type="hidden" data-url="{% url 'create_inventory_item' %}"#}
-                        {#                               data-bind="value: item_id, select2: $root.items, event: {change: $root.item_changed}">#}
                         <select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}"
                                 data-url="{% url 'create_inventory_item' %}" data-script="/static/js/inventory/item.js"></select>
                     </td>

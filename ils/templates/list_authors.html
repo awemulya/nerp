@@ -24,15 +24,13 @@
         <thead>
         <tr>
             <th>{% anchor id 'Author' %}</th>
-{#            <th>Books</th>#}
-            <th>Book Editions</th>
+            <th>{% trans "Book Editions" %}</th>
         </tr>
         </thead>
         <tbody>
         {% for obj in paginated_objects %}
             <tr>
                 <td> {{ obj|linkify }}</td>
-{#                <td>{{ obj.record_set.count }}</td>#}
                 <td>{{ obj.record_set.count }}</td>
             </tr>
         {% endfor %}

@@ -20,7 +20,7 @@
 {% block content %}
 
 
-    <a class="btn btn-default btn-lg" href="{% url 'add_patron' %}">+ Add New Patron</a>
+    <a class="btn btn-default btn-lg" href="{% url 'add_patron' %}">+ {% trans "Add New Patron" %}</a>
     <br><br>
     {% autosort patrons as sorted_objects %}
     {% autopaginate sorted_objects 20 as paginated_objects %}
@@ -29,9 +29,9 @@
         <thead>
         <tr>
             <th>{% anchor id 'Patron' %}</th>
-            <th>Total Borrowed</th>
-            <th>Not Returned</th>
-            <th>Past Due</th>
+            <th>{% trans "Total Borrowed" %}</th>
+            <th>{% trans "Not Returned" %}</th>
+            <th>{% trans "Past Due" %}</th>
         </tr>
         </thead>
         <tbody>

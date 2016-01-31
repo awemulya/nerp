@@ -74,8 +74,6 @@
                     <td data-bind="text: account_no(), localize: true"></td>
                     <td data-bind="text: inventory_classification_reference_no(), localize: true"></td>
                     <td>
-                        {#                        <input type="hidden" data-url="{% url 'create_inventory_item' %}" class="change-on-ready"#}
-                        {#                               data-bind="value: item_id, select2: $root.items, event: {change: $root.item_changed}">#}
                         <select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}"
                                 data-url="{% url 'create_inventory_item' %}" data-script="/static/js/inventory/item.js"></select>
                     </td>

@@ -29,8 +29,6 @@
                 <th colspan='5'>{% trans "Description" %}</th>
                 <th colspan='3'>{% trans "Depreciation Rate" %}</th>
                 <th colspan="3">{% trans "Decay" %}</th>
-                {#                <th colspan='2'>{% trans "Physical condition" %}</th>#}
-                {#                <th rowspan='2'>{% trans "Remarks" %}</th>#}
             </tr>
             <tr>
                 <th>{% trans "Entry Date" %}</th>
@@ -68,12 +66,9 @@
                     <span data-bind="text: unilarize(time_type)"></span>
                 </td>
 
-                {#                <td data-bind="text: time_type"></td>#}
-                {#                <td data-bind="text: time_type"></td>#}
-                {#                <td data-bind="text: time_type"></td>#}
                 <!-- /ko -->
                 <td>
-                    <span data-bind="text: decay_duration"></span> days
+                    <span data-bind="text: decay_duration"></span> {% trans "days" %}
                 </td>
                 <td data-bind="text: decay_value(), localize:2"></td>
                 <td data-bind="text: current_value(), localize:2"></td>

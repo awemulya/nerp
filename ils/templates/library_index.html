@@ -12,48 +12,48 @@
         <div>
             <a href="{% url 'list_records' %}">
                 <img src="{% static 'img/icons/book.png' %}">
-                Books</a>
+                {% trans "Books" %}</a>
         </div>
         {% ifusergroup 'Librarian' %}
             <div>
                 <a href="{% url 'list_patrons' %}">
                     <img src="{% static 'img/icons/user.png' %}">
-                    Patrons</a>
+                    {% trans "Patrons" %}</a>
             </div>
         {% endifusergroup %}
         <div>
             <a href="{% url 'list_authors' %}">
                 <img src="{% static 'img/icons/write.png' %}">
-                Authors</a>
+                {% trans "Authors" %}</a>
         </div>
         <div>
             <a href="{% url 'list_publishers' %}">
                 <img src="{% static 'img/icons/print.png' %}">
-                Publishers</a>
+                {% trans "Publishers" %}</a>
         </div>
 
         <div>
             <a href="{% url 'list_ebooks' %}">
                 <img src="{% static 'img/icons/ebook.png' %}" width="150px" height="150px">
-                Ebooks</a>
+                {% trans "Ebooks" %}</a>
         </div>
 
         {% ifusergroup 'Librarian' %}
             <div>
                 <a href="{% url 'list_transactions' %}">
                     <img src="{% static 'img/icons/import.png' %}">
-                    Transactions</a>
+                    {% trans "Transactions" %}</a>
             </div>
 
             <div>
                 <a href="{% url 'acq' %}">
                     <img src="{% static 'img/icons/download.png' %}">
-                    Acquisition</a>
+                    {% trans "Acquisition" %}</a>
             </div>
             <div>
                 <a href="{% url 'outgoing' %}">
                     <img src="{% static 'img/icons/export.png' %}">
-                    Checkout</a>
+                    {% trans "Checkout" %}</a>
             </div>
         {% endifusergroup %}
     </div>

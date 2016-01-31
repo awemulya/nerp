@@ -4,22 +4,17 @@
 {% load staticfiles %}
 {% load thumbnail %}
 
-{% block title %} Search{% endblock %}
+{% block title %} {% trans "Search" %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><span> Search</span></li>
+    <li><span> {% trans "Search" %}</span></li>
 {% endblock %}
 
 {% block content %}
     {{ form.errors }}
 
     <form class="library-search" method="get" action="{% url 'search' %}">
-        {#        {% csrf_token %}#}
-        {#        <p>#}
-        {#            <label for="id_q">Search:</label> <input id="id_q" name="q" value="asd" type="text">#}
-        {#            <input type="submit" value="Search!" class="button">#}
-        {#        </p>#}
 
         {{ form.as_p }}
 
@@ -28,7 +23,7 @@
     </form>
 
     {% if request.GET %}
-        {{ form.search.count }} results
+        {{ form.search.count }} {% trans "results" %}
         <br>
         <ol class="records">
             {% for item in form.search %}
@@ -40,7 +35,6 @@
                                 <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
                                     {% if record.get_small_cover %}
                                         <a href="{{ record.get_absolute_url }}">
-                                            {#                                            <img src="{{ MEDIA_URL }}{{ record.small_cover }}"></a>#}
                                             {% thumbnail record.get_small_cover "40x60" as im %}
                                                 <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
                                             {% endthumbnail %}
@@ -54,17 +48,17 @@
                                     <a href="{{ record.get_absolute_url }}"><h3>{{ record }}</h3></a>
                                     <h5>
                                         {% if record.authors.all %}
-                                            by {% for author in record.authors.all %}
+                                            {% trans "by" %} {% for author in record.authors.all %}
                                             {{ author|linkify }}{% if not forloop.last %}, {% endif %}
                                         {% endfor %}
                                         {% endif %}
                                         {% if record.publisher or record.published_date %}
-                                            Published
+                                            {% trans "Published" %}
                                             {% if record.published_date %}
                                                 {{ record.published_date }}
                                             {% endif %}
                                             {% if record.publisher %}
-                                                by {{ record.publisher|linkify }}
+                                                {% trans "by" %} {{ record.publisher|linkify }}
                                             {% endif %}
                                         {% endif %}
                                     </h5>

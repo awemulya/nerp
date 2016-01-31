@@ -9,7 +9,6 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {#    <a href="{% url "list_demand_forms" %}">{% trans 'Demand' %} {% trans 'Forms' %}</a>#}
     <li><span> {% trans 'Transactions' %}</span></li>
 {% endblock %}
 
@@ -43,7 +42,7 @@
                         {{ transaction.return_date }}
                     {% else %}
 
-                        <a href="{% url 'incoming' transaction_pk=transaction.id %}">Return</a>
+                        <a href="{% url 'incoming' transaction_pk=transaction.id %}">{% trans "Return" %}</a>
                     {% endif %}
                     </td>
                 </tr>

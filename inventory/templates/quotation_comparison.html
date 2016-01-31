@@ -88,10 +88,6 @@
                         <select data-bind="selectize: $root.items, value: item_id, event: {change: $root.item_changed}"
                                 data-url="{% url 'create_inventory_item' %}"
                                 data-script="/static/js/inventory/item.js"></select>
-                        {#                                                <select class="span12 item-selector"#}
-                        {#                                                        data-bind="options: $root.items, optionsText: 'name', optionsValue: 'id', value: item_id, optionsCaption: ' ', event: {change: $root.item_changed}"></select>#}
-                        {#                        <input type="hidden" data-url="{% url 'create_inventory_item' %}" class="change-on-ready"#}
-                        {#                               data-bind="value: item_id, select2: $root.items, event: {change: $root.item_changed}, readOnly: status() != 'Requested'">#}
                     </td>
                     <td data-bind="editableText: specification"></td>
                     <td data-bind="editableText: quantity, numeric: true, localize: true"></td>

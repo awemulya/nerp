@@ -23,7 +23,7 @@
     {% autopaginate sorted_objects 20 as paginated_objects %}
 
     <div class="pull-right">
-        Sort by {% anchor date_of_publication 'Published Date' %} | {% anchor publisher %} |
+        {% trans "Sort by" %} {% anchor date_of_publication 'Published Date' %} | {% anchor publisher %} |
     </div>
 
     <ul class="records">
@@ -47,17 +47,17 @@
                         <a href="{{ record.get_absolute_url }}"><h3>{{ record }}</h3></a>
                         <h5>
                             {% if record.authors.all %}
-                                by {% for author in record.authors.all %}
+                                {% trans "by" %} {% for author in record.authors.all %}
                                 {{ author|linkify }}{% if not forloop.last %}, {% endif %}
                             {% endfor %}
                             {% endif %}
                             {% if record.publisher or record.date_of_publication %}
-                                Published
+                                {% trans "Published" %}
                                 {% if record.date_of_publication %}
                                     {{ record.date_of_publication }}
                                 {% endif %}
                                 {% if record.publisher %}
-                                    by {{ record.publisher|linkify }}
+                                    {% trans "by" %} {{ record.publisher|linkify }}
                                 {% endif %}
                             {% endif %}
                         </h5>

@@ -186,11 +186,11 @@
                         {% ifusergroup 'Store Keeper' 'Chief' %}
                             <button class="btn btn-default"
                                     data-bind="click: approve, visible: $root.id() && status() == 'Requested' && total_release() > 0">
-                                Approve
+                                {% trans "Approve" %}
                             </button>
                             <button class="btn btn-default"
                                     data-bind="click: disapprove, visible: status() == 'Approved'">
-                                Disapprove
+                                {% trans "Disapprove" %}
                             </button>
                             {#                            <button class="btn btn-default"#}
                             {#                                    data-bind="click: function(data, event) { fulfill($root, data, event) }, visible: status() == 'Approved'">#}
@@ -199,11 +199,11 @@
                             {#                            </button>#}
                             <button class="btn btn-default"
                                     data-bind="click: fulfill, visible: status() == 'Approved' && total_release() > 0">
-                                Set as Fulfilled
+                                {% trans "Set as Fulfilled" %}
                             </button>
                             <button class="btn btn-default"
-                                    data-bind="click: unfulfill, visible: status() == 'Fulfilled'">Set
-                                as Unfulfilled
+                                    data-bind="click: unfulfill, visible: status() == 'Fulfilled'">
+                                    {% trans "Set as Unfulfilled" %}
                             </button>
                         {% endifusergroup %}
                     </td>
