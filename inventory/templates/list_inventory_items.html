@@ -50,10 +50,10 @@
         <tbody>
         {% for item in paginated_objects %}
             <tr>
-                <td>
+                <td class="link">
                     <a href="{% url 'update_inventory_item' item.id %}">{{ item.name }}</a>
                 </td>
-                <td>
+                <td class="link">
                     {% if item.account %}
                     <a href="{% url 'view_inventory_account' item.account.id %}">
                         {{ item.account.account_no|localize }}

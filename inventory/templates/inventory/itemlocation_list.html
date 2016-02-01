@@ -25,7 +25,7 @@
         <tbody>
         {% for item in paginated_objects %}
             <tr>
-                <td>
+                <td class="link">
                     <a href="{% url 'itemlocation_detail' item.id %}">{{ item }}</a>
                 </td>
                 <td>{{ item.remarks }}</td>

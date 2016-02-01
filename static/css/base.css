@@ -421,3 +421,7 @@ footer {
 td.link a{
     display: block;
 }
+
+li.link a{
+    display: block;
+}

@@ -29,11 +29,11 @@
         <tbody>
         {% for item in paginated_objects %}
             <tr>
-                <td><a href="{% url 'update_resource_person' item.id %}">{{ item.name }}</a></td>
+                <td class="link"><a href="{% url 'update_resource_person' item.id %}">{{ item.name }}</a></td>
                 <td>{{ item.address }}</td>
                 <td>{{ item.phone }}</td>
                 <td>{{ item.email|mailto }}</td>
-                <td>
+                <td class="link">
                     {% if item.organization %}
                         <a href="{% url 'update_organization' item.organization.id %}">{{ item.organization.name }}</a>
                     {% endif %}

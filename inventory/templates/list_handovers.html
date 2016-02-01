@@ -35,7 +35,7 @@
         <tbody>
         {% for item in paginated_objects %}
             <tr>
-                <td>
+                <td class="link">
                     <a href="{% url 'update_handover' item.id %}">{{ item.voucher_no|localize }}</a>
                 </td>
                 <td>

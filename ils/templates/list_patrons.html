@@ -37,7 +37,7 @@
         <tbody>
         {% for patron in paginated_objects %}
             <tr>
-                <td><a href="{% url 'view_patron' pk=patron.id %}">{{ patron }}</a></td>
+                <td class="link"><a href="{% url 'view_patron' pk=patron.id %}">{{ patron }}</a></td>
                 <td>{{ patron.transactions.count }}</td>
                 <td>{{ patron.not_returned.count }}</td>
                 <td>{{ patron.past_due.count }}</td>
