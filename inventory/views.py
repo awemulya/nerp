@@ -22,6 +22,7 @@ from openpyxl.cell import get_column_letter
 
 from core.models import app_setting, FiscalYear, Party, FISCAL_YEARS
 from app.utils.helpers import invalid, save_model, empty_to_none
+from app.utils.mixins import PDFView
 from users.models import group_required, User
 
 from inventory.filters import InventoryItemFilter
@@ -1641,28 +1642,11 @@ class ExpenseUpdate(CreateView):
     form_class = ExpenseForm
 
 
-from easy_pdf.views import PDFTemplateView
-from django.views.generic import TemplateView
-
-
-class LedgersPDFView(PDFTemplateView):
+class LedgersPDF(PDFView):
     template_name = "pdf/ledgers.html"
 
     def get_context_data(self, **kwargs):
-        return super(LedgersPDFView, self).get_context_data(
-            pagesize="A4",
-            title=_('Inventory Ledgers'),
-            ledgers = InventoryAccount.objects.all(),
-            **kwargs
-        )
-
-class LedgersView(TemplateView):
-    template_name = "pdf/ledgers.html"
-
-    def get_context_data(self, **kwargs):
-        return super(LedgersView, self).get_context_data(
-            pagesize="A4",
-            title=_('Inventory Ledgers'),
-            ledgers = InventoryAccount.objects.all(),
-            **kwargs
-        )
+        return {
+            'title': _('Inventory Ledgers'),
+            'ledgers': InventoryAccount.objects.all(),
+        }
