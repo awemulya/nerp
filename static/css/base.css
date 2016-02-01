@@ -404,12 +404,12 @@ footer {
     height: 5px;
 }
 
-.tile a{
+.tile a {
     display: block;
     padding-top: 0.5em;
 }
 
-.tile{
+.tile {
     width: 20em;
     float: left;
     background-color: #eeeeee;
@@ -418,10 +418,10 @@ footer {
     min-height: 15em;
 }
 
-td.link a{
+td.link a {
     display: block;
 }
 
-li.link a{
+li.link a {
     display: block;
 }
