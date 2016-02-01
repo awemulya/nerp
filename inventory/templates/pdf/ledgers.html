@@ -18,8 +18,10 @@
         <tbody>
         {% for obj in ledgers %}
             <tr>
-                <td>
-                    {{ obj.account_no|localize }}
+                <td class="link">
+                    <a href="#ledger-{{ obj.id }}">
+                        {{ obj.account_no|localize }}
+                    </a>
                 </td>
                 <td>
                     {{ obj.item.name }}
@@ -32,4 +34,12 @@
         {% endfor %}
         </tbody>
     </table>
+
+
+    {% for obj in ledgers %}
+        <div id="ledger-{{ obj.id }}" name="ledger-{{ obj.id }}">
+            {{ obj }}
+        </div>
+    {% endfor %}
+
 {% endblock %}

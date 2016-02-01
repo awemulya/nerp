@@ -44,11 +44,12 @@
         </div>
 
         <div class="tile">
-            <h3>{% trans 'Inventory Accounts' %}</h3>
+            <h3>{% trans 'Inventory' %} {% trans 'Accounts' %}</h3>
             <a href="{% url 'list_inventory_accounts' %}">{% trans 'Inventory' %} {% trans 'Accounts' %}</a>
             <a href="{% url 'list_consumable_inventory_accounts' %}">{% trans 'Consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}</a>
             <a href="{% url 'list_non_consumable_inventory_accounts' %}">{% trans 'Non-consumable' %} {% trans 'Inventory' %} {% trans 'Accounts' %}</a>
             <a href="{% url 'inventory_transactions_list' %}">{% trans 'Transactions' %}</a>
+            <a href="{% url 'ledgers_as_pdf' %}">{% trans 'Export to PDF' %}</a>
         </div>
 
         <div class="tile">
