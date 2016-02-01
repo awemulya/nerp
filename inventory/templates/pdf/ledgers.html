@@ -35,10 +35,12 @@
         </tbody>
     </table>
 
+    <span class="page-break"></span>
 
     {% for obj in ledgers %}
         <div id="ledger-{{ obj.id }}" name="ledger-{{ obj.id }}">
             {{ obj }}
+            <span class="page-break"></span>
         </div>
     {% endfor %}
 
