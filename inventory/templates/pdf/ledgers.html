@@ -1,4 +1,4 @@
-{% extends "pdf_base.html" %}
+{% extends "base.html" %}
 
 {% load i18n filters static %}
 
@@ -29,7 +29,6 @@
                 <td>
                     {{ obj.item.get_type_display }}
                 </td>
-
             </tr>
         {% endfor %}
         </tbody>
@@ -39,7 +38,7 @@
 
     {% for obj in ledgers %}
         <div id="ledger-{{ obj.id }}" name="ledger-{{ obj.id }}">
-            {{ obj }}
+            {% include "partials/inventory_account_page.html" %}
             <span class="page-break"></span>
         </div>
     {% endfor %}

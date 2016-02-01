@@ -103,6 +103,30 @@ class InventoryAccount(models.Model):
     opening_rate = models.FloatField(default=0)
     opening_rate_vattable = models.BooleanField(default=True)
 
+    def get_data(self, year=None):
+        from inventory.serializers import InventoryAccountRowSerializer
+        obj = self
+        le_data = {}
+        if obj.item.type == 'consumable' and year:
+            last_entry = JournalEntry.objects.filter(transactions__account_id=obj.id, date__lt=FiscalYear.start(year)).order_by(
+                'date', 'id').last()
+            if last_entry:
+                le_data = InventoryAccountRowSerializer(last_entry).data
+                le_data['income_quantity'] = le_data['current_balance']
+                le_data['income_rate'] = None
+                le_data['expense_quantity'] = None
+                le_data['voucher_no'] = 'Last FY'
+            journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id, date__gte=FiscalYear.start(year),
+                                                          date__lte=FiscalYear.end(year)).order_by('date', 'id') \
+                .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+        else:
+            journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('date', 'id') \
+                .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+        data = InventoryAccountRowSerializer(journal_entries, many=True).data
+        if le_data:
+            data.insert(0, le_data)
+        return data
+
     def __unicode__(self):
         return str(self.account_no) + ' [' + self.name + ']'
 
@@ -695,9 +719,9 @@ class Inspection(models.Model):
     report_no = models.IntegerField()
     date = BSDateField(default=today, validators=[validate_in_fy])
     # transaction = models.ForeignKey(Transaction, related_name='inspection')
-    
+
     objects = FYManager()
-    
+
     @property
     def fiscal_year(self):
         return FiscalYear.from_date(self.date)

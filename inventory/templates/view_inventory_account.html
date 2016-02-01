@@ -1,6 +1,5 @@
 {% extends "inventory_base.html" %}
-{% load i18n %}
-{% load staticfiles %}
+{% load i18n filters staticfiles %}
 
 {% block title %}{{ obj.name }}{% endblock %}
 
@@ -9,8 +8,6 @@
     <li><a href="{% url "list_inventory_accounts" %}">{% trans 'Inventory' %} {% trans 'Accounts' %}</a></li>
     <li><span>{{ obj.name }}</span></li>
 {% endblock %}
-
-{% load filters %}
 
 {% block head_end %}
     <script src="{% static 'js/inventory/inventory_account.js' %}"></script>

@@ -1,0 +1,125 @@
+{% load i18n filters %}
+
+{% if obj.get_data %}
+
+    {#<div class="visible-print-block">#}
+    {#        <span class="pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %}#}
+    {#            {% if obj.item.type == 'non-consumable' %}#}
+    {#                {% trans '4' %}{% trans '7' %}#}
+    {#            {% else %}#}
+    {#                {% trans '5' %}{% trans '2' %}#}
+    {#            {% endif %}#}
+    {#        </span>#}
+    {#    <br/>#}
+    {#    <h4 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>#}
+    {#    <h4 class="center">#}
+    {#        {% if obj.item.type == 'non-consumable' %}#}
+    {#            {% trans 'Inventory Account of Non-consumable Item' %}#}
+    {#        {% else %}#}
+    {#            {% trans 'Inventory Account of Consumable Item' %}#}
+    {#        {% endif %}#}
+    {#    </h4>#}
+    {#</div>#}
+
+    <div>
+        {% trans "Inventory" %} {% trans "Item's Name" %}: <h2>{{ obj.item.name }}</h2><br/>
+
+        <div class="row">
+            <div class="col-md-5">
+                {% trans 'Unit' %}: {{ obj.item.unit }}
+            </div>
+            <div class="col-md-7">
+                {% trans "Inventory Item's Property Classification Reference Number" %}
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th rowspan="2">{% trans 'Date' %}</th>
+            <th rowspan="2">{% trans 'Entry No.' %}/{% trans 'Release No.' %}</th>
+            <th rowspan="2">{% trans 'Specification' %}</th>
+            {% if obj.item.type == 'non-consumable' %}
+                <th colspan="4">{% trans 'Description' %}</th>
+            {% endif %}
+            <th colspan="3">{% trans 'Income' %}</th>
+            <th colspan="2">{% trans 'Expense' %}</th>
+            <th colspan="2">{% trans 'Remaining' %}</th>
+            <th rowspan="2">{% trans 'Remarks' %}</th>
+        </tr>
+        <tr>
+            {% if obj.item.type == 'non-consumable' %}
+                <th>{% trans "Country of Production or Company Name" %}</th>
+                <th>{% trans "Size" %}</th>
+                <th>{% trans "Expected Life" %}</th>
+                <th>{% trans "Source of item receipt" %}</th>
+            {% endif %}
+            <th>{% trans "Quantity" %}</th>
+            <th>{% trans "Price per Unit" %}</th>
+            <th>{% trans "Total Cost Price" %}</th>
+            <th>{% trans "Quantity" %}</th>
+            <th>{% trans "Total Cost Price" %}</th>
+            <th>{% trans "Quantity" %}</th>
+            <th>{% trans "Total Cost Price" %}</th>
+        </tr>
+        </thead>
+        <tbody data-bind="with: table_vm">
+        {% for row in obj.get_data %}
+            <tr>
+                <td>{{ row.date }}</td>
+                <td title="{{ row.creator_type }}">
+                    {{ row.voucher_no }}
+                </td>
+                <td>{{ row.specification|default:'' }}</td>
+                {% if obj.item.type == 'non-consumable' %}
+                    <td>{{ row.country_or_company }}</td>
+                    <td>{{ row.size }}</td>
+                    <td>{{ row.expected_life }}</td>
+                    <td>{{ row.source }}</td>
+                {% endif %}
+
+
+                <td>{{ row.income_quantity }}</td>
+                <td>{{ row.income_rate }}</td>
+                <td>{{ row.income_total|default:0 }}</td>
+
+                <td>{{ row.expenses_quantity }}</td>
+                <td>{{ row.expense_total }}</td>
+                <td>{{ row.current_balance }}</td>
+                <td>{% if row.remaining_total_cost_price %}
+                    {{ row.remaining_total_cost_price }}
+                    {% elif forloop.first %}
+                    {{ row.income_total|subtract:row.expense_total }}
+                    {% else %}
+                    {% get_previous forloop obj.get_data as prev %}
+                    {{ prev.remaining_total_cost_price|add:row.income_total|subtract:row.expense_total }}
+                {% endif %}</td>
+                <td>{{ row.remarks }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {#<div class="row visible-print-block">#}
+    {#    <div class="col-lg-4 col-sm-4 col-xs-4">#}
+    {#        {% trans "Faantwaala's" %} {% trans 'Signature' %}:<br>#}
+    {#        {% trans 'Name' %}:<br>#}
+    {#        {% trans 'Designation' %}:<br>#}
+    {#        {% trans 'Date' %}:#}
+    {#    </div>#}
+    {#    <div class="col-lg-4 col-sm-4 col-xs-4">#}
+    {#        {% trans 'Section' %} {% trans "Head's" %} {% trans 'Signature' %}:<br>#}
+    {#        {% trans 'Name' %}:<br>#}
+    {#        {% trans 'Designation' %}:<br>#}
+    {#        {% trans 'Date' %}:#}
+    {#    </div>#}
+    {#    <div class="col-lg-4 col-sm-4 col-xs-4">#}
+    {#        {% trans "Signature of Head of Office" %}:<br>#}
+    {#        {% trans 'Name' %}:<br>#}
+    {#        {% trans 'Designation' %}:<br>#}
+    {#        {% trans 'Date' %}:#}
+    {#    </div>#}
+    {#</div>#}
+
+{% endif %}

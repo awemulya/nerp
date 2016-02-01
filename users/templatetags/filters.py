@@ -81,7 +81,10 @@ def subtract(value, arg):
         value = 0
     if arg is None:
         arg = 0
+    if not value:
+        value = 0
     return value - arg
+    
 
 
 @register.simple_tag
@@ -303,3 +306,8 @@ def fiscal_year(year):
     if calendar == 'ad':
         year -= 57
     return str(year) + '/' + str(year - 1999)
+
+
+@register.assignment_tag
+def get_previous(loop, lst):
+    return lst[loop['counter'] - 1]
