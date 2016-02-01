@@ -31,7 +31,7 @@
         <tbody>
         {% for obj in paginated_objects %}
             <tr>
-                <td> {{ obj|linkify }}</td>
+                <td class="link"> {{ obj|linkify }}</td>
                 <td>{{ obj.record_set.count }}</td>
             </tr>
         {% endfor %}

@@ -54,7 +54,7 @@
             <tbody>
             {% for transaction in paginated_objects %}
                 <tr>
-                    <td>{{ transaction.record|linkify }}</td>
+                    <td class="link">{{ transaction.record|linkify }}</td>
                     <td>{{ transaction.borrow_date }}</td>
                     <td>{{ transaction.due_date }}</td>
                     <td> {% if transaction.return_date %}
