@@ -71,13 +71,13 @@
                     <th class="span3 hidden-print">{% trans 'Purpose' %}</th>
 
                     <th
-                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>{% trans 'Released Item Quantity' %}</th>
+                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block hidden-print"{% endifusergroup %}>{% trans 'Released Item Quantity' %}</th>
 
 
                     <th
-                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>{% trans 'Inventory Account No.' %}</th>
+                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block hidden-print"{% endifusergroup %}>{% trans 'Inventory Account No.' %}</th>
                     <th
-                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>{% trans 'Remarks' %}</th>
+                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block hidden-print"{% endifusergroup %}>{% trans 'Remarks' %}</th>
                     <th class="span1 hidden-print"></th>
                 </tr>
                 </thead>
@@ -99,7 +99,7 @@
                     <td class="hidden-print"
                         data-bind="editableText: purpose, disable_content_editable: status() != 'Requested'"></td>
 
-                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>
+                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block hidden-print"{% endifusergroup %}>
                         <div class="btn-group">
 
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
@@ -175,10 +175,10 @@
                         </div>
                     </td>
 
-                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block" {% endifusergroup %}
+                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block hidden-print" {% endifusergroup %}
                         data-bind="text: localize(inventory_account_id(), window.lang)">
                     </td>
-                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}
+                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block hidden-print"{% endifusergroup %}
                         data-bind="editableText: remarks"></td>
 
                     <td class="hidden-print">
