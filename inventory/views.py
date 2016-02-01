@@ -387,7 +387,7 @@ def yearly_report_list(request):
 
 def yearly_report_detail(request, id):
     obj = YearlyReport.objects.get(pk=id)
-    rows = obj.rows.order_by("sn")
+    # rows = obj.rows.order_by("sn")
     data = YearlyReportSerializer(obj).data
     return render(request, 'yearly_report_detail.html', {'obj': obj, 'data': data})
 

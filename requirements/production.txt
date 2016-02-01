@@ -20,3 +20,4 @@ sorl-thumbnail==11.12.1b
 django-redis
 jsonfield
 openpyxl
+WeasyPrint
