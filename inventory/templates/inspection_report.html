@@ -72,20 +72,20 @@
                 <tr>
                     <td data-bind="text: $index()+1, localize: true"></td>
 
-                    <td data-bind="text: account_no"></td>
+                    <td data-bind="text: account_no(), localize: true"></td>
                     <td data-bind="text: inventory_classification_reference_no"></td>
                     <td data-bind="text: item_name" class="item_name"></td>
                     <td data-bind="text: unit"></td>
-                    <td data-bind="text: total_dr_amount"></td>
-                    <td data-bind="text: rate"></td>
-                    <td data-bind="text: price"></td>
-                    <td data-bind="editableText: match_number, valueUpdate: 'afterkeydown'"></td>
-                    <td data-bind="text: unmatch_number"></td>
-                    <td data-bind="text: decrement"></td>
-                    <td data-bind="text: increment"></td>
-                    <td data-bind="text: decrement_increment_price"></td>
-                    <td data-bind="editableText: good"></td>
-                    <td data-bind="editableText: bad"></td>
+                    <td data-bind="text: total_dr_amount(), localize: 2"></td>
+                    <td data-bind="text: rate(), localize: 2 "></td>
+                    <td data-bind="text: price(), localize: 2"></td>
+                    <td data-bind="editableText: match_number, valueUpdate: 'afterkeydown', localize: true"></td>
+                    <td data-bind="text: unmatch_number(), localize: true"></td>
+                    <td data-bind="text: decrement(), localize: true"></td>
+                    <td data-bind="text: increment(), localize: true"></td>
+                    <td data-bind="text: decrement_increment_price(), localize: true"></td>
+                    <td data-bind="editableText: good(), localize: true"></td>
+                    <td data-bind="editableText: bad(), localize: true"></td>
                     <td data-bind="editableText: remarks"></td>
                 </tr>
                 <!-- /ko -->

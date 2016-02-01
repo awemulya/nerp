@@ -93,13 +93,13 @@
                 {% endif %}
 
                 {% if o.good %}
-                    <td>{{ o.good }}</td>
+                    <td>{{ o.good |localize}}</td>
                 {% else %}
                     <td></td>
                 {% endif %}
 
                 {% if o.bad %}
-                    <td>{{ o.bad }}</td>
+                    <td>{{ o.bad |localize}}</td>
                 {% else %}
                     <td></td>
                 {% endif %}

@@ -650,7 +650,6 @@ def depreciation_report(request):
     transaction = TransactionSerializer(transaction_without_duplication, many=True).data
     # depreciate_item = DepreciationSerializer(depreciate_object_list, many=True).data
     # depreciate_object_list = []
-    # import pdb; pdb.set_trace()
     return render(request, "depreciation_report.html", {'data': transaction})
 
 
