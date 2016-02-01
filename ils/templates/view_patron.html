@@ -9,7 +9,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url 'list_patrons' %}">Patrons</a></li>
+    <li><a href="{% url 'list_patrons' %}">{% trans "Patrons" %}</a></li>
     <li><span> {{ patron }}</span></li>
 {% endblock %}
 
@@ -23,9 +23,9 @@
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
-            <th>Total Borrowed</th>
-            <th>Not Returned</th>
-            <th>Past Due</th>
+            <th>{% trans "Total Borrowed" %}</th>
+            <th>{% trans "Not Returned" %}</th>
+            <th>{% trans "Past Due" %}</th>
         </tr>
         </thead>
         <tbody>
@@ -39,7 +39,7 @@
     {% autosort transactions as sorted_objects %}
     {% autopaginate sorted_objects 20 as paginated_objects %}
 
-    <h3>Transactions</h3>
+    <h3>{% trans "Transactions" %}</h3>
 
     <div class="transactions">
         <table class="table table-striped table-bordered">
@@ -54,14 +54,14 @@
             <tbody>
             {% for transaction in paginated_objects %}
                 <tr>
-                    <td>{{ transaction.record|linkify }}</td>
+                    <td class="link">{{ transaction.record|linkify }}</td>
                     <td>{{ transaction.borrow_date }}</td>
                     <td>{{ transaction.due_date }}</td>
                     <td> {% if transaction.return_date %}
                         {{ transaction.return_date }}
                     {% else %}
 
-                        <a href="{% url 'incoming' transaction_pk=transaction.id %}">Return</a>
+                        <a href="{% url 'incoming' transaction_pk=transaction.id %}">{% trans "Return" %}</a>
                     {% endif %}
                     </td>
                 </tr>

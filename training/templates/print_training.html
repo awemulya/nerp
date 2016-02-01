@@ -26,11 +26,11 @@
 
 
     {% if obj.starts %}
-        From: <span id="id_starts">{{ obj.starts }}</span>
+       {% trans "From" %}: <span id="id_starts">{{ obj.starts }}</span>
     {% endif %}
     &nbsp;&nbsp;&nbsp;
     {% if obj.ends %}
-        To: <span id="id_ends">{{ obj.ends }}</span>
+        {% trans "To" %}: <span id="id_ends">{{ obj.ends }}</span>
     {% endif %}
     &nbsp;&nbsp;&nbsp;
     <span id="duration"></span>
@@ -41,9 +41,9 @@
 
     {% if obj.categories.count %}
         {% if obj.categories.count == 1 %}
-            <b>Category:</b>
+            <b>{% trans "Category" %}:</b>
         {% else %}
-            <b>Categories:</b>
+            <b>{% trans "Categories" %}:</b>
         {% endif %}
         {{ obj.categories.all|join:', ' }}
         <br><br>
@@ -52,9 +52,9 @@
 
     {% if obj.target_groups.count %}
         {% if obj.target_groups.count == 1 %}
-            <b>Target Group:</b>
+            <b>{% trans "Target Group" %}:</b>
         {% else %}
-            <b>Target Groups:</b>
+            <b>{% trans "Target Groups" %}:</b>
         {% endif %}
         {{ obj.target_groups.all|join:', ' }}
         <br><br>
@@ -62,9 +62,9 @@
 
     {% if obj.resource_persons.count %}
         {% if obj.resource_persons.count == 1 %}
-            <b>Resource Person:</b>
+            <b>{% trans "Resource Person" %}:</b>
         {% else %}
-            <b>Resource Persons:</b>
+            <b>{% trans "Resource Persons" %}:</b>
         {% endif %}
         {{ obj.resource_persons.all|join:', ' }}
         <br><br>
@@ -72,37 +72,37 @@
 
 
     {% if obj.criteria_for_selection %}
-        <b>Criteria for Selection:</b>
+        <b>{% trans "Criteria for Selection" %}:</b>
         {{ obj.criteria_for_selection|linebreaks }}
         <br><br>
     {% endif %}
 
     {% if obj.objective %}
-        <b>Objective:</b>
+        <b>{% trans "Objective" %}:</b>
         {{ obj.objective|linebreaks }}
         <br><br>
     {% endif %}
 
     {% if obj.output %}
-        <b>Output:</b>
+        <b>{% trans "Output" %}:</b>
         {{ obj.output|linebreaks }}
         <br><br>
     {% endif %}
 
     {% if obj.conclusion %}
-        <b>Conclusion:</b>
+        <b>{% trans "Conclusion" %}:</b>
         {{ obj.conclusion|linebreaks }}
         <br><br>
     {% endif %}
 
     {% if obj.feedback %}
-        <b>Feedback:</b>
+        <b>{% trans "Feedback" %}:</b>
         {{ obj.feedback|linebreaks }}
         <br><br>
     {% endif %}
 
     {% if obj.curriculum %}
-        <b>Curriculum:</b>
+        <b>{% trans "Curriculum" %}:</b>
         {{ obj.curriculum|linebreaks }}
         <br><br>
     {% endif %}
@@ -112,7 +112,7 @@
 
     {% autosort obj.participants.all as sorted_objects %}
 
-    <h3>Participants</h3>
+    <h3>{% trans "Participants" %}</h3>
 
     <table class="table-bordered">
         <thead>

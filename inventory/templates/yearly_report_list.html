@@ -32,7 +32,7 @@
         <tbody>
         {% for yearly_report in paginated_objects %}
             <tr>
-                <td>
+                <td class="link">
                     <a href="{% url 'yearly_report_detail' yearly_report.pk %}">{{ yearly_report.fiscal_year|localize }}</a>
                 </td>
             </tr>
@@ -42,7 +42,5 @@
 
     {% paginate %}
  
-  <!--a class="btn btn-default btn-lg"
-       href="{% url 'yearly_report' %}">{% trans 'New' %} {% trans 'Yearly' %} {% trans 'Report' %}</a-->
 {% endblock %}
   

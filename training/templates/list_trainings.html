@@ -31,7 +31,7 @@
 
         {% for item in sorted_objects %}
             <tr>
-                <td><a href="{% url 'update_training' item.id %}">{{ item.title }}</a></td>
+                <td class="link"><a href="{% url 'update_training' item.id %}">{{ item.title }}</a></td>
                 <td>{{ item.starts|date:"D d M Y" }}</td>
                 <td>{{ item.ends|date:"D d M Y" }}</td>
                 <td>{{ item.days }}</td>

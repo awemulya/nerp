@@ -19,31 +19,23 @@
 {% endblock %}
 
 {% block content %}
-    {#<form>#}
-    {#<label for="patron">Patron</label>#}
-    {#<input type="text" id="patron" name="patron"/>#}
-    {#<label for="isbn">ISBN</label>#}
-    {#<input type="text" id="isbn" name="isbn"/>#}
-    {#<label for="isbn">ISBN</label>#}
-    {#<input type="text" id="isbn" name="isbn"/>#}
-    {#</form>#}
 
 
 
     <form method="post" action="{% url 'save_outgoing' %}">
         {% csrf_token %}
 
-        <label for="id_user">Patron:</label>
+        <label for="id_user">{% trans "Patron" %}:</label>
         {{ form.user }}
 
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                <label for="borrow_date">Borrow Date</label>
+                <label for="borrow_date">{% trans "Borrow Date" %}</label>
                 {{ form.borrow_date }}
             </div>
 
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                <label for="due_date">Due Date</label>
+                <label for="due_date">{% trans "Due Date" %}</label>
                 {{ form.due_date }}
             </div>
 
@@ -51,12 +43,12 @@
 
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                <label for="isbn">ISBN</label>
+                <label for="isbn">{% trans "ISBN" %}</label>
                 {{ form.isbn }}
             </div>
 
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                <label for="id_record">Item:</label>
+                <label for="id_record">{% trans "Item" %}:</label>
                 {{ form.record }}
             </div>
 

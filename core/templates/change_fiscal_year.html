@@ -13,7 +13,6 @@
 {% block content %}
 
     <h1>
-        {# {% trans 'Current' %} {% trans 'Fiscal Year' %} : {{ 'core.models.app_setting.fiscal_year'|setting|localize }} #}
         {% trans 'Current' %} {% trans 'Fiscal Year' %} : {{ current_fiscal_year|localize }}
     </h1>
 
@@ -22,7 +21,6 @@
         {% trans 'New' %} {% trans 'Fiscal Year' %} :<br/>
         <select name="fiscal_year">
             {% for fiscal_year in fiscal_years %}
-                {# {% if not 'core.models.app_setting.fiscal_year'|setting|str_equals:fiscal_year.0 %} #}
                 {% if not 'core.models.app_setting.fiscal_year'|setting|add:"0" == fiscal_year.0 %}
                     <option value="{{ fiscal_year.0 }}">{{ fiscal_year.1|localize }}</option>
                 {% endif %}

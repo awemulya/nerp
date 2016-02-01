@@ -38,10 +38,10 @@
         <tbody>
         {% for quotation_comparison in paginated_objects %}
             <tr>
-                <td>
+                <td class="link">
                     <a href="{% url 'detail_quotation_forms' quotation_comparison.pk %}">{{ quotation_comparison.report_no|localize }}</a>
                 </td>
-                <td>
+                <td class="link">
                     <a href="{% url 'detail_quotation_forms' quotation_comparison.pk %}">{{ quotation_comparison.date|localize }}</a>
                 </td>
                 <td>

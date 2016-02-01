@@ -54,50 +54,44 @@
                 {% endif %}
             </div>
         </div>
-
-        <!--ul class="tabs" data-tab id="training-tab">
-            <li class="tab-title active"><a href="#basic">Basic</a></li>
-            <li class="tab-title"><a href="#detail">Details</a></li>
-            <li class="tab-title"><a href="#participants">Participants</a></li>
-            <li class="tab-title"><a href="#files">Files </a></li>
-        </ul-->
+    
         <ul class="nav nav-tabs" role="tablist" id="training-tab">
-            <li role="presentation" class="active"><a href="#basic" data-toggle="tab">Basic</a></li>
-            <li role="presentation"><a href="#detail" data-toggle="tab">Detail</a></li>
-            <li role="presentation"><a href="#participants" data-toggle="tab">Participants</a></li>
-            <li role="presentation"><a href="#files" data-toggle="tab">Files</a></li>
+            <li role="presentation" class="active"><a href="#basic" data-toggle="tab">{% trans "Basic" %}</a></li>
+            <li role="presentation"><a href="#detail" data-toggle="tab">{% trans "Detail" %}</a></li>
+            <li role="presentation"><a href="#participants" data-toggle="tab">{% trans "Participants" %}</a></li>
+            <li role="presentation"><a href="#files" data-toggle="tab">{% trans "Files" %}</a></li>
         </ul>
 
         <div class="tab-content">
             <div class="content tab-pane active" id="basic">
-                <label for="id_title">Title:</label>
+                <label for="id_title">{% trans "Title" %}:</label>
                 {{ form.title }}
 
-                <label for="id_description">Description:</label>
+                <label for="id_description">{% trans "Description" %}:</label>
                 {{ form.description }}
 
-                <label for="id_starts">Starts:</label>
+                <label for="id_starts">{% trans "Starts" %}:</label>
                 {#                <input type="text" name="starts" id="id_starts" data-date-format="yyyy-mm-dd">#}
                 {{ form.starts }}
 
                 <span id="duration"></span>
 
-                <label for="id_ends">Ends:</label>
+                <label for="id_ends">{% trans "Ends" %}:</label>
                 {#                <input type="text" name="ends" id="id_ends" data-date-format="yyyy-mm-dd">#}
                 {{ form.ends }}
                 <br>
 
                 <div class="inline-add">
 
-                    <label for="id_categories">Categories:</label><br>
+                    <label for="id_categories">{% trans "Categories" %}:</label><br>
                     {{ form.categories }}
                     <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-category">+</a>
                     <br>
-                    <label for="id_target_groups">Target groups:</label><br>
+                    <label for="id_target_groups">{% trans "Target groups" %}:</label><br>
                     {{ form.target_groups }}
                     <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-target-group">+</a>
                     <br>
-                    <label for="id_resource_persons">Resource persons:</label><br>
+                    <label for="id_resource_persons">{% trans "Resource persons" %}:</label><br>
                     {{ form.resource_persons }}
                     <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-resource-person">+</a>
 
@@ -105,23 +99,23 @@
             </div>
 
             <div class="content tab-pane" id="detail">
-                <label for="id_criteria_for_selection">Criteria for selection:</label>
+                <label for="id_criteria_for_selection">{% trans "Criteria for selection" %}:</label>
                 {{ form.criteria_for_selection }}
 
 
-                <label for="id_objective">Objective:</label>
+                <label for="id_objective">{% trans "Objective" %}:</label>
                 {{ form.objective }}
 
-                <label for="id_output">Output:</label>
+                <label for="id_output">{% trans "Output" %}:</label>
                 {{ form.output }}
 
-                <label for="id_conclusion">Conclusion:</label>
+                <label for="id_conclusion">{% trans "Conclusion" %}:</label>
                 {{ form.conclusion }}
 
-                <label for="id_feedback">Feedback:</label>
+                <label for="id_feedback">{% trans "Feedback" %}:</label>
                 {{ form.feedback }}
 
-                <label for="id_curriculum">Curriculum:</label>
+                <label for="id_curriculum">{% trans "Curriculum" %}:</label>
                 {{ form.curriculum }}
 
 
@@ -132,16 +126,16 @@
                 <br>
                 <select id="available"
                         data-bind="options: $root.participants_available, value: selected_participant, optionsText: 'name', optionsValue: 'id'"></select>
-                <button class="btn btn-default" data-bind="click: add_participant">↓ Add</button>
-                <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-participant">+ Create New</a>
+                <button class="btn btn-default" data-bind="click: add_participant">↓ {% trans "Add" %}</button>
+                <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-participant">+ {% trans "Create New" %}</a>
                 <br><br>
                 <table class="table table-bordered">
                     <thead>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>Phone</th>
-                    <th>Email</th>
-                    <th>Organization</th>
+                    <th>{% trans "Name" %}</th>
+                    <th>{% trans "Address" %}</th>
+                    <th>{% trans "Phone" %}</th>
+                    <th>{% trans "Email" %}</th>
+                    <th>{% trans "Organization" %}</th>
                     <th></th>
                     </thead>
                     <tbody>
@@ -178,8 +172,8 @@
                 <table class="table table-striped table-bordered">
                     <thead>
                     <tr>
-                        <th>File</th>
-                        <th>Description</th>
+                        <th>{% trans "File" %}</th>
+                        <th>{% trans "Description" %}</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -190,11 +184,11 @@
                             <input type="hidden" name="indices" data-bind="value: $index()">
                             <input type="hidden" name="file_ids" data-bind="value: id">
                             <!-- ko if: file() -->
-                            Currently: <a target="_blank"
+                            {% trans "Currently" %}: <a target="_blank"
                                           data-bind="attr: {'href': '{{ MEDIA_URL }}'+file()}, text: file()"></a>
 
-                            <input type="checkbox" data-bind="attr:{name: 'clears['+$index()+']'}"> Clear<br>
-                            Change:<!-- /ko --><input type="file" data-bind="attr:{name: 'files['+$index()+']'}">
+                            <input type="checkbox" data-bind="attr:{name: 'clears['+$index()+']'}"> {% trans "Clear" %}<br>
+                            {% trans "Change" %}:<!-- /ko --><input type="file" data-bind="attr:{name: 'files['+$index()+']'}">
 
                         </td>
                         <td>
@@ -207,7 +201,7 @@
                     <!-- /ko -->
                     </tbody>
                 </table>
-                <button class="btn btn-default" data-bind="click: add_row">+ Add File</button>
+                <button class="btn btn-default" data-bind="click: add_row">+ {% trans "Add File" %}</button>
                 <input type="hidden" name="deleted_files" data-bind="value: deleted_rows()">
             </div>
 
@@ -220,7 +214,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h2>Add Category</h2>
+                    <h2>{% trans "Add Category" %}</h2>
                 </div>
                 <div class="modal-body">
                     <form method="post" action="{% url 'add_training_category' %}">
@@ -239,7 +233,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h2>Add Target Group</h2>
+                    <h2>{% trans "Add Target Group" %}</h2>
                 </div>
                 <div class="modal-body">
                     <form method="post" action="{% url 'add_target_group' %}">
@@ -258,7 +252,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h2>Add Resource Person</h2>
+                    <h2>{% trans "Add Resource Person" %}</h2>
                 </div>
                 <div class="modal-body">
                     <form method="post" action="{% url 'add_resource_person' %}">
@@ -277,7 +271,7 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h2>dd Participant</h2>
+                    <h2>{% trans "dd Participant" %}</h2>
                 </div>
                 <div class="modal-body">
                     <form method="post" action="{% url 'add_participant' %}">
@@ -289,7 +283,7 @@
             </div>
         </div>
 
-        <div id="add-organization" class="modal" data-reveal><h2>Add Organization</h2>
+        <div id="add-organization" class="modal" data-reveal><h2>{% trans "Add Organization" %}</h2>
             <a class="close-reveal-modal">&#215;</a>
 
             <form method="post" action="{% url 'add_organization' %}">

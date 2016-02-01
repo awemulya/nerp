@@ -25,7 +25,7 @@
         <tbody>
         {% for item in paginated_objects %}
             <tr>
-                <td>
+                <td class="link">
                     <a href="{{ MEDIA_URL }}{{ item.file }}">{{ item.filename }}</a>
                 </td>
                 <td>

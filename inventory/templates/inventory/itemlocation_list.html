@@ -21,13 +21,11 @@
         <thead>
         <th>{% anchor name _('Name') %}</th>
         <th>{% trans 'Remarks' %}</th>
-        {#        <th>{% anchor date _('Date') %}</th>#}
-        {#        <th>{% anchor purpose _('Purpose') %}</th>#}
         </thead>
         <tbody>
         {% for item in paginated_objects %}
             <tr>
-                <td>
+                <td class="link">
                     <a href="{% url 'itemlocation_detail' item.id %}">{{ item }}</a>
                 </td>
                 <td>{{ item.remarks }}</td>

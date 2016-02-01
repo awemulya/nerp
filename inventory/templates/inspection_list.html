@@ -36,13 +36,13 @@
         <tbody>
         {% for inspection in paginated_objects %}
             <tr>
-                <td>
+                <td class="link">
                     <a href="{% url 'inspection_report_detail' inspection.pk %}">{{ inspection.report_no|localize }}</a>
                 </td>
-                <td>
+                <td class="link">
                     <a href="{% url 'inspection_report_detail' inspection.pk %}">{{ inspection.date|localize }}</a>
                 </td>
-                <td>
+                <td class="link">
                     <a href="{% url 'inspection_report_detail' inspection.pk %}">{{ inspection.fiscal_year|localize }}</a>
                 </td>
             </tr>

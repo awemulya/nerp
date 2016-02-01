@@ -10,7 +10,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url 'list_records' %}">Books</a></li>
+    <li><a href="{% url 'list_records' %}">{% trans "Books" %}</a></li>
     <li><span> {{ record }}</span></li>
 {% endblock %}
 
@@ -41,10 +41,10 @@
                 {% endif %}
                 </small>
                 {% ifusergroup 'Librarian' %}
-                    <a class="btn btn-default" href="{% url 'edit_book' record.id %}">EDIT</a>
+                    <a class="btn btn-default" href="{% url 'edit_book' record.id %}">{% trans "EDIT" %}</a>
                 {% endifusergroup %}
             </h1>
-            <p id="text-by"><em>by</em>
+            <p id="text-by"><em>{% trans "by" %}</em>
                 {% for author in record.authors.all %}
                     {{ author|linkify }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
@@ -52,15 +52,15 @@
 
             <p>
                 {% if record.publisher or record.published_date or record.published_places.all %}
-                    <em>Published on</em>
+                    <em>{% trans "Published on" %}</em>
                     {% if record.date_of_publication %}
                         {{ record.date_of_publication }}
                     {% endif %}
                     {% if record.publisher %}
-                        by {{ record.publisher|linkify }}
+                        {% trans "by" %} {{ record.publisher|linkify }}
                     {% endif %}
                     {% if record.published_places.all %}
-                        in {{ record.published_places.all|join:', ' }}
+                        {% trans "in" %} {{ record.published_places.all|join:', ' }}
                     {% endif %}
                 {% endif %}
 
@@ -77,21 +77,21 @@
 
                 {% if record.isbn13 %}
                     <tr>
-                        <th>ISBN</th>
+                        <th>{% trans "ISBN" %}</th>
                         <td>{{ record.isbn13 }}</td>
                     </tr>
                 {% endif %}
 
                 {% if record.pagination %}
                     <tr>
-                        <th>Pagination</th>
+                        <th>{% trans "Pagination" %}</th>
                         <td>{{ record.pagination }}</td>
                     </tr>
                 {% endif %}
 
                 {% if record.openlibrary_id %}
                     <tr>
-                        <th>OpenLibrary</th>
+                        <th>{% trans "OpenLibrary" %}</th>
                         <td>
                             <a target="_blank"
                                href="https//openlibrary.org/books/{{ record.openlibrary_id }}/">{{ record.openlibrary_id }}</a>
@@ -101,7 +101,7 @@
 
                 {% if record.goodreads_id %}
                     <tr>
-                        <th>Goodreads</th>
+                        <th>{% trans "Goodreads" %}</th>
                         <td><a target="_blank"
                                href="http//www.goodreads.com/book/show/{{ record.goodreads_id }}">{{ record.goodreads_id }}</a>
                         </td>
@@ -110,7 +110,7 @@
 
                 {% if record.lccn_id %}
                     <tr>
-                        <th>Library of Congress Control Number</th>
+                        <th>{% trans "Library of Congress Control Number" %}</th>
                         <td><a target="_blank"
                                href="http//lccn.loc.gov/{{ record.lccn_id }}">{{ record.lccn_id }}</a></td>
                     </tr>
@@ -118,7 +118,7 @@
 
                 {% if record.oclc_id %}
                     <tr>
-                        <th>OCLC WorldCat</th>
+                        <th>{% trans "OCLC WorldCat" %}</th>
                         <td><a target="_blank"
                                href="http//www.worldcat.org/oclc/{{ record.oclc_id }}?tab=details">{{ record.oclc_id }}</a>
                         </td>
@@ -127,7 +127,7 @@
 
                 {% if record.librarything_id %}
                     <tr>
-                        <th>LibraryThing</th>
+                        <th>{% trans "LibraryThing" %}</th>
                         <td><a target="_blank"
                                href="http//www.librarything.com/work/{{ record.librarything_id }}">{{ record.librarything_id }}</a>
                         </td>
@@ -136,7 +136,7 @@
 
                 {% if record.format %}
                     <tr>
-                        <th>Format</th>
+                        <th>{% trans "Format" %}</th>
                         <td>
                             {{ record.format }}
                         </td>
@@ -146,7 +146,7 @@
                 {% if record.format != 'eBook' %}
                     {% if record.type %}
                         <tr>
-                            <th>Type</th>
+                            <th>{% trans "Type" %}</th>
                             <td>{{ record.type }}</td>
                         </tr>
                     {% endif %}
@@ -154,28 +154,28 @@
 
                 {% if record.weight %}
                     <tr>
-                        <th>Weight</th>
+                        <th>{% trans "Weight" %}</th>
                         <td>{{ record.weight }}</td>
                     </tr>
                 {% endif %}
 
                 {% if record.dimensions %}
                     <tr>
-                        <th>Dimensions</th>
+                        <th>{% trans "Dimensions" %}</th>
                         <td>{{ record.dimensions }}</td>
                     </tr>
                 {% endif %}
 
                 {% if record.lcc %}
                     <tr>
-                        <th>Library of Congress Classification</th>
+                        <th>{% trans "Library of Congress Classification" %}</th>
                         <td>{{ record.lcc }}</td>
                     </tr>
                 {% endif %}
 
                 {% if record.ddc %}
                     <tr>
-                        <th>Dewey Decimal Class</th>
+                        <th>{% trans "Dewey Decimal Class" %}</th>
                         <td>{{ record.ddc }}</td>
                     </tr>
                 {% endif %}
@@ -186,22 +186,22 @@
                 {% ifusergroup 'Librarian' %}
                     <table id="circulation-detail">
                         <tr>
-                            <th>Total</th>
+                            <th>{% trans "Total" %}</th>
                             <td>{{ record.quantity }}</td>
                         </tr>
                         <tr>
-                            <th>In Circulation</th>
+                            <th>{% trans "In Circulation" %}</th>
                             <td>{{ record.in_circulation.count }}</td>
                         </tr>
                         <tr>
-                            <th>Available</th>
+                            <th>{% trans "Available" %}</th>
                             <td>{{ record.quantity|subtract:record.in_circulation.count }}</td>
                         </tr>
                         {% if record.type == 'Circulative' %}
                             {% if record.quantity|subtract:record.in_circulation.count > 0 %}
                                 <tr>
                                     <th colspan="2">
-                                        <a href="{% url 'outgoing' pk=record.id %}">Checkout</a>
+                                        <a href="{% url 'outgoing' pk=record.id %}">{% trans "Checkout" %}</a>
                                     </th>
                                 </tr>
                             {% endif %}
@@ -214,7 +214,7 @@
                 <table>
                     <tbody>
                     <tr>
-                        <th>E-books</th>
+                        <th>{% trans "E-books" %}</th>
                     </tr>
                     <tr>
                         <td>
@@ -245,7 +245,7 @@
     <div class="row">
         <div class="col-sm-12">
             {% if record.notes %}
-                <strong>Notes: </strong><em>{{ record.notes }}</em>
+                <strong>{% trans "Notes" %}: </strong><em>{{ record.notes }}</em>
             {% endif %}
         </div>
     </div>
@@ -258,7 +258,7 @@
 
             {% if record.format != 'eBook' %}
                 {% ifusergroup 'Librarian' %}
-                    <h3>Transactions</h3>
+                    <h3>{% trans "Transactions" %}</h3>
 
 
                     <table class="table table-striped table-bordered">
@@ -283,7 +283,7 @@
                                     {{ transaction.return_date }}
                                 {% else %}
 
-                                    <a href="{% url 'incoming' transaction_pk=transaction.id %}">Return</a>
+                                    <a href="{% url 'incoming' transaction_pk=transaction.id %}">{% trans "Return" %}</a>
                                 {% endif %}
                                 </td>
                             </tr>

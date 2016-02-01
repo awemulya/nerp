@@ -417,3 +417,11 @@ footer {
     margin: 1em;
     min-height: 15em;
 }
+
+td.link a{
+    display: block;
+}
+
+li.link a{
+    display: block;
+}

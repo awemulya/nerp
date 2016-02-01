@@ -28,12 +28,12 @@
         <tbody>
         {% for obj in paginated_objects %}
             <tr>
-                <td>
+                <td class="link">
                     <a href="{% url 'view_inventory_account' obj.id %}">
                     {{ obj.account_no|localize }}
                     </a>
                 </td>
-                <td>
+                <td class="link">
                     <a href="{% url 'view_inventory_account' obj.id %}">
                     {{ obj.item.name }}
                     </a>

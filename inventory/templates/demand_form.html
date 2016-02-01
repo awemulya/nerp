@@ -71,13 +71,13 @@
                     <th class="span3 hidden-print">{% trans 'Purpose' %}</th>
 
                     <th
-                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>{% trans 'Released Item Quantity' %}</th>
+                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block hidden-print"{% endifusergroup %}>{% trans 'Released Item Quantity' %}</th>
 
 
                     <th
-                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>{% trans 'Inventory Account No.' %}</th>
+                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block hidden-print"{% endifusergroup %}>{% trans 'Inventory Account No.' %}</th>
                     <th
-                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>{% trans 'Remarks' %}</th>
+                            {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block hidden-print"{% endifusergroup %}>{% trans 'Remarks' %}</th>
                     <th class="span1 hidden-print"></th>
                 </tr>
                 </thead>
@@ -99,7 +99,7 @@
                     <td class="hidden-print"
                         data-bind="editableText: purpose, disable_content_editable: status() != 'Requested'"></td>
 
-                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}>
+                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block hidden-print"{% endifusergroup %}>
                         <div class="btn-group">
 
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
@@ -175,10 +175,10 @@
                         </div>
                     </td>
 
-                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block" {% endifusergroup %}
+                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block hidden-print" {% endifusergroup %}
                         data-bind="text: localize(inventory_account_id(), window.lang)">
                     </td>
-                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block"{% endifusergroup %}
+                    <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block hidden-print"{% endifusergroup %}
                         data-bind="editableText: remarks"></td>
 
                     <td class="hidden-print">
@@ -186,11 +186,11 @@
                         {% ifusergroup 'Store Keeper' 'Chief' %}
                             <button class="btn btn-default"
                                     data-bind="click: approve, visible: $root.id() && status() == 'Requested' && total_release() > 0">
-                                Approve
+                                {% trans "Approve" %}
                             </button>
                             <button class="btn btn-default"
                                     data-bind="click: disapprove, visible: status() == 'Approved'">
-                                Disapprove
+                                {% trans "Disapprove" %}
                             </button>
                             {#                            <button class="btn btn-default"#}
                             {#                                    data-bind="click: function(data, event) { fulfill($root, data, event) }, visible: status() == 'Approved'">#}
@@ -199,11 +199,11 @@
                             {#                            </button>#}
                             <button class="btn btn-default"
                                     data-bind="click: fulfill, visible: status() == 'Approved' && total_release() > 0">
-                                Set as Fulfilled
+                                {% trans "Set as Fulfilled" %}
                             </button>
                             <button class="btn btn-default"
-                                    data-bind="click: unfulfill, visible: status() == 'Fulfilled'">Set
-                                as Unfulfilled
+                                    data-bind="click: unfulfill, visible: status() == 'Fulfilled'">
+                                    {% trans "Set as Unfulfilled" %}
                             </button>
                         {% endifusergroup %}
                     </td>

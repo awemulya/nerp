@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <span> <a href="{% url 'library_index' %}">Library</a></span>
+    <span> <a href="{% url 'library_index' %}">{% trans "Library" %}</a></span>
 {% endblock %}
 
 

@@ -80,10 +80,10 @@
                              class="f-dropdown content amount-dropdown">
                             <table class="table table-bordered">
                                 <tr>
-                                    <th rowspan="2" data-bind="visible: has_balance('nepal_government')">Nepal
-                                        Government
+                                    <th rowspan="2" data-bind="visible: has_balance('nepal_government')">
+                                    {% trans "Nepal Government" %}
                                     </th>
-                                    <th colspan="5" data-bind="visible: has_foreign()">Foreign</th>
+                                    <th colspan="5" data-bind="visible: has_foreign()">{% trans "Foreign" %}</th>
                                 </tr>
                                 <tr>
                                     <td data-bind="visible: has_balance('foreign_cash_grant')">{% trans 'Cash Grant' %}</td>

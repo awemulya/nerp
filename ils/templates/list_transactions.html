@@ -9,7 +9,6 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    {#    <a href="{% url "list_demand_forms" %}">{% trans 'Demand' %} {% trans 'Forms' %}</a>#}
     <li><span> {% trans 'Transactions' %}</span></li>
 {% endblock %}
 
@@ -35,15 +34,15 @@
             <tbody>
             {% for transaction in paginated_objects %}
                 <tr>
-                    <td>{{ transaction.record|linkify }}</td>
-                    <td><a href="{% url 'view_patron' pk=transaction.user.id %}">{{ transaction.user }}</a></td>
+                    <td class="link">{{ transaction.record|linkify }}</td>
+                    <td class="link"><a href="{% url 'view_patron' pk=transaction.user.id %}">{{ transaction.user }}</a></td>
                     <td>{{ transaction.borrow_date }}</td>
                     <td>{{ transaction.due_date }}</td>
                     <td> {% if transaction.return_date %}
                         {{ transaction.return_date }}
                     {% else %}
 
-                        <a href="{% url 'incoming' transaction_pk=transaction.id %}">Return</a>
+                        <a href="{% url 'incoming' transaction_pk=transaction.id %}">{% trans "Return" %}</a>
                     {% endif %}
                     </td>
                 </tr>

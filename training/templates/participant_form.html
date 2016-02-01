@@ -36,12 +36,12 @@
     </form>
 
     {% if scenario == 'Update' %}
-        <h1>Trainings</h1>
+        <h1>{% trans "Trainings" %}</h1>
         {% for training in  form.instance.trainings.all %}
             <td><a href="{% url 'update_training' training.id %}">{{ training.title }}</a></td><br>
         {% endfor %}
         {% if form.instance.trainings.count < 1 %}
-            No trainings taken by this participant!
+            {% trans "No trainings taken by this participant!" %}
         {% endif %}
     {% endif %}
 

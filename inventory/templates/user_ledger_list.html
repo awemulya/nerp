@@ -22,12 +22,11 @@
     <table class="table table-striped table-bordered">
         <thead>
         <th>{% anchor name _('Name') %}</th>
-{#        <th>{% anchor demandee _('Fiscal Year') %}</th>#}
         </thead>
         <tbody>
         {% for obj in paginated_objects %}
             <tr>
-                <td>
+                <td class="link">
                     <a href="{% url 'user_ledger_detail' obj.pk %}">{{ obj }}</a>
                 </td>
             </tr>

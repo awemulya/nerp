@@ -11,9 +11,9 @@
 {% block content %}
 
     {% load mptt_tags %}
-    <ul>
+    <ul class="list-group">
         {% recursetree categories %}
-            <li>
+            <li class="list-group-item link">
                 <a href="{% url 'update_inventory_category' node.id %}">{{ node.name }}</a>
                 {% if not node.is_leaf_node %}
                     <ul class="children">
@@ -24,7 +24,7 @@
         {% endrecursetree %}
     </ul>
 
-    <a class="small secondary button"
+    <a class="btn btn-default btn-lg"
        href="{% url 'create_inventory_category' %}">{% trans 'New' %} {% trans 'Category' %}</a>
 
 {% endblock %}

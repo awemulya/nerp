@@ -10,7 +10,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url 'list_authors' %}">Authors</a></li>
+    <li><a href="{% url 'list_authors' %}">{% trans "Authors" %}</a></li>
     <li><span> {{ author }}</span></li>
 {% endblock %}
 
@@ -20,9 +20,9 @@
 
 {% block content %}
 
-    <h3>Books written by {{ author }}</h3>
+    <h3>{% trans "Books written by" %} {{ author }}</h3>
     <div class="pull-right">
-        Sort by {% anchor date_of_publication 'Published Date' %} | {% anchor publisher %}
+        {% trans "Sort by" %} {% anchor date_of_publication 'Published Date' %} | {% anchor publisher %}
     </div>
 
     {% autosort author.record_set.all as sorted_objects %}
@@ -35,7 +35,6 @@
                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
                         {% if record.get_small_cover %}
                             <a href="{{ record.get_absolute_url }}">
-                            {#                                <img src="{{ MEDIA_URL }}{{ record.small_cover }}"></a>#}
                             {% thumbnail record.get_small_cover "40x60" as im %}
                                 <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
                             {% endthumbnail %}
@@ -47,15 +46,15 @@
                     <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
                         <h3><a href="{{ record.get_absolute_url }}">{{ record }}</a></h3>
                         {% if record.publisher or record.published_date or record.published_places.all %}
-                            Published
+                            {% trans "Published" %}
                             {% if record.published_date %}
                                 {{ record.published_date }}
                             {% endif %}
                             {% if record.publisher %}
-                                by {{ record.publisher|linkify }}
+                                {% trans "by" %} {{ record.publisher|linkify }}
                             {% endif %}
                             {% if record.published_places.all %}
-                                in {{ record.published_places.all|join:', ' }}
+                                {% trans "in" %} {{ record.published_places.all|join:', ' }}
                             {% endif %}
                         {% endif %}
                     </div>

@@ -27,12 +27,12 @@
             {{ form.errors }}
         <form method="post" id="form">
             <ul class="nav nav-tabs" role="tablist" id="training-tab">
-                <li role="presentation" class="active"><a href="#basic" data-toggle="tab">Basic</a></li>
+                <li role="presentation" class="active"><a href="#basic" data-toggle="tab">{% trans "Basic" %}</a></li>
                 {% ifusergroup 'Store Keeper' %}
-                    <li role="presentation"><a href="#depreciation" data-toggle="tab">Depreciation</a></li>
+                    <li role="presentation"><a href="#depreciation" data-toggle="tab">{% trans "Depreciation" %}</a></li>
                 {% endifusergroup %}
                 {% if scenario == 'Update' %}
-                <li class="tab-title"><a href="#item_instance" class="item-instance" data-toggle="tab">Item Instance</a></li>
+                <li class="tab-title"><a href="#item_instance" class="item-instance" data-toggle="tab">{% trans "Item Instance" %}</a></li>
                 {% endif %}
              <button type="submit" value="Submit" class="btn btn-primary pull-right">
                             {% trans 'Submit' %}</button>
@@ -64,9 +64,6 @@
                             <a class="btn btn-danger btn-lg"
                                href="{% url 'delete_inventory_item' form.instance.id %}">{% trans 'Delete' %}!</a>
                         {% endif %}
-        {#                <a class="small secondary button" target="_blank"#}
-        {#                   href="{% url 'create_inventory_category' %}">{% trans 'New' %}#}
-        {#                    {% trans 'Inventory' %} {% trans 'Category' %}</a>#}
                     </div>
             </div>
         <div class="content tab-pane" id="depreciation">
@@ -77,7 +74,7 @@
                    <div class="row">
                     <div class="col-md-12 col-sm-12">
 
-                        <label>Depreciate</label>
+                        <label>{% trans "Depreciate" %}</label>
                         </div>
                         <div class="col-md-9 col-sm-9">
                         <div class="input-group">
@@ -89,7 +86,7 @@
                     </div>
                     
                     <div class="col-md-2 col-sm-2">
-                    <label for="id_depreciate_type">Depreciation</label>
+                    <label for="id_depreciate_type">{% trans "Depreciation" %}</label>
                         {{ depreciation_form.depreciate_type }}
                     </div>
                     <div class="col-md-5 col-sm-5">
@@ -100,7 +97,7 @@
                    <div class="row">
                     <div class="col-md-12 col-sm-12">
 
-                        <label>Every</label>
+                        <label>{% trans "Every" %}</label>
                         </div>
                         <div class="col-md-9 col-sm-9">
                         <div class="input-group">
