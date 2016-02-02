@@ -470,6 +470,13 @@ class EntryReport(models.Model):
     source_object_id = models.PositiveIntegerField()
     source = GenericForeignKey('source_content_type', 'source_object_id')
 
+    objects = FYManager()
+
+    def save(self, *args, **kwargs):
+        if self.__class__.objects.fiscal_year().filter(entry_report_no=self.entry_report_no).exclude(pk=self.pk):
+            raise ValidationError(_('Voucher no. exists!'))
+        super(EntryReport, self).save(*args, **kwargs)
+
     @property
     def fiscal_year(self):
         return FiscalYear.from_date(self.source.date)
@@ -532,6 +539,11 @@ class Handover(models.Model):
         if not self.pk and not self.voucher_no:
             self.voucher_no = get_next_voucher_no_for_fy(self.__class__, 'voucher_no')
 
+    def save(self, *args, **kwargs):
+        if self.__class__.objects.fiscal_year().filter(voucher_no=self.voucher_no).exclude(pk=self.pk):
+            raise ValidationError(_('Voucher no. exists!'))
+        super(Handover, self).save(*args, **kwargs)
+   
     @property
     def fiscal_year(self):
         return FiscalYear.from_date(self.date)
@@ -591,6 +603,11 @@ class PurchaseOrder(models.Model):
                                     object_id_field='source_object_id')
 
     objects = FYManager()
+
+    def save(self, *args, **kwargs):
+        if self.__class__.objects.fiscal_year().filter(order_no=self.order_no).exclude(pk=self.pk):
+            raise ValidationError(_('Voucher no. exists!'))
+        super(PurchaseOrder, self).save(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
         super(PurchaseOrder, self).__init__(*args, **kwargs)
@@ -697,7 +714,12 @@ class Inspection(models.Model):
     # transaction = models.ForeignKey(Transaction, related_name='inspection')
     
     objects = FYManager()
-    
+
+    def save(self, *args, **kwargs):
+        if self.__class__.objects.fiscal_year().filter(report_no=self.report_no).exclude(pk=self.pk):
+            raise ValidationError(_('Voucher no. exists!'))
+        super(Inspection, self).save(*args, **kwargs)
+
     @property
     def fiscal_year(self):
         return FiscalYear.from_date(self.date)
@@ -750,6 +772,11 @@ class QuotationComparison(models.Model):
     date = BSDateField(default=today, validators=[validate_in_fy], blank=True, null=True)
 
     objects = FYManager()
+
+    def save(self, *args, **kwargs):
+        if self.__class__.objects.fiscal_year().filter(report_no=self.report_no).exclude(pk=self.pk):
+            raise ValidationError(_('Voucher no. exists!'))
+        super(QuotationComparison, self).save(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
         super(QuotationComparison, self).__init__(*args, **kwargs)
@@ -848,6 +875,13 @@ class Expense(models.Model):
     types = (('Waive', _('Waive')), ('Handover', _('Handover')), ('Auction', _('Auction')))
     type = models.CharField(choices=types, max_length=20, default='Waive', verbose_name=_('Type'))
     rate = models.FloatField(blank=True, null=True, verbose_name=_('Rate'))
+
+    objects = FYManager()
+
+    def save(self, *args, **kwargs):
+        if self.__class__.objects.fiscal_year().filter(voucher_no=self.voucher_no).exclude(pk=self.pk):
+            raise ValidationError(_('Voucher no. exists!'))
+        super(Expense, self).save(*args, **kwargs)
 
     @property
     def fiscal_year(self):
