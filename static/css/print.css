@@ -114,3 +114,16 @@ td, tr, th {
 .selectize-inline .selectize-input{
     display: inline !important;
 }
+
+@media print {
+
+  .onlyprintbutton {
+    display: block !important;
+    border: none;
+  }
+
+  th.tableprintview, td.tableprintview {
+    display: table-cell !important;
+  }
+  
+}
