@@ -105,6 +105,7 @@ class InventoryAccount(models.Model):
 
     def get_data(self, year=None):
         from inventory.serializers import InventoryAccountRowSerializer
+
         obj = self
         le_data = {}
         if obj.item.type == 'consumable' and year:
@@ -594,6 +595,21 @@ class HandoverRow(models.Model):
 
     @property
     def release_quantity(self):
+        if self.handover.type == 'Outgoing':
+            return self.quantity
+
+    @property
+    def income_quantity(self):
+        if self.handover.type == 'Incoming':
+            return self.quantity
+
+    @property
+    def income_rate(self):
+        if self.handover.type == 'Incoming':
+            return self.rate
+
+    @property
+    def expense_total(self):
         if self.handover.type == 'Outgoing':
             return self.total_amount
 

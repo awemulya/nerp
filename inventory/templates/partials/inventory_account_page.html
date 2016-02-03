@@ -80,20 +80,20 @@
                 {% endif %}
 
 
-                <td>{{ row.income_quantity }}</td>
-                <td>{{ row.income_rate }}</td>
+                <td>{{ row.income_quantity|floatformat:2 }}</td>
+                <td>{{ row.income_rate|floatformat:2 }}</td>
                 <td>{{ row.income_total|default:0 }}</td>
 
-                <td>{{ row.expenses_quantity }}</td>
-                <td>{{ row.expense_total }}</td>
-                <td>{{ row.current_balance }}</td>
+                <td>{{ row.expenses_quantity|floatformat:2 }}</td>
+                <td>{{ row.expense_total|floatformat:2 }}</td>
+                <td>{{ row.current_balance|floatformat:2 }}</td>
                 <td>{% if row.remaining_total_cost_price %}
-                    {{ row.remaining_total_cost_price }}
+                    {{ row.remaining_total_cost_price|floatformat:2 }}
                     {% elif forloop.first %}
-                    {{ row.income_total|subtract:row.expense_total }}
+                    {{ row.income_total|subtract:row.expense_total|floatformat:2 }}
                     {% else %}
                     {% get_previous forloop obj.get_data as prev %}
-                    {{ prev.remaining_total_cost_price|add:row.income_total|subtract:row.expense_total }}
+                    {{ prev.remaining_total_cost_price|add:row.income_total|subtract:row.expense_total|floatformat:2 }}
                 {% endif %}</td>
                 <td>{{ row.remarks }}</td>
             </tr>
