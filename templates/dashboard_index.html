@@ -46,27 +46,27 @@
                             <div>
                                 <a href="{% url 'list_trainings' %}">
                                     <img src="{% static 'img/icons/training.png' %}">
-                                    <b>Trainings</b>
+                                    <b>{% trans "Trainings" %}</b>
                                 </a>
                             </div>
 
                             <div>
                                 <a href="{% url 'list_resource_persons' %}">
                                     <img src="{% static 'img/icons/trainer.png' %}">
-                                    Resource Persons
+                                    {% trans "Resource Persons" %}
                                 </a>
                             </div>
 
                             <div>
                                 <a href="{% url 'list_participants' %}">
                                     <img src="{% static 'img/icons/students.png' %}">
-                                    Participants
+                                    {% trans "Participants" %}
                                 </a>
                             </div>
                             <div>
                                 <a href="{% url 'list_organizations' %}">
                                     <img src="{% static 'img/icons/organization.png' %}">
-                                    Organizations
+                                    {% trans "Organizations" %}
                                 </a>
                             </div>
 
@@ -74,27 +74,27 @@
                             <div>
                                 <a href="{% url 'list_files' %}">
                                     <img src="{% static 'img/icons/file.png' %}">
-                                    Files
+                                    {% trans "Files" %}
                                 </a>
                             </div>
 
                             <div>
                                 <a href="{% url 'list_training_categories' %}">
                                     <img src="{% static 'img/icons/category.png' %}">
-                                    Categories
+                                    {% trans "Categories" %}
                                 </a>
                             </div>
                             <div>
                                 <a href="{% url 'list_target_groups' %}">
                                     <img src="{% static 'img/icons/target.png' %}">
-                                    Target Groups
+                                    {% trans "Target Groups" %}
                                 </a>
                             </div>
                         {% else %}
                             <div>
                                 <a href="{% url 'add_participant' %}">
                                     <img src="{% static 'img/icons/students.png' %}">
-                                    Register
+                                    {% trans "Register" %}
                                 </a>
                             </div>
                         {% endifusergroup %}
@@ -115,33 +115,33 @@
                         <div>
                             <a href="{% url 'list_records' %}">
                                 <img src="{% static 'img/icons/book.png' %}">
-                                Books
+                                {% trans "Books" %}
                             </a>
                         </div>
                         {% ifusergroup 'Librarian' %}
                             <div>
                                 <a href="{% url 'list_patrons' %}">
                                     <img src="{% static 'img/icons/user.png' %}">
-                                    Patrons
+                                    {% trans "Patrons" %}
                                 </a>
                             </div>
                         {% endifusergroup %}
                         <div>
                             <a href="{% url 'list_authors' %}">
                                 <img src="{% static 'img/icons/write.png' %}">
-                                Authors
+                                {% trans "Authors" %}
                             </a>
                         </div>
                         <div>
                             <a href="{% url 'list_publishers' %}">
                                 <img src="{% static 'img/icons/print.png' %}">
-                                Publishers
+                                {% trans "Publishers" %}
                             </a>
                         </div>
                         <div>
                             <a href="{% url 'list_ebooks' %}">
                                 <img src="{% static 'img/icons/ebook.png' %}" width="150px" height="150px">
-                                Ebooks
+                                {% trans "Ebooks" %}
                             </a>
                         </div>
 
@@ -149,20 +149,20 @@
                             <div>
                                 <a href="{% url 'list_transactions' %}">
                                     <img src="{% static 'img/icons/import.png' %}">
-                                    Transactions
+                                    {% trans "Transactions" %}
                                 </a>
                             </div>
 
                             <div>
                                 <a href="{% url 'acq' %}">
                                     <img src="{% static 'img/icons/download.png' %}">
-                                    Acquisition
+                                    {% trans "Acquisition" %}
                                 </a>
                             </div>
                             <div>
                                 <a href="{% url 'outgoing' %}">
                                     <img src="{% static 'img/icons/export.png' %}">
-                                    Checkout
+                                    {% trans "Checkout" %}
                                 </a>
                             </div>
                         {% endifusergroup %}
