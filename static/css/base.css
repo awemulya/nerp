@@ -416,6 +416,7 @@ footer {
     padding: 0 0.5em 0.5em;
     margin: 1em;
     min-height: 15em;
+    box-shadow: 0 0 0 1px #F8F8F8 inset, 0 0 0 1px #CCCCCC;
 }
 
 td.link a{
