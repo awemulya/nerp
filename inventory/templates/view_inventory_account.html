@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block content %}
-
+    <div class="well">
     <div class="visible-print-block">
         <span class="pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %}
             {% if obj.item.type == 'non-consumable' %}
@@ -56,7 +56,7 @@
     <div class="row hidden-print">
 
         <div class="col-md-6">
-            <table class="table table-bordered table-responsive">
+            <table class="table table-responsive">
                 <tr>
                     <th colspan="2" class="text-center"><h2>{{ obj.item.name }}</h2></th>
                 </tr>
@@ -96,8 +96,10 @@
         {% endif %}
 
     </div>
+    </div>
 
-    <table class="table table-striped table-bordered">
+    <div class="well">
+    <table class="table table-striped">
         <thead>
         <tr>
             <th rowspan="2">{% trans 'Date' %}</th>
@@ -156,8 +158,9 @@
         <!-- /ko -->
         </tbody>
     </table>
+    </div>
 
-    <input type="submit" class="btn btn-primary btn-lg" value="{% trans 'Save' %}" data-bind="click: save">
+    <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}" data-bind="click: save">
 
     <div class="row visible-print-block">
         <div class="col-lg-4 col-sm-4 col-xs-4">
