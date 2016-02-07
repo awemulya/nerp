@@ -183,33 +183,35 @@
                         data-bind="editableText: remarks"></td>
 
                     <td class="hidden-print">
-                        <div>
-                        {% ifusergroup 'Store Keeper' 'Chief' %}
-                            <button class="btn btn-default btn-raised"
-                                    data-bind="click: approve, visible: $root.id() && status() == 'Requested' && total_release() > 0">
-                                {% trans "Approve" %}
-                            </button>
-                            <button class="btn btn-default btn-raised"
-                                    data-bind="click: disapprove, visible: status() == 'Approved'">
-                                {% trans "Disapprove" %}
-                            </button>
-                            {#                            <button class="btn btn-default btn-raised"#}
-                            {#                                    data-bind="click: function(data, event) { fulfill($root, data, event) }, visible: status() == 'Approved'">#}
-                            {#                                Set as#}
-                            {#                                Fulfilled#}
-                            {#                            </button>#}
-                            <button class="btn btn-default btn-raised"
-                                    data-bind="click: fulfill, visible: status() == 'Approved' && total_release() > 0">
-                                {% trans "Set as Fulfilled" %}
-                            </button>
-                            <button class="btn btn-default btn-raised"
-                                    data-bind="click: unfulfill, visible: status() == 'Fulfilled'">
-                                    {% trans "Set as Unfulfilled" %}
-                            </button>
-                        {% endifusergroup %}
-                        </div>
-                        <div>
-                        <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
+                        <div class="row">
+                            <div class="col-sm-10">
+                               {% ifusergroup 'Store Keeper' 'Chief' %}
+                                <button class="btn btn-default btn-raised"
+                                        data-bind="click: approve, visible: $root.id() && status() == 'Requested' && total_release() > 0">
+                                    {% trans "Approve" %}
+                                </button>
+                                <button class="btn btn-default btn-raised"
+                                        data-bind="click: disapprove, visible: status() == 'Approved'">
+                                    {% trans "Disapprove" %}
+                                </button>
+                                {#                            <button class="btn btn-default btn-raised"#}
+                                {#                                    data-bind="click: function(data, event) { fulfill($root, data, event) }, visible: status() == 'Approved'">#}
+                                {#                                Set as#}
+                                {#                                Fulfilled#}
+                                {#                            </button>#}
+                                <button class="btn btn-default btn-raised"
+                                        data-bind="click: fulfill, visible: status() == 'Approved' && total_release() > 0">
+                                    {% trans "Set as Fulfilled" %}
+                                </button>
+                                <button class="btn btn-default btn-raised"
+                                        data-bind="click: unfulfill, visible: status() == 'Fulfilled'">
+                                        {% trans "Set as Unfulfilled" %}
+                                </button>
+                            {% endifusergroup %}
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
+                            </div>
                         </div>
                     </td>
                 </tr>
