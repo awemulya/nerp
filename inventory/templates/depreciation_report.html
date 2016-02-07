@@ -18,7 +18,9 @@
 {% endblock %}
 
 {% block content %}
+
     <h1 class="center">{% trans 'Depreciation' %} {% trans 'Report' %}</h1>
+    <div class="well">
     <div data-bind="with: table_view">
         <table class="table table-striped table-bordered">
             <thead>
@@ -77,5 +79,6 @@
 
             </tbody>
         </table>
+        </div>
     </div>
 {% endblock %}
