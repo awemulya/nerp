@@ -30,24 +30,29 @@
         {% csrf_token %}
 
         <input type="hidden" name="table_model" data-bind="value: ko.toJSON($data.demand_rows, null, 2)">
-
+        <div class="well">
         <div class="pull-right">
-            {% trans 'Date' %}: <input type="text" class="pull-right text-right form-control" required="required"
+            {% trans 'Date' %}: 
+        <div class="form-inline inline">
+
+            <input type="text" class="pull-right text-right form-control" required="required"
                                        name="date" id="id_date"
                                        data-bind="value: date, localize: true, autosize:3">
             {{ form.date.errors }}
+            </div>
         </div>
 
 
         {% trans 'Entry Report' %} {% trans 'No.' %}:
+        <div class="form-inline inline">
+
         <input type="text" name="entry_report_no" min="0" class="form-control input-inline" id="id_entry_report_no"
                required data-bind="value: entry_report_no, localize: true">
+        </div>
         {{ form.entry_report.errors }}
-
-        <br><br>
-
+        </div>
         <div data-bind="with:table_view">
-
+            <div class="well">
             <table class="table table-striped table-bordered">
                 <thead>
                 <tr>
@@ -103,27 +108,28 @@
                 <!-- /ko -->
                 </tbody>
             </table>
-            <a class="btn btn-default hidden-print" data-bind="click: addRow">
+            <a class="btn btn-default btn-raised hidden-print" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>
+            </div>
         </div>
 
         <br>
-        <input type="submit" class="btn btn-primary btn-lg hidden-print" value="{% trans 'Save' %}">
+        <input type="submit" class="btn btn-info btn-raised btn-lg hidden-print" value="{% trans 'Save' %}">
         <span data-bind="text: msg, css: status"></span>
 
         {% if form.instance.id %}
             <a href="{% url 'convert_entry_report' form.instance.id %}"
-               class="btn btn-primary btn-lg hidden-print">{% trans 'Export as XLS' %}</a>
-            <a class="btn btn-danger btn-lg hidden-print"
+               class="btn btn-info btn-raised btn-lg hidden-print">{% trans 'Export as XLS' %}</a>
+            <a class="btn btn-danger btn-raised btn-lg hidden-print"
                href="{% url 'delete_entry_report' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}
 
         {% if form.instance.source|get_class == 'PurchaseOrder' %}
-            <a class="btn btn-primary btn-lg hidden-print" target="_blank"
+            <a class="btn btn-info btn-raised btn-lg hidden-print" target="_blank"
                href="{% url 'update_purchase_order' form.instance.source.id %}">{% trans 'Purchase Order' %}</a>
         {% else %}
-            <a class="btn btn-primary btn-lg hidden-print" target="_blank"
+            <a class="btn btn-info btn-raised btn-lg hidden-print" target="_blank"
                href="{% url 'update_handover' form.instance.source.id %}">{% trans 'Handover' %}</a>
         {% endif %}
 
