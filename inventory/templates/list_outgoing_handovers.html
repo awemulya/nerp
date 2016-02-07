@@ -15,8 +15,8 @@
 
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
-
-    <table class="table table-striped table-bordered">
+    <div class="well">
+    <table class="table table-striped">
         <thead>
         <th>{% anchor voucher_no _('Form No.') %}</th>
         <th>{% anchor office _('Handed Over Office') %}</th>
@@ -33,16 +33,17 @@
                 </td>
 
                 <td>
-                    {{ item.date|bsdate:"Y-m-d" }}
+                    {{ item.date }}
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
     {% paginate %}
 
-    <a class="btn btn-default btn-lg"
+    <a class="btn btn-success btn-raised btn-lg"
        href="{% url 'create_outgoing_handover' %}">{% trans 'New' %} {% trans 'Outgoing Handover' %}</a>
 
 {% endblock %}
