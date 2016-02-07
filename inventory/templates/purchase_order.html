@@ -47,14 +47,20 @@
             <div class="col-lg-6 col-sm-6 pull-right text-right">
                 <div class="pull-right text-right">
                     {% trans 'Purchase Order' %} {% trans 'No.' %}:
+                    <div class="form-inline inline">
+
                     <input type="text" class="pull-right text-right form-control" name="order_no" id="id_order_no" required
                            data-bind="value: order_no, localize: true, autosize:3">
+                    </div>
                     {{ form.order_no.errors }}
                 </div>
                 <div class="pull-right text-right clear">
-                    {% trans 'Date' %}: <input type="text" class="pull-right text-right form-control" required="required"
+                    {% trans 'Date' %}: 
+                    <div class="form-inline inline">
+                    <input type="text" class="pull-right text-right form-control" required="required"
                                                name="date" id="id_date"
                                                data-bind="value: date, localize: true, autosize:3">
+                    </div>
                     {{ form.date.errors }}
                 </div>
             </div>

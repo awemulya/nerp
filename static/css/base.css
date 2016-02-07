@@ -443,3 +443,7 @@ li.link a{
 .form-group{
     margin: 0px !important;
 };
+
+.form-inline {
+    display: inline:;
+};
