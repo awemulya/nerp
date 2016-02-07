@@ -17,7 +17,7 @@
 
     {% autosort obj as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
-
+    <div class="well">
     <a href="{% url "inspection_report_list" %}">{% trans "Current Fiscal Year's" %} {% trans 'Inspection' %} {% trans 'Reports' %}</a>
     |
     <a href="{% url "inspection_report_list" %}?year=all">{% trans 'All' %} {% trans 'Inspection' %} {% trans 'Reports' %}</a>
@@ -25,9 +25,11 @@
     {% for fiscal_year in fiscal_years %}
         | <a href="{% url "inspection_report_list" %}?year={{ fiscal_year.year }}">{{ fiscal_year }}</a>
     {% endfor %}
-    <br/><br/>
+    </div>
+    
 
-    <table class="table table-striped table-bordered">
+    <div class="well">
+    <table class="table table-striped">
         <thead>
         <th>{% anchor report_no _('No.') %}</th>
         <th>{% anchor date _('Date') %}</th>
@@ -49,10 +51,10 @@
         {% endfor %}
         </tbody>
     </table>
-
+    </div>
     {% paginate %}
 
-    <a class="btn btn-default btn-lg"
+    <a class="btn btn-success btn-raised btn-lg"
        href="{% url 'inspection_report' %}">{% trans 'New' %} {% trans 'Inspection' %} {% trans 'Report' %}</a>
 {% endblock %}
   
