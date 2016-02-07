@@ -60,7 +60,7 @@
         </div>
 
         <div data-bind="with:table_view">
-            <div class="well">
+           <div class="well">
             <table class="table table-bordered table-striped table-responsive">
                 <thead>
                 <tr>
@@ -173,7 +173,7 @@
                             </div>
                             <!-- /ko -->
 
-                        </div>
+
                     </td>
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block tableprintview" {% endifusergroup %}
@@ -183,7 +183,7 @@
                         data-bind="editableText: remarks"></td>
 
                     <td class="hidden-print">
-                        <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
+                        <div>
                         {% ifusergroup 'Store Keeper' 'Chief' %}
                             <button class="btn btn-default btn-raised"
                                     data-bind="click: approve, visible: $root.id() && status() == 'Requested' && total_release() > 0">
@@ -207,6 +207,10 @@
                                     {% trans "Set as Unfulfilled" %}
                             </button>
                         {% endifusergroup %}
+                        </div>
+                        <div>
+                        <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
+                        </div>
                     </td>
                 </tr>
                 <!-- /ko -->
@@ -215,8 +219,8 @@
             <a class="btn btn-default btn-raised" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>
+            </div>
         </div>
-        <br>
         <div class="well">
         <div class="row">
             <div class="col-lg-6 col-sm-6 col-xs-6">
@@ -253,7 +257,6 @@
             </div>
         </div>
         </div>
-        <br/>
 
         <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}"
                 {#               data-bind="visible: $root.status() == 'Requested'"#}
