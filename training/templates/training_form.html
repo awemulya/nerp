@@ -43,19 +43,18 @@
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-
         <div class="pull-right">
             <div class="span12">
-                <button type="submit" value="submit" class="btn btn-primary">
+                <button type="submit" value="submit" class="btn btn-info btn-raised">
                     {% trans 'Save' %}</button>
                 {% if scenario == 'Update' %}
-                    <a class="btn btn-danger"
+                    <a class="btn btn-danger btn-raised"
                        href="{% url 'delete_training' form.instance.id %}">{% trans 'Delete' %}!</a>
                 {% endif %}
             </div>
         </div>
     
-        <ul class="nav nav-tabs" role="tablist" id="training-tab">
+        <ul class="nav nav-pills" role="tablist" id="training-tab">
             <li role="presentation" class="active"><a href="#basic" data-toggle="tab">{% trans "Basic" %}</a></li>
             <li role="presentation"><a href="#detail" data-toggle="tab">{% trans "Detail" %}</a></li>
             <li role="presentation"><a href="#participants" data-toggle="tab">{% trans "Participants" %}</a></li>
@@ -63,7 +62,9 @@
         </ul>
 
         <div class="tab-content">
+        <br>
             <div class="content tab-pane active" id="basic">
+            <div class="well">
                 <label for="id_title">{% trans "Title" %}:</label>
                 {{ form.title }}
 
@@ -96,9 +97,11 @@
                     <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-resource-person">+</a>
 
                 </div>
+                </div>
             </div>
-
+            
             <div class="content tab-pane" id="detail">
+                <div class="well">
                 <label for="id_criteria_for_selection">{% trans "Criteria for selection" %}:</label>
                 {{ form.criteria_for_selection }}
 
@@ -117,19 +120,18 @@
 
                 <label for="id_curriculum">{% trans "Curriculum" %}:</label>
                 {{ form.curriculum }}
-
+                </div>
 
             </div>
-            <br>
 
             <div class="content tab-pane" id="participants">
-                <br>
+                <div class="well">
                 <select id="available"
                         data-bind="options: $root.participants_available, value: selected_participant, optionsText: 'name', optionsValue: 'id'"></select>
                 <button class="btn btn-default" data-bind="click: add_participant">↓ {% trans "Add" %}</button>
                 <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-participant">+ {% trans "Create New" %}</a>
                 <br><br>
-                <table class="table table-bordered">
+                <table class="table ">
                     <thead>
                     <th>{% trans "Name" %}</th>
                     <th>{% trans "Address" %}</th>
@@ -164,12 +166,12 @@
                 </table>
 
                 <input type="hidden" name="selected_participants" data-bind="value: participants">
-
+                </div>
             </div>
 
             <div class="content tab-pane" id="files">
-                <br>
-                <table class="table table-striped table-bordered">
+                <div class="well">
+                <table class="table table-striped">
                     <thead>
                     <tr>
                         <th>{% trans "File" %}</th>
@@ -204,7 +206,7 @@
                 <button class="btn btn-default" data-bind="click: add_row">+ {% trans "Add File" %}</button>
                 <input type="hidden" name="deleted_files" data-bind="value: deleted_rows()">
             </div>
-
+            </div>
         </div>
     </form>
 

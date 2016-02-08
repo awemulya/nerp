@@ -24,18 +24,24 @@
 {% block content %}
 
     <h1>{% trans "Training Report" %}</h1>
-
+    <div class="well">
     <form class="center">
         <span {% if not request.GET.from %}class="hidden-print"{% endif %}>{% trans "From" %}:</span>
-        <input type="text" id="from" name="from" data-date-format="yyyy-mm-dd"
+        <div class="form-inline inline">
+        <input type="text" id="from" name="from" data-date-format="yyyy-mm-dd" class="form-control"
                {% if request.GET.from %}value="{{ request.GET.from }}"{% endif %}>
+        </div>
         <span {% if not request.GET.to %}class="hidden-print"{% endif %}>{% trans "To" %}:</span>
-        <input type="text" id="to" name="to" data-date-format="yyyy-mm-dd"
+        <div class="form-inline inline">
+        <input type="text" id="to" name="to" data-date-format="yyyy-mm-dd" class="form-control"
                {% if request.GET.to %}value="{{ request.GET.to }}"{% endif %}>
-        <input type="submit" value="Go!">
+        </div>
+        <button type="btn btn-default btn-raised">{% trans "Go!" %}</button>
     </form>
-
-    <table class="table table-striped table-bordered">
+    
+    </div>
+    <div class="well">
+    <table class="table table-striped">
         <tr>
             <td>{% trans "Total Trainings" %}</td>
             <td>{{ objects.count }}</td>
@@ -61,10 +67,11 @@
             <td>{{ days }}</td>
         </tr>
     </table>
+    </div>
 
     <h3>{% trans "Trainings" %}</h3>
-
-    <table class="table table-striped table-bordered">
+    <div class="well">
+    <table class="table table-striped">
         <thead>
         <th>{% anchor title _('Title') %}</th>
         <th>{% anchor starts _('Starts') %}</th>
@@ -89,6 +96,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
 
 {% endblock %}

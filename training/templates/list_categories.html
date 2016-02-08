@@ -11,6 +11,7 @@
 {% block content %}
 
     {% load mptt_tags %}
+    <div class="well">
     <ul>
         {% recursetree objects %}
             <li class="link">
@@ -25,9 +26,10 @@
                 {% endif %}
             </li>
         {% endrecursetree %}
-    </ul>
+    </ul>  
+    </div>
 
-    <a class="btn btn-default btn-lg"
+    <a class="btn btn-success btn-raised btn-lg"
        href="{% url 'add_training_category' %}">{% trans 'New' %} {% trans 'Category' %}</a>
 
 {% endblock %}

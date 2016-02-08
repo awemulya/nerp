@@ -24,12 +24,14 @@
     {{ form.errors }}
     <form method="post">
         {% csrf_token %}
+        <div class="well">
         {{ form.as_p }}
+        </div>
             <div class="span12">
-                <button type="submit" value="Submit" class="btn btn-primary btn-lg">
+                <button type="submit" value="Submit" class="btn btn-info btn-raised btn-lg">
                     {% trans 'Submit' %}</button>
                 {% if scenario == 'Update' %}
-                    <a class="btn btn-danger btn-lg"
+                    <a class="btn btn-danger btn-raised btn-lg"
                        href="{% url 'delete_participant' form.instance.id %}">{% trans 'Delete' %}!</a>
                 {% endif %}
             </div>
@@ -37,12 +39,14 @@
 
     {% if scenario == 'Update' %}
         <h1>{% trans "Trainings" %}</h1>
+        <div class="well">
         {% for training in  form.instance.trainings.all %}
             <td><a href="{% url 'update_training' training.id %}">{{ training.title }}</a></td><br>
         {% endfor %}
         {% if form.instance.trainings.count < 1 %}
             {% trans "No trainings taken by this participant!" %}
         {% endif %}
+        </div>
     {% endif %}
 
 {% endblock %}
