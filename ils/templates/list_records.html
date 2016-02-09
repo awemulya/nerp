@@ -21,14 +21,19 @@
 {% block content %}
     {% autosort records as sorted_objects %}
     {% autopaginate sorted_objects 20 as paginated_objects %}
-
-    <div class="pull-right">
-        {% trans "Sort by" %} {% anchor date_of_publication 'Published Date' %} | {% anchor publisher %} |
-    </div>
-
+    <div class="well">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="pull-right">
+                    {% trans "Sort by" %} {% anchor date_of_publication 'Published Date' %} | {% anchor publisher %} |
+                </div>
+            </div>
+        </div>
+    </div>  
     <ul class="records">
         {% for record in paginated_objects %}
             <li>
+            <div class="well">
                 <div class="row">
                     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
                         {% if record.get_small_cover %}
@@ -64,6 +69,7 @@
                     </div>
                     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
                     </div>
+                </div>
                 </div>
             </li>
         {% endfor %}

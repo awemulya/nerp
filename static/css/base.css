@@ -222,6 +222,10 @@ ul.records, ul#id_models {
     list-style: none;
 }
 
+ul.records {
+    padding-left: 0px;
+}
+
 ul.messages {
     list-style: none;
     border: 1px solid black;
@@ -455,4 +459,8 @@ li.link a{
 #breadcrumb-search-isbn {
     margin-top: -2.2em;
     margin-left: 1.3em;
+}
+
+.word-wrap {
+    word-wrap: break-word;;
 }
