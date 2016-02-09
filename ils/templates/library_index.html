@@ -6,7 +6,9 @@
 {% block title %} {% trans 'Integrated Library System' %}{% endblock %}
 
 {% block content %}
-
+<div class="well">
+    <div class="row">
+        <div class="col-sm-12">
     <div class="dashboard">
 
         <div>
@@ -67,9 +69,14 @@
 
             {#            {{ form.as_p }}#}
 
-            <input type="submit" value="Search!" class="btn btn-default">
+            <input type="submit" value="Search!" class="btn btn-default btn-raised">
 
         </form>
     </div>
+            
+        </div>
+    </div>
+</div>
+
 
 {% endblock %}

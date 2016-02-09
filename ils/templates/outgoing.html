@@ -24,6 +24,7 @@
 
     <form method="post" action="{% url 'save_outgoing' %}">
         {% csrf_token %}
+        <div class="well">
 
         <label for="id_user">{% trans "Patron" %}:</label>
         {{ form.user }}
@@ -53,9 +54,9 @@
             </div>
 
         </div>
-        <br>
+        </div>
 
-        <input type="submit" value="Checkout!" class="btn btn-default">
+        <input type="submit" value="Checkout!" class="btn btn-info btn-raised">
 
     </form>
 
