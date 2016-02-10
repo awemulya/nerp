@@ -12,9 +12,9 @@
 
     {% load mptt_tags %}
     <div class="well">
-    <ul>
+    <ul class="list-group">
         {% recursetree objects %}
-            <li class="link">
+            <li class="list-group-item">
                 <a href="{% url 'update_target_group' node.id %}">{{ node.name }}</a>
                 {% if node.description %}
                     : {{ node.description }}

@@ -122,7 +122,7 @@ def category_form(request, pk=None):
             item = form.save()
             if request.is_ajax():
                 return JsonResponse({'id': item.id, 'name': item.name})
-            return redirect(reverse('list_categories'))
+            return redirect(reverse('list_training_categories'))
     else:
         form = CategoryForm(instance=item)
     return render(request, 'category_form.html', {
@@ -306,7 +306,7 @@ def delete_organization(request, pk):
 def delete_category(request, pk):
     obj = get_object_or_404(Category, pk=pk)
     obj.delete()
-    return redirect(reverse('list_categories'))
+    return redirect(reverse('list_training_categories'))
 
 
 @group_required('Trainer')
