@@ -119,10 +119,10 @@ class InventoryAccount(models.Model):
                 le_data['voucher_no'] = 'Last FY'
             journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id, date__gte=FiscalYear.start(year),
                                                           date__lte=FiscalYear.end(year)).order_by('date', 'id') \
-                .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+                .prefetch_related('transactions', 'account_row', 'creator', 'content_type', 'transactions__account').select_related()
         else:
             journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('date', 'id') \
-                .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+                .prefetch_related('transactions', 'account_row', 'creator', 'content_type', 'transactions__account').select_related()
         data = InventoryAccountRowSerializer(journal_entries, many=True).data
         if le_data:
             data.insert(0, le_data)
