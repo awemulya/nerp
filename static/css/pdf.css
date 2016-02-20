@@ -12,3 +12,8 @@
     display: block;
     page-break-before: always;
 }
+
+table{
+    max-width: 100%;
+    font-size: 90%;
+}
