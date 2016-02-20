@@ -12,20 +12,20 @@
 
 
 {% block content %}
-
+<div class="well">
     {% trans "Yearly report according to fiscal year" %} 
     {% get_fiscal_years as fiscal_years %}
     {% for fiscal_year in fiscal_years %}
         | <a href="{% url "yearly_report" %}?year={{ fiscal_year.year }}">{{ fiscal_year }}</a>
     {% endfor %}
-    <br><br>
+</div>
  {% load pagination_tags %}
     {% load sorting_tags %}
    
     {% autosort obj as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
-
-    <table class="table table-striped table-bordered">
+    <div class="well">
+    <table class="table table-striped ">
         <thead>
         <th>{% anchor demandee _('Fiscal Year') %}</th>
         </thead>
@@ -39,6 +39,7 @@
         {% endfor %}
         </tbody>
     </table>
+</div>
 
     {% paginate %}
  

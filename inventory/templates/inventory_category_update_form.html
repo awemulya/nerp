@@ -5,24 +5,20 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_inventory_categories" %}">{% trans 'Inventory' %} {% trans 'Categories' %}</a>
-    <span>{% trans 'Update' %} {% trans 'Inventory' %} {% trans 'Category' %}</span>
+    <li><a href="{% url "list_inventory_categories" %}">{% trans 'Inventory' %} {% trans 'Categories' %}</a></li>
+    <li><span>{% trans 'Update' %} {% trans 'Inventory' %} {% trans 'Category' %}</span></li>
 {% endblock %}
 
 {% block content %}
     <form method="post">
         {% csrf_token %}
+        <div class="well">
 
         {{ form.as_p }}
-
-        <div class="row">
-
-            <input type="submit" value="Submit" class="btn btn-primary btn-lg"/>
-            <a class="btn btn-danger btn-lg"
-               href="{% url 'delete_inventory_category' form.instance.id %}">{% trans 'Delete!' %}</a>
-
         </div>
-
+            <input type="submit" value="Submit" class="btn btn-info btn-raised btn-lg"/>
+            <a class="btn btn-danger btn-raised btn-lg"
+               href="{% url 'delete_inventory_category' form.instance.id %}">{% trans 'Delete!' %}</a>
 
     </form>
 

@@ -651,7 +651,6 @@ def depreciation_report(request):
     transaction = TransactionSerializer(transaction_without_duplication, many=True).data
     # depreciate_item = DepreciationSerializer(depreciate_object_list, many=True).data
     # depreciate_object_list = []
-    # import pdb; pdb.set_trace()
     return render(request, "depreciation_report.html", {'data': transaction})
 
 
@@ -1248,10 +1247,10 @@ def save_handover(request):
         obj = Handover.objects.get(id=params.get('id'))
     else:
         obj = Handover()
+    model = HandoverRow
     try:
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
-        model = HandoverRow
         for index, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['quantity', 'unit', 'item_id', 'total_amount']):
                 continue

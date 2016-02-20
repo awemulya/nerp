@@ -15,7 +15,7 @@
 
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
-
+    <div class="well">
     <a href="{% url "list_handovers" %}">{% trans "Current Fiscal Year's" %} {% trans 'Handover' %}</a>
     |
     <a href="{% url "list_handovers" %}?year=all">{% trans 'All' %} {% trans 'Handover' %}</a>
@@ -23,9 +23,10 @@
     {% for fiscal_year in fiscal_years %}
         | <a href="{% url "list_handovers" %}?year={{ fiscal_year.year }}">{{ fiscal_year }}</a>
     {% endfor %}
-    <br/><br/>
+    </div>
 
-    <table class="table table-striped table-bordered">
+    <div class="well">
+    <table class="table table-striped">
         <thead>
         <th>{% anchor voucher_no _('Form No.') %}</th>
         <th>{% anchor office _('Handed To/From') %}</th>
@@ -51,13 +52,14 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
     {% paginate %}
 
-    <a class="btn btn-default btn-lg"
+    <a class="btn btn-success btn-raised btn-lg"
        href="{% url 'create_outgoing_handover' %}">{% trans 'New' %} {% trans 'Outgoing Handover' %}</a>
 
-    <a class="btn btn-default btn-lg"
+    <a class="btn btn-success btn-raised btn-lg"
        href="{% url 'create_incoming_handover' %}">{% trans 'New' %} {% trans 'Incoming Handover' %}</a>
 
 {% endblock %}

@@ -15,8 +15,8 @@
 
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
-
-    <table class="table table-striped table-bordered">
+    <div class="well">
+    <table class="table table-striped">
         <thead>
         <th>{% anchor name _('Name') %}</th>
         <th>{% anchor address _('Address') %}</th>
@@ -42,10 +42,10 @@
         {% endfor %}
         </tbody>
     </table>
-
+    </div>
     {% paginate %}
 
-    <a class="btn btn-default btn-lg"
+    <a class="btn btn-success btn-raised btn-lg"
        href="{% url 'create_party' %}">{% trans 'New' %} {% trans 'Party' %}</a>
 
 {% endblock %}

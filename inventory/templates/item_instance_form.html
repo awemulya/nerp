@@ -13,32 +13,38 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_inventory_items" %}">{% trans 'Inventory' %} {% trans 'Items' %}</a>
-    <span>{% trans scenario %} {% trans 'Inventory' %} {% trans 'Item' %}</span>
+    <li><a href="{% url "list_inventory_items" %}">{% trans 'Inventory' %} {% trans 'Items' %}</a></li>
+    <li><span>{% trans scenario %} {% trans 'Inventory' %} {% trans 'Item' %}</span></li>
 {% endblock %}
 
 {% block content %}
 
 <form method="POST">
 	{% csrf_token %}
+    <div class="well">
 	{{ form.as_p }}
     <div id="other-properties">
         <label for="id_other_properties">{% trans "Other properties" %}</label>
-        <div id="id_other_properties" data-bind="foreach: other_properties">
-            <p>
-                <input type="text" id="id_property_name" name="property_name" placeholder="Property name" data-bind="value: property_name"> 
-                <input type="text" id="id_property" name="property" placeholder="Property" data-bind="value: property">
-                <a href="#" class="close tiny secondary" data-bind="click: $parent.removeOtherProperty">x</a>
-            </p>
+        <label>
+            <a class="btn btn-default btn-raised" data-bind="click: addOtherProperty"><i
+                class="fa fa-plus"></i> {% trans 'Add New' %}
+            </a>
+        </label>
+
+        <div id="id_other_properties" data-bind="foreach: other_properties" class="form-inline">
+            <div class="property-row">
+                <input type="text" class="form-control test" id="id_property_name" name="property_name" placeholder="Property name" data-bind="value: property_name"> 
+                <input type="text" class="form-control" id="id_property" name="property" placeholder="Property" data-bind="value: property">
+                <a href="#" class="btn btn-default" data-bind="click: $parent.removeOtherProperty">x</a>
+            </div>
         </div>
-        <a class="small secondary button" data-bind="click: addOtherProperty">
-            {% trans 'Add New Row' %}
-        </a>
     </div>
-            <button type="submit" value="Submit" class="small secondary button">
+
+     </div>
+            <button type="submit" value="Submit" class="btn btn-info btn-raised">
                 {% trans 'Submit' %}</button>
             {% if scenario == 'Update' %}
-                <a class="small secondary button alert"
+                <a class="btn btn-danger btn-raised"
                    href="#">{% trans 'Delete' %}!</a>
             {% endif %}
 </form>
