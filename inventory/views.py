@@ -23,7 +23,7 @@ from openpyxl.cell import get_column_letter
 from core.models import app_setting, FiscalYear, Party, FISCAL_YEARS
 from app.utils.helpers import invalid, save_model, empty_to_none
 from app.utils.mixins import PDFView
-from app.utils.mixins import TemplateView as PDFView
+# from app.utils.mixins import TemplateView as PDFView
 from users.models import group_required, User
 
 from inventory.filters import InventoryItemFilter

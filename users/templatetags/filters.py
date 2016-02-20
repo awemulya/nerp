@@ -15,6 +15,7 @@ from django.utils.translation import get_language
 from njango.utils import get_calendar
 
 from app import settings
+from app.utils.helpers import zero_for_none
 
 register = Library()
 
@@ -84,7 +85,6 @@ def subtract(value, arg):
     if not value:
         value = 0
     return value - arg
-    
 
 
 @register.simple_tag
@@ -310,4 +310,16 @@ def fiscal_year(year):
 
 @register.assignment_tag
 def get_previous(loop, lst):
-    return lst[loop['counter'] - 1]
+    return lst[loop['counter'] - 2]
+
+
+@register.simple_tag
+def remaining_total_cost_price(row, counter, data):
+    if row.get('remaining_total_cost_price'):
+        return float(row.get('remaining_total_cost_price'))
+    if counter == 0:
+        return zero_for_none(row.get('income_total')) - zero_for_none(row.get('expense_total'))
+    previous_row = data[counter - 1]
+    return zero_for_none(row.get('income_total')) - zero_for_none(row.get('expense_total')) + remaining_total_cost_price(
+        previous_row, counter - 1, data)
+    

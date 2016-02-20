@@ -29,7 +29,10 @@
                 {% trans 'Unit' %}: {{ obj.item.unit }}
             </div>
             <div class="col-md-7">
-                {% trans "Inventory Item's Property Classification Reference Number" %}
+                {% if obj.item.property_classification_reference_number %}
+                    {% trans "Inventory Item's Property Classification Reference Number" %}
+                    : {{ obj.item.property_classification_reference_number|localize }}
+                {% endif %}
             </div>
         </div>
     </div>
@@ -82,19 +85,22 @@
 
                 <td>{{ row.income_quantity|floatformat:2 }}</td>
                 <td>{{ row.income_rate|floatformat:2 }}</td>
-                <td>{{ row.income_total|default:0 }}</td>
+                <td>{{ row.income_total|floatformat:2|default:'' }}</td>
 
-                <td>{{ row.expenses_quantity|floatformat:2 }}</td>
-                <td>{{ row.expense_total|floatformat:2 }}</td>
+                <td>{{ row.expense_quantity|floatformat:2 }}</td>
+                <td>{{ row.expense_total|default:''|floatformat:2 }}</td>
                 <td>{{ row.current_balance|floatformat:2 }}</td>
-                <td>{% if row.remaining_total_cost_price %}
-                    {{ row.remaining_total_cost_price|floatformat:2 }}
-                    {% elif forloop.first %}
-                    {{ row.income_total|subtract:row.expense_total|floatformat:2 }}
-                    {% else %}
-                    {% get_previous forloop obj.get_data as prev %}
-                    {{ prev.remaining_total_cost_price|add:row.income_total|subtract:row.expense_total|floatformat:2 }}
-                {% endif %}</td>
+                <td>
+                    {% remaining_total_cost_price row forloop.counter0 obj.get_data %}
+                    {#                    {% if row.remaining_total_cost_price %}#}
+                    {#                    {{ row.remaining_total_cost_price|floatformat:2 }}#}
+                    {#                    {% elif forloop.first %}#}
+                    {#                    {{ row.income_total|subtract:row.expense_total|floatformat:2 }}#}
+                    {#                    {% else %}#}
+                    {#                    {% get_previous forloop obj.get_data as prev %}#}
+                    {#                    {{ prev.remaining_total_cost_price }}#}
+                    {#                {% endif %}#}
+                </td>
                 <td>{{ row.remarks }}</td>
             </tr>
         {% endfor %}
