@@ -35,7 +35,7 @@
         श्री प्रमुख,<br/>
         भण्डार शाखा
         </span>
-
+        <div class="well">
         <div class="row">
 
                 <span class="col-lg-6 col-sm-6">
@@ -57,9 +57,10 @@
                 </span>
 
         </div>
+        </div>
 
         <div data-bind="with:table_view">
-
+           <div class="well">
             <table class="table table-bordered table-striped table-responsive">
                 <thead>
                 <tr>
@@ -166,13 +167,13 @@
                                     <!-- /ko -->
                                     </tbody>
                                 </table>
-
+                            </div>
                                 <br/>
 
                             </div>
                             <!-- /ko -->
 
-                        </div>
+
                     </td>
 
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block tableprintview" {% endifusergroup %}
@@ -182,41 +183,47 @@
                         data-bind="editableText: remarks"></td>
 
                     <td class="hidden-print">
-                        <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
-                        {% ifusergroup 'Store Keeper' 'Chief' %}
-                            <button class="btn btn-default"
-                                    data-bind="click: approve, visible: $root.id() && status() == 'Requested' && total_release() > 0">
-                                {% trans "Approve" %}
-                            </button>
-                            <button class="btn btn-default"
-                                    data-bind="click: disapprove, visible: status() == 'Approved'">
-                                {% trans "Disapprove" %}
-                            </button>
-                            {#                            <button class="btn btn-default"#}
-                            {#                                    data-bind="click: function(data, event) { fulfill($root, data, event) }, visible: status() == 'Approved'">#}
-                            {#                                Set as#}
-                            {#                                Fulfilled#}
-                            {#                            </button>#}
-                            <button class="btn btn-default"
-                                    data-bind="click: fulfill, visible: status() == 'Approved' && total_release() > 0">
-                                {% trans "Set as Fulfilled" %}
-                            </button>
-                            <button class="btn btn-default"
-                                    data-bind="click: unfulfill, visible: status() == 'Fulfilled'">
-                                    {% trans "Set as Unfulfilled" %}
-                            </button>
-                        {% endifusergroup %}
+                        <div class="row">
+                            <div class="col-sm-10">
+                               {% ifusergroup 'Store Keeper' 'Chief' %}
+                                <button class="btn btn-default btn-raised"
+                                        data-bind="click: approve, visible: $root.id() && status() == 'Requested' && total_release() > 0">
+                                    {% trans "Approve" %}
+                                </button>
+                                <button class="btn btn-default btn-raised"
+                                        data-bind="click: disapprove, visible: status() == 'Approved'">
+                                    {% trans "Disapprove" %}
+                                </button>
+                                {#                            <button class="btn btn-default btn-raised"#}
+                                {#                                    data-bind="click: function(data, event) { fulfill($root, data, event) }, visible: status() == 'Approved'">#}
+                                {#                                Set as#}
+                                {#                                Fulfilled#}
+                                {#                            </button>#}
+                                <button class="btn btn-default btn-raised"
+                                        data-bind="click: fulfill, visible: status() == 'Approved' && total_release() > 0">
+                                    {% trans "Set as Fulfilled" %}
+                                </button>
+                                <button class="btn btn-default btn-raised"
+                                        data-bind="click: unfulfill, visible: status() == 'Fulfilled'">
+                                        {% trans "Set as Unfulfilled" %}
+                                </button>
+                            {% endifusergroup %}
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
+                            </div>
+                        </div>
                     </td>
                 </tr>
                 <!-- /ko -->
                 </tbody>
             </table>
-            <a class="btn btn-default" data-bind="click: addRow">
+            <a class="btn btn-default btn-raised" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>
+            </div>
         </div>
-        <br>
-
+        <div class="well">
         <div class="row">
             <div class="col-lg-6 col-sm-6 col-xs-6">
                 <div class="visible-print-block">{% trans "Demandee's Signature" %}:-</div>
@@ -251,16 +258,15 @@
                 <div>{% trans "Date" %}:-</div>
             </div>
         </div>
+        </div>
 
-        <br/>
-
-        <input type="submit" class="btn btn-primary btn-lg" value="{% trans 'Save' %}"
+        <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}"
                 {#               data-bind="visible: $root.status() == 'Requested'"#}
                 >
         {% if scenario == 'Update' %}
             <a href="{% url 'convert_demand_form' form.instance.id %}"
-               class="btn btn-primary btn-lg">{% trans 'Export as XLS' %}</a>
-            <a class="btn btn-danger btn-lg"
+               class="btn btn-info btn-raised btn-lg">{% trans 'Export as XLS' %}</a>
+            <a class="btn btn-danger btn-raised btn-lg"
                href="{% url 'delete_demand_form' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}
 

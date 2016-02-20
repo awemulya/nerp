@@ -15,16 +15,16 @@
     {{ form.errors }}
     <form method="post">
         {% csrf_token %}
+        <div class="well">
         {{ form.as_p }}
-        <div class="row">
+        </div>
             <div class="span12">
-                <button type="submit" value="Submit" class="small secondary button">
+                <button type="submit" value="Submit" class="btn btn-info btn-raised">
                     {% trans 'Submit' %}</button>
                 {% if scenario == 'Update' %}
-                    <a class="small secondary button alert"
+                    <a class="btn btn-info btn-raised"
                        href="{% url 'delete_employee' form.instance.id %}">{% trans 'Delete' %}!</a>
                 {% endif %}
             </div>
-        </div>
     </form>
 {% endblock %}

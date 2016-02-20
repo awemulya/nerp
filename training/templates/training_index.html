@@ -12,7 +12,9 @@
 {% endblock %}
 
 {% block content %}
-
+    <div class="well"> 
+    <div class="row">
+        <div class="col-sm-12">
     <div class="dashboard">
         {% ifusergroup 'Trainer' %}
 
@@ -25,7 +27,7 @@
             <div>
                 <a href="{% url 'list_resource_persons' %}">
                     <img src="{% static 'img/icons/trainer.png' %}">
-                    {% trans "Resource Persons} %}</a>
+                    {% trans "Resource Persons" %}</a>
             </div>
 
             <div>
@@ -65,7 +67,10 @@
         {% endifusergroup %}
 
     </div>
+            
+        </div>
+    </div>   
 
-
+</div>
 
 {% endblock %}

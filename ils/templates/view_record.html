@@ -20,7 +20,7 @@
 {% endblock %}
 {% block content %}
 
-
+    <div class="well">
     <div class="row">
 
         <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
@@ -41,7 +41,7 @@
                 {% endif %}
                 </small>
                 {% ifusergroup 'Librarian' %}
-                    <a class="btn btn-default" href="{% url 'edit_book' record.id %}">{% trans "EDIT" %}</a>
+                    <a class="btn btn-default btn-raised" href="{% url 'edit_book' record.id %}">{% trans "EDIT" %}</a>
                 {% endifusergroup %}
             </h1>
             <p id="text-by"><em>{% trans "by" %}</em>
@@ -68,11 +68,12 @@
         </div>
 
     </div>
-
+    </div>
+    <div class="well">
     <div class="row">
         <div class="col-sm-12">
 
-            <table id="book-detail">
+            <table class="table table-striped" id="book-detail">
                 <tbody>
 
                 {% if record.isbn13 %}
@@ -181,10 +182,9 @@
                 {% endif %}
                 </tbody>
             </table>
-
             {% if record.format != 'eBook' %}
                 {% ifusergroup 'Librarian' %}
-                    <table id="circulation-detail">
+                    <table class="table table-striped"  id="circulation-detail">
                         <tr>
                             <th>{% trans "Total" %}</th>
                             <td>{{ record.quantity }}</td>
@@ -211,7 +211,7 @@
             {% endif %}
 
             {% if record.ebooks %}
-                <table>
+                <table class="table table-striped">
                     <tbody>
                     <tr>
                         <th>{% trans "E-books" %}</th>
@@ -230,28 +230,30 @@
 
         </div>
     </div>
+    </div>
 
     <div class="row">
         <div class="col-sm-12">
             {% if record.excerpt %}
-                <blockquote>
+                <div class="well">
+                <blockquote class="word-wrap">
                     {{ record.excerpt }}
                 </blockquote>
+                </div>
             {% endif %}
-        </div>
     </div>
-
+    </div>
 
     <div class="row">
         <div class="col-sm-12">
             {% if record.notes %}
-                <strong>{% trans "Notes" %}: </strong><em>{{ record.notes }}</em>
+              <div class="well">
+                <p class="word-wrap"><strong>{% trans "Notes" %}: </strong><em>{{ record.notes }}</em></p>
+             </div>
             {% endif %}
-        </div>
+    </div>
     </div>
 
-
-    <br>
     <div class="row">
         <div id="transactions" class="col-sm-12">
 
@@ -259,9 +261,9 @@
             {% if record.format != 'eBook' %}
                 {% ifusergroup 'Librarian' %}
                     <h3>{% trans "Transactions" %}</h3>
-
-
-                    <table class="table table-striped table-bordered">
+        
+                    <div class="well">
+                    <table class="table table-striped">
                         <thead>
                         <tr>
                             <th>{% anchor user_id 'Patron' %}</th>
@@ -290,6 +292,7 @@
                         {% endfor %}
                         </tbody>
                     </table>
+                    </div>
                     {% paginate %}
 
                 {% endifusergroup %}

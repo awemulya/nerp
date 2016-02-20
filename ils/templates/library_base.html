@@ -9,9 +9,9 @@
 
 {% block breadcrumbs_right %}
 <li class="pull-right">
-    <form action="{% url 'isbn_to_record' %}" method="post">
+    <form action="{% url 'isbn_to_record' %}" id="breadcrumb-search-isbn" method="post">
         {% csrf_token %}
-        <input type="text" placeholder="ISBN" name="isbn" autofocus>
+        <input type="text" placeholder="ISBN" class="form-control" name="isbn" autofocus>
     </form>
 </li>
     {{ block.super }}

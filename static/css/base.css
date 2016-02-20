@@ -27,7 +27,7 @@ h1 {
 }
 
 .main-content {
-    border-left: 1px solid #DDDDDD;
+    /*border-left: 1px solid #DDDDDD;*/
 }
 
 .table-bordered {
@@ -222,6 +222,10 @@ ul.records, ul#id_models {
     list-style: none;
 }
 
+ul.records {
+    padding-left: 0px;
+}
+
 ul.messages {
     list-style: none;
     border: 1px solid black;
@@ -368,6 +372,7 @@ form {
     display: inline !important;
 }
 
+
 footer {
     text-align: center;
     padding-top: 2em;
@@ -409,6 +414,8 @@ footer {
     padding-top: 0.5em;
 }
 
+
+
 .tile{
     width: 20em;
     float: left;
@@ -416,6 +423,7 @@ footer {
     padding: 0 0.5em 0.5em;
     margin: 1em;
     min-height: 15em;
+    box-shadow: 0 0 0 1px #F8F8F8 inset, 0 0 0 1px #CCCCCC;
 }
 
 td.link a{
@@ -424,4 +432,35 @@ td.link a{
 
 li.link a{
     display: block;
+}
+
+
+.nav-bar .nav-btn form div select.btn {
+    height: 32px;
+    color: #fff;
+}
+
+.nav-bar .nav-btn a.btn {
+    color: #fff;
+}
+
+.navbar ul li a h3 {
+    margin: 0px;
+}
+
+.form-group{
+    margin: 0px !important;
+}
+
+.form-inline {
+    display: inline:;
+}
+
+#breadcrumb-search-isbn {
+    margin-top: -2.2em;
+    margin-left: 1.3em;
+}
+
+.word-wrap {
+    word-wrap: break-word;;
 }

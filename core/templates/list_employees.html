@@ -15,8 +15,8 @@
 
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
-
-    <table class="table-bordered">
+    <div class="well">
+    <table class="table">
         <thead>
         <th>{% anchor name %}</th>
         <th>{% anchor address %}</th>
@@ -42,10 +42,11 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
     {% paginate %}
 
-    <a class="small secondary button"
+    <a class="btn btn-success btn-raised"
        href="{% url 'create_employee' %}">{% trans 'New' %} {% trans 'Employee' %}</a>
 
 {% endblock %}

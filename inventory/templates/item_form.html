@@ -26,7 +26,7 @@
             {{ form.non_field_errors }}
             {{ form.errors }}
         <form method="post" id="form">
-            <ul class="nav nav-tabs" role="tablist" id="training-tab">
+            <ul class="nav nav-pills" role="tablist" id="training-tab">
                 <li role="presentation" class="active"><a href="#basic" data-toggle="tab">{% trans "Basic" %}</a></li>
                 {% ifusergroup 'Store Keeper' %}
                     <li role="presentation"><a href="#depreciation" data-toggle="tab">{% trans "Depreciation" %}</a></li>
@@ -34,39 +34,47 @@
                 {% if scenario == 'Update' %}
                 <li class="tab-title"><a href="#item_instance" class="item-instance" data-toggle="tab">{% trans "Item Instance" %}</a></li>
                 {% endif %}
-             <button type="submit" value="Submit" class="btn btn-primary pull-right">
-                            {% trans 'Submit' %}</button>
+                <div class="span12">
+                    {% if scenario == 'Update' %}
+                        <a class="btn btn-danger btn-lg btn-raised pull-right"
+                           href="{% url 'delete_inventory_item' form.instance.id %}">{% trans 'Delete' %}!</a>
+                    {% endif %}
+                </div>
+                <button type="submit" value="Submit" class="btn btn-info btn-raised pull-right">
+                    {% trans 'Submit' %}
+                </button>
+
             </ul>
             <br>
 
             <div class="tab-content">
             <div class="content tab-pane active" id="basic">
                 {% csrf_token %}
-                {{ form.as_p }}
+                <div class="well">
+                    {{ form.as_p }}
                 <p>
                 <div id="other-properties">
-                    <label for="id_other_properties">{% trans "Other properties" %}</label>
-                    <div id="id_other_properties" data-bind="foreach: other_properties">
-                        <p>
+                <label for="id_other_properties">{% trans "Other properties" %}</label>
+                <label>
+                    <a class="btn btn-default btn-raised" data-bind="click: addOtherProperty"><i
+                            class="fa fa-plus"></i> {% trans 'Add New' %}
+                    </a>
+                </label>
+
+                    <div id="id_other_properties" data-bind="foreach: other_properties" class="form-inline">
+                        <div class="property-row">
                             <input type="text" class="form-control test" id="id_property_name" name="property_name" placeholder="Property name" data-bind="value: property_name"> 
                             <input type="text" class="form-control" id="id_property" name="property" placeholder="Property" data-bind="value: property">
                             <a href="#" class="btn btn-default" data-bind="click: $parent.removeOtherProperty">x</a>
-                        </p>
+                        </div>
                     </div>
-                    <a class="btn btn-default" data-bind="click: addOtherProperty">
-                        {% trans 'Add New Property' %}
-                    </a>
                 </div>
+                </div>
+
                 </p>
-                    <div class="span12">
-                       
-                        {% if scenario == 'Update' %}
-                            <a class="btn btn-danger btn-lg"
-                               href="{% url 'delete_inventory_item' form.instance.id %}">{% trans 'Delete' %}!</a>
-                        {% endif %}
-                    </div>
             </div>
-        <div class="content tab-pane" id="depreciation">
+        <div class="content tab-pane well" id="depreciation">
+
             <div>
                 {% csrf_token %}
                 <div class="row">
@@ -118,10 +126,12 @@
                 
             </div>
         </div>
+
         </form>
         {% if scenario == 'Update' %}
         <div class="content tab-pane" id="item_instance">
-            <table class="table table-bordered table-striped">
+        <div class="well">
+            <table class="table table-striped">
             <thead>
                 <th>{% trans "Name" %}</th>
                 <th>{% trans 'Rate' %}</th>
@@ -143,6 +153,7 @@
             {% endfor %}
             </tbody>
             </table>
+        </div>
         </div>     
         {% endif %}
     </div>

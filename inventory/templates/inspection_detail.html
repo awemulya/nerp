@@ -12,6 +12,7 @@
 
 
 {% block content %}
+<div class="well">
     <div class="visible-print-block form-header">
         <h4 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>
     </div>
@@ -23,7 +24,8 @@
     {% if obj.date %}
     <h4>{% trans "Date" %} : {{ obj.date }}</h4>
     {% endif %}
-
+</div>
+<div class="well">
      <table class="table table-bordered"> 
         <thead>
             <tr>
@@ -113,7 +115,8 @@
         {% endfor %}
         </tbody>
         </table>
-    <a class="btn btn-danger btn-lg hidden-print" href="{% url 'delete_inspection_report' obj.id %}">{% trans 'Delete!' %}</a>
+</div>
+    <a class="btn btn-danger btn-raised btn-lg hidden-print" href="{% url 'delete_inspection_report' obj.id %}">{% trans 'Delete!' %}</a>
 
 
 {% endblock %}
