@@ -40,8 +40,8 @@
 
     {% autosort objects.qs as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
-
-    <table class="table table-bordered table-striped">
+    <div class="well">
+    <table class="table table-striped">
         <thead>
         <th>{% anchor name _("Name") %}</th>
         <th>{% anchor account__account_no _('Account No.') %}</th>
@@ -65,10 +65,10 @@
         {% endfor %}
         </tbody>
     </table>
-
+    </div>
     {% paginate %}
 
-    <a class="btn btn-default btn-lg"
+    <a class="btn btn-success btn-raised"
        href="{% url 'create_inventory_item' %}">{% trans 'New' %} {% trans 'Inventory' %} {% trans 'Item' %}</a>
 
 {% endblock %}

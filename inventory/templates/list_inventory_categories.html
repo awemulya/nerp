@@ -5,11 +5,11 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "list_inventory_categories" %}">{% trans 'Inventory' %} {% trans 'Categories' %}</a>
+    <li><a href="{% url "list_inventory_categories" %}">{% trans 'Inventory' %} {% trans 'Categories' %}</a></li>
 {% endblock %}
 
 {% block content %}
-
+    <div class="well">
     {% load mptt_tags %}
     <ul class="list-group">
         {% recursetree categories %}
@@ -23,8 +23,8 @@
             </li>
         {% endrecursetree %}
     </ul>
-
-    <a class="btn btn-default btn-lg"
+    </div>
+    <a class="btn btn-success btn-raised btn-lg"
        href="{% url 'create_inventory_category' %}">{% trans 'New' %} {% trans 'Category' %}</a>
 
 {% endblock %}

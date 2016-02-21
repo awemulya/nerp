@@ -15,20 +15,23 @@
     {{ form.errors }}
 
     <form class="library-search" method="get" action="{% url 'search' %}">
-
+    <div class="well">
         {{ form.as_p }}
-
-        <input type="submit" value="Search!" class="btn btn-default">
+    </div>
+        <input type="submit" value="Search!" class="btn btn-info btn-raised">
 
     </form>
 
     {% if request.GET %}
+        <div class="well">
         {{ form.search.count }} {% trans "results" %}
-        <br>
-        <ol class="records">
+        </div>
+        <ul class="records">
             {% for item in form.search %}
 
                 {% if item.model_name == 'record' %}
+                  <div class="well">
+
                     <li>
                         {% with item.object as  record %}
                             <div class="row">
@@ -68,10 +71,13 @@
                             </div>
                         {% endwith %}
                     </li>
+                   </div>
                 {% else %}
+                <div class="well">
                     <li class="link">
                         {{ item.object|linkify }}
                     </li>
+                </div>
                 {% endif %}
 
                 <br/>

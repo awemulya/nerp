@@ -19,8 +19,8 @@
 {% block content %}
     {% autosort authors as sorted_objects %}
     {% autopaginate sorted_objects 20 as paginated_objects %}
-
-    <table class="table table-striped table-bordered">
+    <div class="well">
+    <table class="table table-striped">
         <thead>
         <tr>
             <th>{% anchor id 'Author' %}</th>
@@ -36,6 +36,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
     {% paginate %}
 
 

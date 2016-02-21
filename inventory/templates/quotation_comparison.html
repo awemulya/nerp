@@ -26,7 +26,7 @@
 
     <form method="post" enctype="multipart/form-data" data-bind="submit: save" name="demand-form" novalidate>
         {% csrf_token %}
-
+        <div class="well">
         <div class="row">
             <div class="col-md-1"><h6>{% trans 'Report' %} {% trans 'No.' %}:</h6></div>
             <div class="col-md-3">
@@ -34,13 +34,18 @@
             </div>
             <div class="col-md-8">
                 <div class="pull-right">
-                    {% trans 'Date' %}: <input class="form-control inline" type="text" required="required" name="date" id="id_date"
+                    {% trans 'Date' %}: 
+                    <div class="form-inline inline">
+                    <input class="form-control inline" type="text" required="required" name="date" id="id_date"
                                                data-bind="value: date, localize: true">
+                    </div>
                 </div>
             </div>
         </div>
-        <br>
+        </div>
+
         <div data-bind="with: table_view">
+        <div class="well">
             <div class="row hidden-print">
                 <div class="col-md-1">{% trans 'Party' %}:</div>
                 <div class="col-md-3">
@@ -49,7 +54,7 @@
                 </div>
                 <div class="col-md-8">
                     <button data-bind="click: $root.add_party"
-                            class="btn btn-default"> + {% trans 'Add selected party for comparison' %}</button>
+                            class="btn btn-default btn-raised">  {% trans 'Add selected party for comparison' %}</button>
                 </div>
             </div>
             <table class="table table-bordered table-striped">
@@ -107,15 +112,14 @@
                 </tbody>
 
             </table>
-            <a class="btn btn-default hidden-p" data-bind="click: addRow">
+            <a class="btn btn-default btn-raised hidden-p" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>
-
+            </div>
         </div>
-        <br>
-        <input class="btn btn-primary btn-lg" type="submit" value="Save">
+        <input class="btn btn-info btn-raised btn-lg" type="submit" value="Save">
         {% if scenario == 'Update' %}
-            <a class="btn btn-danger btn-lg"
+            <a class="btn btn-danger btn-raised btn-lg"
                href="{% url 'delete_quotation_comparison' quotation.id %}">{% trans 'Delete!' %}</a>
         {% endif %}
 

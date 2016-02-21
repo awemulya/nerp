@@ -11,9 +11,12 @@
 {% block content %}
 
     {% load mptt_tags %}
-    <ul>
+    <div class="well">
+
+    
+    <ul class="list-group">
         {% recursetree objects %}
-            <li class="link">
+            <li class="list-group-item">
                 <a href="{% url 'update_training_category' node.id %}">{{ node.name }}</a>
                 {% if node.description %}
                     : {{ node.description }}
@@ -25,9 +28,10 @@
                 {% endif %}
             </li>
         {% endrecursetree %}
-    </ul>
+    </ul>  
+    </div>
 
-    <a class="btn btn-default btn-lg"
+    <a class="btn btn-success btn-raised btn-lg"
        href="{% url 'add_training_category' %}">{% trans 'New' %} {% trans 'Category' %}</a>
 
 {% endblock %}

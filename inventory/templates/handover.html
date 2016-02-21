@@ -26,7 +26,7 @@
 
     <form method="post" data-bind="submit: save">
         {% csrf_token %}
-
+        <div class="well">
         <input type="hidden" name="table_model" data-bind="value: ko.toJSON($data.demand_rows, null, 2)">
 
         {% trans 'Handover' %} {% trans 'Form No.' %}
@@ -38,35 +38,46 @@
                data-bind="value: addressee, autosize: 16">
         {{ form.addressee.errors }}<br>
         निम्नांकित मालसामानहरु मिति
-        <input type="text" required="required" name="date" id="id_date" class="input-inline form-control"
+        <div class="form-inline inline">
+            <input type="text" required="required" name="date" id="id_date" class="input-inline form-inline form-control"
                data-bind="value: date, localize: true, autosize: 7">
+        </div>
         को निर्णयानुसार
+        <div class="form-inline inline">
         <input type="text" required="required" name="office" maxlength="254" id="id_office" class="input-inline form-control"
                data-bind="value: office, autosize: 12">
+        </div>
         मन्त्रालय/विभाग/कार्यालय/आयोजनाका
+        <div class="form-inline inline">
         <input type="text" required="required" name="designation" maxlength="254" id="id_designation"
                class="input-inline form-control"
                data-bind="value: designation, autosize: 12">
+        </div>
         श्री
+        <div class="form-inline inline">
         <input type="text" required="required" name="handed_to" maxlength="254" id="id_handed_to"
                class="input-inline form-control"
                data-bind="value: handed_to, autosize: 12">
+        </div>
         {{ form.addressee.errors }}
         {{ form.date.errors }}
         {{ form.office.errors }}
         {{ form.designation.errors }}
         {{ form.handed_to.errors }}
         को हस्ते पठाएको छु । सो सामान भण्डार दाखिला गरी
+        <div class="form-inline inline">
         <input type="text" required="required" name="due_days" id="id_due_days" class="input-inline form-control"
                data-bind="value: due_days, localize: true, autosize: 0">
+        </div>
         दिनभित्र दाखिला प्रतिवेदन समेत पठाईदिनुहुन
         अनुरोध छ ।
         {{ form.due_days.errors }}
+        </div>
+
 
         <div data-bind="with:table_view">
-            <br>
-            <br>
-            <table class="table table-bordered table-striped">
+        <div class="well">
+            <table class="table table-striped">
                 <thead>
                 <tr>
                     <th rowspan="2" class="span1">{% trans 'SN' %}</th>
@@ -98,10 +109,10 @@
                                 data-url="{% url 'create_inventory_item' %}"></select>
                     </td>
                     <td data-bind="editableText: specification"></td>
-                    <td data-bind="editableText: quantity, numeric: true"></td>
+                    <td data-bind="editableText: quantity, numeric: true, localize: 2"></td>
                     <td data-bind="editableText: unit"></td>
                     <td data-bind="editableText: total_amount, numeric: true, localize: 2"></td>
-                    <td data-bind="editableText: received_date"></td>
+                    <td data-bind="editableText: received_date, localize: true"></td>
                     <td class="remarks-cell" data-bind="editableText: condition"></td>
                     <td class="hidden-print">
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
@@ -110,21 +121,22 @@
                 <!-- /ko -->
                 </tbody>
             </table>
-            <a class="btn btn-default" data-bind="click: addRow">
+            <a class="btn btn-default btn-raised" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>
+            </div>
         </div>
 
         <br>
-        <input type="submit" class="btn btn-primary btn-lg" value="{% trans 'Save' %}">
+        <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
         <span data-bind="text: msg, css: status"></span>
 
         {% if scenario == 'Update' %}
-            <a class="btn btn-danger btn-lg"
+            <a class="btn btn-danger btn-raised btn-lg"
                href="{% url 'delete_handover' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}
 
-        <a class="btn btn-primary btn-lg" target="_blank"
+        <a class="btn btn-info btn-raised btn-lg" target="_blank"
            data-bind="visible: $root.id() && $root.type() == 'Incoming', attr: {'href': '/inventory/entry-report/handover/'+$root.id()}">{% trans 'Entry Report' %}</a>
 
 

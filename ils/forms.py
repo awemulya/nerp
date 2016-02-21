@@ -173,3 +173,13 @@ class LibrarySearchForm(ModelSearchForm):
         aa, bb = self.fields['models'].choices[2]
         self.fields['models'].choices[2] = (aa, 'Books')
         self.fields['models'].initial = ['ils.record']
+
+        for (name, field) in self.fields.items():
+            widget = field.widget
+            exclude_form_control = ['CheckboxInput', 'RadioSelect', 'CheckboxSelectMultiple']
+            if widget.__class__.__name__ in exclude_form_control:
+                continue
+            if 'class' in widget.attrs:
+                widget.attrs['class'] += 'form-control'
+            else:
+                widget.attrs['class'] = 'form-control'

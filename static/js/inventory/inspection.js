@@ -5,7 +5,6 @@ $(document).ready(function () {
 });
 
 function InspectionVM(data, date) {
-    console.log(data);
     var self = this;
     self.report_no = ko.observable();
     self.id = ko.observable();

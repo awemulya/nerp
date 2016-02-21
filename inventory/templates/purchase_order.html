@@ -29,7 +29,7 @@
 
     <form method="post" data-bind="submit: save">
         {% csrf_token %}
-
+        <div class="well">
         <div class="row">
 
             <div class="col-lg-6 col-sm-6 selectize-inline">
@@ -47,25 +47,31 @@
             <div class="col-lg-6 col-sm-6 pull-right text-right">
                 <div class="pull-right text-right">
                     {% trans 'Purchase Order' %} {% trans 'No.' %}:
+                    <div class="form-inline inline">
+
                     <input type="text" class="pull-right text-right form-control" name="order_no" id="id_order_no" required
                            data-bind="value: order_no, localize: true, autosize:3">
+                    </div>
                     {{ form.order_no.errors }}
                 </div>
                 <div class="pull-right text-right clear">
-                    {% trans 'Date' %}: <input type="text" class="pull-right text-right form-control" required="required"
+                    {% trans 'Date' %}: 
+                    <div class="form-inline inline">
+                    <input type="text" class="pull-right text-right form-control" required="required"
                                                name="date" id="id_date"
                                                data-bind="value: date, localize: true, autosize:3">
+                    </div>
                     {{ form.date.errors }}
                 </div>
             </div>
         </div>
-
         <div class="centre">
             देहाय बमोजिमका सामानहरु
             <input class="inline" type="text" size="" required="required" name="due_days" id="id_due_days"
                    data-bind="value: due_days, autosize: 0, localize: true">
             दिन भित्र यस कार्यालयमा दाखिला गरि विल / इन्भ्वाईस प्रस्तुत गर्नु होला ।
             {{ form.due_days.errors }}
+        </div>
         </div>
 
         <div class="row">
@@ -75,7 +81,7 @@
 
         </div>
 
-
+        <div class="well">
         <div data-bind="with:table_view">
 
             <table class="table table-bordered">
@@ -138,23 +144,23 @@
 
                 </tbody>
             </table>
-            <a class="btn btn-default" data-bind="click: addRow">
+            <a class="btn btn-default btn-raised" data-bind="click: addRow">
                 {% trans 'Add New Row' %}
             </a>
         </div>
-        <br>
+        </div>
 
-        <input type="submit" class="btn btn-primary btn-lg" value="{% trans 'Save' %}">
+        <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
         <span data-bind="text: msg, css: status"></span>
 
         {% if scenario == 'Update' %}
             <a href="{% url 'convert_purchase_order' form.instance.id %}"
-               class="btn btn-primary btn-lg">{% trans 'Export as XLS' %}</a>
-            <a class="btn btn-danger btn-lg"
+               class="btn btn-info btn-raised btn-lg">{% trans 'Export as XLS' %}</a>
+            <a class="btn btn-danger btn-raised btn-lg"
                href="{% url 'delete_purchase_order' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}
 
-        <a class="btn btn-primary btn-lg" target="_blank"
+        <a class="btn btn-info btn-raised btn-lg" target="_blank"
            data-bind="visible: $root.id(), attr: {'href': '/inventory/entry-report/purchase/'+$root.id()}">{% trans 'Entry Report' %}</a>
 
 

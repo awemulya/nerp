@@ -10,7 +10,7 @@
         {% if form.errors %}
             <p class="alert-error" role='alert'>{% trans "Your username and password didn't match. Please try again." %}</p>
         {% endif %}
-
+        <div class="well">
         <form method="post" action="{% url 'login' %}"
               id="user_login_new">{% csrf_token %}
             {% if state %}
@@ -33,11 +33,10 @@
                 <input type="checkbox" id="remember_me" name="remember_me" value="true"/>
                 <label for="remember_me">{% trans "Remember Me" %}</label>
             </div>
+            </div>
 
             <div>
-                <input type="submit" value="Log In" class="btn btn-default btn-lg"/>
-
-
+                <input type="submit" value="Log In" class="btn btn-info btn-lg btn-raised"/>
             </div>
         </form>
 

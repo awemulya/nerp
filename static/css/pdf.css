@@ -1,4 +1,5 @@
 @page {
+    size: A4 landscape;
     counter-increment: page;
     @bottom-right {
         content: "Page " counter(page) " of " counter(pages);
@@ -10,4 +11,9 @@
 .page-break {
     display: block;
     page-break-before: always;
+}
+
+table{
+    max-width: 100%;
+    font-size: 90%;
 }

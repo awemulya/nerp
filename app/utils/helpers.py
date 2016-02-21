@@ -32,10 +32,10 @@ def save_model(model, values):
 
 
 def zero_for_none(obj):
-    if obj is None:
+    if obj is None or obj is '':
         return 0
     else:
-        return obj
+        return float(obj)
 
 
 def none_for_zero(obj):

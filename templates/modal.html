@@ -32,6 +32,14 @@ $(document).ready(function() {
 		});
 
 	}
+	
+	if ($('modal-body').has('div.well')) {
+		$('.modal-body .tab-content div.well').each(function() {
+			if ($(this).hasClass('well')) {
+				$(this).removeClass('well');
+			};
+		});
+	}
 });
 
 if ($('.modal').length == 2 ) {

@@ -39,8 +39,6 @@ function InventoryAccountRow(data) {
         self[i] = ko.observable(data[i]);
     }
 
-    self.income_total(r2z(self.income_total()));
-
     if (self.income_quantity()) {
         self.expense_total(null);
     }
