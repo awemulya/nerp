@@ -464,3 +464,7 @@ li.link a{
 .word-wrap {
     word-wrap: break-word;;
 }
+
+.is-empty {
+    display: inline;
+}
