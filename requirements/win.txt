@@ -1,9 +1,4 @@
-# Development only
-pyinotify
-git-pylint-commit-hook
-django-debug-toolbar
-
-# Development and Production
+# Windows
 Django
 psycopg2
 django-mptt
@@ -18,7 +13,7 @@ django-froala-editor
 https://github.com/helber/django-dbsettings/tarball/master#egg=django-dbsettings
 django-modeltranslation
 https://github.com/awecode/njango/tarball/master#egg=njango
-sorl-thumbnail==11.12.1b
+sorl-thumbnail
 django-redis
 jsonfield
 openpyxl
