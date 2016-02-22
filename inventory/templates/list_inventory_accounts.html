@@ -14,16 +14,13 @@
     {% load sorting_tags %}
     {% load filters %}
 
-
-    <br>
-
     {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
     <div class="well">
     <table class="table table-striped">
         <thead>
         <th>{% anchor account_no _('Account No.') %}</th>
-        <th>{% anchor name _('Name')%}</th>
+        <th>{% anchor name _('Name') %}</th>
         <th>{% anchor item__type _('Type') %}</th>
         <th>{% anchor item__unit _('Unit') %}</th>
         </thead>
@@ -32,12 +29,12 @@
             <tr>
                 <td class="link">
                     <a href="{% url 'view_inventory_account' obj.id %}">
-                    {{ obj.account_no|localize }}
+                        {{ obj.account_no|localize }}
                     </a>
                 </td>
                 <td class="link">
                     <a href="{% url 'view_inventory_account' obj.id %}">
-                    {{ obj.item.name }}
+                        {{ obj.item.name }}
                     </a>
                 </td>
                 <td>
@@ -50,8 +47,7 @@
     </table>
     </div>
     {% paginate %}
-<br>
-    <a class="btn btn-success btn-raised btn-lg"
-       href="{% url 'create_inventory_item' %}">{% trans 'New' %} {% trans 'Inventory' %} {% trans 'Item' %}</a>
+    
+    <a class="btn btn-success btn-raised btn-lg" href="{% url 'create_inventory_item' %}">{% trans 'New' %} {% trans 'Inventory' %} {% trans 'Item' %}</a>
 
 {% endblock %}

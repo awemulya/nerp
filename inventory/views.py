@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import json
 import datetime
 # from datetime import date
@@ -23,6 +24,7 @@ from openpyxl.cell import get_column_letter
 from core.models import app_setting, FiscalYear, Party, FISCAL_YEARS
 from app.utils.helpers import invalid, save_model, empty_to_none
 from app.utils.mixins import PDFView
+# from app.utils.mixins import TemplateView as PDFView
 from users.models import group_required, User
 
 from inventory.filters import InventoryItemFilter
@@ -1207,38 +1209,6 @@ def list_non_consumable_accounts(request):
 
 
 @group_required('Store Keeper', 'Chief')
-def view_inventory_account(request, id, year=None):
-    obj = get_object_or_404(InventoryAccount, id=id)
-    le_data = {}
-    if obj.item.type == 'consumable' and not year == '0000':
-        last_entry = JournalEntry.objects.filter(transactions__account_id=obj.id, date__lt=FiscalYear.start(year)).order_by(
-            'date', 'id').last()
-        if last_entry:
-            le_data = InventoryAccountRowSerializer(last_entry).data
-            le_data['income_quantity'] = le_data['current_balance']
-            le_data['income_rate'] = None
-            le_data['expense_quantity'] = None
-            le_data['voucher_no'] = 'Last FY'
-        journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id, date__gte=FiscalYear.start(year),
-                                                      date__lte=FiscalYear.end(year)).order_by('date', 'id') \
-            .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-    else:
-        journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('date', 'id') \
-            .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
-    data = InventoryAccountRowSerializer(journal_entries, many=True).data
-    if le_data:
-        data.insert(0, le_data)
-    if year == '0000':
-        year = 'All Years'
-    elif not year:
-        year = FiscalYear.get()
-    else:
-        year = FiscalYear.get(year)
-    context = {'obj': obj, 'entries': journal_entries, 'data': data, 'year': year, 'fiscal_years': FISCAL_YEARS}
-    return render(request, 'view_inventory_account.html', context)
-
-
-@group_required('Store Keeper', 'Chief')
 def handover_incoming(request, id=None):
     if id:
         obj = get_object_or_404(Handover, id=id)
@@ -1639,6 +1609,38 @@ class ExpenseCreate(CreateView):
 class ExpenseUpdate(CreateView):
     model = Expense
     form_class = ExpenseForm
+    
+@group_required('Store Keeper', 'Chief')
+def view_inventory_account(request, id, year=None):
+    obj = get_object_or_404(InventoryAccount, id=id)
+    le_data = {}
+    if obj.item.type == 'consumable' and not year == '0000':
+        last_entry = JournalEntry.objects.filter(transactions__account_id=obj.id, date__lt=FiscalYear.start(year)).order_by(
+            'date', 'id').last()
+        if last_entry:
+            le_data = InventoryAccountRowSerializer(last_entry).data
+            le_data['income_quantity'] = le_data['current_balance']
+            le_data['income_rate'] = None
+            le_data['expense_quantity'] = None
+            le_data['voucher_no'] = 'Last FY'
+        journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id, date__gte=FiscalYear.start(year),
+                                                      date__lte=FiscalYear.end(year)).order_by('date', 'id') \
+            .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+    else:
+        journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('date', 'id') \
+            .prefetch_related('transactions', 'content_type', 'transactions__account').select_related()
+    data = InventoryAccountRowSerializer(journal_entries, many=True).data
+    if le_data:
+        data.insert(0, le_data)
+    if year == '0000':
+        year = 'All Years'
+    elif not year:
+        year = FiscalYear.get()
+    else:
+        year = FiscalYear.get(year)
+    context = {'obj': obj, 'entries': journal_entries, 'data': data, 'year': year, 'fiscal_years': FISCAL_YEARS}
+    return render(request, 'view_inventory_account.html', context)
+
 
 
 class LedgersPDF(PDFView):
@@ -1647,5 +1649,5 @@ class LedgersPDF(PDFView):
     def get_context_data(self, **kwargs):
         return {
             'title': _('Inventory Ledgers'),
-            'ledgers': InventoryAccount.objects.all(),
+            'ledgers': InventoryAccount.objects.all().select_related('item'),
         }

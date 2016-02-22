@@ -160,24 +160,6 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
     def get_creator_type(self, obj):
         return obj.creator.__class__.__name__.replace('Row', '')
 
-    def get_expense_total(self, obj):
-        if obj.creator.__class__.__name__ == 'Expense':
-            return obj.creator.rate
-        try:
-            if obj.account_row.expense_total_cost_price:
-                return obj.account_row.expense_total_cost_price
-        except ObjectDoesNotExist:
-            pass
-        total = 0
-        if obj.creator.__class__.__name__ == 'DemandRow':
-            for release in obj.creator.releases.all():
-                total += release.item_instance.rate
-            return total
-        return 0
-
-    class Meta:
-        model = JournalEntry
-
     def get_country_or_company(self, obj):
         try:
             return obj.account_row.country_of_production_or_company_name
@@ -205,11 +187,15 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
     def get_income_quantity(self, obj):
         if obj.creator.__class__.__name__ in ['DemandRow', 'Expense']:
             return ''
+        if obj.creator.__class__.__name__ in ['HandoverRow']:
+            return obj.creator.income_quantity
         return obj.creator.quantity
 
     def get_income_rate(self, obj):
         if obj.creator.__class__.__name__ in ['DemandRow', 'Expense']:
             return ''
+        if obj.creator.__class__.__name__ in ['HandoverRow']:
+            return obj.creator.income_rate
         return obj.creator.rate
 
     def get_income_total(self, obj):
@@ -237,6 +223,23 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
     #     except:
     #         return ''
 
+    def get_expense_total(self, obj):
+        if obj.creator.__class__.__name__ == 'Expense':
+            return obj.creator.rate
+        try:
+            if obj.account_row.expense_total_cost_price:
+                return obj.account_row.expense_total_cost_price
+        except ObjectDoesNotExist:
+            pass
+        total = 0
+        if obj.creator.__class__.__name__ == 'DemandRow':
+            for release in obj.creator.releases.all():
+                total += release.item_instance.rate
+            return total
+        if obj.creator.__class__.__name__ == 'HandoverRow':
+            return obj.creator.expense_total
+        return 0
+
     def get_remaining_total_cost_price(self, obj):
         try:
             return obj.account_row.remaining_total_cost_price or ''
@@ -255,6 +258,9 @@ class InventoryAccountRowSerializer(serializers.ModelSerializer):
         else:
             account = obj.creator.item.account
         return obj.transactions.filter(account=account)[0].current_balance
+
+    class Meta:
+        model = JournalEntry
 
 
 class InspectionRowSerializer(serializers.ModelSerializer):

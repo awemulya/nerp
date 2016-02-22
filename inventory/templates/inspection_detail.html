@@ -16,7 +16,7 @@
     <div class="visible-print-block form-header">
         <h4 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>
     </div>
-    <h1 class='center'>{% trans "Inspection Detail" %}</h1>
+    <h1 class='center'>{% trans 'Inspection' %} {% trans 'Report' %}</h1>
     <h4>{% trans "Fiscal Year" %}: {{ obj.fiscal_year }} </h4>
     {% if obj.report_no %}
     <h4>{% trans "Release no" %} : {{ obj.report_no }}</h4>

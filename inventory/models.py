@@ -103,6 +103,33 @@ class InventoryAccount(models.Model):
     opening_rate = models.FloatField(default=0)
     opening_rate_vattable = models.BooleanField(default=True)
 
+    def get_data(self, year=None):
+        from inventory.serializers import InventoryAccountRowSerializer
+
+        obj = self
+        le_data = {}
+        if obj.item.type == 'consumable' and year:
+            last_entry = JournalEntry.objects.filter(transactions__account_id=obj.id, date__lt=FiscalYear.start(year)).order_by(
+                'date', 'id').last()
+            if last_entry:
+                le_data = InventoryAccountRowSerializer(last_entry).data
+                le_data['income_quantity'] = le_data['current_balance']
+                le_data['income_rate'] = None
+                le_data['expense_quantity'] = None
+                le_data['voucher_no'] = 'Last FY'
+            journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id, date__gte=FiscalYear.start(year),
+                                                          date__lte=FiscalYear.end(year)).order_by('date', 'id') \
+                .prefetch_related('transactions', 'account_row', 'creator', 'content_type',
+                                  'transactions__account').select_related()
+        else:
+            journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id).order_by('date', 'id') \
+                .prefetch_related('transactions', 'account_row', 'creator', 'content_type',
+                                  'transactions__account').select_related()
+        data = InventoryAccountRowSerializer(journal_entries, many=True).data
+        if le_data:
+            data.insert(0, le_data)
+        return data
+
     def __unicode__(self):
         return str(self.account_no) + ' [' + self.name + ']'
 
@@ -543,7 +570,7 @@ class Handover(models.Model):
         if self.__class__.objects.fiscal_year().filter(voucher_no=self.voucher_no).exclude(pk=self.pk):
             raise ValidationError(_('Voucher no. exists!'))
         super(Handover, self).save(*args, **kwargs)
-   
+
     @property
     def fiscal_year(self):
         return FiscalYear.from_date(self.date)
@@ -582,6 +609,21 @@ class HandoverRow(models.Model):
 
     @property
     def release_quantity(self):
+        if self.handover.type == 'Outgoing':
+            return self.quantity
+
+    @property
+    def income_quantity(self):
+        if self.handover.type == 'Incoming':
+            return self.quantity
+
+    @property
+    def income_rate(self):
+        if self.handover.type == 'Incoming':
+            return self.rate
+
+    @property
+    def expense_total(self):
         if self.handover.type == 'Outgoing':
             return self.total_amount
 
@@ -712,7 +754,7 @@ class Inspection(models.Model):
     report_no = models.IntegerField()
     date = BSDateField(default=today, validators=[validate_in_fy])
     # transaction = models.ForeignKey(Transaction, related_name='inspection')
-    
+
     objects = FYManager()
 
     def save(self, *args, **kwargs):

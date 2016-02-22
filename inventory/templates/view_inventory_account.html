@@ -1,6 +1,5 @@
 {% extends "inventory_base.html" %}
-{% load i18n %}
-{% load staticfiles %}
+{% load i18n filters staticfiles %}
 
 {% block title %}{{ obj.name }}{% endblock %}
 
@@ -9,8 +8,6 @@
     <li><a href="{% url "list_inventory_accounts" %}">{% trans 'Inventory' %} {% trans 'Accounts' %}</a></li>
     <li><span>{{ obj.name }}</span></li>
 {% endblock %}
-
-{% load filters %}
 
 {% block head_end %}
     <script src="{% static 'js/inventory/inventory_account.js' %}"></script>
@@ -145,13 +142,13 @@
             {% endif %}
 
 
-            <td data-bind="text: income_quantity(), localize: true"></td>
+            <td data-bind="text: income_quantity(), localize: 2"></td>
             <td data-bind="text: income_rate(), localize: 2"></td>
             <td data-bind="text: income_total(), localize: 2"></td>
 
-            <td data-bind="text: expense_quantity(), localize: true"></td>
+            <td data-bind="text: expense_quantity(), localize: 2"></td>
             <td data-bind="editableText: expense_total, localize: 2, disable_content_editable: income_quantity()"></td>
-            <td data-bind="text: current_balance(), localize: true"></td>
+            <td data-bind="text: current_balance(), localize: 2"></td>
             <td data-bind="editableText: wrapper.remaining_total($root, $index), localize: 2"></td>
             <td data-bind="editableText: remarks"></td>
         </tr>

@@ -109,10 +109,10 @@
                                 data-url="{% url 'create_inventory_item' %}"></select>
                     </td>
                     <td data-bind="editableText: specification"></td>
-                    <td data-bind="editableText: quantity, numeric: true"></td>
+                    <td data-bind="editableText: quantity, numeric: true, localize: 2"></td>
                     <td data-bind="editableText: unit"></td>
                     <td data-bind="editableText: total_amount, numeric: true, localize: 2"></td>
-                    <td data-bind="editableText: received_date"></td>
+                    <td data-bind="editableText: received_date, localize: true"></td>
                     <td class="remarks-cell" data-bind="editableText: condition"></td>
                     <td class="hidden-print">
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>

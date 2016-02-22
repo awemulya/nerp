@@ -8,18 +8,20 @@
 
 {% block content %}
 
-    <h1>गृह जिन्सी जिन्सी खाताहरु</h1>
+    <h1>{% trans 'Inventory' %} {% trans 'Accounts' %}</h1>
     <table class="table table-striped table-bordered">
         <thead>
-        <th>{% trans 'Account No' %}</th>
+        <th>{% trans 'Account No.' %}</th>
         <th>{% trans 'Name' %}</th>
         <th>{% trans 'Type' %}</th>
         </thead>
         <tbody>
         {% for obj in ledgers %}
             <tr>
-                <td>
-                    {{ obj.account_no|localize }}
+                <td class="link">
+                    <a href="#ledger-{{ obj.id }}">
+                        {{ obj.account_no|localize }}
+                    </a>
                 </td>
                 <td>
                     {{ obj.item.name }}
@@ -27,9 +29,18 @@
                 <td>
                     {{ obj.item.get_type_display }}
                 </td>
-
             </tr>
         {% endfor %}
         </tbody>
     </table>
+
+    <span class="page-break"></span>
+
+    {% for obj in ledgers %}
+        <div id="ledger-{{ obj.id }}" name="ledger-{{ obj.id }}">
+            {% include "partials/inventory_account_page.html" %}
+            <span class="page-break"></span>
+        </div>
+    {% endfor %}
+
 {% endblock %}
