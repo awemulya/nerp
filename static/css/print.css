@@ -117,13 +117,27 @@ td, tr, th {
 
 @media print {
 
-  .onlyprintbutton {
+
+    .is-empty {
+        display: inline;
+    }
+
+    .is-empty input {
+        margin-top: -9px;
+    }
+
+    .container-fluid .well {
+        padding: 0px !important;
+        margin-bottom: 0px !important;
+    }
+
+    .onlyprintbutton {
     display: block !important;
     border: none;
-  }
+    }
 
-  th.tableprintview, td.tableprintview {
+    th.tableprintview, td.tableprintview {
     display: table-cell !important;
-  }
+    }
   
 }
