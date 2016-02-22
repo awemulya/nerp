@@ -116,7 +116,9 @@ td, tr, th {
 }
 
 @media print {
-
+    .inline {
+        display: inline !important;
+    }
 
     .is-empty {
         display: inline;
@@ -124,6 +126,10 @@ td, tr, th {
 
     .is-empty input {
         margin-top: -9px;
+    }
+
+    .is-empty input.form-inline {
+        display: inline;
     }
 
     .container-fluid .well {
