@@ -1,8 +1,7 @@
-# Windows
+# Production and Development
 Django
-psycopg2
 django-mptt
-https://github.com/zyga/django-pagination/tarball/master#egg=linaro-django-pagination
+-e git+https://github.com/zyga/django-pagination.git@master#egg=linaro-django-pagination
 django-filter
 webstack-django-sorting
 djangorestframework
@@ -10,11 +9,11 @@ Pillow
 django-haystack
 pyelasticsearch
 django-froala-editor
-https://github.com/helber/django-dbsettings/tarball/master#egg=django-dbsettings
+-e git+https://github.com/helber/django-dbsettings.git@master#egg=django-dbsettings
 django-modeltranslation
-https://github.com/awecode/njango/tarball/master#egg=njango
+-e git+https://github.com/awecode/njango.git@master#egg=njango
 sorl-thumbnail
 django-redis
 jsonfield
-openpyxl
 WeasyPrint
+openpyxl
