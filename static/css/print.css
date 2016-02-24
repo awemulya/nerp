@@ -120,15 +120,15 @@ td, tr, th {
         display: inline !important;
     }
 
-    .is-empty {
+    .form-group {
         display: inline;
     }
 
-    .is-empty input {
+    .form-group input {
         margin-top: -9px;
     }
 
-    .is-empty input.form-inline {
+    .form-group input.form-inline {
         display: inline;
     }
 

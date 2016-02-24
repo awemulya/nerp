@@ -43,9 +43,11 @@
                 <span class="col-lg-6 col-sm-6">
                     {% ifusergroup 'Store Keeper' 'Chief' %}
                         {% trans 'Release No.' %}:
+                        <div class="form-inline inline">
                         <input type="text" class="inline form-control" name="release_no" id="id_release_no"
                                data-bind="value: release_no, localize: true" required>
                         {{ form.release_no.errors }}
+                        </div>
                         <br>
                     {% else %}
                         <div class="visible-print-inline">{% trans 'Release No.' %}: <span data-bind="text: release_no"></span>
