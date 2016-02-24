@@ -15,7 +15,7 @@ from django.utils.translation import get_language
 from njango.utils import get_calendar
 
 from app import settings
-from app.utils.helpers import zero_for_none
+from app.utils.helpers import float_zero_for_none
 
 register = Library()
 
