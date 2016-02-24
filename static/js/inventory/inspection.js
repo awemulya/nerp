@@ -103,7 +103,7 @@ function InspectionRow(row) {
             return self.increment() * self.rate();
         }
         if (self.decrement()) {
-            return self.decrement() * self.rate()
+            return self.decrement() * self.rate();
         }
     });
     self.good = ko.observable();
@@ -111,6 +111,6 @@ function InspectionRow(row) {
     self.remarks = ko.observable();
 
     self.price = ko.computed(function() {
-        return self.total_dr_amount() * self.rate()
+        return round2(self.total_dr_amount() * self.rate());
     });
 }
