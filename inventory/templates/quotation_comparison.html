@@ -27,21 +27,18 @@
     <form method="post" enctype="multipart/form-data" data-bind="submit: save" name="demand-form" novalidate>
         {% csrf_token %}
         <div class="well">
-        <div class="row">
-            <div class="col-md-1"><h6>{% trans 'Report' %} {% trans 'No.' %}:</h6></div>
-            <div class="col-md-3">
-                <input data-bind="value: report_no, localize: true" class="form-control width-auto input-inline">
-            </div>
-            <div class="col-md-8">
-                <div class="pull-right">
-                    {% trans 'Date' %}: 
-                    <div class="form-inline inline">
-                    <input class="form-control inline" type="text" required="required" name="date" id="id_date"
-                                               data-bind="value: date, localize: true">
-                    </div>
+            <div class="pull-right">
+                {% trans 'Date' %}: 
+                <div class="form-inline inline">
+                        <input class="form-control inline" type="text" required="required" name="date" id="id_date"
+                                                   data-bind="value: date, localize: true">
                 </div>
             </div>
-        </div>
+
+            {% trans 'Report' %} {% trans 'No.' %}:
+            <div class="form-inline inline">
+                <input data-bind="value: report_no, localize: true" class="form-control width-auto input-inline">
+            </div>
         </div>
 
         <div data-bind="with: table_view">
