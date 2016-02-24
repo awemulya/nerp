@@ -37,6 +37,11 @@ def zero_for_none(obj):
     else:
         return obj
 
+def float_zero_for_none(obj):
+    if obj is None or obj is '':
+        return 0
+    else:
+        return float(obj)
 
 def none_for_zero(obj):
     if not obj:

@@ -318,8 +318,8 @@ def remaining_total_cost_price(row, counter, data):
     if row.get('remaining_total_cost_price'):
         return float(row.get('remaining_total_cost_price'))
     if counter == 0:
-        return zero_for_none(row.get('income_total')) - zero_for_none(row.get('expense_total'))
+        return float_zero_for_none(row.get('income_total')) - float_zero_for_none(row.get('expense_total'))
     previous_row = data[counter - 1]
-    return zero_for_none(row.get('income_total')) - zero_for_none(row.get('expense_total')) + remaining_total_cost_price(
+    return float_zero_for_none(row.get('income_total')) - float_zero_for_none(row.get('expense_total')) + remaining_total_cost_price(
         previous_row, counter - 1, data)
     
