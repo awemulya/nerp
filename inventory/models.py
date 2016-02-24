@@ -499,6 +499,11 @@ class EntryReport(models.Model):
 
     objects = FYManager()
 
+    def __init__(self, *args, **kwargs):
+        super(EntryReport, self).__init__(*args, **kwargs)
+        if not self.pk and not self.entry_report_no:
+            self.entry_report_no = get_next_voucher_no_for_fy(self.__class__, 'entry_report_no')
+
     def save(self, *args, **kwargs):
         if self.__class__.objects.fiscal_year().filter(entry_report_no=self.entry_report_no).exclude(pk=self.pk):
             raise ValidationError(_('Voucher no. exists!'))
