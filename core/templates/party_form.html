@@ -13,8 +13,8 @@
 
     {{ form.non_field_errors }}
     {{ form.errors }}
-    <div class="well">
     <form method="post" id="form">
+    <div class="well">
         {% csrf_token %}
         {{ form.as_p }}
     </div>
