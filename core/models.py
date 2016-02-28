@@ -95,7 +95,7 @@ class AppSetting(dbsettings.Group):
     # fiscal_year = dbsettings.MultipleChoiceValue(choices=[('13+', '13-19'), ('19+', '19-25'), ('25+', '25-40')])
     fiscal_year = dbsettings.StringValue(
         choices=FISCAL_YEARS)
-    header_for_forms = dbsettings.TextValue()
+    header_for_forms = dbsettings.TextValue(default='NERP')
 
 
 app_setting = AppSetting()
