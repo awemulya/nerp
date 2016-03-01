@@ -52,7 +52,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'froala_editor',
     'haystack',
-    'dbsettings',
     'sorl.thumbnail',
     'njango',
 
@@ -61,8 +60,10 @@ INSTALLED_APPS = (
     'account',
     'core',
     'ils',
-    'key',
     'training',
+    'key',
+
+    'dbsettings',
 )
 
 TIME_ZONE = 'Asia/Kathmandu'
