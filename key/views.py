@@ -1,5 +1,6 @@
 import json
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
 
 import requests
 
@@ -14,5 +15,21 @@ def send_key_request(request):
     res = requests.post(REQUEST_URL, data={'app': APP_NAME, 'user': setting.value})
     return JsonResponse(json.loads(res.content))
 
+
 def invalid_key(request):
     return render(request, 'key/invalid.html')
+
+
+@csrf_exempt
+def activation(request):
+    if request.POST.get('key'):
+        try:
+            key = Setting.objects.get(attribute_name='key')
+        except Setting.DoesNotExist:
+            key = Setting.objects.create(attribute_name='key', module_name='key.models')
+        key.value = request.POST.get('key')
+        key.save()
+        if request.META.get('HTTP_REFERER'):
+            return redirect(request.META.get('HTTP_REFERER'))
+        else:
+            return redirect('/')

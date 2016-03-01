@@ -47,9 +47,9 @@
     <input type="submit" value="Request Key" id="request-key-btn">
     <div id="request-key-result"></div>
     
-    <form action="">
+    <form action="{% url 'key_activation' %}" method="post">
         <label for="activation_key">Activation Key</label>
-        <input id="activation_key" type="text">
+        <input id="activation_key" name="key" type="text">
         <input type="submit">
     </form>
     

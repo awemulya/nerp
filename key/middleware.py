@@ -34,7 +34,7 @@ class KeyMiddleware(object):
             setting = Setting.objects.get(attribute_name=ATTR_NAME)
             if not setting.value in DEFAULT_VALUES and not request.path.replace('/', '')[
                                                            0:5] == 'admin' and not request.path.replace(
-                    '/', '')[0:3] == 'key':
+                '/', '')[0:3] == 'key':
                 validity = {'error': 'No Activation Key!'}
                 try:
                     key = Setting.objects.get(attribute_name='key')
