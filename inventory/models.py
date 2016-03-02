@@ -63,7 +63,7 @@ def set_transactions(model, date, *args):
         transaction.account.current_balance += diff
         transaction.current_balance = transaction.account.current_balance
         transaction.account.save()
-        journal_entry.transactions.add(transaction)
+        journal_entry.transactions.add(transaction, bulk=False)
         alter(transaction.account, date, diff)
 
 
@@ -498,6 +498,11 @@ class EntryReport(models.Model):
     source = GenericForeignKey('source_content_type', 'source_object_id')
 
     objects = FYManager()
+
+    def __init__(self, *args, **kwargs):
+        super(EntryReport, self).__init__(*args, **kwargs)
+        if not self.pk and not self.entry_report_no:
+            self.entry_report_no = get_next_voucher_no_for_fy(self.__class__, 'entry_report_no')
 
     def save(self, *args, **kwargs):
         if self.__class__.objects.fiscal_year().filter(entry_report_no=self.entry_report_no).exclude(pk=self.pk):

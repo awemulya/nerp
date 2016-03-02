@@ -2,6 +2,7 @@
 *~
 .idea
 media
+db.sqlite3
 
 gunicorn.log
 gunicorn-error.log

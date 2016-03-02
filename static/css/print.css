@@ -116,14 +116,34 @@ td, tr, th {
 }
 
 @media print {
+    .inline {
+        display: inline !important;
+    }
 
-  .onlyprintbutton {
+    .form-group {
+        display: inline;
+    }
+
+    .form-group input {
+        margin-top: -9px;
+    }
+
+    .form-group input.form-inline {
+        display: inline;
+    }
+
+    .container-fluid .well {
+        padding: 0px !important;
+        margin-bottom: 0px !important;
+    }
+
+    .onlyprintbutton {
     display: block !important;
     border: none;
-  }
+    }
 
-  th.tableprintview, td.tableprintview {
+    th.tableprintview, td.tableprintview {
     display: table-cell !important;
-  }
+    }
   
 }

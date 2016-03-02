@@ -54,6 +54,13 @@ function InspectionRow(row) {
     var self = this;
     // self.sn = ko.observable();
     self.id = ko.observable()
+    self.total_dr_amount = ko.observable();
+    self.rate = ko.observable();
+    self.account_no =  ko.observable();
+    self.inventory_classification_reference_no = ko.observable();
+    self.item_name = ko.observable();
+    self.unit = ko.observable();
+    
     for (var k in row) {
         if (row[k] != null)
             self[k] = ko.observable(row[k]);
@@ -96,7 +103,7 @@ function InspectionRow(row) {
             return self.increment() * self.rate();
         }
         if (self.decrement()) {
-            return self.decrement() * self.rate()
+            return self.decrement() * self.rate();
         }
     });
     self.good = ko.observable();
@@ -104,6 +111,6 @@ function InspectionRow(row) {
     self.remarks = ko.observable();
 
     self.price = ko.computed(function() {
-        return self.total_dr_amount() * self.rate()
+        return round2(self.total_dr_amount() * self.rate());
     });
 }

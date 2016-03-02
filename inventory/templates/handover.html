@@ -30,7 +30,7 @@
         <input type="hidden" name="table_model" data-bind="value: ko.toJSON($data.demand_rows, null, 2)">
 
         {% trans 'Handover' %} {% trans 'Form No.' %}
-        <input type="text" class="form-control input-inline" name="voucher_no" id="id_voucher_no"
+        <input type="text" class="form-control form-inline" name="voucher_no" id="id_voucher_no"
                data-bind="value: voucher_no, localize: true">
         <br>
         श्री
@@ -73,6 +73,7 @@
         अनुरोध छ ।
         {{ form.due_days.errors }}
         </div>
+        <br>
 
 
         <div data-bind="with:table_view">
