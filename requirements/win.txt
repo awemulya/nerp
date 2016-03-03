@@ -1,5 +1,5 @@
 # Production and Development
-Django
+Django==1.8.4
 django-mptt
 -e git+https://github.com/zyga/django-pagination.git@master#egg=linaro-django-pagination
 django-filter
@@ -17,3 +17,4 @@ django-redis
 jsonfield
 WeasyPrint
 openpyxl
+requests
