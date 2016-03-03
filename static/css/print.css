@@ -137,6 +137,11 @@ td, tr, th {
         margin-bottom: 0px !important;
     }
 
+    h6 {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+
     table {
         border: 1px solid #DDDDDD;
     }

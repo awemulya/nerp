@@ -17,12 +17,12 @@
         <h4 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>
     </div>
     <h1 class='center'>{% trans 'Inspection' %} {% trans 'Report' %}</h1>
-    <h4>{% trans "Fiscal Year" %}: {{ obj.fiscal_year }} </h4>
+    <h6>{% trans "Fiscal Year" %}: {{ obj.fiscal_year }} </h6>
     {% if obj.report_no %}
-    <h4>{% trans "Release no" %} : {{ obj.report_no }}</h4>
+    <h6>{% trans "Release no" %} : {{ obj.report_no }}</h6>
     {% endif %}
     {% if obj.date %}
-    <h4>{% trans "Date" %} : {{ obj.date }}</h4>
+    <h6>{% trans "Date" %} : {{ obj.date }}</h6>
     {% endif %}
 </div>
 <div class="well">
