@@ -12,7 +12,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.views.generic import ListView, DetailView, UpdateView, CreateView
 
 from openpyxl import Workbook
@@ -124,6 +124,7 @@ def convert_demand(request, id):
     ws.merge_cells('A2:H2')
     header = ws.cell('A2')
     header.value = app_setting.header_for_forms
+    ws.row_dimensions[header.row].height = 40
     header.style = Style(
         font=Font(
             bold=True,
@@ -134,6 +135,7 @@ def convert_demand(request, id):
     ws.merge_cells('A4:H4')
     report_name = ws.cell('A4')
     report_name.value = _("Demand Form")
+    ws.row_dimensions[report_name.row].height = 35
     report_name.style = Style(
         font=Font(
             # bold=True,
@@ -192,6 +194,7 @@ def convert_purchase_order(request, id):
 
     # Header
     header = merge_and_add(ws, 2, 1, 2, 9, app_setting.header_for_forms)
+    ws.row_dimensions[header.row].height = 40
     header.style = Style(
         font=Font(
             bold=True,
@@ -200,6 +203,7 @@ def convert_purchase_order(request, id):
             horizontal='center'),
     )
     report_name = merge_and_add(ws, 4, 1, 4, 9, "Purchase Order")
+    ws.row_dimensions[report_name.row].height = 35
     report_name.style = Style(
         font=Font(
             # bold=True,
@@ -279,6 +283,7 @@ def convert_entry_report(request, id):
     row_index = 9
     # Header
     header = merge_and_add(ws, 2, 1, 2, 13, app_setting.header_for_forms)
+    ws.row_dimensions[header.row].height = 40
     header.style = Style(
         font=Font(
             bold=True,
@@ -287,6 +292,7 @@ def convert_entry_report(request, id):
             horizontal='center'),
     )
     report_name = merge_and_add(ws, 4, 1, 4, 13, _("Entry Report"))
+    ws.row_dimensions[report_name.row].height = 35
     report_name.style = Style(
         font=Font(
             # bold=True,

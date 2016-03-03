@@ -65,7 +65,7 @@
 
         <div data-bind="with:table_view">
            <div class="well">
-            <table class="table table-bordered table-striped table-responsive">
+            <table class="table table-striped table-responsive">
                 <thead>
                 <tr>
                     <th class="span1">{% trans 'SN' %}</th>
@@ -244,10 +244,17 @@
                 <div>
                     {% trans "Date" %}:-
                     {#                    {{ form.instance.date|date:"Y-m-d" }}#}
-                    <input class="form-control" type="text" required="required" name="date" id="id_date"
+                    <div class="form-inline inline">
+                    <input class="form-control inline" type="text" required="required" name="date" id="id_date"
                            data-bind="value: date, localize: true">
+                    </div>
                 </div>
-                <div>{% trans "Purpose" %}:- {{ form.purpose }}</div>
+                <div>
+                {% trans "Purpose" %}:- 
+                    <div class="form-inline inline">
+                        {{ form.purpose }}
+                     </div>
+                </div>
                 <div class="visible-print-block">{% trans "Signature of the one who enters in Inventory Account" %}:-</div>
                 <div class="visible-print-block">{% trans "Date" %}:-</div>
             </div>
