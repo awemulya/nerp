@@ -87,6 +87,9 @@ class DemandForm(KOModelForm):
     class Meta:
         model = Demand
         exclude = ()
+        widgets = {
+            'purpose': forms.TextInput(attrs={'class': 'inline'})
+        }
 
 
 class PurchaseOrderForm(KOModelForm):
