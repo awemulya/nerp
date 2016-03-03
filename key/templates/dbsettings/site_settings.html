@@ -34,6 +34,9 @@
                         <table summary="
                                 
                                 
+                                
+                                
+                                
                                 {% filter capfirst %}{% blocktrans with module.grouper as name %}Models available in the {{ name }} application.{% endblocktrans %}{% endfilter %}"
                                width="100%">
                             <caption>{% filter capfirst %}{{ module.grouper }}{% endfilter %}</caption>
@@ -55,6 +58,32 @@
             <input type="submit" value="Request Key" id="request-key-btn">
             <span id="request-key-result"></span>
             <script>
+                (function ($) {
+                    $.fn.changeElementType = function (newType) {
+                        var attrs = {};
+
+                        $.each(this[0].attributes, function (idx, attr) {
+                            attrs[attr.nodeName] = attr.nodeValue;
+                        });
+
+                        this.replaceWith(function () {
+                            return $("<" + newType + "/>", attrs).append($(this).contents());
+                        });
+                    }
+                })(jQuery);
+
+                var text_to_area = function (id) {
+                    // jquery can't select element for some reason
+                    var $el = $(document.getElementById(id));
+                    var val = $el.val();
+                    $el.changeElementType('textarea');
+                    // get the new element again
+                    var $el = $(document.getElementById(id))
+                    $el.text(val);
+                    $el.attr('rows', 4);
+                    $el.attr('cols', 80);
+                }
+
                 $(document).ready(function () {
                     $("#request-key-btn").click(function (e) {
                         e.preventDefault();
@@ -72,6 +101,7 @@
                             }
                         });
                     });
+                    text_to_area('id_core.models____header_for_forms');
                 });
 
             </script>
