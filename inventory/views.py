@@ -283,6 +283,7 @@ def convert_entry_report(request, id):
     row_index = 9
     # Header
     header = merge_and_add(ws, 2, 1, 2, 13, app_setting.header_for_forms)
+    ws.row_dimensions[header.row].height = 40
     header.style = Style(
         font=Font(
             bold=True,
@@ -291,6 +292,7 @@ def convert_entry_report(request, id):
             horizontal='center'),
     )
     report_name = merge_and_add(ws, 4, 1, 4, 13, _("Entry Report"))
+    ws.row_dimensions[report_name.row].height = 35
     report_name.style = Style(
         font=Font(
             # bold=True,
