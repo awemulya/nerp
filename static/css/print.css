@@ -137,6 +137,18 @@ td, tr, th {
         margin-bottom: 0px !important;
     }
 
+    table {
+        border: 1px solid #DDDDDD;
+    }
+
+    table>thead>tr>th {
+        border: 1px solid #DDDDDD;
+    }
+ 
+    table>tbody>tr>td {
+        border: 1px solid #DDDDDD;
+    }
+
     .onlyprintbutton {
     display: block !important;
     border: none;
