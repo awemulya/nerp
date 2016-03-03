@@ -19,19 +19,19 @@
 
     <h3>{% trans 'Non-consumable' %} {% trans 'Items' %}</h3>
     <div class="well">
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped">
         <tbody>
         <tr>
             <th>{% trans 'Total' %} {% trans 'Items' %}</th>
-            <td>{{ non_consumable_all_instances.count }}</td>
+            <td>{{ non_consumable_all_instances.count |localize }}</td>
         </tr>
         <tr>
             <th>{% trans 'Distinct' %} {% trans 'Items' %}</th>
-            <td> {{ non_consumable_instances.count }}</td>
+            <td> {{ non_consumable_instances.count |localize }}</td>
         </tr>
         <tr>
             <th>{% trans 'Total' %} {% trans 'Worth' %}</th>
-            <td> {{ non_consumable_grand_total }}</td>
+            <td> {{ non_consumable_grand_total |localize }}</td>
         </tr>
         </tbody>
 
@@ -41,7 +41,7 @@
 
     {% autopaginate non_consumable_instances 25 as paginated_non_consumable_instances %}
     <div class="well">
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped">
         <thead>
         <th>{% trans 'Name' %}</th>
         <th>{% trans 'Total' %} {% trans 'Count' %}</th>
@@ -53,8 +53,8 @@
                 <td>
                     <a href="{% url 'update_inventory_item' instance.item %}">{{ instance.item__name }}</a>
                 </td>
-                <td>{{ instance.total_count }}</td>
-                <td>{{ instance.total_value }}</td>
+                <td>{{ instance.total_count |localize }}</td>
+                <td>{{ instance.total_value |localize }}</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -66,7 +66,7 @@
 
     {% autopaginate non_consumable_all_instances 25 as paginated_non_consumable_all_instances %}
     <div class="well">
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped">
         <thead>
         <th>{% trans 'Name' %}</th>
         <th>{% trans 'Rate' %}</th>
@@ -78,7 +78,7 @@
                 <td>
                     <a href="{% url 'iteminstance_history' instance.id %}">{{ instance.item }}</a>
                 </td>
-                <td>{{ instance.item_rate }}</td>
+                <td>{{ instance.item_rate |localize }}</td>
                 <td class="hidden-print">
                     <a class="btn btn-danger"
                        href="{% url 'return_to_store' instance.id %}?next={% url 'user_ledger_detail' user.id %}">{% trans 'Return to Store' %}</a>
@@ -94,19 +94,19 @@
 
     <h1>{% trans 'Consumable' %}</h1>
     <div class="well">
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped">
         <tbody>
         <tr>
             <th>{% trans 'Total' %} {% trans 'Items' %}</th>
-            <td>{{ consumable_all_instances.count }}</td>
+            <td>{{ consumable_all_instances.count |localize }}</td>
         </tr>
         <tr>
             <th>{% trans 'Distinct' %} {% trans 'Items' %}</th>
-            <td> {{ consumable_instances.count }}</td>
+            <td> {{ consumable_instances.count |localize }}</td>
         </tr>
         <tr>
             <th>{% trans 'Total' %} {% trans 'Worth' %}</th>
-            <td> {{ consumable_grand_total }}</td>
+            <td> {{ consumable_grand_total |localize }}</td>
         </tr>
         </tbody>
 
@@ -114,7 +114,7 @@
     </div>
     {% autopaginate consumable_instances 25 as paginated_consumable_instances %}
     <div class="well">
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped">
         <thead>
         <th>{% trans 'Name' %}</th>
         <th>{% trans 'Total' %} {% trans 'Count' %}</th>
@@ -126,8 +126,8 @@
                 <td>
                     <a href="{% url 'update_inventory_item' instance.item %}">{{ instance.item__name }}</a>
                 </td>
-                <td>{{ instance.total_count }}</td>
-                <td>{{ instance.total_value }}</td>
+                <td>{{ instance.total_count |localize }}</td>
+                <td>{{ instance.total_value |localize }}</td>
             </tr>
         {% endfor %}
         </tbody>
