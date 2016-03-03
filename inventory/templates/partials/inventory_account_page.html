@@ -70,26 +70,26 @@
             <tbody data-bind="with: table_vm">
             {% for row in data %}
                 <tr>
-                    <td>{{ row.date }}</td>
+                    <td>{{ row.date |default:'' |localize}}</td>
                     <td title="{{ row.creator_type }}">
-                        {{ row.voucher_no }}
+                        {{ row.voucher_no |localize }}
                     </td>
                     <td>{{ row.specification|default:'' }}</td>
                     {% if obj.item.type == 'non-consumable' %}
                         <td>{{ row.country_or_company }}</td>
-                        <td>{{ row.size }}</td>
-                        <td>{{ row.expected_life }}</td>
-                        <td>{{ row.source }}</td>
+                        <td>{{ row.size |localize }}</td>
+                        <td>{{ row.expected_life |localize }}</td>
+                        <td>{{ row.source |localize }}</td>
                     {% endif %}
 
 
-                    <td>{{ row.income_quantity|floatformat:2 }}</td>
-                    <td>{{ row.income_rate|floatformat:2 }}</td>
-                    <td>{{ row.income_total|floatformat:2|default:'' }}</td>
+                    <td>{{ row.income_quantity|floatformat:2 |localize }}</td>
+                    <td>{{ row.income_rate|floatformat:2 |localize }}</td>
+                    <td>{{ row.income_total|floatformat:2|default:'' |localize }}</td>
 
-                    <td>{{ row.expense_quantity|floatformat:2 }}</td>
-                    <td>{{ row.expense_total|default:''|floatformat:2 }}</td>
-                    <td>{{ row.current_balance|floatformat:2 }}</td>
+                    <td>{{ row.expense_quantity|floatformat:2 |localize }}</td>
+                    <td>{{ row.expense_total|default:''|floatformat:2 |localize }}</td>
+                    <td>{{ row.current_balance|floatformat:2 |localize }}</td>
                     <td>
                         {% remaining_total_cost_price row forloop.counter0 data %}
                         {#                    {% if row.remaining_total_cost_price %}#}
