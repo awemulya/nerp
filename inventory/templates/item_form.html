@@ -20,141 +20,146 @@
 
 
 {% block content %}
-<script>
-        depreciation_data = {{ depreciation_data|jsonify }}
-</script>
-            {{ form.non_field_errors }}
-            {{ form.errors }}
-        <form method="post" id="form">
-            <ul class="nav nav-pills" role="tablist" id="training-tab">
-                <li role="presentation" class="active"><a href="#basic" data-toggle="tab">{% trans "Basic" %}</a></li>
-                {% ifusergroup 'Store Keeper' %}
-                    <li role="presentation"><a href="#depreciation" data-toggle="tab">{% trans "Depreciation" %}</a></li>
-                {% endifusergroup %}
+    <script>
+        depreciation_data =
+        {{ depreciation_data|jsonify }}
+    </script>
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+    <form method="post" id="form">
+        <ul class="nav nav-pills" role="tablist" id="training-tab">
+            <li role="presentation" class="active"><a href="#basic" data-toggle="tab">{% trans "Basic" %}</a></li>
+            {% ifusergroup 'Store Keeper' %}
+                <li role="presentation"><a href="#depreciation" data-toggle="tab">{% trans "Depreciation" %}</a></li>
+            {% endifusergroup %}
+            {% if scenario == 'Update' %}
+                <li class="tab-title"><a href="#item_instance" class="item-instance"
+                                         data-toggle="tab">{% trans "Instances" %}</a></li>
+            {% endif %}
+            <div class="span12">
                 {% if scenario == 'Update' %}
-                <li class="tab-title"><a href="#item_instance" class="item-instance" data-toggle="tab">{% trans "Item Instance" %}</a></li>
+                    <a class="btn btn-danger btn-lg btn-raised pull-right"
+                       href="{% url 'delete_inventory_item' form.instance.id %}">{% trans 'Delete' %}!</a>
                 {% endif %}
-                <div class="span12">
-                    {% if scenario == 'Update' %}
-                        <a class="btn btn-danger btn-lg btn-raised pull-right"
-                           href="{% url 'delete_inventory_item' form.instance.id %}">{% trans 'Delete' %}!</a>
-                    {% endif %}
-                </div>
-                <button type="submit" value="Submit" class="btn btn-info btn-raised pull-right">
-                    {% trans 'Submit' %}
-                </button>
+            </div>
+            <button type="submit" value="Submit" class="btn btn-info btn-raised pull-right">
+                {% trans 'Save' %}
+            </button>
 
-            </ul>
-            <br>
+        </ul>
+        <br>
 
-            <div class="tab-content">
+        <div class="tab-content">
             <div class="content tab-pane active" id="basic">
                 {% csrf_token %}
                 <div class="well">
                     {{ form.as_p }}
-                <p>
-                <div id="other-properties">
-                <label for="id_other_properties">{% trans "Other properties" %}</label>
-                <label>
-                    <a class="btn btn-default btn-raised" data-bind="click: addOtherProperty"><i
-                            class="fa fa-plus"></i> {% trans 'Add New' %}
-                    </a>
-                </label>
+                    <p>
 
-                    <div id="id_other_properties" data-bind="foreach: other_properties" class="form-inline">
-                        <div class="property-row">
-                            <input type="text" class="form-control test" id="id_property_name" name="property_name" placeholder="Property name" data-bind="value: property_name"> 
-                            <input type="text" class="form-control" id="id_property" name="property" placeholder="Property" data-bind="value: property">
-                            <a href="#" class="btn btn-default" data-bind="click: $parent.removeOtherProperty">x</a>
+                    <div id="other-properties">
+                        <label for="id_other_properties">{% trans "Other properties" %}</label>
+                        <label>
+                            <a class="btn btn-default btn-raised" data-bind="click: addOtherProperty"><i
+                                    class="fa fa-plus"></i> {% trans 'Add New' %}
+                            </a>
+                        </label>
+
+                        <div id="id_other_properties" data-bind="foreach: other_properties" class="form-inline">
+                            <div class="property-row">
+                                <input type="text" class="form-control test" id="id_property_name" name="property_name"
+                                       placeholder="Property name" data-bind="value: property_name">
+                                <input type="text" class="form-control" id="id_property" name="property" placeholder="Property"
+                                       data-bind="value: property">
+                                <a href="#" class="btn btn-default" data-bind="click: $parent.removeOtherProperty">x</a>
+                            </div>
                         </div>
                     </div>
-                </div>
                 </div>
 
                 </p>
             </div>
-        <div class="content tab-pane well" id="depreciation">
+            <div class="content tab-pane well" id="depreciation">
 
-            <div>
-                {% csrf_token %}
-                <div class="row">
-                    <div class="col-md-3 col-sm-3">
-                   <div class="row">
-                    <div class="col-md-12 col-sm-12">
+                <div>
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12">
 
-                        <label>{% trans "Depreciate" %}</label>
-                        </div>
-                        <div class="col-md-9 col-sm-9">
-                        <div class="input-group">
-                            {{ depreciation_form.depreciate_value }}
-                            <div class="input-group-addon" class="postfix" data-bind="text: postfix">%</div>
+                                    <label>{% trans "Depreciate" %}</label>
+                                </div>
+                                <div class="col-md-9 col-sm-9">
+                                    <div class="input-group">
+                                        {{ depreciation_form.depreciate_value }}
+                                        <div class="input-group-addon" class="postfix" data-bind="text: postfix">%</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    </div>
-                    
-                    <div class="col-md-2 col-sm-2">
-                    <label for="id_depreciate_type">{% trans "Depreciation" %}</label>
-                        {{ depreciation_form.depreciate_type }}
-                    </div>
-                    <div class="col-md-5 col-sm-5">
-                    </div>
-                </div>
-                  <div class="row">
-                    <div class="col-md-3 col-sm-3">
-                   <div class="row">
-                    <div class="col-md-12 col-sm-12">
 
-                        <label>{% trans "Every" %}</label>
+                        <div class="col-md-2 col-sm-2">
+                            <label for="id_depreciate_type">{% trans "Depreciation" %}</label>
+                            {{ depreciation_form.depreciate_type }}
                         </div>
-                        <div class="col-md-9 col-sm-9">
-                        <div class="input-group">
-                             {{ depreciation_form.time }}
-                        </div>
+                        <div class="col-md-5 col-sm-5">
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12">
+
+                                    <label>{% trans "Every" %}</label>
+                                </div>
+                                <div class="col-md-9 col-sm-9">
+                                    <div class="input-group">
+                                        {{ depreciation_form.time }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 col-sm-2">
+                            <label for="id_depreciate_type"></label>
+                            {{ depreciation_form.time_type }}
+                            <input type="hidden" data-bind="value: id" name='depreciation_id'>
+                        </div>
+                        <div class="col-md-5 col-sm-5">
+                        </div>
                     </div>
-                    
-                    <div class="col-md-2 col-sm-2">
-                    <label for="id_depreciate_type"></label>
-                        {{ depreciation_form.time_type }}
-                        <input type="hidden" data-bind="value: id" name='depreciation_id'>
-                    </div>
-                    <div class="col-md-5 col-sm-5">
-                    </div>
+
                 </div>
-                
+            </div>
+
+    </form>
+    {% if scenario == 'Update' %}
+        <div class="content tab-pane" id="item_instance">
+            <div class="well">
+                <table class="table table-striped">
+                    <thead>
+                    <th>{% trans "Name" %}</th>
+                    <th>{% trans 'Rate' %}</th>
+                    <th>{% trans 'Location' %}</th>
+                    <th>{% trans "Other properties" %}</th>
+                    </thead>
+                    <tbody>
+                    {% for obj in item_instances %}
+                        <tr>
+                            <td>
+                                <a href="{% url "item_instance_detail" obj.id %}">{{ obj.item }}</a>
+                            </td>
+                            <td>
+                                <a href="{% url "item_instance_detail" obj.id %}">{{ obj.item_rate }}</a>
+                            </td>
+                            <td>{{ obj.location }}</td>
+                            <td id="item_instance_properties">{{ obj.other_properties| jsonify }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-
-        </form>
-        {% if scenario == 'Update' %}
-        <div class="content tab-pane" id="item_instance">
-        <div class="well">
-            <table class="table table-striped">
-            <thead>
-                <th>{% trans "Name" %}</th>
-                <th>{% trans 'Rate' %}</th>
-                <th>{% trans 'Location' %}</th>
-                <th>{% trans "Other properties" %}</th>
-            </thead>
-            <tbody>
-            {% for obj in item_instances %}
-                <tr>
-                    <td>
-                        <a href="{% url "item_instance_detail" obj.id %}">{{ obj.item }}</a>
-                    </td>
-                    <td>
-                        <a href="{% url "item_instance_detail" obj.id %}">{{ obj.item_rate }}</a>
-                    </td>
-                    <td>{{ obj.location }}</td>
-                    <td id="item_instance_properties">{{ obj.other_properties| jsonify }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-            </table>
-        </div>
-        </div>     
-        {% endif %}
+    {% endif %}
     </div>
 {% endblock %}

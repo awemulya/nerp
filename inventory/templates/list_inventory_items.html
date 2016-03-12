@@ -38,7 +38,7 @@
     </div>
     <br>
 
-    {% autosort objects.qs as sorted_objects %}
+    {% autosort objects as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
     <div class="well">
     <table class="table table-striped">

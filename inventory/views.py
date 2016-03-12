@@ -778,8 +778,8 @@ def delete_inventory_item(request, id):
 @group_required('Store Keeper', 'Chief')
 def list_inventory_items(request):
     objects = Item.objects.all()
-    filtered_items = InventoryItemFilter(request.GET, queryset=objects)
-    return render(request, 'list_inventory_items.html', {'objects': filtered_items})
+    # filtered_items = InventoryItemFilter(request.GET, queryset=objects)
+    return render(request, 'list_inventory_items.html', {'objects': objects})
 
 
 @login_required
