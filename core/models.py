@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.core.exceptions import ValidationError
 from django.db import models
 from njango.models import TranslatableNumberModel
@@ -96,6 +97,7 @@ class AppSetting(dbsettings.Group):
     fiscal_year = dbsettings.StringValue(
         choices=FISCAL_YEARS)
     header_for_forms = dbsettings.TextValue(default='NERP')
+    header_for_forms_nepali = dbsettings.TextValue()
 
 
 app_setting = AppSetting()
