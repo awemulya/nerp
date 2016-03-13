@@ -1,11 +1,10 @@
 from django.conf.urls import patterns, include, url
-# from app.admin import admin_site
 from django.conf import settings
 from django.contrib import admin
-from users import views as users_views
-from django.conf.urls.static import static
 
-# admin.site = admin_site
+from users import views as users_views
+from key import views as key_views
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -18,20 +17,18 @@ urlpatterns = patterns('',
                        (r'^inventory/', include('inventory.urls')),
                        (r'^library/', include('ils.urls')),
                        (r'^training/', include('training.urls')),
+                       (r'^key/', include('key.urls')),
 
-                        (r'^admin/settings/', include('dbsettings.urls')),
+                       (r'^admin/settings/', include('dbsettings.urls')),
                        url(r'^admin/', include(admin.site.urls)),
                        (r'^i18n/', include('django.conf.urls.i18n')),
 
                        url(r'^froala_editor/', include('froala_editor.urls')),
 
-
-
                        (r'', include('core.urls')),
 
-
                        )
- # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     urlpatterns += patterns('',

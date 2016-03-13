@@ -52,9 +52,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'froala_editor',
     'haystack',
-    'dbsettings',
     'sorl.thumbnail',
-    'easy_pdf',
     'njango',
 
     'users',
@@ -63,6 +61,9 @@ INSTALLED_APPS = (
     'core',
     'ils',
     'training',
+    'key',
+
+    'dbsettings',
 )
 
 TIME_ZONE = 'Asia/Kathmandu'
@@ -84,8 +85,6 @@ try:
 except ImportError:
     pass
 
-
-
 AUTH_USER_MODEL = 'users.User'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/user/login/'
@@ -100,6 +99,7 @@ MIDDLEWARE_CLASSES = (
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
     'njango.middleware.CalendarMiddleware',
+    'key.middleware.KeyMiddleware',
 )
 
 HAYSTACK_CONNECTIONS = {

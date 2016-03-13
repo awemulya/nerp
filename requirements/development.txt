@@ -7,7 +7,7 @@ django-debug-toolbar
 Django
 psycopg2
 django-mptt
--e git+https://github.com/zyga/django-pagination.git@master#egg=linaro-django-pagination
+https://github.com/zyga/django-pagination/tarball/master#egg=linaro-django-pagination
 django-filter
 webstack-django-sorting
 djangorestframework
@@ -15,11 +15,12 @@ Pillow
 django-haystack
 pyelasticsearch
 django-froala-editor
--e git+https://github.com/helber/django-dbsettings.git@master#egg=django-dbsettings
+https://github.com/helber/django-dbsettings/tarball/master#egg=django-dbsettings
 django-modeltranslation
--e git+https://github.com/awecode/njango.git@master#egg=njango
+https://github.com/awecode/njango/tarball/master#egg=njango
 sorl-thumbnail==11.12.1b
 django-redis
 jsonfield
 openpyxl
 WeasyPrint
+requests

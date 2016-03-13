@@ -14,18 +14,25 @@ INSTALLED_APPS += (
     # 'debug_toolbar',
 )
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'awecounting',
+#         'USER': 'awecounting',
+#         'PASSWORD': 'password',
+#         'HOST': '',
+#         'PORT': '',
+#         'ATOMIC_REQUESTS': True,
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'awecounting',
-        'USER': 'awecounting',
-        'PASSWORD': 'password',
-        'HOST': '',
-        'PORT': '',
-        'ATOMIC_REQUESTS': True,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db.sqlite3',
     }
 }
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['awecode.com', 'localhost', '127.0.0.1']
 
 SITE_ID = 1
