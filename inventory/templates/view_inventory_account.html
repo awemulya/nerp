@@ -27,7 +27,7 @@
             {% endif %}
         </span>
         <br/>
-        <h4 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>
+        <h4 class="center">{% localize_header %}</h4>
         <h4 class="center">
             {% if obj.item.type == 'non-consumable' %}
                 {% trans 'Inventory Account of Non-consumable Item' %}

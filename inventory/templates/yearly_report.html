@@ -20,7 +20,7 @@
 
 {% block content %}
     <div class="form-header text-center visible-print-block">
-        <h4 class="text-center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>
+        <h4 class="text-center">{% localize_header %}</h4>
     </div>
 
     <h4 class='center'>{% trans 'Yearly' %} {% trans 'Report' %}</h4>
