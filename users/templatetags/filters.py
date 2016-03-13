@@ -19,6 +19,13 @@ from app.utils.helpers import float_zero_for_none
 
 register = Library()
 
+@register.filter(takes_context=True)
+def localize_company_name(value):
+    from core.models import app_setting
+    lang_code = get_language()
+    if lang_code == 'ne':
+        value = app_setting.header_for_forms_nepali
+    return value
 
 @register.filter
 def bsdate(value, arg=None):
