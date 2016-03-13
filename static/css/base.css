@@ -465,3 +465,12 @@ li.link a {
 {
     overflow-x: auto;
 }*/
+
+.form-control { 
+    margin-bottom: 0px !important;
+    padding: 7px 0 4px 0 !important;
+}
+
+td div.btn-group {
+    margin: 0px;
+}

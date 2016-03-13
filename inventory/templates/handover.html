@@ -20,7 +20,7 @@
 {% block content %}
     <div class="visible-print-block form-header">
         <span class="pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '4' %}{% trans '8' %}</span>
-        <h4 class="center">{{ 'core.models.app_setting.header_for_forms'|setting|linebreaks }}</h4>
+        <h4 class="center">{% localize_header %}</h4>
         <h4 class="center">{% trans 'Handover' %} {% trans 'Form' %}</h4>
     </div>
 
