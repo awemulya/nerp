@@ -1656,3 +1656,15 @@ class LedgersPDF(PDFView):
             'title': _('Inventory Ledgers'),
             'ledgers': InventoryAccount.objects.all().select_related('item'),
         }
+
+
+class DemandPDF(PDFView):
+    model = Demand
+    template_name = "pdf/demand_form_pdf.html"
+
+    def get_context_data(self, **kwargs):
+        pk = int(kwargs.get('pk'))
+        return {
+            'title': _('Demand Form'),
+            'demand': self.model.objects.get(pk=pk),
+        }

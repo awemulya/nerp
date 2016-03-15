@@ -125,5 +125,6 @@ urlpatterns = patterns('',
                        # url(r'^expense/(?P<pk>[0-9]+)/$', views.ExpenseCreate.as_view(), name='expense_update'),
 
                        url(r'^ledgers.pdf$', views.LedgersPDF.as_view(), name='ledgers_as_pdf'),
+                       url(r'^demand.pdf/(?P<pk>\d+)/$', views.DemandPDF.as_view(), name='demand_form_as_pdf'),
 
                        )

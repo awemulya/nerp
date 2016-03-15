@@ -42,7 +42,10 @@ class PDFView(TemplateView):
     def render_to_response(self, *args, **kwargs):
         html_template = get_template(self.template_name)
         context = {'you': self.request.user, 'pagesize': 'A4'}
-        context.update(self.get_context_data())
+        try:
+            context.update(self.get_context_data())
+        except:
+            context.update(args[0])
         rendered_html = html_template.render(RequestContext(self.request, context)).encode(encoding="UTF-8")
         pdf_file = HTML(string=rendered_html).write_pdf(stylesheets=self.get_stylesheets())
         http_response = HttpResponse(pdf_file, content_type='application/pdf')
