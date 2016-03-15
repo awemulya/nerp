@@ -1658,13 +1658,13 @@ class LedgersPDF(PDFView):
         }
 
 
-class DemandPDF(PDFView):
+class DemandPDF(PDFView, DetailView):
     model = Demand
     template_name = "pdf/demand_form_pdf.html"
 
     def get_context_data(self, **kwargs):
-        pk = int(kwargs.get('pk'))
+        self.object = self.get_object()
         return {
             'title': _('Demand Form'),
-            'demand': self.model.objects.get(pk=pk),
+            'demand': self.object,
         }
