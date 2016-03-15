@@ -231,7 +231,7 @@
         <div class="row">
             <div class="col-lg-6 col-sm-6 col-xs-6">
                 <div class="visible-print-block">{% trans "Demandee's Signature" %}:-</div>
-                <div class="inline-fields">
+                <div class="inline-fields form-inline inline">
                     {% trans "Name" %}:-
                     {% ifusergroup 'Store Keeper' 'Chief' %}
                         {{ form.demandee }}

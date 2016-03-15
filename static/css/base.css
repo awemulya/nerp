@@ -474,3 +474,7 @@ li.link a {
 td div.btn-group {
     margin: 0px;
 }
+
+.add_selected_party {
+    margin: 0 !important;
+}
