@@ -544,6 +544,21 @@ class EntryReportRow(models.Model):
             cost *= 1.13
         return cost + self.other_expenses
 
+    @property
+    def vattable_amount(self):
+        vat = 0
+        if self.vattable:
+            vat = 0.13
+        return self.rate * vat
+
+    @property
+    def unit_price(self):
+        return self.rate + self.vattable_amount
+
+    @property
+    def total(self):
+        return ( self.rate + self.vattable_amount ) * ( self.quantity + self.other_expenses )
+
     def get_voucher_no(self):
         if self.entry_report:
             return self.entry_report.entry_report_no

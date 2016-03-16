@@ -1673,5 +1673,10 @@ class DemandPDF(VoucherPDF):
 
 
 class PurchaseOrderPDF(VoucherPDF):
-    model  = PurchaseOrder
+    model = PurchaseOrder
     template_name = "pdf/purchase_order_pdf.html"
+
+
+class EntryReportPDF(VoucherPDF):
+    model = EntryReport
+    template_name = "pdf/entry_report_pdf.html"
