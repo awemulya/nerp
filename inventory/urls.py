@@ -129,5 +129,6 @@ urlpatterns = patterns('',
                        url(r'^purchase.pdf/(?P<pk>\d+)/$', views.PurchaseOrderPDF.as_view(), name='purchase_order_as_pdf'),
                        url(r'^entry_report.pdf/(?P<pk>\d+)/$', views.EntryReportPDF.as_view(), name='entry_report_as_pdf'),
                        url(r'^handover.pdf/(?P<pk>\d+)/$', views.HandoverPDF.as_view(), name='handover_as_pdf'),
+                       url(r'^inspection.pdf/(?P<pk>\d+)/$', views.InspectionPDF.as_view(), name='inspection_as_pdf'),
 
                        )

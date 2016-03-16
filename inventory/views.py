@@ -1685,3 +1685,8 @@ class EntryReportPDF(VoucherPDF):
 class HandoverPDF(VoucherPDF):
     model = Handover
     template_name = "pdf/handover_pdf.html"
+
+
+class InspectionPDF(VoucherPDF):
+    model = Inspection
+    template_name = "pdf/inspection_pdf.html"
