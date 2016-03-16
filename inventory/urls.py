@@ -130,5 +130,6 @@ urlpatterns = patterns('',
                        url(r'^entry_report.pdf/(?P<pk>\d+)/$', views.EntryReportPDF.as_view(), name='entry_report_as_pdf'),
                        url(r'^handover.pdf/(?P<pk>\d+)/$', views.HandoverPDF.as_view(), name='handover_as_pdf'),
                        url(r'^inspection.pdf/(?P<pk>\d+)/$', views.InspectionPDF.as_view(), name='inspection_as_pdf'),
+                       url(r'^yearly_report.pdf/(?P<pk>\d+)/$', views.YearlyReportPDF.as_view(), name='yearly_report_as_pdf'),
 
                        )

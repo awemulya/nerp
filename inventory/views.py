@@ -1690,3 +1690,8 @@ class HandoverPDF(VoucherPDF):
 class InspectionPDF(VoucherPDF):
     model = Inspection
     template_name = "pdf/inspection_pdf.html"
+
+
+class YearlyReportPDF(VoucherPDF):
+    model = YearlyReport
+    template_name = "pdf/yearly_report_pdf.html"
