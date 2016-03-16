@@ -116,6 +116,8 @@
         </div>
         <input class="btn btn-info btn-raised btn-lg" type="submit" value="Save">
         {% if scenario == 'Update' %}
+            <a class="btn btn-info btn-raised btn-lg"
+               href="{% url 'quotation_comparison_as_pdf' quotation.id %}">{% trans 'Export as PDF' %}</a>
             <a class="btn btn-danger btn-raised btn-lg"
                href="{% url 'delete_quotation_comparison' quotation.id %}">{% trans 'Delete!' %}</a>
         {% endif %}

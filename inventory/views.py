@@ -1695,3 +1695,9 @@ class InspectionPDF(VoucherPDF):
 class YearlyReportPDF(VoucherPDF):
     model = YearlyReport
     template_name = "pdf/yearly_report_pdf.html"
+
+
+class QuotationComparisonPDF(VoucherPDF):
+    model = QuotationComparison
+    template_name = "pdf/quotation_comparison_pdf.html"
+
