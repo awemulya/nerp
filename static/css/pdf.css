@@ -29,3 +29,7 @@ table>thead>tr>th {
 table>tbody>tr>td {
     border: 1px solid #DDDDDD;
 }
+
+table.font-size thead th{
+    font-size: 11px;
+}
