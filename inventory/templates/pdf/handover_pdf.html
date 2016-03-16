@@ -1,0 +1,122 @@
+{% extends "pdf_base.html" %}
+
+{% load i18n filters static %}
+
+{% block extra_style %}
+
+{% endblock %}
+
+{% block content %}
+    <div >
+        <span class="pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '4' %}{% trans '8' %}</span>
+        <br>
+        <h4 class="center">{% localize_header %}</h4>
+        <h4 class="center">{% trans 'Handover' %} {% trans 'Form' %}</h4>
+    </div>
+
+        {% trans 'Handover' %} {% trans 'Form No.' %}: <span>{{ object.voucher_no}}</span>
+        <br>
+        श्री {{ object.addressee }}
+        <br>
+        निम्नांकित मालसामानहरु मिति
+        <div class="form-inline inline">
+            {{ object.date |localize}}
+        </div>
+        को निर्णयानुसार
+        <div class="form-inline inline">
+            {{ object.office }}
+        </div>
+        मन्त्रालय/विभाग/कार्यालय/आयोजनाका
+        <div class="form-inline inline">
+        {{ object.designation }}
+        </div>
+        श्री
+        <div class="form-inline inline">
+        {{ object.handed_to }}
+        </div>
+        को हस्ते पठाएको छु । सो सामान भण्डार दाखिला गरी
+        <div class="form-inline inline">
+        {{ object.due_days |localize }}
+        </div>
+        दिनभित्र दाखिला प्रतिवेदन समेत पठाईदिनुहुन
+        अनुरोध छ ।
+
+        <div>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th rowspan="2" class="span1">{% trans 'SN' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Inventory Account Page No.' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Inventory Classification Reference No.' %}</th>
+                    <th rowspan="2" class="span2">{% trans "Item's Name" %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Specification' %}</th>
+                    <th rowspan="2" class="span3">{% trans 'Quantity' %}</th>
+                    <th rowspan="2" class="span3">{% trans 'Unit' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Total Cost Price' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Start Received Date' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Physical Condition of Item' %}</th>
+                </tr>
+                </thead>
+
+                <tbody id="tbody">
+                {% for row in object.rows.all %}
+                <tr>
+                    <td>
+                        <span> {{ row.sn }}</span>
+                    </td>
+                    <td>{{ row.item.account.account_no }}</td>
+                    <td>{{ row.item.property_classification_reference_number |localize }}</td>
+                    <td> {{ row.item }}
+                    </td>
+                    <td>{{ row.specification }}</td>
+                    <td>{{ row.quantity |localize }}</td>
+                    <td>{{ row.unit }}</td>
+                    <td>{{ row.total_amount |localize }}</td>
+                    <td>{{ row.received_date |localize }}</td>
+                    <td class="remarks-cell">{{ row.condition }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    <div>
+        <div class="text-center">
+            माथि लेखिए बमोजिमका मालसामानहरु
+            ...............................................................मन्त्रालय
+            /विभाग/कार्यालय/आयोजनामा दाखिला गर्ने गरी
+            दुई प्रति हस्तान्तरण फाराम समेत बुझिलिँए ।
+        </div>
+
+        <div class="row">
+
+            <div class="col-xs-6">
+            </div>
+            <div class="col-xs-6">
+                सामान बुझिलिनेको :<br>
+                {% trans 'Name' %}:<br>
+                {% trans 'Designation' %}:<br>
+                {% trans 'Office' %}:<br>
+                {% trans 'Date' %}:<br>
+            </div>
+
+        </div>
+
+        <u><b>सामान बुझिलिने कार्यालयले भर्ने ।–</b></u><br>
+
+        <div class="text-center">
+            माथि लेखिए बमोजिमका मालसामानहरु कार्यालयका........................................श्री हस्ते यस कार्यालयमा प्राप्त
+            भएको प्रमाणित गर्दछु ।
+        </div>
+
+        <div class="col-xs-6"></div>
+        <div class="col-xs-6">
+            प्रमाणित गर्ने:<br>
+            {% trans 'Name' %}:<br>
+            {% trans 'Designation' %}:<br>
+            {% trans 'Office' %}:<br>
+            {% trans 'Date' %}:<br>
+        </div>
+    </div>
+
+{% endblock %}

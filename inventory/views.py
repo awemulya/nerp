@@ -1680,3 +1680,8 @@ class PurchaseOrderPDF(VoucherPDF):
 class EntryReportPDF(VoucherPDF):
     model = EntryReport
     template_name = "pdf/entry_report_pdf.html"
+
+
+class HandoverPDF(VoucherPDF):
+    model = Handover
+    template_name = "pdf/handover_pdf.html"
