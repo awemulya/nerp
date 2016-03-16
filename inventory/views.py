@@ -1658,13 +1658,20 @@ class LedgersPDF(PDFView):
         }
 
 
-class DemandPDF(PDFView, DetailView):
-    model = Demand
-    template_name = "pdf/demand_form_pdf.html"
+class VoucherPDF(PDFView, DetailView):
 
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
         return {
-            'title': _('Demand Form'),
-            'demand': self.object,
+            'object': self.object,
         }
+
+
+class DemandPDF(VoucherPDF):
+    model = Demand
+    template_name = "pdf/demand_form_pdf.html"
+
+
+class PurchaseOrderPDF(VoucherPDF):
+    model  = PurchaseOrder
+    template_name = "pdf/purchase_order_pdf.html"

@@ -40,7 +40,7 @@
                 <br>
                 {% trans 'Address' %}: <span data-bind="text:party_address"></span>
                 <br>
-                {% trans "VAT/PAN" %}: <span data-bind="text:party_pan_no"></span>
+                {% trans "VAT/PAN" %}: <span data-bind="text:party_pan_no, localize: true"></span>
                 <br/>
             </div>
 
@@ -156,6 +156,8 @@
         {% if scenario == 'Update' %}
             <a href="{% url 'convert_purchase_order' form.instance.id %}"
                class="btn btn-info btn-raised btn-lg">{% trans 'Export as XLS' %}</a>
+            <a href="{% url 'purchase_order_as_pdf' form.instance.id %}"
+               class="btn btn-info btn-raised btn-lg">{% trans 'Export as PDF' %}</a>
             <a class="btn btn-danger btn-raised btn-lg"
                href="{% url 'delete_purchase_order' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}

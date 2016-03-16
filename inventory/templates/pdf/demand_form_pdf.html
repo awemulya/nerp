@@ -12,7 +12,6 @@
     <br/>
     <h4 class="text-center">{% localize_header %}</h4>
     <h4 class="text-center">{% trans 'Demand Form' %}</h4>
-
     <span>
     श्री प्रमुख,<br/>
     भण्डार शाखा
@@ -20,7 +19,7 @@
     <br>
     <div class="row">
         <span class="col-lg-6 col-sm-6">
-                <div class="visible-print-inline">{% trans 'Release No.' %}: <span>{{ demand.release_no }}</span>
+                <div class="visible-print-inline">{% trans 'Release No.' %}: <span>{{ object.release_no |localize }}</span>
                 </div>
         </span>
 
@@ -53,15 +52,15 @@
             </thead>
 
             <tbody id="tbody">
-            {% for row in demand.rows.all %}
+            {% for row in object.rows.all %}
             <tr>
-                <td>{{ row.sn }}</td>
+                <td>{{ row.sn |localize }}</td>
                 <td>{{ row.item }}</td>
                 <td>{{ row.specification }}</td>
-                <td>{{ row.quantity }}</td>
+                <td>{{ row.quantity |localize }}</td>
                 <td>{{ row.unit }}</td>
-                <td>{{ row.releases.count }}</td>
-                <td>{{ row.item.account.account_no }}</td>
+                <td>{{ row.releases.count |localize }}</td>
+                <td>{{ row.item.account.account_no |localize }}</td>
                 <td> {{ row.remarks |default:''}}</td>
 
             </tr>
@@ -72,18 +71,18 @@
     <div class="row">
         <div class="col-lg-6 col-sm-6 col-xs-6">
             <div class="inline-fields form-inline inline">
-                {% trans "Name" %}:- {{ demand.demandee }}
+                {% trans "Name" %}:- {{ object.demandee }}
             </div>
             <div>
                 {% trans "Date" %}:-
                 <div class="form-inline inline">
-                {{ demand.date }}
+                {{ object.date |localize }}
                 </div>
             </div>
             <div>
             {% trans "Purpose" %}:- 
                 <div class="form-inline inline">
-                    {{ demand.purpose }}
+                    {{ object.purpose }}
                  </div>
             </div>
         </div>

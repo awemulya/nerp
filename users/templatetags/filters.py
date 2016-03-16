@@ -19,6 +19,12 @@ from app.utils.helpers import float_zero_for_none
 
 register = Library()
 
+@register.simple_tag()
+def multiply(a, b):
+    if a and b:
+        return a * b
+    return ''
+
 @register.simple_tag
 def localize_header():
     from core.models import app_setting

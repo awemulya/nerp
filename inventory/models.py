@@ -660,6 +660,24 @@ class PurchaseOrder(models.Model):
         super(PurchaseOrder, self).__init__(*args, **kwargs)
         if not self.pk and not self.order_no:
             self.order_no = get_next_voucher_no_for_fy(self.__class__, 'order_no')
+    @property
+    def sub_total(self):
+        grand_total = 0
+        for obj in self.rows.all():
+            grand_total += obj.quantity * obj.rate
+        return grand_total
+
+    @property
+    def tax_amount(self):
+        _sum = 0
+        _sum = self.sub_total * 0.13
+        return _sum
+
+    @property
+    def total(self):
+        amount = self.sub_total
+        amount = self.sub_total + self.tax_amount
+        return amount
 
     @property
     def fiscal_year(self):
