@@ -1,0 +1,166 @@
+{% extends "pdf_base.html" %}
+
+{% load i18n filters static %}
+
+{% block extra_style %}
+
+{% endblock %}
+
+{% block content %}
+        <span class="pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %}
+            {% trans '4' %}{% trans '5' %}</span>
+        <br/>
+        <h4 class="center">{% localize_header %}</h4>
+        <h4 class="center">{% trans 'Purchase Order' %}</h4>
+
+        <div class="row">
+            <div class="col-xs-6 form-line">
+                {% trans 'Shree' %}: {{ object.party }}
+                <br>
+                {% trans 'Address' %}: <span> {{ object.party.address }}</span>
+                <br>
+                {% trans "VAT/PAN" %}: <span> {{ object.party.pan_no |localize}}</span>
+                <br/>
+            </div>
+
+            <div class="col-xs-6 text-right">
+                <div class="">
+                    {% trans 'Purchase Order' %} {% trans 'No.' %}: {{ object.order_no |localize}}
+                </div>
+                <div class=" clear">
+                    {% trans 'Date' %}: <span>{{ object.date |localize}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="centre">
+            देहाय बमोजिमका सामानहरु {{ object.due_days |localize}}
+            दिन भित्र यस कार्यालयमा दाखिला गरि विल / इन्भ्वाईस प्रस्तुत गर्नु होला ।
+            {{ form.due_days.errors }}
+        </div>
+
+
+        <div>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th rowspan="2" class="span1">{% trans 'SN' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Budget Title No.' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Particular' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Specification' %}</th>
+                    <th rowspan="2" class="span3">{% trans 'Item Quantity' %}</th>
+                    <th rowspan="2" class="span3">{% trans 'Unit' %}</th>
+                    <th colspan="2" class="span2">{% trans 'Price' %}</th>
+                    <th rowspan="2" class="span2">{% trans 'Remarks' %}</th>
+                </tr>
+                <tr>
+                    <th>{% trans 'Rate' %}</th>
+                    <th>{% trans 'Total Amount' %}</th>
+                </tr>
+                </thead>
+
+                <tbody id="tbody">
+                {% for row in object.rows.all %}
+                <tr>
+                    <td>
+                        <span>{{ row.sn }} </span>
+                    </td>
+                    <td>{{ row.budget_title_no }}</td>
+                    <td>{{ row.item }}</td>
+                    <td>{{ row.specification }}</td>
+                    <td>{{ row.quantity |localize }}</td>
+                    <td>{{ row.unit }}</td>
+                    <td>{{ row.rate|localize }}</td>
+                    <td>{% multiply row.quantity row.rate as total %} {{ total |localize }}</td>
+                    <td>{{ row.remarks }}</td>
+                </tr>
+                <tr class="dont-validate">
+                    <td colspan="7" class="text-right"><span>{% trans 'Total' %}</span></td>
+                    <td colspan="2">{{ object.sub_total |localize}}</td>
+                </tr>
+                <tr class="dont-validate">
+                    <td colspan="7" class="text-right"><span>{% trans '1' %}{% trans '3' %}% {% trans 'VAT' %}</span></td>
+                    <td colspan="2">{{ object.tax_amount |localize}}</td>
+                </tr>
+                <tr class="dont-validate">
+                    <td colspan="7" class="text-right"><span>{% trans 'Grand Total' %}</span></td>
+                    <td colspan="2">{{ object.total |localize}}</td>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+    <div class="row ">
+        <div class="col-lg-6 col-xs-6">
+            {% trans "Faantwaala's" %} {% trans 'Signature' %}:-
+            <br>
+            {% trans 'Date' %}:-
+        </div>
+        <div class="col-lg-6 col-xs-6">
+            {% trans 'Section' %} {% trans "Head's" %} {% trans 'Signature' %}:-
+            <br>
+            {% trans 'Date' %}:-
+        </div>
+    </div>
+
+    <div class="bordered">
+
+        <div><u>{% trans 'To be filled by financial administration section' %}</u>:</div>
+        <div>
+            माथि उल्लेखि सामानहरु बजट उपशिर्षक न. .............. को खर्च शिर्षक न. .......... बाट भुक्तानी दिन बजेट
+            बाँकी देखिन्छ / देखिदैंन ।
+        </div>
+
+        <div class="row">
+            <span class="col-lg-6 col-xs-6"></span>
+
+            <div class="col-lg-6 col-xs-6">
+                {% trans 'Accounting' %} {% trans "Head's" %} {% trans 'Signature' %}:-
+                <br>
+                {% trans 'Date' %}:-
+            </div>
+        </div>
+    </div>
+    <br/>
+
+    <div class="container-fluid">
+        <div class="row bordered">
+            <span class="col-lg-6 col-xs-6"></span>
+
+            <div class="col-lg-6 col-xs-6">
+                {% trans "Signature of Head of Office" %}:-
+                <br>
+                {% trans 'Date' %}:-
+            </div>
+        </div>
+    </div>
+
+    <div>
+        माथि उल्लेखित सामानहरु मिति .......................... भित्र
+        .............................................................. कार्यालयमा बुझाउने छु भनी सहिछाप गर्ने ।
+        <br>
+
+    </div>
+
+
+    <div class="row ">
+        <div class="col-lg-4 col-xs-4">
+            <b>{% trans "Firm's Name" %}</b>
+            <br>
+            <span>{{ object.party }}</span>
+        </div>
+        <div class="col-lg-4 col-xs-4">
+            <b>{% trans 'Signature' %}</b>
+            <br>
+        </div>
+        <div class="col-lg-4 col-xs-4">
+            <b>{% trans 'Date' %}</b>
+            <br>
+        </div>
+    </div>
+
+
+
+{% endblock %}

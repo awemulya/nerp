@@ -17,3 +17,19 @@ table{
     max-width: 100%;
     font-size: 90%;
 }
+
+table {
+    border: 1px solid #DDDDDD;
+}
+
+table>thead>tr>th {
+    border: 1px solid #DDDDDD;
+}
+
+table>tbody>tr>td {
+    border: 1px solid #DDDDDD;
+}
+
+table.font-size thead th{
+    font-size: 11px;
+}

@@ -1,0 +1,76 @@
+{% extends "pdf_base.html" %}
+
+{% load i18n filters static %}
+
+{% block extra_style %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div>
+        <h4 class="text-center">{% localize_header %}</h4>
+        <h4 class="text-center">{% trans 'Quotation' %} {% trans 'Comparison' %} {% trans 'Report' %}</h4>
+    </div>
+
+    <div class="pull-right">
+        {% trans 'Date' %}: {{ object.date}}
+    </div>
+    {% trans 'Report' %} {% trans 'No.' %}: {{ object.report_no }}
+
+        <div>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th rowspan='3'>{% trans 'SN' %}</th>
+                    <th rowspan='3'>{% trans 'Item Name' %}</th>
+                    <th rowspan='3'>{% trans 'Specification' %}</th>
+                    <th rowspan='3'>{% trans 'Item Quantity' %}</th>
+                    <th rowspan='3'>{% trans 'Estimated Cost' %}</th>
+                </tr>
+                <tr>
+                {% with object.rows.all|first as parties_to_display %}
+                    {% for party in parties_to_display.bidder_quote.all %}
+                    <th colspan='2'>
+                        <span>{{ party.party }}</span>
+                    </th>
+                    {% endfor %}
+                {% endwith %}
+                </tr>
+                <tr>
+                {% with object.rows.all|first as parties_to_display %}
+                    {% for party in parties_to_display.bidder_quote.all %}
+                    <th>{% trans "Per Unit Price" %}</th>
+                    <th>{% trans "Total Price" %}</th>
+                    {% endfor %}
+                {% endwith %}
+                    <th rowspan='3'>{% trans "Remarks" %}</th>
+                </tr>
+
+                </thead>
+                <tbody>
+                {% for row in object.rows.all %}
+                <tr>
+                    <td>
+                        <span data-bind="text:  $index()+1, localize: true"> {{ row.sn |localize }}</span>
+                    </td>
+                    <td>
+                        {{ row.item }}
+                    </td>
+                    <td data-bind="editableText: specification">{{ row.specification }}</td>
+                    <td data-bind="editableText: quantity, numeric: true, localize: true">{{ row.quantity |localize }}</td>
+                    <td data-bind="editableText: estimated_cost, numeric: true, localize: true">{{ row.estimated_cost |localize }}</td>
+                    {% for party_quotation in row.bidder_quote.all %}
+                    <td data-bind="editableText: per_unit_price, numeric: true, localize: true">{{ party_quotation.per_unit_price |localize }}</td>
+                    <td data-bind="text: total($parent.quantity), localize: true">{% multiply row.quantity party_quotation.per_unit_price %}</td>
+                    {% endfor %}
+                    <td data-bind="editableText: remarks">{{ row.remarks }}</td>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+            </div>
+
+{% endblock %}

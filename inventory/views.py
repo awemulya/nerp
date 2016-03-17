@@ -1656,3 +1656,48 @@ class LedgersPDF(PDFView):
             'title': _('Inventory Ledgers'),
             'ledgers': InventoryAccount.objects.all().select_related('item'),
         }
+
+
+class VoucherPDF(PDFView, DetailView):
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        return {
+            'object': self.object,
+        }
+
+
+class DemandPDF(VoucherPDF):
+    model = Demand
+    template_name = "pdf/demand_form_pdf.html"
+
+
+class PurchaseOrderPDF(VoucherPDF):
+    model = PurchaseOrder
+    template_name = "pdf/purchase_order_pdf.html"
+
+
+class EntryReportPDF(VoucherPDF):
+    model = EntryReport
+    template_name = "pdf/entry_report_pdf.html"
+
+
+class HandoverPDF(VoucherPDF):
+    model = Handover
+    template_name = "pdf/handover_pdf.html"
+
+
+class InspectionPDF(VoucherPDF):
+    model = Inspection
+    template_name = "pdf/inspection_pdf.html"
+
+
+class YearlyReportPDF(VoucherPDF):
+    model = YearlyReport
+    template_name = "pdf/yearly_report_pdf.html"
+
+
+class QuotationComparisonPDF(VoucherPDF):
+    model = QuotationComparison
+    template_name = "pdf/quotation_comparison_pdf.html"
+

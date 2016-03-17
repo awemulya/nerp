@@ -125,5 +125,12 @@ urlpatterns = patterns('',
                        # url(r'^expense/(?P<pk>[0-9]+)/$', views.ExpenseCreate.as_view(), name='expense_update'),
 
                        url(r'^ledgers.pdf$', views.LedgersPDF.as_view(), name='ledgers_as_pdf'),
+                       url(r'^demand.pdf/(?P<pk>\d+)/$', views.DemandPDF.as_view(), name='demand_form_as_pdf'),
+                       url(r'^purchase.pdf/(?P<pk>\d+)/$', views.PurchaseOrderPDF.as_view(), name='purchase_order_as_pdf'),
+                       url(r'^entry_report.pdf/(?P<pk>\d+)/$', views.EntryReportPDF.as_view(), name='entry_report_as_pdf'),
+                       url(r'^handover.pdf/(?P<pk>\d+)/$', views.HandoverPDF.as_view(), name='handover_as_pdf'),
+                       url(r'^inspection.pdf/(?P<pk>\d+)/$', views.InspectionPDF.as_view(), name='inspection_as_pdf'),
+                       url(r'^yearly_report.pdf/(?P<pk>\d+)/$', views.YearlyReportPDF.as_view(), name='yearly_report_as_pdf'),
+                       url(r'^quotation_comparison.pdf/(?P<pk>\d+)/$', views.QuotationComparisonPDF.as_view(), name='quotation_comparison_as_pdf'),
 
                        )

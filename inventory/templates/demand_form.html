@@ -277,6 +277,8 @@
         {% if scenario == 'Update' %}
             <a href="{% url 'convert_demand_form' form.instance.id %}"
                class="btn btn-info btn-raised btn-lg">{% trans 'Export as XLS' %}</a>
+            <a href="{% url 'demand_form_as_pdf' form.instance.id %}"
+               class="btn btn-info btn-raised btn-lg">{% trans 'Export as PDF' %}</a>
             <a class="btn btn-danger btn-raised btn-lg"
                href="{% url 'delete_demand_form' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}

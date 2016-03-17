@@ -123,6 +123,9 @@
         {% if form.instance.id %}
             <a href="{% url 'convert_entry_report' form.instance.id %}"
                class="btn btn-info btn-raised btn-lg hidden-print">{% trans 'Export as XLS' %}</a>
+            <a href="{% url 'entry_report_as_pdf' form.instance.id %}"
+               class="btn btn-info btn-raised btn-lg hidden-print">{% trans 'Export as PDF' %}</a>
+
             <a class="btn btn-danger btn-raised btn-lg hidden-print"
                href="{% url 'delete_entry_report' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}

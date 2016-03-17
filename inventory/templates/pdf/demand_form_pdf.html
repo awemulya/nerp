@@ -1,0 +1,102 @@
+{% extends "pdf_base.html" %}
+
+{% load i18n filters static %}
+
+{% block extra_style %}
+
+{% endblock %}
+
+{% block content %}
+
+    <span class="pull-right">{% trans 'FCGO' %} {% trans 'F.N.' %} {% trans '5' %}{% trans '1' %}</span>
+    <br/>
+    <h4 class="text-center">{% localize_header %}</h4>
+    <h4 class="text-center">{% trans 'Demand Form' %}</h4>
+    <span>
+    श्री प्रमुख,<br/>
+    भण्डार शाखा
+    </span>
+    <br>
+    <div class="row">
+        <span class="col-lg-6 col-sm-6">
+                <div class="visible-print-inline">{% trans 'Release No.' %}: <span>{{ object.release_no |localize }}</span>
+                </div>
+        </span>
+
+        <span class="col-sm-6 visible-print-inline pull-right text-right">
+                {% trans 'Fiscal Year' %}:
+                {{ 'core.models.app_setting.fiscal_year'|setting|fiscal_year|localize }}
+        </span>
+    </div>
+    <br>
+
+    <div>
+        <table class="table table-striped table-responsive">
+            <thead>
+            <tr>
+                <th class="span1">{% trans 'SN' %}</th>
+                <th class="span2">{% trans 'Item Name' %}</th>
+                <th class="span2">{% trans 'Specification' %}</th>
+                <th class="span3">{% trans 'Item Quantity' %}</th>
+                <th class="span3">{% trans 'Unit' %}</th>
+                <th>
+                    {% trans 'Released Item Quantity' %}
+                </th>
+                <th>
+                    {% trans 'Inventory Account No.' %}
+                </th>
+                <th>
+                    {% trans 'Remarks' %}
+                </th> 
+                <tr>
+            </thead>
+
+            <tbody id="tbody">
+            {% for row in object.rows.all %}
+            <tr>
+                <td>{{ row.sn |localize }}</td>
+                <td>{{ row.item }}</td>
+                <td>{{ row.specification }}</td>
+                <td>{{ row.quantity |localize }}</td>
+                <td>{{ row.unit }}</td>
+                <td>{{ row.releases.count |localize }}</td>
+                <td>{{ row.item.account.account_no |localize }}</td>
+                <td> {{ row.remarks |default:''}}</td>
+
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-sm-6 col-xs-6">
+            <div class="inline-fields form-inline inline">
+                {% trans "Name" %}:- {{ object.demandee }}
+            </div>
+            <div>
+                {% trans "Date" %}:-
+                <div class="form-inline inline">
+                {{ object.date |localize }}
+                </div>
+            </div>
+            <div>
+            {% trans "Purpose" %}:- 
+                <div class="form-inline inline">
+                    {{ object.purpose }}
+                 </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-sm-6 col-xs-6">
+
+            <span>{% trans "(a)" %} {% trans "Buy from market" %}</span><br/>
+            <span>{% trans "(b)" %} {% trans "Lend from store" %}</span>
+
+            <div>{% trans "Signature of the orderer" %}:-</div>
+            <div>{% trans "Date" %}:-</div>
+            <div>{% trans "Signature of the receiver" %}:-</div>
+            <div>{% trans "Date" %}:-</div>
+        </div>
+    </div>
+
+
+{% endblock %}

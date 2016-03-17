@@ -1,0 +1,75 @@
+{% extends "pdf_base.html" %}
+
+{% load i18n filters static %}
+
+{% block extra_style %}
+
+{% endblock %}
+
+{% block content %}
+    <div>
+        <h4 class="center">{% localize_header %}</h4>
+    </div>
+    <h1 class='center'>{% trans 'Inspection' %} {% trans 'Report' %}</h1>
+    <h6>{% trans "Fiscal Year" %}: {{ object.fiscal_year }} </h6>
+    {% if object.report_no %}
+    <h6>{% trans "Release no" %} : {{ object.report_no |localize}}</h6>
+    {% endif %}
+    <h6>{% trans "Date" %} : {{ object.date |default:''|localize }}</h6>
+    <div class="row">
+        <div class="col-xs-12">
+         <table class="table table-bordered font-size"> 
+            <thead>
+                <tr>
+                    <th rowspan='2'>{% trans 'SN' %}</th>
+                    <th rowspan='2'>{% trans 'Inventory Account Page No.' %}</th>
+                    <th rowspan="2">{% trans 'Inventory Classification Reference No.' %}</th>
+                    <th rowspan="2">{% trans "Item's Name" %}</th>
+                    <th colspan='4'>{% trans "Stock from Inventory Account" %}</th>
+                    <th colspan='2'>{% trans "Specification" %}</th>
+                    <th colspan='3'>{% trans "While Reviewing Physical State" %}</th>
+                    <th colspan='2'>{% trans "Physical condition" %}</th>
+                    <th rowspan='2'>{% trans "Remarks" %}</th>
+                </tr>
+                <tr>
+                    <th>{% trans "Unit" %}</th>
+                    <th>{% trans "Quantity" %}</th>
+                    <th>{% trans "Rate" %}</th>
+                    <th>{% trans "Price" %}</th>
+                    <th>{% trans "Matched number" %}</th>
+                    <th>{% trans "Unmatched number" %}</th>
+                    <th>{% trans "Decrement" %}</th>
+                    <th>{% trans "Increment" %}</th>
+                    <th>{% trans "Decrement" %}/{% trans "Increment" %} {% trans "Price" %}</th>
+                    <th>{% trans "Good" %}</th>
+                    <th>{% trans "Bad" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for row in object.rows.all %}
+                <tr>
+                    <td>{{ row.sn|localize }}</td>
+                    <td>{{ row.account_no|localize }}</td>
+                    <td>{{ row.property_classification_reference_number|localize }}</td>
+                    <td>{{ row.item_name }}</td>
+                    <td>{{ row.unit }}</td>
+                    <td>{{ row.quantity|floatformat:2|localize }}</td>
+                    <td>{{ row.rate|floatformat:2|localize }}</td>
+                    <td>{{ row.price|floatformat:2|localize }}</td>
+                    <td>{{ row.matched_number|localize |default:'' }}</td>
+                    <td>{{ row.unmatched_number|localize |default:'' }}</td>
+                    <td>{{ row.decrement|localize |default:'' }}</td>
+                    <td>{{ row.increment|localize |default:'' }}</td>
+                    <td>{{ row.decrement_increment_price|localize |default:'' }}</td>
+                    <td>{{ row.good |localize |default:'' }}</td>
+                    <td>{{ row.bad |localize |default:'' }}</td>
+                    <td>{{ row.remarks |default:'' }}</td>
+            {% endfor %}
+            </tbody>
+            </table>
+            
+        </div>
+    </div>
+
+
+{% endblock %}
