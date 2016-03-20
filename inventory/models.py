@@ -236,9 +236,15 @@ class Item(models.Model):
         return self.name
 
 
-class ItemLocation(models.Model):
+class ItemLocation(MPTTModel):
+    code = models.CharField(max_length=100, null=True, blank=True)
     name = models.CharField(max_length=100)
     remarks = models.CharField(max_length=100, null=True, blank=True)
+    parent = TreeForeignKey(
+        'self',
+        blank=True,
+        null=True,
+        related_name='children')
 
     def __unicode__(self):
         return self.name
