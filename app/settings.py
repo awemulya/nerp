@@ -59,8 +59,8 @@ INSTALLED_APPS = (
     'inventory',
     'account',
     'core',
-    # 'ils',
-    # 'training',
+    'ils',
+    'training',
     'key',
 
     'dbsettings',
