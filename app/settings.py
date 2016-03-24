@@ -64,6 +64,7 @@ INSTALLED_APPS = (
     'key',
 
     'dbsettings',
+    'hr',
 )
 
 TIME_ZONE = 'Asia/Kathmandu'

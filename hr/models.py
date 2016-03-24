@@ -19,8 +19,8 @@ from users.models import User
 class Account(models.Model):
     acc_type = [('BANK ACC', _('Bank Account')), ('INSURANCE ACC', _('InsuranceAccount')), ('NALA ACC', _('Nagarik Lagani Kosh Account')), ('SANCHAI KOSH', _('Sanchai Kosh'))]
     holder_type = [('EMPLOYEE', _("Employee's Account")), ('COMPANY', _('Company Account'))]
-    account_holder_type = models.CharField(choices=holder_type)
-    account_type = models.CharField(options=acc_type)
+    account_holder_type = models.CharField(choices=holder_type, max_length=50)
+    account_type = models.CharField(choices=acc_type, max_length=50)
     org_name = models.CharField(max_length=200)
     branch = models.CharField(max_length=150)
     acc_number = models.CharField(max_length=100)
@@ -58,7 +58,7 @@ class EmployeeGrade(models.Model):
     grade_rate = models.FloatField()
     parent_grade = models.ForeignKey('self', null=True, blank=True)
     # When employee is tecnician it should have no siblings
-    is_tecnicial = models.BooleanField(deault=False)
+    is_tecnicial = models.BooleanField(default=False)
 
     def __unicode__(self):
         if self.is_tecnician:
@@ -84,7 +84,7 @@ class Allowence(models.Model):
     amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? ==> May be it should be in settingShould be in setting
     payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
-    description = models.Charfield(max_length=250)
+    description = models.CharField(max_length=250)
 
     def __unicode__(self):
         return self.name
@@ -99,7 +99,7 @@ class Incentive(models.Model):
     amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? == May be we should keep it in setting
     payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
-    description = models.Charfield(max_length=250)
+    description = models.CharField(max_length=250)
 
     def __unicode__(self):
         return self.name
@@ -115,17 +115,18 @@ class Employee(models.Model):
     sex = models.CharField(choices=sex_choice, max_length=1)
     designation = models.ForeignKey(Designation)
     pan_number = models.CharField(max_length=100)
-    bank_account = models.OneToOneField(Account)
-    insurance_account = models.OneToOneField(Account)
-    nalakosh_account = models.OneToOneField(Account)
-    pro_tempore = models.OneToOneField('self', null=True, blank=True)
+    bank_account = models.OneToOneField(Account, related_name='bank_account')
+    insurance_account = models.OneToOneField(Account, related_name='insurance_acc')
+    nalakosh_account = models.OneToOneField(Account, related_name='nalakosh_acc')
+    sanchai_account = models.OneToOneField(Account, related_name='sanchai_acc')
+    pro_tempore = models.OneToOneField('self', null=True, blank=True, related_name='pro_temp')
     # Talab rokka(Should not transact when payment_halt=True)
     payment_halt = models.BooleanField(default=False)
-    appoint_date = models.DateField(default=timezone.now().date())
+    appoint_date = models.DateField(auto_now_add=True)
     # allowence will be added to salary 
-    allowence = models.ManyToManyField(Allowence, null=True, blank=True)
+    allowence = models.ManyToManyField(Allowence, blank=True)
     # incentive will have diff trancation
-    incentive = models.ManyToManyField(Incentive, null=True, blank=True)
+    incentive = models.ManyToManyField(Incentive, blank=True)
     # Permanent has extra functionality while deduction from salary
     is_permanent = models.BooleanField(default=False)
 
@@ -163,7 +164,7 @@ class Employee(models.Model):
 
 
 # This should be in setting as many to many
-class Deduction(models.Models):
+class Deduction(models.Model):
     name = models.CharField(max_length=150)
     # Below only one out of two should be active
     amount = models.FloatField(null=True, blank=True)
