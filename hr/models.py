@@ -1,9 +1,9 @@
-# import dbsetting
+# import dbsettings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from users.models import User
-from core.models import FiscalYear
+# from core.models import FiscalYear
 # from solo.models import SingletonModel
 # from django.core.exceptions import ValidationError
 
@@ -16,23 +16,49 @@ from core.models import FiscalYear
 #         )
 
 
-class BankAccount(models.Model):
-    bank_name = models.CharField(max_length=200)
-    branch =models.CharField(max_length=150)
+class Account(models.Model):
+    acc_type = [('BANK ACC', _('Bank Account')), ('INSURANCE ACC', _('InsuranceAccount')), ('NALA ACC', _('Nagarik Lagani Kosh Account')), ('SANCHAI KOSH', _('Sanchai Kosh'))]
+    holder_type = [('EMPLOYEE', _("Employee's Account")), ('COMPANY', _('Company Account'))]
+    account_holder_type = models.CharField(choices=holder_type)
+    account_type = models.CharField(options=acc_type)
+    org_name = models.CharField(max_length=200)
+    branch = models.CharField(max_length=150)
     acc_number = models.CharField(max_length=100)
+    description = models.CharField(max_length=256)
+    credit = models.FloatField()
+    debit = models.FloatField()
 
     def __unicode__(self):
-        return self.bank_name
+        return '%s[%s][%s]' %  (self.account_type, self.org_name, self.acc_number)  
+
+
+# class InsuranceAccount(models.model):
+#     org_name = models.CharField(max_length=200)
+#     branch = models.CharField(max_length=150)
+#     acc_number = models.CharField(max_length=100)
+
+#     def __unicode__(self):
+#         return self.org_name
+
+
+# class NalaAccount(models.model):
+#     # org_name = models.CharField(max_length=200)
+#     branch = models.CharField(max_length=150)
+#     acc_number = models.CharField(max_length=100)
+
+#     def __unicode__(self):
+#         return str(self.acc_number)
 
 
 class EmployeeGrade(models.Model):
     grade_name = models.CharField(max_length=100)
-    rate = models.FloatField()
+    salary_scale = models.FloatField()
     # rate increases yearly with grade rate. Also shold mention when in setting? How much times
+    grade_number = models.PositiveIntegerField()
     grade_rate = models.FloatField()
     parent_grade = models.ForeignKey('self', null=True, blank=True)
     # When employee is tecnician it should have no siblings
-    is_tecnician = models.BooleanField(deault=False)
+    is_tecnicial = models.BooleanField(deault=False)
 
     def __unicode__(self):
         if self.is_tecnician:
@@ -53,9 +79,11 @@ class Designation(models.Model):
 class Allowence(models.Model):
     name = models.CharField(max_length=100)
     employee_grade = models.ForeignKey(EmployeeGrade)
-    amount = models.FloatField()
-    # When to pay? Should be in setting
-    rate_of_payment = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
+    # Any one out of two should be filled
+    amount = models.FloatField(null=True, blank=True)
+    amount_rate = models.FloatField(null=True, blank=True)
+    # When to pay? ==> May be it should be in settingShould be in setting
+    payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
     description = models.Charfield(max_length=250)
 
     def __unicode__(self):
@@ -66,9 +94,12 @@ class Allowence(models.Model):
 class Incentive(models.Model):
     name = models.CharField(max_length=100)
     employee_grade = models.ForeignKey(EmployeeGrade)
-    amount = models.FloatField()
-    # When to pay?
-    rate_of_payment = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
+    # Any one of the two should be filled
+    amount = models.FloatField(null=True, blank=True)
+    amount_rate = models.FloatField(null=True, blank=True)
+    # When to pay? == May be we should keep it in setting
+    payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
+    description = models.Charfield(max_length=250)
 
     def __unicode__(self):
         return self.name
@@ -76,14 +107,18 @@ class Incentive(models.Model):
 
 class Employee(models.Model):
     # Budget code (Functionality to change budget code for employee group)
+    budget_code = models.CharField(max_length=100)
+    working_branch = models.CharField(max_length=100)
     # Employee ko section or branch coz he can be in another branch and payed from central
     sex_choice = [('M', _('Male')), ('F', _('Female'))]
-    employee = models.ForeignKey(User)
+    employee = models.OneToOneField(User)
     sex = models.CharField(choices=sex_choice, max_length=1)
     designation = models.ForeignKey(Designation)
     pan_number = models.CharField(max_length=100)
-    bank_account = models.ForeignKey(BankAccount)
-    pro_tempore = models.ForeignKey('self', null=True, blank=True)
+    bank_account = models.OneToOneField(Account)
+    insurance_account = models.OneToOneField(Account)
+    nalakosh_account = models.OneToOneField(Account)
+    pro_tempore = models.OneToOneField('self', null=True, blank=True)
     # Talab rokka(Should not transact when payment_halt=True)
     payment_halt = models.BooleanField(default=False)
     appoint_date = models.DateField(default=timezone.now().date())
@@ -91,7 +126,25 @@ class Employee(models.Model):
     allowence = models.ManyToManyField(Allowence, null=True, blank=True)
     # incentive will have diff trancation
     incentive = models.ManyToManyField(Incentive, null=True, blank=True)
-    # Employee is permanent or temporary? 10% PF in permanent
+    # Permanent has extra functionality while deduction from salary
+    is_permanent = models.BooleanField(default=False)
+
+    def current_salary(self):
+        grade_salary = self.designation.grade.salary_scale
+        grade_number = self.designation.grade.grade_number
+        grade_rate = self.designation.grade.grade_rate
+        # Instead of appoint_date we need to use lagu miti for now its oppoint date and lagu miti should be in appSETTING
+        appointed_since = timezone.now().date() - self.appoint_date
+        years_worked = appointed_since.days/365.25
+        if years_worked <= grade_number:
+            return grade_salary + int(years_worked) * grade_rate
+        elif grade_number > years_worked:
+            return grade_salary + grade_number * grade_rate
+
+    def __unicode__(self):
+        return str(self.id)
+
+    # Employee is permanent o r temporary? 10% PF in permanent
     # Beema(insurance) +200
     # There is also another insurance in Nagarik Lagani kosh()
     
@@ -107,6 +160,15 @@ class Employee(models.Model):
     # Baki chai either in bank or cash
     # 
     # Sabai ko account huncha 
+
+
+# This should be in setting as many to many
+class Deduction(models.Models):
+    name = models.CharField(max_length=150)
+    # Below only one out of two should be active
+    amount = models.FloatField(null=True, blank=True)
+    amount_rate = models.FloatField(null=True, blank=True)
+    description = models.CharField(max_length=150)
 
     def __unicode__(self):
         return self.name
@@ -124,30 +186,30 @@ class IncomeTaxRate(models.Model):
 
 
 class PaymentRecord(models.Model):
-    month = [(1, _('Baisak')),
-             (2, _('Jeth')),
-             (3, _('Aasar')),
-             (4, _('Shrawan')),
-             (5, _('Bhadra')),
-             (6, _('Aswin')),
-             (7, _('Kartik')),
-             (8, _('Mangsir')),
-             (9, _('Poush')),
-             (10, _('Magh')),
-             (11, _('Falgun')),
-             (12, _('Chaitra')),
-             ]
-    payed_to = models.ForeignKey(Employee)
-    fiscal_year = models.ForeignKey(FiscalYear)
-    month = models.IntegerField(choices=month)
+    payed_employee = models.ForeignKey(Employee)
+    payed_from_date = models.DateField()
+    payed_to_date = models.DateField()
+    absent_days = models.PositiveIntegerField()
+    deductiom = models.ManyToManyField(Deduction)
+    payed_amout = models.FloatField()
+    # Deducted amount fields
 
+    def total_present_days(self):
+        return self.payed_to_date - self.payed_from_date - self.absent_days
 
-# class IncomeTaxConfig(dbsettings.Group):
+    def __unicode__(self):
+        return str(self.id)
+
+# class HrConfig(dbsettings.Group):
 #     site_name = models.CharField(max_length=255, default='Site Name')
 #     maintenance_mode = models.BooleanField(default=False)
+#     ** Sanchai Kosh ko percentage
+#     ** Tax rate
+#     ** Lagu miti of rate
+#     ** Absent case
 
 #     def __unicode__(self):
-#         return self.
+#         return u"hr config"
 
 #     class Meta:
 #         verbose_name = "Setup Income Tax Rate"
@@ -180,3 +242,7 @@ class PaymentRecord(models.Model):
 #  
 #  
 #  Make branch model with code on which employee work
+  
+  
+#  When does increse in scale get active?
+#  The day from which the goverment announces it or the day from which the employeer is apponted
