@@ -27,6 +27,7 @@ urlpatterns = patterns('',
                        url(r'^froala_editor/', include('froala_editor.urls')),
 
                        (r'', include('core.urls')),
+                       (r'^payroll/', include('hr.urls')),
 
                        )
 # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

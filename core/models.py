@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+    # -*- coding: utf-8 -*-
 from django.core.exceptions import ValidationError
 from django.db import models
 from njango.models import TranslatableNumberModel

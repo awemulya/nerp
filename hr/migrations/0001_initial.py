@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.utils.timezone
 from django.conf import settings
 
 
@@ -22,8 +23,6 @@ class Migration(migrations.Migration):
                 ('branch', models.CharField(max_length=150)),
                 ('acc_number', models.CharField(max_length=100)),
                 ('description', models.CharField(max_length=256)),
-                ('credit', models.FloatField()),
-                ('debit', models.FloatField()),
             ],
         ),
         migrations.CreateModel(
@@ -34,6 +33,14 @@ class Migration(migrations.Migration):
                 ('amount', models.FloatField(null=True, blank=True)),
                 ('amount_rate', models.FloatField(null=True, blank=True)),
                 ('description', models.CharField(max_length=250)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='BranchOffice',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=100)),
+                ('code', models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
@@ -58,11 +65,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('budget_code', models.CharField(max_length=100)),
-                ('working_branch', models.CharField(max_length=100)),
                 ('sex', models.CharField(max_length=1, choices=[(b'M', 'Male'), (b'F', 'Female')])),
                 ('pan_number', models.CharField(max_length=100)),
                 ('payment_halt', models.BooleanField(default=False)),
                 ('appoint_date', models.DateField(auto_now_add=True)),
+                ('dismiss_date', models.DateField(null=True, blank=True)),
                 ('is_permanent', models.BooleanField(default=False)),
                 ('allowence', models.ManyToManyField(to='hr.Allowence', blank=True)),
                 ('bank_account', models.OneToOneField(related_name='bank_account', to='hr.Account')),
@@ -78,7 +85,7 @@ class Migration(migrations.Migration):
                 ('salary_scale', models.FloatField()),
                 ('grade_number', models.PositiveIntegerField()),
                 ('grade_rate', models.FloatField()),
-                ('is_tecnicial', models.BooleanField(default=False)),
+                ('is_technical', models.BooleanField(default=False)),
                 ('parent_grade', models.ForeignKey(blank=True, to='hr.EmployeeGrade', null=True)),
             ],
         ),
@@ -109,9 +116,39 @@ class Migration(migrations.Migration):
                 ('payed_from_date', models.DateField()),
                 ('payed_to_date', models.DateField()),
                 ('absent_days', models.PositiveIntegerField()),
+                ('allowence', models.FloatField(null=True, blank=True)),
+                ('incentive', models.FloatField(null=True, blank=True)),
                 ('payed_amout', models.FloatField()),
-                ('deductiom', models.ManyToManyField(to='hr.Deduction')),
+                ('deduction', models.ManyToManyField(to='hr.Deduction')),
                 ('payed_employee', models.ForeignKey(to='hr.Employee')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='PayrollEntry',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('entry_datetime', models.DateTimeField(default=django.utils.timezone.now)),
+                ('entry_row', models.ManyToManyField(to='hr.PaymentRecord')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='ProTempore',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('appoint_date', models.DateField(auto_now_add=True)),
+                ('dismiss_date', models.DateField(null=True, blank=True)),
+                ('employee', models.OneToOneField(related_name='real_employee_post', to='hr.Employee')),
+                ('pro_tempore', models.OneToOneField(related_name='virtual_employee_post', to='hr.Employee')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Transaction',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('credit', models.FloatField()),
+                ('debit', models.FloatField()),
+                ('date_time', models.DateTimeField(default=django.utils.timezone.now)),
+                ('account', models.ForeignKey(to='hr.Account')),
             ],
         ),
         migrations.AddField(
@@ -131,13 +168,13 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='employee',
-            name='pro_tempore',
-            field=models.OneToOneField(related_name='pro_temp', null=True, blank=True, to='hr.Employee'),
+            name='sanchai_account',
+            field=models.OneToOneField(related_name='sanchai_acc', to='hr.Account'),
         ),
         migrations.AddField(
             model_name='employee',
-            name='sanchai_account',
-            field=models.OneToOneField(related_name='sanchai_acc', to='hr.Account'),
+            name='working_branch',
+            field=models.ForeignKey(to='hr.BranchOffice'),
         ),
         migrations.AddField(
             model_name='designation',

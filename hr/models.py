@@ -25,12 +25,19 @@ class Account(models.Model):
     branch = models.CharField(max_length=150)
     acc_number = models.CharField(max_length=100)
     description = models.CharField(max_length=256)
-    credit = models.FloatField()
-    debit = models.FloatField()
 
     def __unicode__(self):
         return '%s[%s][%s]' %  (self.account_type, self.org_name, self.acc_number)  
 
+
+class Transaction(models.Model):
+    account = models.ForeignKey(Account)
+    credit = models.FloatField()
+    debit = models.FloatField()
+    date_time = models.DateTimeField(default=timezone.now)
+
+    def __unicode__(self):
+        return str(self.account.id)
 
 # class InsuranceAccount(models.model):
 #     org_name = models.CharField(max_length=200)
@@ -58,10 +65,10 @@ class EmployeeGrade(models.Model):
     grade_rate = models.FloatField()
     parent_grade = models.ForeignKey('self', null=True, blank=True)
     # When employee is tecnician it should have no siblings
-    is_tecnicial = models.BooleanField(default=False)
+    is_technical = models.BooleanField(default=False)
 
     def __unicode__(self):
-        if self.is_tecnician:
+        if self.is_technical:
             return self.grade_name + '( Is Tecnician)'
         else:
             return self.grade_name
@@ -105,24 +112,34 @@ class Incentive(models.Model):
         return self.name
 
 
+class BranchOffice(models.Model):
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Employee(models.Model):
     # Budget code (Functionality to change budget code for employee group)
     budget_code = models.CharField(max_length=100)
-    working_branch = models.CharField(max_length=100)
+    # working_branch = models.CharField(max_length=100)
     # Employee ko section or branch coz he can be in another branch and payed from central
     sex_choice = [('M', _('Male')), ('F', _('Female'))]
     employee = models.OneToOneField(User)
     sex = models.CharField(choices=sex_choice, max_length=1)
     designation = models.ForeignKey(Designation)
     pan_number = models.CharField(max_length=100)
+    working_branch = models.ForeignKey(BranchOffice)
     bank_account = models.OneToOneField(Account, related_name='bank_account')
     insurance_account = models.OneToOneField(Account, related_name='insurance_acc')
     nalakosh_account = models.OneToOneField(Account, related_name='nalakosh_acc')
     sanchai_account = models.OneToOneField(Account, related_name='sanchai_acc')
-    pro_tempore = models.OneToOneField('self', null=True, blank=True, related_name='pro_temp')
+    # pro_tempore = models.OneToOneField('self', null=True, blank=True, related_name='pro_temp')
     # Talab rokka(Should not transact when payment_halt=True)
     payment_halt = models.BooleanField(default=False)
     appoint_date = models.DateField(auto_now_add=True)
+    dismiss_date = models.DateField(null=True, blank=True)
     # allowence will be added to salary 
     allowence = models.ManyToManyField(Allowence, blank=True)
     # incentive will have diff trancation
@@ -145,6 +162,16 @@ class Employee(models.Model):
     def __unicode__(self):
         return str(self.id)
 
+
+class ProTempore(models.Model):
+    employee = models.OneToOneField(Employee, related_name="real_employee_post")
+    pro_tempore = models.OneToOneField(Employee, related_name="virtual_employee_post")
+    appoint_date = models.DateField(auto_now_add=True)
+    dismiss_date = models.DateField(null=True, blank=True)
+
+    def __unicode__(self):
+        return str(self.id)
+
     # Employee is permanent o r temporary? 10% PF in permanent
     # Beema(insurance) +200
     # There is also another insurance in Nagarik Lagani kosh()
@@ -163,7 +190,7 @@ class Employee(models.Model):
     # Sabai ko account huncha 
 
 
-# This should be in setting as many to many
+# These two below should be in setting as many to many
 class Deduction(models.Model):
     name = models.CharField(max_length=150)
     # Below only one out of two should be active
@@ -180,7 +207,7 @@ class IncomeTaxRate(models.Model):
     end_to = models.FloatField()
     tax_rate = models.FloatField()
 
-    # Income tax ma female ko lago 10% discount
+    # Income tax ma female ko lago 10% discount(Suruma tax lagaera??)
 
     def __unicode__(self):
         return u"From %f - %f is %f%"
@@ -191,9 +218,12 @@ class PaymentRecord(models.Model):
     payed_from_date = models.DateField()
     payed_to_date = models.DateField()
     absent_days = models.PositiveIntegerField()
-    deductiom = models.ManyToManyField(Deduction)
+    allowence = models.FloatField(null=True, blank=True)
+    incentive = models.FloatField(null=True, blank=True)
+    deduction = models.ManyToManyField(Deduction)
     payed_amout = models.FloatField()
     # Deducted amount fields
+    # How much incentive and how much allowence
 
     def total_present_days(self):
         return self.payed_to_date - self.payed_from_date - self.absent_days
@@ -201,8 +231,13 @@ class PaymentRecord(models.Model):
     def __unicode__(self):
         return str(self.id)
 
+
+class PayrollEntry(models.Model):
+    entry_row = models.ManyToManyField(PaymentRecord)
+    entry_datetime = models.DateTimeField(default=timezone.now)
+
 # class HrConfig(dbsettings.Group):
-#     site_name = models.CharField(max_length=255, default='Site Name')
+#     sk_deduction_rate = models.PositiveIntegerField()
 #     maintenance_mode = models.BooleanField(default=False)
 #     ** Sanchai Kosh ko percentage
 #     ** Tax rate
@@ -238,7 +273,7 @@ class PaymentRecord(models.Model):
 #  Salary advance
 #  
 #  
-#  When Salary increased in middle of the month each day earning shoud be calculated
+#  When Salary increased in middle of the month each day earning shoud be calculated ****
 #  
 #  
 #  
