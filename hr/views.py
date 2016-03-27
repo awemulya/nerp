@@ -1,6 +1,7 @@
 from django.shortcuts import render
-
+from .forms import PaymentRowForm, PayrollEntryForm
 
 # Create your views here.
 def payroll_entry(request):
-    return render(request, 'payroll_entry.html', {'form': 6})
+    form = PaymentRowForm()
+    return render(request, 'payroll_entry.html', {'form': form})

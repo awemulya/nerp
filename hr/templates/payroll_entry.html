@@ -5,24 +5,28 @@
 {% load i18n %}
 
 {% block head_end %}
-    <script src="{% static 'js/account/receipt.js' %}"></script>
+    <script src="{% static 'js/hr/hr.js' %}"></script>
     <script>
-        ko_data = {{data|jsonify}};
+        // ko_data = {{data|jsonify}};
     </script>
 {% endblock %}
 
 {% block alert %}
-    <div id="alert_placeholder">
+    <!-- <div id="alert_placeholder">
         <ul data-bind="foreach: errors.items" class="alert-error">
             <li>
                 Budget for "<span data-bind="text: budget.name()"></span>" from source "<span data-bind="text: source"></span>" exceeds
             </li>
         </ul>
-    </div>
+    </div> -->
 {% endblock %}
 
 {% block  content %}
-
-<h1>Here will be payroll entry</h1>
+<div data-bind="foreach: rows">
+    <form data-bind="submit: $parent.saveAndAdd">
+        {{ form }}
+        <input type="submit" class="#" value="Save">
+    </form>
+</div>
     
 {% endblock %}
