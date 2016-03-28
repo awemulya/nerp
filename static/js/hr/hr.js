@@ -18,7 +18,7 @@ function PaymentEntryRow() {
     self.absent_days = ko.observable();
     self.allowence = ko.observable();
     self.incentive = ko.observable();
-    self.deduction = ko.observableArray();
+    self.deduced_amount = ko.observable();
     self.payed_amout = ko.observable();
     
     // Make here a observable function dat will set other parameters with employee id and date range

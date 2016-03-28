@@ -120,11 +120,23 @@ class BranchOffice(models.Model):
         return self.name
 
 
+# These two below should be in setting as many to many
+class Deduction(models.Model):
+    name = models.CharField(max_length=150)
+    # Below only one out of two should be active
+    amount = models.FloatField(null=True, blank=True)
+    amount_rate = models.FloatField(null=True, blank=True)
+    description = models.CharField(max_length=150)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Employee(models.Model):
     # Budget code (Functionality to change budget code for employee group)
     budget_code = models.CharField(max_length=100)
     # working_branch = models.CharField(max_length=100)
-    # Employee ko section or branch coz he can be in another branch and payed from central
+    # Employee ko section or branch coz he can be in another branch and paid from central
     sex_choice = [('M', _('Male')), ('F', _('Female'))]
     employee = models.OneToOneField(User)
     sex = models.CharField(choices=sex_choice, max_length=1)
@@ -146,6 +158,7 @@ class Employee(models.Model):
     incentive = models.ManyToManyField(Incentive, blank=True)
     # Permanent has extra functionality while deduction from salary
     is_permanent = models.BooleanField(default=False)
+    deductions = models.ManyToManyField(Deduction)
 
     def current_salary(self):
         grade_salary = self.designation.grade.salary_scale
@@ -190,18 +203,6 @@ class ProTempore(models.Model):
     # Sabai ko account huncha 
 
 
-# These two below should be in setting as many to many
-class Deduction(models.Model):
-    name = models.CharField(max_length=150)
-    # Below only one out of two should be active
-    amount = models.FloatField(null=True, blank=True)
-    amount_rate = models.FloatField(null=True, blank=True)
-    description = models.CharField(max_length=150)
-
-    def __unicode__(self):
-        return self.name
-
-
 class IncomeTaxRate(models.Model):
     start_from = models.FloatField()
     end_to = models.FloatField()
@@ -214,19 +215,19 @@ class IncomeTaxRate(models.Model):
 
 
 class PaymentRecord(models.Model):
-    payed_employee = models.ForeignKey(Employee)
-    payed_from_date = models.DateField()
-    payed_to_date = models.DateField()
+    paid_employee = models.ForeignKey(Employee)
+    paid_from_date = models.DateField()
+    paid_to_date = models.DateField()
     absent_days = models.PositiveIntegerField()
     allowence = models.FloatField(null=True, blank=True)
     incentive = models.FloatField(null=True, blank=True)
-    deduction = models.ManyToManyField(Deduction)
-    payed_amout = models.FloatField()
+    deduced_amount = models.FloatField(null=True, blank=True)
+    paid_amount = models.FloatField()
     # Deducted amount fields
     # How much incentive and how much allowence
 
     def total_present_days(self):
-        return self.payed_to_date - self.payed_from_date - self.absent_days
+        return self.paid_to_date - self.paid_from_date - self.absent_days
 
     def __unicode__(self):
         return str(self.id)
