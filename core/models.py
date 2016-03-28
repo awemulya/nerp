@@ -47,6 +47,7 @@ class FiscalYear(models.Model):
         if not year:
             year = app_setting.fiscal_year
         fiscal_year_start = str(year) + '-04-01'
+        print fiscal_year_start
         tuple_value = tuple_from_string(fiscal_year_start)
         calendar = get_calendar()
         if calendar == 'ad':

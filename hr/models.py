@@ -3,6 +3,9 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from users.models import User
+from core.models import validate_in_fy
+from njango.fields import BSDateField, today
+
 # from core.models import FiscalYear
 # from solo.models import SingletonModel
 # from django.core.exceptions import ValidationError
@@ -216,8 +219,8 @@ class IncomeTaxRate(models.Model):
 
 class PaymentRecord(models.Model):
     paid_employee = models.ForeignKey(Employee)
-    paid_from_date = models.DateField()
-    paid_to_date = models.DateField()
+    paid_from_date = models.BSDateField()
+    paid_to_date = models.DBSateField()
     absent_days = models.PositiveIntegerField()
     allowence = models.FloatField(null=True, blank=True)
     incentive = models.FloatField(null=True, blank=True)
