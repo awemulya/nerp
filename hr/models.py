@@ -29,6 +29,7 @@ class AccountType(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class Account(models.Model):
     holder_type = [('EMPLOYEE', _("Employee's Account")), ('COMPANY', _('Company Account'))]
     account_holder_type = models.CharField(choices=holder_type, max_length=50)
