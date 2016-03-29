@@ -26,6 +26,8 @@ class AccountType(models.Model):
     name = models.CharField(max_length=150)
     description = models.CharField(max_length=250)
 
+    def __unicode__(self):
+        return self.name
 
 class Account(models.Model):
     holder_type = [('EMPLOYEE', _("Employee's Account")), ('COMPANY', _('Company Account'))]
