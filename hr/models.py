@@ -18,7 +18,7 @@ from njango.fields import BSDateField, today
 #             params={'value': value},
 #         )
 
-acc_type = [('BANK ACC', _('Bank Account')), ('INSURANCE ACC', _('InsuranceAccount')), ('NALA ACC', _('Nagarik Lagani Kosh Account')), ('SANCHAI KOSH', _('Sanchai Kosh'))]
+# acc_type = [('BANK ACC', _('Bank Account')), ('INSURANCE ACC', _('InsuranceAccount')), ('NALA ACC', _('Nagarik Lagani Kosh Account')), ('SANCHAI KOSH', _('Sanchai Kosh'))]
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
 
 
@@ -30,7 +30,7 @@ class AccountType(models.Model):
 class Account(models.Model):
     holder_type = [('EMPLOYEE', _("Employee's Account")), ('COMPANY', _('Company Account'))]
     account_holder_type = models.CharField(choices=holder_type, max_length=50)
-    account_type = models.CharField(choices=acc_type, max_length=50)
+    account_type = models.ForeignKey(AccountType)
     org_name = models.CharField(max_length=200)
     branch = models.CharField(max_length=150)
     acc_number = models.CharField(max_length=100)
@@ -148,6 +148,7 @@ class Deduction(models.Model):
     # Below only one out of two should be active
     duduct_type = models.CharField(max_length=50, choices=deduct_choice)
     # In which type of account to make deduction transaction
+    in_acc_type = models.OneToOneField(AccountType)
     # transact_in = models.CharField(choice=acc_type)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
