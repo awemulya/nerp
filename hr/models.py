@@ -18,12 +18,16 @@ from njango.fields import BSDateField, today
 #             params={'value': value},
 #         )
 
-# acc_type = [('BANK ACC', _('Bank Account')), ('INSURANCE ACC', _('InsuranceAccount')), ('NALA ACC', _('Nagarik Lagani Kosh Account')), ('SANCHAI KOSH', _('Sanchai Kosh'))]
+acc_type = [('BANK ACC', _('Bank Account')), ('INSURANCE ACC', _('InsuranceAccount')), ('NALA ACC', _('Nagarik Lagani Kosh Account')), ('SANCHAI KOSH', _('Sanchai Kosh'))]
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
+payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
+
+# Allowence
+# When yearly than when to pay should be in setting
 
 
 class AccountType(models.Model):
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150, choices=acc_type, unique=True)
     description = models.CharField(max_length=250)
 
     def __unicode__(self):
@@ -101,15 +105,15 @@ class Allowence(models.Model):
     name = models.CharField(max_length=100)
     employee_grade = models.ForeignKey(EmployeeGrade)
     # Any one out of two should be filled
-    duduct_type = models.CharField(max_length=50, choices=deduct_choice)
+    sum_type = models.CharField(max_length=50, choices=deduct_choice)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? ==> May be it should be in settingShould be in setting
-    payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
+    incentive_cycle = models.CharField(max_length=50, choices=payment_cycle)
     description = models.CharField(max_length=250)
 
     def __unicode__(self):
-        if self.deduct_type == 'AMOUNT':
+        if self.sum_type == 'AMOUNT':
             return '%s, %f' % (self.name, self.amount)
         else:
             return '%s, %f' % (self.name, self.rate)
@@ -121,15 +125,16 @@ class Incentive(models.Model):
     name = models.CharField(max_length=100)
     employee_grade = models.ForeignKey(EmployeeGrade)
     # Any one of the two should be filled
-    duduct_type = models.CharField(max_length=50, choices=deduct_choice)
+    sum_type = models.CharField(max_length=50, choices=deduct_choice)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? == May be we should keep it in setting
-    payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
+    # payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
+    incentive_cycle = models.CharField(max_length=50, choices=payment_cycle)
     description = models.CharField(max_length=250)
 
     def __unicode__(self):
-        if self.deduct_type == 'AMOUNT':
+        if self.sum_type == 'AMOUNT':
             return '%s, %f' % (self.name, self.amount)
         else:
             return '%s, %f' % (self.name, self.rate)
@@ -149,7 +154,7 @@ class Deduction(models.Model):
     # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
     name = models.CharField(max_length=150)
     # Below only one out of two should be active
-    duduct_type = models.CharField(max_length=50, choices=deduct_choice)
+    deduct_type = models.CharField(max_length=50, choices=deduct_choice)
     # In which type of account to make deduction transaction
     in_acc_type = models.OneToOneField(AccountType)
     # transact_in = models.CharField(choice=acc_type)
@@ -161,7 +166,7 @@ class Deduction(models.Model):
         if self.deduct_type == 'AMOUNT':
             return '%s, %f' % (self.name, self.amount)
         else:
-            return '%s, %f' % (self.name, self.rate)
+            return '%s, %f' % (self.name, self.amount_rate)
 
 
 class Employee(models.Model):
