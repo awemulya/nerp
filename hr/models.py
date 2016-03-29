@@ -18,9 +18,16 @@ from njango.fields import BSDateField, today
 #             params={'value': value},
 #         )
 
+acc_type = [('BANK ACC', _('Bank Account')), ('INSURANCE ACC', _('InsuranceAccount')), ('NALA ACC', _('Nagarik Lagani Kosh Account')), ('SANCHAI KOSH', _('Sanchai Kosh'))]
+deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
+
+
+class AccountType(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.CharField(max_length=250)
+
 
 class Account(models.Model):
-    acc_type = [('BANK ACC', _('Bank Account')), ('INSURANCE ACC', _('InsuranceAccount')), ('NALA ACC', _('Nagarik Lagani Kosh Account')), ('SANCHAI KOSH', _('Sanchai Kosh'))]
     holder_type = [('EMPLOYEE', _("Employee's Account")), ('COMPANY', _('Company Account'))]
     account_holder_type = models.CharField(choices=holder_type, max_length=50)
     account_type = models.CharField(choices=acc_type, max_length=50)
@@ -87,9 +94,11 @@ class Designation(models.Model):
 
 # This is bhatta
 class Allowence(models.Model):
+    # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
     name = models.CharField(max_length=100)
     employee_grade = models.ForeignKey(EmployeeGrade)
     # Any one out of two should be filled
+    duduct_type = models.CharField(max_length=50, choices=deduct_choice)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? ==> May be it should be in settingShould be in setting
@@ -97,14 +106,19 @@ class Allowence(models.Model):
     description = models.CharField(max_length=250)
 
     def __unicode__(self):
-        return self.name
+        if self.deduct_type == 'AMOUNT':
+            return '%s, %f' % (self.name, self.amount)
+        else:
+            return '%s, %f' % (self.name, self.rate)
 
 
 # This is incentive(for motivation)
 class Incentive(models.Model):
+    # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
     name = models.CharField(max_length=100)
     employee_grade = models.ForeignKey(EmployeeGrade)
     # Any one of the two should be filled
+    duduct_type = models.CharField(max_length=50, choices=deduct_choice)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? == May be we should keep it in setting
@@ -112,7 +126,10 @@ class Incentive(models.Model):
     description = models.CharField(max_length=250)
 
     def __unicode__(self):
-        return self.name
+        if self.deduct_type == 'AMOUNT':
+            return '%s, %f' % (self.name, self.amount)
+        else:
+            return '%s, %f' % (self.name, self.rate)
 
 
 class BranchOffice(models.Model):
@@ -124,15 +141,23 @@ class BranchOffice(models.Model):
 
 
 # These two below should be in setting as many to many
+# Imp: Deductin cant be in BAnk Account type and should be one to one with account type
 class Deduction(models.Model):
+    # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
     name = models.CharField(max_length=150)
     # Below only one out of two should be active
+    duduct_type = models.CharField(max_length=50, choices=deduct_choice)
+    # In which type of account to make deduction transaction
+    # transact_in = models.CharField(choice=acc_type)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
     description = models.CharField(max_length=150)
 
     def __unicode__(self):
-        return self.name
+        if self.deduct_type == 'AMOUNT':
+            return '%s, %f' % (self.name, self.amount)
+        else:
+            return '%s, %f' % (self.name, self.rate)
 
 
 class Employee(models.Model):
@@ -219,8 +244,8 @@ class IncomeTaxRate(models.Model):
 
 class PaymentRecord(models.Model):
     paid_employee = models.ForeignKey(Employee)
-    paid_from_date = models.BSDateField()
-    paid_to_date = models.DBSateField()
+    paid_from_date = BSDateField()
+    paid_to_date = BSDateField()
     absent_days = models.PositiveIntegerField()
     allowence = models.FloatField(null=True, blank=True)
     incentive = models.FloatField(null=True, blank=True)
@@ -239,6 +264,7 @@ class PaymentRecord(models.Model):
 class PayrollEntry(models.Model):
     entry_row = models.ManyToManyField(PaymentRecord)
     entry_datetime = models.DateTimeField(default=timezone.now)
+
 
 # class HrConfig(dbsettings.Group):
 #     sk_deduction_rate = models.PositiveIntegerField()
