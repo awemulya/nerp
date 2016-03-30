@@ -159,7 +159,7 @@ class Deduction(models.Model):
     deduction_for = models.CharField(max_length=50, choices=deduct_for)
     # Explit acc is only specified when deduction for is explicit_acc
     explicit_acc = models.ForeignKey(Account, null=True, blank=True)
-    # In which type of account to make deduction transaction
+    # In which type of account to make deduction transaction when deduction for is employee acc
     in_acc_type = models.ForeignKey(AccountType)
     # transact_in = models.CharField(choice=acc_type)
     amount = models.FloatField(null=True, blank=True)
