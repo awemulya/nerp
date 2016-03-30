@@ -20,6 +20,7 @@ from njango.fields import BSDateField, today
 
 acc_type = [('BANK ACC', _('Bank Account')), ('INSURANCE ACC', _('InsuranceAccount')), ('NALA ACC', _('Nagarik Lagani Kosh Account')), ('SANCHAI KOSH', _('Sanchai Kosh'))]
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
+deduct_for = [('EMPLOYEE ACC', _('For employee Account')), ('EXPLICIT ACC', _('An Explicit Account'))]
 payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
 
 # Allowence
@@ -155,6 +156,8 @@ class Deduction(models.Model):
     name = models.CharField(max_length=150)
     # Below only one out of two should be active
     deduct_type = models.CharField(max_length=50, choices=deduct_choice)
+    deduction_for = models.CharField(max_length=50, choices=deduct_for, null=True)
+    # explicit_acc = models.ForeignKey(Account, null=True)
     # In which type of account to make deduction transaction
     in_acc_type = models.OneToOneField(AccountType)
     # transact_in = models.CharField(choice=acc_type)
