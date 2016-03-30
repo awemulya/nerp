@@ -18,10 +18,19 @@ from njango.fields import BSDateField, today
 #             params={'value': value},
 #         )
 
-acc_type = [('BANK ACC', _('Bank Account')), ('INSURANCE ACC', _('InsuranceAccount')), ('NALA ACC', _('Nagarik Lagani Kosh Account')), ('SANCHAI KOSH', _('Sanchai Kosh'))]
+acc_type = [('BANK ACC', _('Bank Account')),
+            ('INSURANCE ACC', _('InsuranceAccount')),
+            ('NALA ACC', _('Nagarik Lagani Kosh Account')),
+            ('SANCHAI KOSH', _('Sanchai Kosh'))]
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
-deduct_for = [('EMPLOYEE ACC', _('For employee Account')), ('EXPLICIT ACC', _('An Explicit Account'))]
-payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
+deduct_for = [('EMPLOYEE ACC', _('For employee Account')),
+              ('EXPLICIT ACC', _('An Explicit Account'))]
+payment_cycle = [('M', _('Monthly')),
+                 ('Y', _('Yearly')),
+                 ('D', _('Daily')),
+                 ('H', _('Hourly'))]
+holder_type = [('EMPLOYEE', _("Employee's Account")),
+               ('COMPANY', _('Company Account'))]
 
 # Allowence
 # When yearly than when to pay should be in setting
@@ -36,7 +45,6 @@ class AccountType(models.Model):
 
 
 class Account(models.Model):
-    holder_type = [('EMPLOYEE', _("Employee's Account")), ('COMPANY', _('Company Account'))]
     account_holder_type = models.CharField(choices=holder_type, max_length=50)
     account_type = models.ForeignKey(AccountType)
     org_name = models.CharField(max_length=200)
@@ -45,7 +53,11 @@ class Account(models.Model):
     description = models.CharField(max_length=256)
 
     def __unicode__(self):
-        return '%s[%s][%s]' %  (self.account_type, self.org_name, self.acc_number)  
+        return '%s[%s][%s][%s]' % (self.account_type,
+                                   self.org_name,
+                                   self.acc_number,
+                                   self.account_holder_type
+                                   )
 
 
 class Transaction(models.Model):
@@ -184,10 +196,14 @@ class Employee(models.Model):
     designation = models.ForeignKey(Designation)
     pan_number = models.CharField(max_length=100)
     working_branch = models.ForeignKey(BranchOffice)
-    bank_account = models.OneToOneField(Account, related_name='bank_account')
-    insurance_account = models.OneToOneField(Account, related_name='insurance_acc')
-    nalakosh_account = models.OneToOneField(Account, related_name='nalakosh_acc')
-    sanchai_account = models.OneToOneField(Account, related_name='sanchai_acc')
+    bank_account = models.OneToOneField(Account,
+                                        related_name='bank_account')
+    insurance_account = models.OneToOneField(Account,
+                                             related_name='insurance_acc')
+    nalakosh_account = models.OneToOneField(Account,
+                                            related_name='nalakosh_acc')
+    sanchai_account = models.OneToOneField(Account,
+                                           related_name='sanchai_acc')
     # pro_tempore = models.OneToOneField('self', null=True, blank=True, related_name='pro_temp')
     # Talab rokka(Should not transact when payment_halt=True)
     payment_halt = models.BooleanField(default=False)
@@ -218,8 +234,10 @@ class Employee(models.Model):
 
 
 class ProTempore(models.Model):
-    employee = models.OneToOneField(Employee, related_name="real_employee_post")
-    pro_tempore = models.OneToOneField(Employee, related_name="virtual_employee_post")
+    employee = models.OneToOneField(Employee,
+                                    related_name="real_employee_post")
+    pro_tempore = models.OneToOneField(Employee,
+                                       related_name="virtual_employee_post")
     appoint_date = models.DateField(auto_now_add=True)
     dismiss_date = models.DateField(null=True, blank=True)
 
@@ -229,18 +247,18 @@ class ProTempore(models.Model):
     # Employee is permanent o r temporary? 10% PF in permanent
     # Beema(insurance) +200
     # There is also another insurance in Nagarik Lagani kosh()
-    
+
     #dEDUCTION PART(employee)
     # In  permanent case:
     # 10% x 2 to sanchaikosh
     # Bima ie 200 currently x 2 nagarik lagani kosh(bima)
     # There is also another insurance in Nagarik Lagani kosh().. Person anusar farak rate either in percentage or fixed rate
-    # Advance settlement 
+    # Advance settlement
     # There can also be some other deduction eg in earthquake gov cut it down
     # Social Security tax (1%)
     # Remunuration Tax (income tax)
     # Baki chai either in bank or cash
-    # 
+
     # Sabai ko account huncha 
 
 
