@@ -80,8 +80,9 @@ class PayrollEntryForm(forms.ModelForm):
 
 class GroupPayrollForm(forms.Form):
     payroll_type = forms.ChoiceField(
-        choices=[('INDIVIDUAL', 'Individual'),
-                 ('BRANCH', 'Branch')],
+        choices=[
+                 ('INDIVIDUAL', _('Individual')),
+                 ('BRANCH', _('Branch'))],
         widget=Select(attrs={'data-bind': 'value: payroll_type'})
                  )
     branch = forms.ChoiceField(

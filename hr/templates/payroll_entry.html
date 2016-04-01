@@ -24,7 +24,13 @@
 
 {% block  content %}
     <div id="main">
-        {{ m_form }}
+        {{ m_form.payroll_type.label }}
+        {{ m_form.payroll_type }}
+        {{ m_form.branch }}
+        {{ m_form.from_date.label }}
+        {{ m_form.from_date }}
+        {{ m_form.to_date.label }}
+        {{ m_form.to_date }}
     </div>
     <div>
         <form data-bind="submit: saveAndAdd">
