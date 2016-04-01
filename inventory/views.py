@@ -22,7 +22,7 @@ from openpyxl.cell import get_column_letter
 
 from core.models import app_setting, FiscalYear, Party, FISCAL_YEARS
 from app.utils.helpers import invalid, save_model, empty_to_none
-from app.utils.mixins import PDFView
+from app.utils.mixins import PDFView, LoginRequiredMixin
 # from app.utils.mixins import TemplateView as PDFView
 from users.models import group_required, User
 
@@ -1647,8 +1647,7 @@ def view_inventory_account(request, id, year=None):
     return render(request, 'view_inventory_account.html', context)
 
 
-
-class LedgersPDF(PDFView):
+class LedgersPDF(LoginRequiredMixin, PDFView):
     template_name = "pdf/ledgers.html"
 
     def get_context_data(self, **kwargs):
