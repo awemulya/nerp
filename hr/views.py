@@ -1,12 +1,19 @@
 from django.shortcuts import render
-from .forms import PaymentRowForm, PayrollEntryForm
+from .forms import PaymentRowForm, PayrollEntryForm, GroupPayrollForm
 from .models import Employee
 
 
 # Create your views here.
 def payroll_entry(request):
-    form = PaymentRowForm()
-    return render(request, 'payroll_entry.html', {'form': form})
+    main_form = GroupPayrollForm(initial={'payroll_type': 'BRANCH'})
+    row_form = PaymentRowForm()
+    return render(request, 'payroll_entry.html', {'r_form': row_form, 'm_form': main_form})
+
+
+# def group_payroll_branch(request):
+#     form = GroupPayrollForm()
+#     return render(request, 'group_payroll_branch.html', {'form': form})
+
 
 
 def calculate_salry(request):
@@ -33,6 +40,7 @@ def calculate_salry(request):
 
         # Transact Rs. 200 to Nagarik Lagani Kosh
         salary = salary - 200
+        
         
 
 

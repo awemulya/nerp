@@ -343,3 +343,4 @@ ko.bindingHandlers.toggle = {
     update: function (element, valueAccessor) {
     }
 };
+

@@ -1,3 +1,26 @@
+// ko.bindingHandlers.customValVis = {
+//     init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+//         console.log('We are here in init');
+
+//         var value = valueAccessor();
+//         var valueUnwrapped = ko.unwrap(value);
+//         var ufn = allBindings.get('parentFieldName')
+//         console.log(bindingContext.$root[ufn]());
+//         value(bindingContext.$root[ufn])
+//         // This will be called when the binding is first applied to an element
+//         // Set up any initial state, event handlers, etc. here
+//     },
+//     update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+//         console.log('We are here');
+//         var value = valueAccessor();
+//         var valueUnwrapped = ko.unwrap(value);
+//         var ufn = allBindings.get('updateFieldName')
+//         value(bindingContext.$root[ufn])
+//         // var duration = allBindings.get('valueUpdate')
+//     }
+// };
+
+
 $(document).ready(function () {
     vm = new PayrollEntry();
     ko.applyBindings(vm);
@@ -12,18 +35,18 @@ function PaymentEntryRow() {
     //debugger;
     var self = this;
     self.id = ko.observable();
-    self.payed_employee = ko.observable();
-    self.payed_from_date = ko.observable();
-    self.payed_to_date = ko.observable();
+    self.paid_employee = ko.observable();
+    self.paid_from_date = ko.observable();
+    self.paid_to_date = ko.observable();
     self.absent_days = ko.observable();
     self.allowence = ko.observable();
     self.incentive = ko.observable();
     self.deduced_amount = ko.observable();
-    self.payed_amout = ko.observable();
+    self.paid_amout = ko.observable();
     
     // Make here a observable function dat will set other parameters with employee id and date range
     self.setOtrParam = ko.computed(function(){
-        if(self.id() && self.payed_from_date() && self.payed_to_date()){
+        if(self.paid_employee() && self.paid_from_date() && self.paid_to_date()){
 
             console.log('Here get other computed data from the server')
         }else{
@@ -36,12 +59,26 @@ function PaymentEntryRow() {
 function PayrollEntry() {
     //debugger;
     var self = this;
+    self.payroll_type = ko.observable();
     self.rows = ko.observableArray([new PaymentEntryRow()]);
-    self.id = ko.observable();
-    self.entry_datetime=ko.observable();
+    // self.id = ko.observable();
+    self.paid_from_date = ko.observable();
+    self.paid_to_date = ko.observable();
+    // self.entry_datetime=ko.observable();
+    
+    self.switch_p_type  = ko.computed(function(){
+        console.log(self.payroll_type)
+        if(self.payroll_type()=="INDIVIDUAL"){
+            return true;
+        }else{
+            return false;
+        };
+    }); 
+
     self.saveAndAdd = function(){
         console.log('payment row saved');
     };
+    
 
 };
 

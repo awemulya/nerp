@@ -1,7 +1,8 @@
 from django import forms
 # from datetime import date
-from .models import PaymentRecord, PayrollEntry
+from .models import PaymentRecord, PayrollEntry, BranchOffice
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#, MultiWidget
+from njango.fields import BSDateField, today
 
 
 # class DateSelectorWidget(MultiWidget):
@@ -45,13 +46,14 @@ from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#,
 class PaymentRowForm(forms.ModelForm):
     class Meta:
         model = PaymentRecord
+        # exclude = ('paid_from_date', 'paid_to_date')
         fields = '__all__'
 
         # fields = ('name', 'title', 'birth_date')
         widgets = {
-            'paid_employee': Select(attrs={}),
-            # 'paid_from_date': DateInput(attrs={}),
-            # 'paid_to_date': DateInput(attrs={}),
+            'paid_employee': Select(attrs={'data-bind': "value: paid_employee"}),
+            'paid_from_date': DateInput(attrs={'data-bind': "value:paid_to_date"}),
+            'paid_to_date': DateInput(attrs={'data-bind': "value:paid_to_date"}),
             'absent_days': NumberInput(attrs={}),
             'allowence': NumberInput(attrs={}),
             'incentive': NumberInput(attrs={}),
@@ -69,3 +71,14 @@ class PayrollEntryForm(forms.ModelForm):
             'entry_row': NumberInput(attrs={}),
             'entry_datetime': DateTimeInput(attrs={})
         }
+
+
+class GroupPayrollForm(forms.Form):
+    payroll_type = forms.ChoiceField(
+        choices=[('INDIVIDUAL', 'Individual'),
+                 ('BRANCH', 'Branch')],
+        widget=Select(attrs={'data-bind': 'value: payroll_type'})
+                 )
+    branch = forms.ChoiceField(choices=[(o.id, o.name) for o in BranchOffice.objects.all()])
+    from_date = forms.DateField()
+    to_date = forms.DateField()

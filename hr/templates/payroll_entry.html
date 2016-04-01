@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block alert %}
+
     <!-- <div id="alert_placeholder">
         <ul data-bind="foreach: errors.items" class="alert-error">
             <li>
@@ -22,11 +23,20 @@
 {% endblock %}
 
 {% block  content %}
-<div data-bind="foreach: rows">
-    <form data-bind="submit: $parent.saveAndAdd">
-        {{ form }}
-        <input type="submit" class="#" value="Save">
-    </form>
-</div>
+    <div id="main">
+        {{ m_form }}
+    </div>
+    <div>
+        <form data-bind="submit: saveAndAdd">
+            
+            <div data-bind="foreach: rows">
+                {{ r_form }}
+            <input type="submit" class="#" value="Add Another" data-bind="visible: $parent.switch_p_type">
+        
+            </div>
+            
+            <input type="submit" class="#" value="Transact">
+        </form>
+    </div>
     
 {% endblock %}
