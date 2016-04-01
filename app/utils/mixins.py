@@ -1,4 +1,5 @@
 import os
+from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 from django.template import RequestContext
 from django.http import HttpResponse
@@ -21,6 +22,12 @@ def find_static(path):
             (smart_unicode(os.path.realpath(path)) for path in result))
         return output
 
+
+class LoginRequiredMixin(object):
+    @classmethod
+    def as_view(cls, **kwargs):
+        view = super(LoginRequiredMixin, cls).as_view(**kwargs)
+        return login_required(view)
 
 class PDFView(TemplateView):
     def get_file_name(self):
