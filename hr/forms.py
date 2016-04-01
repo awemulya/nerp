@@ -3,6 +3,7 @@ from django import forms
 from .models import PaymentRecord, PayrollEntry, BranchOffice
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#, MultiWidget
 from njango.fields import BSDateField, today
+from django.utils.translation import ugettext_lazy as _
 
 
 # class DateSelectorWidget(MultiWidget):
@@ -52,14 +53,18 @@ class PaymentRowForm(forms.ModelForm):
         # fields = ('name', 'title', 'birth_date')
         widgets = {
             'paid_employee': Select(attrs={'data-bind': "value: paid_employee"}),
-            'paid_from_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date"}),
-            'paid_to_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date"}),
-            'absent_days': NumberInput(attrs={}),
+            'paid_from_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date, visible: false",}),
+            'paid_to_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date, visible:false"}),
+            'absent_days': NumberInput(attrs={'data-bind': 'visible: false'}),
             'allowence': NumberInput(attrs={}),
             'incentive': NumberInput(attrs={}),
             'deduced_amount': NumberInput(attrs={}),
             'paid_amount': NumberInput(attrs={}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(PaymentRowForm, self).__init__(*args, **kwargs)
+        self.fields["paid_employee"].choices = [("", _("Select Employee")),] + list(self.fields["paid_employee"].choices)[1:]
 
 
 class PayrollEntryForm(forms.ModelForm):
