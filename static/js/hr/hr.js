@@ -74,6 +74,7 @@ function PayrollEntry() {
             };
             return true;
         }else{
+            self.rows([])
             return false;
         };
     }); 
