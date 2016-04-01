@@ -60,7 +60,7 @@ function PayrollEntry() {
     //debugger;
     var self = this;
     self.payroll_type = ko.observable();
-    self.rows = ko.observableArray([new PaymentEntryRow()]);
+    self.rows = ko.observableArray([]);
     // self.id = ko.observable();
     self.paid_from_date = ko.observable();
     self.paid_to_date = ko.observable();
@@ -69,6 +69,9 @@ function PayrollEntry() {
     self.switch_p_type  = ko.computed(function(){
         console.log(self.payroll_type)
         if(self.payroll_type()=="INDIVIDUAL"){
+            if( self.rows().length == 0){    
+                self.rows.push(new PaymentEntryRow())
+            };
             return true;
         }else{
             return false;
@@ -78,6 +81,21 @@ function PayrollEntry() {
     self.saveAndAdd = function(){
         console.log('payment row saved');
     };
+    self.addRow = function(event){
+        self.rows.push(new PaymentEntryRow());
+    };
+    self.set_time_stamp = ko.computed(function(){
+        // console.log('We are in timestamp function');
+        if(self.paid_from_date() && self.paid_to_date()){
+            for(let o of self.rows()){
+                // console.log(self.paid_from_date());
+                // console.log(self.paid_to_date());
+                o.paid_from_date(self.paid_from_date());
+                o.paid_to_date(self.paid_to_date());
+                // console.log('value set')
+            };
+        };
+    });
     
 
 };

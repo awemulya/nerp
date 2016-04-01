@@ -52,8 +52,8 @@ class PaymentRowForm(forms.ModelForm):
         # fields = ('name', 'title', 'birth_date')
         widgets = {
             'paid_employee': Select(attrs={'data-bind': "value: paid_employee"}),
-            'paid_from_date': DateInput(attrs={'data-bind': "value:paid_to_date"}),
-            'paid_to_date': DateInput(attrs={'data-bind': "value:paid_to_date"}),
+            'paid_from_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date"}),
+            'paid_to_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date"}),
             'absent_days': NumberInput(attrs={}),
             'allowence': NumberInput(attrs={}),
             'incentive': NumberInput(attrs={}),
@@ -80,5 +80,15 @@ class GroupPayrollForm(forms.Form):
         widget=Select(attrs={'data-bind': 'value: payroll_type'})
                  )
     branch = forms.ChoiceField(choices=[(o.id, o.name) for o in BranchOffice.objects.all()])
-    from_date = forms.DateField()
-    to_date = forms.DateField()
+    from_date = forms.DateField(
+        widget=DateInput(attrs={
+            'data-bind': 'value: paid_from_date',
+            'is_required': True
+            }),
+        )
+    to_date = forms.DateField(
+        widget=DateInput(attrs={
+            'data-bind': 'value: paid_to_date',
+            'is_required': True
+            }),
+        )
