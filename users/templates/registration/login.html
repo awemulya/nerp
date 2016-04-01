@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static filters %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>
-        {% trans 'Login' %} | {% trans 'Awecounting' %}
+        {% trans 'Login' %} | {{ 'core.models.app_setting.site_name'|setting }}
     </title>
 
     <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
