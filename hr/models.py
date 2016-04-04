@@ -23,7 +23,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 acc_type = [('BANK ACC', _('Bank Account')),
             ('INSURANCE ACC', _('InsuranceAccount')),
             ('NALA ACC', _('Nagarik Lagani Kosh Account')),
-            ('SANCHAI KOSH', _('Sanchai Kosh'))]
+            ('SANCHAYA KOSH', _('Sanchaya Kosh'))]
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
 deduct_for = [('EMPLOYEE ACC', _('For employee Account')),
               ('EXPLICIT ACC', _('An Explicit Account'))]
