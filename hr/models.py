@@ -23,10 +23,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 # Account type name should be same as fieldname in employee account with small letter and underscope
 # That is field name for 'BANK ACCOUNT' in employee model 
 # will be 'bank_account'
-acc_type = [('BANK ACCOUNT', _('Bank Account')),
-            ('INSURANCE ACCOUNT', _('InsuranceAccount')),
-            ('NALAKOSH ACCOUNT', _('Nagarik Lagani Kosh Account')),
-            ('SANCHAYAKOSH ACCOUNT', _('Sanchaya Kosh'))]
+acc_type = [('bank_account', _('Bank Account')),
+            ('insurance_account', _('Insurance Account')),
+            ('nalakosh_account', _('Nagarik Lagani Kosh Account')),
+            ('sanchayakosh_account', _('Sanchayakosh Account'))]
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
 deduct_for = [('EMPLOYEE ACC', _('For employee Account')),
               ('EXPLICIT ACC', _('An Explicit Account'))]

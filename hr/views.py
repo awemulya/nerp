@@ -91,38 +91,33 @@ def get_employee_account(request):
         deduction_detail = {}
         for obj in deductions:
             if obj.deduction_for == 'EMPLOYEE ACC':
-                # if obj.account_type.name == 'SANCHAYA KOSH':
-                #     sanchaya_deduction = {}
-                #     sanchaya_deduction['amount'] = 0
+                deduction_detail[obj.in_acc_type.name] = {}
+                deduction_detail[obj.in_acc_type.name]['amount'] = 0
                 if obj.deduct_type == 'AMOUNT':
-                    deduction_detail[obj.account_type.name]['amount'] += obj.amount/30.0 * total_work_day
+                    deduction_detail[obj.in_acc_type.name]['amount'] += obj.amount/30.0 * total_work_day
                 else:
                     # Rate
-                    deduction_detail[obj.account_type.name]['amount'] += obj.rate/100.0 * salary
+                    deduction_detail[obj.in_acc_type.name]['amount'] += obj.rate/100.0 * salary
                 if employee.is_permanent:
-                    if obj.account_type.permanent_multiply_rate:
-                        deduction_detail[obj.account_type.name]['amount'] *= obj.account_type.permanent_multiply_rate
-                    
-                    # deduction_detail['sanchaya_deduction'] = sanchaya_deduction
-                    # deduction += sanchaya_deduction['amount']
-                # elif obj.account_type.name == 'NALA ACC':
-                #     nala_deduction = 0
-                #     if obj.deduct_type == 'AMOUNT':
-                #         nala_deduction += obj.amount/30.0 * total_work_day
-                #     else:
-                #         # Rate
-                #         nala_deduction += obj.rate/100.0 * salary
-                #     if employee.is_permanent:
-                #         nala_deduction *= 2
-                #     deduction_detail['nala_deduction'] = nala_deduction
-                #     deduction += nala_deduction
-                # elif obj.account_type.name == 'INSURANCE ACC':
-                #     pass
-                # elif obj.account_type.name == 'BANK ACC':
-                #     pass
+                    if obj.in_acc_type.permanent_multiply_rate:
+                        deduction_detail[obj.in_acc_type.name]['amount'] *= obj.in_acc_type.permanent_multiply_rate
+                deduction_detail[obj.in_acc_type.name]['account_id'] = getattr(employee, obj.in_acc_type.name).id
+                deduction += deduction_detail[obj.in_acc_type.name]['amount']
+
             else:
+                name = '_'.join(obj.name.split(' ')).lower()
+                deduction_detail['others'] = {}
+                deduction_detail['others'][name] = {}
+                deduction_detail['others'][name]['amount'] = 0
                 # EXPLICIT ACC
-                pass
+                if obj.deduct_type == 'AMOUNT':
+                    deduction_detail['others'][name]['amount'] += obj.amount/30.0 * total_work_day
+                else:
+                    # Rate
+                    deduction_detail['others'][name]['amount'] += obj.rate/100.0 * salary
+                deduction_detail['others'][name]['account_id'] = obj.explicit_acc.id
+                deduction += deduction_detail['others'][name]['amount']
+
 
 
         return HttpResponse('Well we are doing just fine')
