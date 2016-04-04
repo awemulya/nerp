@@ -5,7 +5,7 @@ from django.utils import timezone
 from users.models import User
 from core.models import validate_in_fy
 from njango.fields import BSDateField, today
-from njango.nepdate import ad2bs
+from njango.nepdate import ad2bs, bs
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 # from core.models import FiscalYear
@@ -242,17 +242,24 @@ class Employee(models.Model):
     # deductions need to be removed from this table
     # deductions = models.ManyToManyField(Deduction)
 
-    def current_salary(self):
+    def current_salary(self, upto):
         grade_salary = self.designation.grade.salary_scale
         grade_number = self.designation.grade.grade_number
         grade_rate = self.designation.grade.grade_rate
         # Instead of appoint_date we need to use lagu miti for now its oppoint date and lagu miti should be in appSETTING
-        appointed_since = ad2bs(timezone.now().date()) - self.appoint_date
-        years_worked = appointed_since.days/365
-        if years_worked <= grade_number:
-            return grade_salary + int(years_worked) * grade_rate
-        elif grade_number > years_worked:
-            return grade_salary + grade_number * grade_rate
+        appointed_since = today - self.appoint_date
+        total_days = appointed_since.days
+        salary = 0
+        if upto and upto > 0:
+            for i in range(1, upto+1):
+                month_days = bs[today.year][today.month+i]
+                total_days += month_days
+                years_worked = total_days/365
+                if years_worked <= grade_number:
+                    salary += grade_salary + int(years_worked) * grade_rate
+                elif years_worked > grade_number:
+                    salary += grade_salary + grade_number * grade_rate
+        return salary
 
     def __unicode__(self):
         return str(self.employee.full_name)
