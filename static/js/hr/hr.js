@@ -47,7 +47,24 @@ function PaymentEntryRow() {
     // Make here a observable function dat will set other parameters with employee id and date range
     self.setOtrParam = ko.computed(function(){
         if(self.paid_employee() && self.paid_from_date() && self.paid_to_date()){
-
+        $.ajax({
+            url: 'get_employee_account/',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                paid_employee: self.paid_employee(),
+                paid_from_date: self.paid_from_date(),
+                paid_to_date: self.paid_to_date()
+            },
+            // async: true,
+            success: function (data) {
+                console.log(data);
+                },
+            error: function(errorThrown){
+                console.log(errorThrown);
+                },
+//            self.budget_heads = ko.observableArray(data);
+        });
             console.log('Here get other computed data from the server')
         }else{
             console.log('Those three attributes are not set')

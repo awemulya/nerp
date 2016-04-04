@@ -5,6 +5,7 @@ from django.utils import timezone
 from users.models import User
 from core.models import validate_in_fy
 from njango.fields import BSDateField, today
+from njango.nepdate import ad2bs
 
 # from core.models import FiscalYear
 # from solo.models import SingletonModel
@@ -215,6 +216,7 @@ class Employee(models.Model):
     incentive = models.ManyToManyField(Incentive, blank=True)
     # Permanent has extra functionality while deduction from salary
     is_permanent = models.BooleanField(default=False)
+    # deductions need to be removed from this table
     deductions = models.ManyToManyField(Deduction)
 
     def current_salary(self):
@@ -222,15 +224,15 @@ class Employee(models.Model):
         grade_number = self.designation.grade.grade_number
         grade_rate = self.designation.grade.grade_rate
         # Instead of appoint_date we need to use lagu miti for now its oppoint date and lagu miti should be in appSETTING
-        appointed_since = timezone.now().date() - self.appoint_date
-        years_worked = appointed_since.days/365.25
+        appointed_since = ad2bs(timezone.now().date()) - self.appoint_date
+        years_worked = appointed_since.days/365
         if years_worked <= grade_number:
             return grade_salary + int(years_worked) * grade_rate
         elif grade_number > years_worked:
             return grade_salary + grade_number * grade_rate
 
     def __unicode__(self):
-        return str(self.id)
+        return str(self.employee.full_name)
 
 
 class ProTempore(models.Model):
