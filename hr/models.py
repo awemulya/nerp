@@ -195,6 +195,7 @@ class Deduction(models.Model):
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
     description = models.CharField(max_length=150)
+    priority = models.IntegerField(unique=True)
 
     def __unicode__(self):
         if self.deduct_type == 'AMOUNT':
