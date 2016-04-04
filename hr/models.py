@@ -222,6 +222,7 @@ class Employee(models.Model):
                                              related_name='insurance_acc')
     nalakosh_account = models.OneToOneField(Account,
                                             related_name='nalakosh_acc')
+    # Change the name below to sanchaya_account
     sanchai_account = models.OneToOneField(Account,
                                            related_name='sanchai_acc')
     # pro_tempore = models.OneToOneField('self', null=True, blank=True, related_name='pro_temp')
