@@ -41,6 +41,7 @@ holder_type = [('EMPLOYEE', _("Employee's Account")),
 class AccountType(models.Model):
     name = models.CharField(max_length=150, choices=acc_type, unique=True)
     description = models.CharField(max_length=250)
+    permanent_multiply_rate = models.PositiveIntegerField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name
