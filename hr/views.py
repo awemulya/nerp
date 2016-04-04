@@ -36,23 +36,57 @@ def get_employee_account(request):
         if error:
             return JsonResponse(error)
         # Now calculate all the values and give a good meaningful response
-        employee_scale = employee.current_salary()
+        current_salary = employee.current_salary()
         total_work_day = paid_to_date - paid_from_date
-        salary = employee_scale/30 * total_work_day
+        salary = current_salary/30 * total_work_day
 
         # Now add allowence to the salary(salary = salary + allowence)
         # Question here is do we need to deduct from incentove(I gues not)
-        for obj employee.allowence:
-            if obj.incentive_cycle == 'Y':
-                # Pay when we in within of dat month
+        for obj in employee.allowences:
+            allowence = 0
+            if obj.payment_cycle == 'Y':
+                # check obj.year_payment_cycle_month to add to salary
                 pass
-            elif obj.incentive_cycle == 'M':
-                pass
-            elif obj.incentive_cycle == 'D':
-                pass
+            elif obj.payment_cycle == 'M':
+                if obj.sum_type == 'AMOUNT':
+                    allowence += obj.amount/30.0 * total_work_day
+                else:
+                    allowence += obj.rate/100.0 * salary
+            elif obj.payment_cycle == 'D':
+                if obj.sum_type == 'AMOUNT':
+                    allowence += obj.amount * total_work_day
+                else:
+                    # Does this mean percentage in daily wages
+                    allowence += obj.rate/100.0 * salary
             else:
+                # This is hourly case(Dont think we have it)
                 pass
-        return HttpResponse(request.POST)
+
+        salary += allowence
+
+        # now calculate incentive if it has but not to add to salary just to transact seperately 
+        for obj in employee.incentives:
+            incentive = 0
+            if obj.payment_cycle == 'Y':
+                # check obj.year_payment_cycle_month to add to salary
+                pass
+            elif obj.payment_cycle == 'M':
+                if obj.sum_type == 'AMOUNT':
+                    incentive += obj.amount/30.0 * total_work_day
+                else:
+                    incentive += obj.rate/100.0 * salary
+            elif obj.payment_cycle == 'D':
+                if obj.sum_type == 'AMOUNT':
+                    incentive += obj.amount * total_work_day
+                else:
+                    # Does this mean percentage in daily wages
+                    incentive += obj.rate/100.0 * salary
+            else:
+                # This is hourly case(Dont think we have it)
+                pass
+
+        return HttpResponse('Well we are doing just fine')
+
     else:
         return HttpResponse('Damn no request.POST')
 
