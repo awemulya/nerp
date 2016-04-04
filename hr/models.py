@@ -6,6 +6,7 @@ from users.models import User
 from core.models import validate_in_fy
 from njango.fields import BSDateField, today
 from njango.nepdate import ad2bs
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # from core.models import FiscalYear
 # from solo.models import SingletonModel
@@ -124,6 +125,14 @@ class Allowence(models.Model):
     amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? ==> May be it should be in settingShould be in setting
     incentive_cycle = models.CharField(max_length=50, choices=payment_cycle)
+    year_allowence_cycle_month = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        validators=[
+            MaxValueValidator(12),
+            MinValueValidator(1)
+                ],
+        )
     description = models.CharField(max_length=250)
 
     def __unicode__(self):
@@ -145,6 +154,14 @@ class Incentive(models.Model):
     # When to pay? == May be we should keep it in setting
     # payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
     incentive_cycle = models.CharField(max_length=50, choices=payment_cycle)
+    year_incentive_cycle_month = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        validators=[
+            MaxValueValidator(12),
+            MinValueValidator(1)
+                ],
+        )
     description = models.CharField(max_length=250)
 
     def __unicode__(self):
@@ -208,16 +225,16 @@ class Employee(models.Model):
     # pro_tempore = models.OneToOneField('self', null=True, blank=True, related_name='pro_temp')
     # Talab rokka(Should not transact when payment_halt=True)
     payment_halt = models.BooleanField(default=False)
-    appoint_date = models.DateField(auto_now_add=True)
-    dismiss_date = models.DateField(null=True, blank=True)
+    appoint_date = BSDateField(default=today)
+    dismiss_date = BSDateField(null=True, blank=True)
     # allowence will be added to salary 
-    allowence = models.ManyToManyField(Allowence, blank=True)
+    allowences = models.ManyToManyField(Allowence, blank=True)
     # incentive will have diff trancation
-    incentive = models.ManyToManyField(Incentive, blank=True)
+    incentives = models.ManyToManyField(Incentive, blank=True)
     # Permanent has extra functionality while deduction from salary
     is_permanent = models.BooleanField(default=False)
     # deductions need to be removed from this table
-    deductions = models.ManyToManyField(Deduction)
+    # deductions = models.ManyToManyField(Deduction)
 
     def current_salary(self):
         grade_salary = self.designation.grade.salary_scale
@@ -240,8 +257,8 @@ class ProTempore(models.Model):
                                     related_name="real_employee_post")
     pro_tempore = models.OneToOneField(Employee,
                                        related_name="virtual_employee_post")
-    appoint_date = models.DateField(auto_now_add=True)
-    dismiss_date = models.DateField(null=True, blank=True)
+    appoint_date = BSDateField(default=today)
+    dismiss_date = BSDateField(null=True, blank=True)
 
     def __unicode__(self):
         return str(self.id)
