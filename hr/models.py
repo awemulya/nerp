@@ -20,10 +20,13 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 #             params={'value': value},
 #         )
 
-acc_type = [('BANK ACC', _('Bank Account')),
-            ('INSURANCE ACC', _('InsuranceAccount')),
-            ('NALA ACC', _('Nagarik Lagani Kosh Account')),
-            ('SANCHAYA KOSH', _('Sanchaya Kosh'))]
+# Account type name should be same as fieldname in employee account with small letter and underscope
+# That is field name for 'BANK ACCOUNT' in employee model 
+# will be 'bank_account'
+acc_type = [('BANK ACCOUNT', _('Bank Account')),
+            ('INSURANCE ACCOUNT', _('InsuranceAccount')),
+            ('NALAKOSH ACCOUNT', _('Nagarik Lagani Kosh Account')),
+            ('SANCHAYAKOSH ACCOUNT', _('Sanchaya Kosh'))]
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
 deduct_for = [('EMPLOYEE ACC', _('For employee Account')),
               ('EXPLICIT ACC', _('An Explicit Account'))]
@@ -223,7 +226,7 @@ class Employee(models.Model):
     nalakosh_account = models.OneToOneField(Account,
                                             related_name='nalakosh_acc')
     # Change the name below to sanchaya_account
-    sanchai_account = models.OneToOneField(Account,
+    sanchayakosh_account = models.OneToOneField(Account,
                                            related_name='sanchai_acc')
     # pro_tempore = models.OneToOneField('self', null=True, blank=True, related_name='pro_temp')
     # Talab rokka(Should not transact when payment_halt=True)
