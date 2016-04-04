@@ -5,8 +5,6 @@ from django.http import HttpResponse, JsonResponse
 from datetime import datetime
 
 
-YEAR_INCENTIVE_MONTH = 3
-
 # Create your views here.
 def payroll_entry(request):
     main_form = GroupPayrollForm(initial={'payroll_type': 'BRANCH'})

@@ -124,8 +124,8 @@ class Allowence(models.Model):
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? ==> May be it should be in settingShould be in setting
-    incentive_cycle = models.CharField(max_length=50, choices=payment_cycle)
-    year_allowence_cycle_month = models.PositiveIntegerField(
+    payment_cycle = models.CharField(max_length=50, choices=payment_cycle)
+    year_payment_cycle_month = models.PositiveIntegerField(
         null=True,
         blank=True,
         validators=[
@@ -153,8 +153,8 @@ class Incentive(models.Model):
     amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? == May be we should keep it in setting
     # payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
-    incentive_cycle = models.CharField(max_length=50, choices=payment_cycle)
-    year_incentive_cycle_month = models.PositiveIntegerField(
+    payment_cycle = models.CharField(max_length=50, choices=payment_cycle)
+    year_payment_cycle_month = models.PositiveIntegerField(
         null=True,
         blank=True,
         validators=[
