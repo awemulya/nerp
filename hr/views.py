@@ -6,6 +6,27 @@ from datetime import date, datetime
 from njango.nepdate import bs
 
 
+def delta_month_date(p_from, p_to):
+    total_work_day = 0
+    total_month = 0
+
+    # Need to test this (this can be made a function)
+    if p_from.year == p_to.year:
+        total_month += p_from.month - p_to.month + 1
+        for ob in range(p_from.month, p_to.month + 1):
+            total_work_day += bs[p_from.year][ob-1]
+    else:
+        while p_from <= p_to:
+            total_work_day += bs[p_from.year][p_from.month-1]
+            if p_from.month < 12:
+                p_from = date(p_from.year, p_from.month+1, p_from.day)
+                total_month += 1
+            else:
+                p_from = date(p_from.year + 1, 1, p_from.day)
+                total_month += 1
+    return (total_month, total_work_day)
+
+
 # Create your views here.
 def payroll_entry(request):
     main_form = GroupPayrollForm(initial={'payroll_type': 'BRANCH'})
@@ -38,26 +59,28 @@ def get_employee_account(request):
             return JsonResponse(error)
         # Now calculate all the values and give a good meaningful response
         # total_work_day = paid_to_date - paid_from_date
-        total_work_day = 0
-        total_month = 0
+        total_month, total_work_day = delta_month_date(paid_from_date,
+                                                       paid_to_date)
+        # total_work_day = 0
+        # total_month = 0
 
-        # Need to test this (this can be made a function)
-        if paid_from_date.year == paid_to_date.year:
-            total_month += paid_from_date.month - paid_to_date.month + 1
-            for ob in range(paid_from_date.month, paid_to_date.month + 1):
-                total_work_day += bs[paid_from_date.year][ob-1]
-        else:
-            p_from = paid_from_date
-            p_to = paid_to_date
+        # # Need to test this (this can be made a function)
+        # if paid_from_date.year == paid_to_date.year:
+        #     total_month += paid_from_date.month - paid_to_date.month + 1
+        #     for ob in range(paid_from_date.month, paid_to_date.month + 1):
+        #         total_work_day += bs[paid_from_date.year][ob-1]
+        # else:
+        #     p_from = paid_from_date
+        #     p_to = paid_to_date
 
-            while p_from <= p_to:
-                total_work_day += bs[p_from.year][p_from.month-1]
-                if p_from.month < 12:
-                    p_from = date(p_from.year, p_from.month+1, p_from.day)
-                    total_month += 1
-                else:
-                    p_from = date(p_from.year + 1, 1, p_from.day)
-                    total_month += 1
+        #     while p_from <= p_to:
+        #         total_work_day += bs[p_from.year][p_from.month-1]
+        #         if p_from.month < 12:
+        #             p_from = date(p_from.year, p_from.month+1, p_from.day)
+        #             total_month += 1
+        #         else:
+        #             p_from = date(p_from.year + 1, 1, p_from.day)
+        #             total_month += 1
 
         salary = employee.current_salary(total_month-1)
 
