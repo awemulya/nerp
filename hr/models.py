@@ -257,7 +257,7 @@ class Employee(models.Model):
             salary += grade_salary + grade_number * grade_rate
         if add_month:
             for i in range(1, add_month+1):
-                month_days = bs[today.year][today.month+i]
+                month_days = bs[today.year][today.month+i-1]
                 total_days += month_days
                 years_worked = total_days/365
                 if years_worked <= grade_number:

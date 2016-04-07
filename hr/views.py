@@ -3,7 +3,7 @@ from .forms import PaymentRowForm, PayrollEntryForm, GroupPayrollForm
 from .models import Employee, Deduction
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime
-
+from njango.nepdate import bs
 
 # Create your views here.
 def payroll_entry(request):
@@ -37,8 +37,37 @@ def get_employee_account(request):
             return JsonResponse(error)
         # Now calculate all the values and give a good meaningful response
         current_salary = employee.current_salary()
-        total_work_day = paid_to_date - paid_from_date
-        salary = current_salary/30 * total_work_day
+        # total_work_day = paid_to_date - paid_from_date
+        total_work_day = 0
+
+        
+        # Need to test this
+        if paid_from_date.year == paid_to_date.year:
+            for ob in range(paid_from_date.month, paid_to_date.month + 1):
+                total_work_day += bs[paid_from_date.year][ob-1]
+        else:
+            start_year = paid_from_date.year
+            start_month = paid_from_date.month
+            end_year = paid_to_date.year
+            end_month = paid_to_date.month
+
+            while start_year <= end_year and start_month <= end_month:
+                total_work_day += bs[start_year][start_month-1]
+                if start_month < 12:
+                    start_month += 1
+                else:
+                    start_year += 1
+                    start_month = 1
+
+
+
+
+        total_month = paid_to_date.month - paid_from_date.month + 1
+        
+        if paid_from_date == paid_to_date:
+            salary = current_salary()
+        else:
+            salary = current_salary(total_month - 1)
 
         # Now add allowence to the salary(salary = salary + allowence)
         # Question here is do we need to deduct from incentove(I gues not)
@@ -49,7 +78,7 @@ def get_employee_account(request):
                 pass
             elif obj.payment_cycle == 'M':
                 if obj.sum_type == 'AMOUNT':
-                    allowence += obj.amount/30.0 * total_work_day
+                    allowence += obj.amount * total_month
                 else:
                     allowence += obj.rate/100.0 * salary
             elif obj.payment_cycle == 'D':
