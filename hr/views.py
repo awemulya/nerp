@@ -2,8 +2,9 @@ from django.shortcuts import render
 from .forms import PaymentRowForm, PayrollEntryForm, GroupPayrollForm
 from .models import Employee, Deduction
 from django.http import HttpResponse, JsonResponse
-from datetime import datetime
+from datetime import date, datetime
 from njango.nepdate import bs
+
 
 # Create your views here.
 def payroll_entry(request):
@@ -36,38 +37,36 @@ def get_employee_account(request):
         if error:
             return JsonResponse(error)
         # Now calculate all the values and give a good meaningful response
-        current_salary = employee.current_salary()
         # total_work_day = paid_to_date - paid_from_date
         total_work_day = 0
+        total_month = 0
 
-        
-        # Need to test this
+        # Need to test this (this can be made a function)
         if paid_from_date.year == paid_to_date.year:
+            total_month += paid_from_date.month - paid_to_date.month + 1
             for ob in range(paid_from_date.month, paid_to_date.month + 1):
                 total_work_day += bs[paid_from_date.year][ob-1]
         else:
-            start_year = paid_from_date.year
-            start_month = paid_from_date.month
-            end_year = paid_to_date.year
-            end_month = paid_to_date.month
+            p_from = paid_from_date
+            p_to = paid_to_date
 
-            while start_year <= end_year and start_month <= end_month:
-                total_work_day += bs[start_year][start_month-1]
-                if start_month < 12:
-                    start_month += 1
+            while p_from <= p_to:
+                total_work_day += bs[p_from.year][p_from.month-1]
+                if p_from.month < 12:
+                    p_from = date(p_from.year, p_from.month+1, p_from.day)
+                    total_month += 1
                 else:
-                    start_year += 1
-                    start_month = 1
+                    p_from = date(p_from.year + 1, 1, p_from.day)
+                    total_month += 1
 
+        salary = employee.current_salary(total_month-1)
 
+        # total_month = paid_to_date.month - paid_from_date.month + 1
 
-
-        total_month = paid_to_date.month - paid_from_date.month + 1
-        
-        if paid_from_date == paid_to_date:
-            salary = current_salary()
-        else:
-            salary = current_salary(total_month - 1)
+        # if paid_from_date == paid_to_date:
+        #     salary = current_salary()
+        # else:
+        #     salary = current_salary(total_month - 1)
 
         # Now add allowence to the salary(salary = salary + allowence)
         # Question here is do we need to deduct from incentove(I gues not)
@@ -101,7 +100,7 @@ def get_employee_account(request):
                 pass
             elif obj.payment_cycle == 'M':
                 if obj.sum_type == 'AMOUNT':
-                    incentive += obj.amount/30.0 * total_work_day
+                    incentive += obj.amount * total_month
                 else:
                     incentive += obj.rate/100.0 * salary
             elif obj.payment_cycle == 'D':
