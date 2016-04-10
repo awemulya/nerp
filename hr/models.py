@@ -219,15 +219,16 @@ class Employee(models.Model):
     designation = models.ForeignKey(Designation)
     pan_number = models.CharField(max_length=100)
     working_branch = models.ForeignKey(BranchOffice)
-    bank_account = models.OneToOneField(Account,
-                                        related_name='bank_account')
-    insurance_account = models.OneToOneField(Account,
-                                             related_name='insurance_acc')
-    nalakosh_account = models.OneToOneField(Account,
-                                            related_name='nalakosh_acc')
-    # Change the name below to sanchaya_account
-    sanchayakosh_account = models.OneToOneField(Account,
-                                           related_name='sanchai_acc')
+    accounts = models.ManyToManyField(Account, through="EmployeeAccount")
+    # bank_account = models.OneToOneField(Account,
+    #                                     related_name='bank_account')
+    # insurance_account = models.OneToOneField(Account,
+    #                                          related_name='insurance_acc')
+    # nalakosh_account = models.OneToOneField(Account,
+    #                                         related_name='nalakosh_acc')
+    # # Change the name below to sanchaya_account
+    # sanchayakosh_account = models.OneToOneField(Account,
+    #                                        related_name='sanchai_acc')
     # pro_tempore = models.OneToOneField('self', null=True, blank=True, related_name='pro_temp')
     # Talab rokka(Should not transact when payment_halt=True)
     payment_halt = models.BooleanField(default=False)
@@ -333,6 +334,13 @@ class PayrollEntry(models.Model):
     entry_row = models.ManyToManyField(PaymentRecord)
     entry_datetime = models.DateTimeField(default=timezone.now)
 
+
+class EmployeeAccount(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, unique=True, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (("employee", "account"),)
 
 # class HrConfig(dbsettings.Group):
 #     sk_deduction_rate = models.PositiveIntegerField()

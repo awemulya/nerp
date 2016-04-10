@@ -1,6 +1,6 @@
 from django import forms
 # from datetime import date
-from .models import PaymentRecord, PayrollEntry, BranchOffice
+from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#, MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -101,3 +101,29 @@ class GroupPayrollForm(forms.Form):
             'is_required': True
             }),
         )
+
+
+# class EmployeeForm(forms.ModelForm):
+#     class Meta:
+#         model = Employee
+#         fields = '__all__'
+
+#     def clean(self):
+#         accounts = self.cleaned_data.get('accounts')
+#         import pdb
+#         pdb.set_trace()
+
+#         return self.cleaned_data
+
+class AccountInlineFormset(forms.models.BaseInlineFormSet):
+    def clean(self):
+        if any(self.errors):
+            return
+        account_types = []
+        for form in self.forms:
+            acc_type = form.cleaned_data['account'].account_type
+            if acc_type in account_types:
+                acc_type_name = _(acc_type.name)
+                raise forms.ValidationError(
+                    _('Cannot have more than one type of %s' % acc_type_name))
+            account_types.append(acc_type)

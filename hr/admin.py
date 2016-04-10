@@ -1,12 +1,42 @@
 from django.contrib import admin
-from .models import AccountType, Account, Transaction, EmployeeGrade, Employee, Designation, Incentive, Allowence, IncomeTaxRate, BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry
+from .models import AccountType, Account,EmployeeAccount, Transaction, EmployeeGrade, Employee, Designation, Incentive, Allowence, IncomeTaxRate, BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry
+from .forms import AccountInlineFormset
+
+
+class EmployeeAccountInline(admin.TabularInline):
+    model = EmployeeAccount
+    formset = AccountInlineFormset
+    extra = 1
+
+
+class EmployeeAdmin(admin.ModelAdmin):
+    inlines = (EmployeeAccountInline,)
+    # form = EmployeeForm
+
+
+# class AccountAdmin(admin.ModelAdmin):
+#     inlines = (EmployeeAccountInline,)
+
+
+
+# class AccountInline(admin.TabularInline):
+#     model = EmployeeAccount.account.through
+
+
+# class EmployeeInline(admin.TabularInline):
+#     model = EmployeeAccount.employee.through
+
+
+# class EmployeeAccountAdmin(admin.ModelAdmin):
+#     pass
+
 
 admin.site.register(AccountType)
 admin.site.register(Account)
 admin.site.register(Transaction)
 
 admin.site.register(EmployeeGrade)
-admin.site.register(Employee)
+admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Designation)
 admin.site.register(Incentive)
 admin.site.register(Allowence)
@@ -16,3 +46,4 @@ admin.site.register(Deduction)
 admin.site.register(ProTempore)
 admin.site.register(PaymentRecord)
 admin.site.register(PayrollEntry)
+admin.site.register(EmployeeAccount)
