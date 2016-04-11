@@ -51,18 +51,19 @@ class AccountType(models.Model):
 
 
 class Account(models.Model):
-    account_holder_type = models.CharField(choices=holder_type, max_length=50)
-    account_type = models.ForeignKey(AccountType)
+    # account_holder_type = models.CharField(choices=holder_type, max_length=50)
+    # account_type = models.ForeignKey(AccountType)
     org_name = models.CharField(max_length=200)
     branch = models.CharField(max_length=150)
     acc_number = models.CharField(max_length=100)
     description = models.CharField(max_length=256)
 
     def __unicode__(self):
-        return '%s[%s][%s][%s]' % (self.account_type,
+        return '[%s][%s]' % (
+                                   # self.account_type,
                                    self.org_name,
                                    self.acc_number,
-                                   self.account_holder_type
+                                   # self.account_holder_type
                                    )
 
 
@@ -337,10 +338,25 @@ class PayrollEntry(models.Model):
 
 class EmployeeAccount(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    account = models.ForeignKey(Account, unique=True, on_delete=models.CASCADE)
+    account = models.OneToOneField(
+                                    Account,
+                                    on_delete=models.CASCADE,
+                                    related_name='employee_account',
+                                    )
+    account_type = models.ForeignKey(
+                                    AccountType
+                                    )
 
     class Meta:
         unique_together = (("employee", "account"),)
+
+
+class CompanyAccount(models.Model):
+    account = models.OneToOneField(
+                                    Account,
+                                    on_delete=models.CASCADE,
+                                    related_name='company_account'
+                                    )
 
 # class HrConfig(dbsettings.Group):
 #     sk_deduction_rate = models.PositiveIntegerField()

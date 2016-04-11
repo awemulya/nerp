@@ -115,13 +115,15 @@ class GroupPayrollForm(forms.Form):
 
 #         return self.cleaned_data
 
-class AccountInlineFormset(forms.models.BaseInlineFormSet):
+class EmployeeAccountInlineFormset(forms.models.BaseInlineFormSet):
     def clean(self):
         if any(self.errors):
             return
         account_types = []
         for form in self.forms:
-            acc_type = form.cleaned_data['account'].account_type
+            # import pdb
+            # pdb.set_trace()
+            acc_type = form.cleaned_data['account_type']
             if acc_type in account_types:
                 acc_type_name = _(acc_type.name)
                 raise forms.ValidationError(

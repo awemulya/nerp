@@ -1,17 +1,18 @@
 from django.contrib import admin
 from .models import AccountType, Account,EmployeeAccount, Transaction, EmployeeGrade, Employee, Designation, Incentive, Allowence, IncomeTaxRate, BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry
-from .forms import AccountInlineFormset
+from .forms import EmployeeAccountInlineFormset
 
 
 class EmployeeAccountInline(admin.TabularInline):
     model = EmployeeAccount
-    formset = AccountInlineFormset
+    formset = EmployeeAccountInlineFormset
     extra = 1
 
 
 class EmployeeAdmin(admin.ModelAdmin):
     inlines = (EmployeeAccountInline,)
     # form = EmployeeForm
+    pass
 
 
 # class AccountAdmin(admin.ModelAdmin):
