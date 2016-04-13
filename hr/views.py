@@ -1,9 +1,16 @@
 from django.shortcuts import render
 from .forms import PaymentRowForm, PayrollEntryForm, GroupPayrollForm
-from .models import Employee, Deduction
+from .models import Employee, Deduction, EmployeeAccount
 from django.http import HttpResponse, JsonResponse
 from datetime import date, datetime
 from njango.nepdate import bs
+
+
+def get_account_id(employee_object, account_type):
+    return EmployeeAccount.objects.get(
+        employee=employee_object,
+        account_type__name=account_type
+        ).account.id
 
 
 def delta_month_date(p_from, p_to):
@@ -40,10 +47,14 @@ def payroll_entry(request):
 
 def get_employee_account(request):
     error = {}
+    result_data = {}
+    result_data['respone'] = []
+    employee_response = {}
     if request.POST:
         employee_id = request.POST.get('paid_employee', None)
         if employee_id:
             employee = Employee.objects.get(id=int(employee_id))
+            employee_response['employee_id'] = employee.id
         else:
             error['employee'] = 'No such employee'
         try:
@@ -113,7 +124,9 @@ def get_employee_account(request):
                 # This is hourly case(Dont think we have it)
                 pass
 
+        employee_response['allowence'] = allowence
         salary += allowence
+        employee_response['salay_allowence_included'] = salary
 
         # now calculate incentive if it has but not to add to salary just to transact seperately 
         for obj in employee.incentives:
@@ -136,6 +149,9 @@ def get_employee_account(request):
                 # This is hourly case(Dont think we have it)
                 pass
 
+        employee_response['incentive'] = incentive
+
+
         # Now the deduction part from the salary
         deductions = sorted(Deduction.objects.all(), key=lambda obj: obj.priority)
         deduction = 0
@@ -152,7 +168,7 @@ def get_employee_account(request):
                 if employee.is_permanent:
                     if obj.in_acc_type.permanent_multiply_rate:
                         deduction_detail[obj.in_acc_type.name]['amount'] *= obj.in_acc_type.permanent_multiply_rate
-                deduction_detail[obj.in_acc_type.name]['account_id'] = getattr(employee, obj.in_acc_type.name).id
+                deduction_detail[obj.in_acc_type.name]['account_id'] = get_account_id(employee, obj.in_acc_type.name)
                 deduction += deduction_detail[obj.in_acc_type.name]['amount']
 
             else:
@@ -168,10 +184,11 @@ def get_employee_account(request):
                     deduction_detail['others'][name]['amount'] += obj.rate/100.0 * salary
                 deduction_detail['others'][name]['account_id'] = obj.explicit_acc.id
                 deduction += deduction_detail['others'][name]['amount']
+        employee_response['deduction'] = deduction
+        employee_response['deduction_detail'] = deduction_detail
 
 
-
-        return HttpResponse('Well we are doing just fine')
+        return JsonResponse(employee_response)
 
     else:
         return HttpResponse('Damn no request.POST')

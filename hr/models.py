@@ -249,7 +249,7 @@ class Employee(models.Model):
         grade_number = self.designation.grade.grade_number
         grade_rate = self.designation.grade.grade_rate
         # Instead of appoint_date we need to use lagu miti for now its oppoint date and lagu miti should be in appSETTING
-        appointed_since = today - self.appoint_date
+        appointed_since = today() - self.appoint_date
         total_days = appointed_since.days
         salary = 0
         years_worked = total_days/365
