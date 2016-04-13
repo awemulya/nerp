@@ -42,14 +42,23 @@ holder_type = [('EMPLOYEE', _("Employee's Account")),
 # Allowence
 # When yearly than when to pay should be in setting
 
+
 def get_y_m_tuple_list(from_date, to_date):
     return_list = []
     while from_date <= to_date:
         return_list.append((from_date.year, from_date.month))
         if from_date.month < 12:
-            from_date = date(from_date.year, from_date.month + 1, from_date.day)
+            from_date = date(
+                from_date.year,
+                from_date.month + 1,
+                from_date.day
+                )
         else:
-            from_date = date(from_date.year + 1, 1 , from_date.day)
+            from_date = date(
+                from_date.year + 1,
+                1,
+                from_date.day
+                )
     return return_list
 
 
@@ -256,33 +265,47 @@ class Employee(models.Model):
     # deductions need to be removed from this table
     # deductions = models.ManyToManyField(Deduction)
 
-    def current_salary(self, add_month):
+    # def current_salary(self, add_month):
+    #     grade_salary = self.designation.grade.salary_scale
+    #     grade_number = self.designation.grade.grade_number
+    #     grade_rate = self.designation.grade.grade_rate
+    #     # Instead of appoint_date we need to use lagu miti for now its oppoint date and lagu miti should be in appSETTING
+    #     appointed_since = today() - self.appoint_date
+    #     total_days = appointed_since.days
+    #     salary = 0
+    #     years_worked = total_days/365
+    #     if years_worked <= grade_number:
+    #         salary += grade_salary + int(years_worked) * grade_rate
+    #     elif years_worked > grade_number:
+    #         salary += grade_salary + grade_number * grade_rate
+    #     if add_month:
+    #         for i in range(1, add_month+1):
+    #             month_days = bs[today.year][today.month+i-1]
+    #             total_days += month_days
+    #             years_worked = total_days/365
+    #             if years_worked <= grade_number:
+    #                 salary += grade_salary + int(years_worked) * grade_rate
+    #             elif years_worked > grade_number:
+    #                 salary += grade_salary + grade_number * grade_rate
+    #     return salary
+
+    def current_salary(self, date_type, from_date, to_date):
         grade_salary = self.designation.grade.salary_scale
         grade_number = self.designation.grade.grade_number
         grade_rate = self.designation.grade.grade_rate
-        # Instead of appoint_date we need to use lagu miti for now its oppoint date and lagu miti should be in appSETTING
-        appointed_since = today() - self.appoint_date
-        total_days = appointed_since.days
         salary = 0
-        years_worked = total_days/365
-        if years_worked <= grade_number:
-            salary += grade_salary + int(years_worked) * grade_rate
-        elif years_worked > grade_number:
-            salary += grade_salary + grade_number * grade_rate
-        if add_month:
-            for i in range(1, add_month+1):
-                month_days = bs[today.year][today.month+i-1]
-                total_days += month_days
-                years_worked = total_days/365
-                if years_worked <= grade_number:
-                    salary += grade_salary + int(years_worked) * grade_rate
-                elif years_worked > grade_number:
-                    salary += grade_salary + grade_number * grade_rate
-        return salary
+        for year, month in get_y_m_tuple_list(from_date, to_date):
+            if date_type == 'AD':
+                days_worked = date(year, month, 1) - self.appoint_date
+            else:
+                days_worked = ad2bs(date(year, month, 1)) - ad2bs((self.appoint_date))
 
-    # def current_salary_ad(self):
-    #     # get a tuple of year, month over the date range
-        pass
+            years_worked = days_worked.days-1/365
+            if years_worked <= grade_number:
+                salary += grade_salary + int(years_worked) * grade_rate
+            elif years_worked > grade_number:
+                salary += grade_salary + grade_number * grade_rate
+        return salary
 
     def __unicode__(self):
         return str(self.employee.full_name)
