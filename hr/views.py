@@ -2,43 +2,58 @@ from django.shortcuts import render
 from .forms import PaymentRowForm, PayrollEntryForm, GroupPayrollForm
 from .models import Employee, Deduction, EmployeeAccount
 from django.http import HttpResponse, JsonResponse
-from datetime import date, datetime
-from njango.nepdate import bs
+from datetime import datetime
+from njango.nepdate import bs2ad
+from .models import get_y_m_tuple_list
+
+
+CALENDER = 'AD'
 
 
 def get_account_id(employee_object, account_type):
     return EmployeeAccount.objects.get(
         employee=employee_object,
         account_type__name=account_type
-        ).account.id
+    ).account.id
 
 
-def delta_month_date(p_from, p_to):
-    total_work_day = 0
-    total_month = 0
+def delta_month_date(date_type, p_from, p_to):
+    y_m_tuple = get_y_m_tuple_list(p_from, p_to)
+    total_month = len(y_m_tuple)
+
+    if date_type == "AD":
+        total_work_day = (p_to - p_from).days
+    else:
+        total_work_day = (bs2ad(p_to) - bs2ad(p_from)).days
 
     # Need to test this (this can be made a function)
-    if p_from.year == p_to.year:
-        total_month += p_from.month - p_to.month + 1
-        for ob in range(p_from.month, p_to.month + 1):
-            total_work_day += bs[p_from.year][ob-1]
-    else:
-        while p_from <= p_to:
-            total_work_day += bs[p_from.year][p_from.month-1]
-            if p_from.month < 12:
-                p_from = date(p_from.year, p_from.month+1, p_from.day)
-                total_month += 1
-            else:
-                p_from = date(p_from.year + 1, 1, p_from.day)
-                total_month += 1
+    # if p_from.year == p_to.year:
+    #     total_month += p_from.month - p_to.month + 1
+    #     for ob in range(p_from.month, p_to.month + 1):
+    #         total_work_day += bs[p_from.year][ob-1]
+    # else:
+    #     while p_from <= p_to:
+    #         total_work_day += bs[p_from.year][p_from.month-1]
+    #         if p_from.month < 12:
+    #             p_from = date(p_from.year, p_from.month+1, p_from.day)
+    #             total_month += 1
+    #         else:
+    #             p_from = date(p_from.year + 1, 1, p_from.day)
+    #             total_month += 1
     return (total_month, total_work_day)
 
 
 # Create your views here.
-def payroll_entry(request):
+def payrollp_entry(request):
     main_form = GroupPayrollForm(initial={'payroll_type': 'BRANCH'})
     row_form = PaymentRowForm()
-    return render(request, 'payroll_entry.html', {'r_form': row_form, 'm_form': main_form})
+    return render(
+        request,
+        'payroll_entry.html',
+        {
+          'r_form': row_form,
+          'm_form': main_form
+        })
 
 
 # def group_payroll_branch(request):
@@ -59,23 +74,28 @@ def get_employee_account(request):
             error['employee'] = 'No such employee'
         try:
             # Validate it for bsdate
-            paid_from_date = datetime.strptime(request.POST.get('paid_from_date', None), '%Y-%m-%d')
+            paid_from_date = datetime.strptime(
+                request.POST.get('paid_from_date', None), '%Y-%m-%d')
         except:
             error['paid_from_date'] = 'Incorrect Date Format'
         try:
-            paid_to_date = datetime.strptime(request.POST.get('paid_to_date', None), '%Y-%m-%d')
+            paid_to_date = datetime.strptime(
+                request.POST.get('paid_to_date', None), '%Y-%m-%d')
         except:
             error['paid_to_date'] = 'Incorrect Date Format'
         if error:
             return JsonResponse(error)
         # Now calculate all the values and give a good meaningful response
         # total_work_day = paid_to_date - paid_from_date
-        total_month, total_work_day = delta_month_date(paid_from_date,
-                                                       paid_to_date)
+        total_month, total_work_day = delta_month_date(
+                                                       CALENDER,
+                                                       paid_from_date,
+                                                       paid_to_date
+                                                       )
         # total_work_day = 0
         # total_month = 0
 
-        # # Need to test this (this can be made a function)
+        # Need to test this (this can be made a function)
         # if paid_from_date.year == paid_to_date.year:
         #     total_month += paid_from_date.month - paid_to_date.month + 1
         #     for ob in range(paid_from_date.month, paid_to_date.month + 1):
@@ -93,7 +113,11 @@ def get_employee_account(request):
         #             p_from = date(p_from.year + 1, 1, p_from.day)
         #             total_month += 1
 
-        salary = employee.current_salary(total_month-1)
+        salary = employee.current_salary(
+            CALENDER,
+            paid_from_date,
+            paid_to_date
+            )
 
         # total_month = paid_to_date.month - paid_from_date.month + 1
 
@@ -113,13 +137,13 @@ def get_employee_account(request):
                 if obj.sum_type == 'AMOUNT':
                     allowence += obj.amount * total_month
                 else:
-                    allowence += obj.rate/100.0 * salary
+                    allowence += obj.rate / 100.0 * salary
             elif obj.payment_cycle == 'D':
                 if obj.sum_type == 'AMOUNT':
                     allowence += obj.amount * total_work_day
                 else:
                     # Does this mean percentage in daily wages
-                    allowence += obj.rate/100.0 * salary
+                    allowence += obj.rate / 100.0 * salary
             else:
                 # This is hourly case(Dont think we have it)
                 pass
@@ -128,7 +152,8 @@ def get_employee_account(request):
         salary += allowence
         employee_response['salay_allowence_included'] = salary
 
-        # now calculate incentive if it has but not to add to salary just to transact seperately 
+        # now calculate incentive if it has but not to add to salary just to
+        # transact seperately
         for obj in employee.incentives:
             incentive = 0
             if obj.payment_cycle == 'Y':
@@ -138,22 +163,22 @@ def get_employee_account(request):
                 if obj.sum_type == 'AMOUNT':
                     incentive += obj.amount * total_month
                 else:
-                    incentive += obj.rate/100.0 * salary
+                    incentive += obj.rate / 100.0 * salary
             elif obj.payment_cycle == 'D':
                 if obj.sum_type == 'AMOUNT':
                     incentive += obj.amount * total_work_day
                 else:
                     # Does this mean percentage in daily wages
-                    incentive += obj.rate/100.0 * salary
+                    incentive += obj.rate / 100.0 * salary
             else:
                 # This is hourly case(Dont think we have it)
                 pass
 
         employee_response['incentive'] = incentive
 
-
         # Now the deduction part from the salary
-        deductions = sorted(Deduction.objects.all(), key=lambda obj: obj.priority)
+        deductions = sorted(
+            Deduction.objects.all(), key=lambda obj: obj.priority)
         deduction = 0
         deduction_detail = {}
         for obj in deductions:
@@ -161,14 +186,21 @@ def get_employee_account(request):
                 deduction_detail[obj.in_acc_type.name] = {}
                 deduction_detail[obj.in_acc_type.name]['amount'] = 0
                 if obj.deduct_type == 'AMOUNT':
-                    deduction_detail[obj.in_acc_type.name]['amount'] += obj.amount/30.0 * total_work_day
+                    deduction_detail[obj.in_acc_type.name][
+                        'amount'] += obj.amount / 30.0 * total_work_day
                 else:
                     # Rate
-                    deduction_detail[obj.in_acc_type.name]['amount'] += obj.rate/100.0 * salary
+                    deduction_detail[obj.in_acc_type.name][
+                        'amount'] += obj.rate / 100.0 * salary
                 if employee.is_permanent:
                     if obj.in_acc_type.permanent_multiply_rate:
-                        deduction_detail[obj.in_acc_type.name]['amount'] *= obj.in_acc_type.permanent_multiply_rate
-                deduction_detail[obj.in_acc_type.name]['account_id'] = get_account_id(employee, obj.in_acc_type.name)
+                        deduction_detail[obj.in_acc_type.name][
+                          'amount'] *= obj.in_acc_type.permanent_multiply_rate
+                deduction_detail[obj.in_acc_type.name][
+                    'account_id'] = get_account_id(
+                        employee,
+                        obj.in_acc_type.name
+                        )
                 deduction += deduction_detail[obj.in_acc_type.name]['amount']
 
             else:
@@ -178,15 +210,17 @@ def get_employee_account(request):
                 deduction_detail['others'][name]['amount'] = 0
                 # EXPLICIT ACC
                 if obj.deduct_type == 'AMOUNT':
-                    deduction_detail['others'][name]['amount'] += obj.amount/30.0 * total_work_day
+                    deduction_detail['others'][name][
+                        'amount'] += obj.amount / 30.0 * total_work_day
                 else:
                     # Rate
-                    deduction_detail['others'][name]['amount'] += obj.rate/100.0 * salary
-                deduction_detail['others'][name]['account_id'] = obj.explicit_acc.id
+                    deduction_detail['others'][name][
+                        'amount'] += obj.rate / 100.0 * salary
+                deduction_detail['others'][name][
+                    'account_id'] = obj.explicit_acc.id
                 deduction += deduction_detail['others'][name]['amount']
         employee_response['deduction'] = deduction
         employee_response['deduction_detail'] = deduction_detail
-
 
         return JsonResponse(employee_response)
 
@@ -194,34 +228,30 @@ def get_employee_account(request):
         return HttpResponse('Damn no request.POST')
 
 
-def calculate_salry(request):
-    data = {}
-    data['allowence'] = 0
-    data['incentive'] = 0
-    data['deduced'] = 0
-    if request.POST:
-        employee_id = request.POST.get('employee', None)
-        pay_from = request.POST.get('paid_from_date', None)
-        pay_to = request.POST.get('paid_to_date', None)
+# def calculate_salry(request):
+#     data = {}
+#     data['allowence'] = 0
+#     data['incentive'] = 0
+#     data['deduced'] = 0
+#     if request.POST:
+#         employee_id = request.POST.get('employee', None)
+#         pay_from = request.POST.get('paid_from_date', None)
+#         pay_to = request.POST.get('paid_to_date', None)
 
-        employee = Employee.objects.get(id=employee_id)
-        salary = employee.current_salary()
-        # Now datao sanchai kosh
-        if employee.is_permanent:
-            sanchaya_deduction = 20/100 * salary
-            #Transact sanchaya deduction to sanchaya kosh employee account
-            salary = salary = sanchaya_deduction
-        else:
-            sanchaya_deduction = 10/100 * salary
-            #Transact sanchaya deduction to sanchaya kosh employee account
-            salary = salary = sanchaya_deduction
+#         employee = Employee.objects.get(id=employee_id)
+#         salary = employee.current_salary()
+#         # Now datao sanchai kosh
+#         if employee.is_permanent:
+#             sanchaya_deduction = 20 / 100 * salary
+#             # Transact sanchaya deduction to sanchaya kosh employee account
+#             salary = salary = sanchaya_deduction
+#         else:
+#             sanchaya_deduction = 10 / 100 * salary
+#             # Transact sanchaya deduction to sanchaya kosh employee account
+#             salary = salary = sanchaya_deduction
 
-        # Transact Rs. 200 to Nagarik Lagani Kosh
-        salary = salary - 200
-        
-        
+#         # Transact Rs. 200 to Nagarik Lagani Kosh
+#         salary = salary - 200
 
-
-
-        # Now generate salary and dont transact here,
-        # Trancsaction should be done when the row is saved 
+#         # Now generate salary and dont transact here,
+#         # Trancsaction should be done when the row is saved

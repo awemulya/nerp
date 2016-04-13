@@ -5,7 +5,7 @@ from django.utils import timezone
 from users.models import User
 from core.models import validate_in_fy
 from njango.fields import BSDateField, today
-from njango.nepdate import ad2bs, bs
+from njango.nepdate import bs2ad
 from django.core.validators import MaxValueValidator, MinValueValidator
 import calendar
 from datetime import date
@@ -298,7 +298,7 @@ class Employee(models.Model):
             if date_type == 'AD':
                 days_worked = date(year, month, 1) - self.appoint_date
             else:
-                days_worked = ad2bs(date(year, month, 1)) - ad2bs((self.appoint_date))
+                days_worked = bs2ad(date(year, month, 1)) - bs2ad((self.appoint_date))
 
             years_worked = days_worked.days-1/365
             if years_worked <= grade_number:
