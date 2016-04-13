@@ -7,6 +7,8 @@ from core.models import validate_in_fy
 from njango.fields import BSDateField, today
 from njango.nepdate import ad2bs, bs
 from django.core.validators import MaxValueValidator, MinValueValidator
+import calendar
+from datetime import date
 
 # from core.models import FiscalYear
 # from solo.models import SingletonModel
@@ -39,6 +41,16 @@ holder_type = [('EMPLOYEE', _("Employee's Account")),
 
 # Allowence
 # When yearly than when to pay should be in setting
+
+def get_y_m_tuple_list(from_date, to_date):
+    return_list = []
+    while from_date <= to_date:
+        return_list.append((from_date.year, from_date.month))
+        if from_date.month < 12:
+            from_date = date(from_date.year, from_date.month + 1, from_date.day)
+        else:
+            from_date = date(from_date.year + 1, 1 , from_date.day)
+    return return_list
 
 
 class AccountType(models.Model):
@@ -267,6 +279,10 @@ class Employee(models.Model):
                 elif years_worked > grade_number:
                     salary += grade_salary + grade_number * grade_rate
         return salary
+
+    # def current_salary_ad(self):
+    #     # get a tuple of year, month over the date range
+        pass
 
     def __unicode__(self):
         return str(self.employee.full_name)
