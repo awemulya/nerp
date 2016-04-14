@@ -123,9 +123,10 @@ class EmployeeAccountInlineFormset(forms.models.BaseInlineFormSet):
         for form in self.forms:
             # import pdb
             # pdb.set_trace()
-            acc_type = form.cleaned_data['account_type']
-            if acc_type in account_types:
-                acc_type_name = _(acc_type.name)
-                raise forms.ValidationError(
-                    _('Cannot have more than one type of %s' % acc_type_name))
+            if form.cleaned_data:
+                acc_type = form.cleaned_data['account_type']
+                if acc_type in account_types:
+                    acc_type_name = _(acc_type.name)
+                    raise forms.ValidationError(
+                        _('Cannot have more than one type of %s' % acc_type_name))
             account_types.append(acc_type)

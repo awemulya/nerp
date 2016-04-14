@@ -165,7 +165,7 @@ class Allowence(models.Model):
         if self.sum_type == 'AMOUNT':
             return '%s, %f' % (self.name, self.amount)
         else:
-            return '%s, %f' % (self.name, self.rate)
+            return '%s, %f' % (self.name, self.amount_rate)
 
 
 # This is incentive(for motivation)
@@ -298,7 +298,7 @@ class Employee(models.Model):
             if date_type == 'AD':
                 days_worked = date(year, month, 1) - self.appoint_date
             else:
-                days_worked = bs2ad(date(year, month, 1)) - bs2ad((self.appoint_date))
+                days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.appoint_date)))
 
             years_worked = days_worked.days-1/365
             if years_worked <= grade_number:

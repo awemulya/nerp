@@ -2,12 +2,12 @@ from django.shortcuts import render
 from .forms import PaymentRowForm, PayrollEntryForm, GroupPayrollForm
 from .models import Employee, Deduction, EmployeeAccount
 from django.http import HttpResponse, JsonResponse
-from datetime import datetime
+from datetime import datetime, date
 from njango.nepdate import bs2ad
 from .models import get_y_m_tuple_list
 
 
-CALENDER = 'AD'
+CALENDER = 'BS'
 
 
 def get_account_id(employee_object, account_type):
@@ -24,7 +24,9 @@ def delta_month_date(date_type, p_from, p_to):
     if date_type == "AD":
         total_work_day = (p_to - p_from).days
     else:
-        total_work_day = (bs2ad(p_to) - bs2ad(p_from)).days
+        # import pdb
+        # pdb.set_trace()
+        total_work_day = (date(*bs2ad(p_to)) - date(*bs2ad(p_from))).days
 
     # Need to test this (this can be made a function)
     # if p_from.year == p_to.year:
@@ -44,7 +46,7 @@ def delta_month_date(date_type, p_from, p_to):
 
 
 # Create your views here.
-def payrollp_entry(request):
+def payroll_entry(request):
     main_form = GroupPayrollForm(initial={'payroll_type': 'BRANCH'})
     row_form = PaymentRowForm()
     return render(
@@ -89,8 +91,8 @@ def get_employee_account(request):
         # total_work_day = paid_to_date - paid_from_date
         total_month, total_work_day = delta_month_date(
                                                        CALENDER,
-                                                       paid_from_date,
-                                                       paid_to_date
+                                                       paid_from_date.date(),
+                                                       paid_to_date.date()
                                                        )
         # total_work_day = 0
         # total_month = 0
@@ -115,8 +117,8 @@ def get_employee_account(request):
 
         salary = employee.current_salary(
             CALENDER,
-            paid_from_date,
-            paid_to_date
+            paid_from_date.date(),
+            paid_to_date.date()
             )
 
         # total_month = paid_to_date.month - paid_from_date.month + 1
@@ -128,7 +130,7 @@ def get_employee_account(request):
 
         # Now add allowence to the salary(salary = salary + allowence)
         # Question here is do we need to deduct from incentove(I gues not)
-        for obj in employee.allowences:
+        for obj in employee.allowences.all():
             allowence = 0
             if obj.payment_cycle == 'Y':
                 # check obj.year_payment_cycle_month to add to salary
@@ -137,13 +139,13 @@ def get_employee_account(request):
                 if obj.sum_type == 'AMOUNT':
                     allowence += obj.amount * total_month
                 else:
-                    allowence += obj.rate / 100.0 * salary
+                    allowence += obj.amount_rate / 100.0 * salary
             elif obj.payment_cycle == 'D':
                 if obj.sum_type == 'AMOUNT':
                     allowence += obj.amount * total_work_day
                 else:
                     # Does this mean percentage in daily wages
-                    allowence += obj.rate / 100.0 * salary
+                    allowence += obj.amount_rate / 100.0 * salary
             else:
                 # This is hourly case(Dont think we have it)
                 pass
@@ -154,7 +156,7 @@ def get_employee_account(request):
 
         # now calculate incentive if it has but not to add to salary just to
         # transact seperately
-        for obj in employee.incentives:
+        for obj in employee.incentives.all():
             incentive = 0
             if obj.payment_cycle == 'Y':
                 # check obj.year_payment_cycle_month to add to salary
@@ -163,13 +165,13 @@ def get_employee_account(request):
                 if obj.sum_type == 'AMOUNT':
                     incentive += obj.amount * total_month
                 else:
-                    incentive += obj.rate / 100.0 * salary
+                    incentive += obj.amount_rate / 100.0 * salary
             elif obj.payment_cycle == 'D':
                 if obj.sum_type == 'AMOUNT':
                     incentive += obj.amount * total_work_day
                 else:
                     # Does this mean percentage in daily wages
-                    incentive += obj.rate / 100.0 * salary
+                    incentive += obj.amount_rate / 100.0 * salary
             else:
                 # This is hourly case(Dont think we have it)
                 pass
@@ -191,7 +193,7 @@ def get_employee_account(request):
                 else:
                     # Rate
                     deduction_detail[obj.in_acc_type.name][
-                        'amount'] += obj.rate / 100.0 * salary
+                        'amount'] += obj.amount_rate / 100.0 * salary
                 if employee.is_permanent:
                     if obj.in_acc_type.permanent_multiply_rate:
                         deduction_detail[obj.in_acc_type.name][
@@ -215,7 +217,7 @@ def get_employee_account(request):
                 else:
                     # Rate
                     deduction_detail['others'][name][
-                        'amount'] += obj.rate / 100.0 * salary
+                        'amount'] += obj.amount_rate / 100.0 * salary
                 deduction_detail['others'][name][
                     'account_id'] = obj.explicit_acc.id
                 deduction += deduction_detail['others'][name]['amount']
