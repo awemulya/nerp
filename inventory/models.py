@@ -1016,10 +1016,14 @@ class StockEntry(models.Model):
         super(StockEntry, self).__init__(*args, **kwargs)
 
         if not self.pk and not self.voucher_no:
-            self.voucher_no = get_next_voucher_no(Expense, 'voucher_no')
+            self.voucher_no = get_next_voucher_no(StockEntry, 'voucher_no')
+
+    def __str__(self):
+        return str(self.voucher_no)
 
 
 class StockEntryRow(models.Model):
+    sn = models.PositiveIntegerField()
     name = models.CharField(max_length=254)
     description = models.TextField(blank=True, null=True)
     unit = models.CharField(max_length=50, default=_('pieces'))
