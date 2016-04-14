@@ -29,17 +29,19 @@ from users.models import group_required, User
 from inventory.filters import InventoryItemFilter
 
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, \
-    ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm, InstanceHistoryForm, ExpenseForm
+    ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm, InstanceHistoryForm, ExpenseForm, \
+    StockEntryForm
 
 from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Depreciation, Demand, ItemInstance, \
     DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InstanceHistory, \
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
-    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release, Expense
+    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release, Expense, \
+    StockEntry, StockEntryRow
 
 from inventory.serializers import QuotationComparisonSerializer, DepreciationSerializer, DemandSerializer, ItemSerializer, \
     PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
-    TransactionSerializer, ItemLocationSerializer, YearlyReportSerializer
+    TransactionSerializer, ItemLocationSerializer, YearlyReportSerializer, StockEntrySerializer
 from django.db import IntegrityError
 
 
@@ -1701,3 +1703,16 @@ class QuotationComparisonPDF(VoucherPDF):
     model = QuotationComparison
     template_name = "pdf/quotation_comparison_pdf.html"
 
+
+@group_required('Store Keeper', 'Chief')
+def stock_entry(request, pk=None):
+    if pk:
+        obj = get_object_or_404(StockEntry, pk=pk)
+        scenario = 'Update'
+    else:
+        obj = StockEntry()
+        scenario = 'Create'
+    form = StockEntryForm(instance=obj)
+    object_data = StockEntrySerializer(obj).data
+    return render(request, 'stock_entry.html',
+                  {'form': form, 'data': object_data, 'scenario': scenario})

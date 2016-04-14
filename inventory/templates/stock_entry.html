@@ -1,0 +1,17 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles filters %}
+
+{% block title %}{% trans scenario %} {% trans 'Stock Entry' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="#">{% trans 'Stock Entry' %}</a></li>
+    <li><span> {% trans scenario %} {% trans 'Stock Entry' %}</span></li>
+{% endblock %}
+
+{% block head_end %}
+    <script src="{% static 'js/inventory/stock_entry.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}

@@ -133,4 +133,8 @@ urlpatterns = patterns('',
                        url(r'^yearly_report/yearly_report_(?P<pk>\d+).pdf', views.YearlyReportPDF.as_view(), name='yearly_report_as_pdf'),
                        url(r'^quotation_comparison/quotation_comparison_(?P<pk>\d+).pdf', views.QuotationComparisonPDF.as_view(), name='quotation_comparison_as_pdf'),
 
+                       url(r'^stock_entry/$', views.stock_entry, name='create_stock_entry'),
+                       url(r'^stock_entry/(?P<pk>[0-9]+)/$', views.stock_entry, name='update_stock_entry'),
+
+
                        )
