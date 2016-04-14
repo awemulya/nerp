@@ -1000,3 +1000,31 @@ def fiscal_year_changed(sender, **kwargs):
     pass
 
 # fiscal_year_signal.connect(fiscal_year_changed)
+
+class StockEntry(models.Model):
+    voucher_no = models.PositiveIntegerField(verbose_name=_('Voucher No.'))
+    date = BSDateField(default=today, validators=[validate_in_fy])
+
+    objects = FYManager()
+
+    def save(self, *args, **kwargs):
+        if self.__class__.objects.fiscal_year().filter(voucher_no=self.voucher_no).exclude(pk=self.pk):
+            raise ValidationError(_('Voucher no. exists!'))
+        super(StockEntry, self).save(*args, **kwargs)
+
+    def __init__(self, *args, **kwargs):
+        super(StockEntry, self).__init__(*args, **kwargs)
+
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no(Expense, 'voucher_no')
+
+
+class StockEntryRow(models.Model):
+    name = models.CharField(max_length=254)
+    description = models.TextField(blank=True, null=True)
+    unit = models.CharField(max_length=50, default=_('pieces'))
+    account_no = models.PositiveIntegerField()
+    opening_stock = models.FloatField(default=0)
+    opening_rate = models.FloatField(default=0)
+    opening_rate_vattable = models.BooleanField(default=True)
+    stock_entry = UnsavedForeignKey(StockEntry, related_name='rows')
