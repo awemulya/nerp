@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .forms import PaymentRowForm, PayrollEntryForm, GroupPayrollForm
-from .models import Employee, Deduction, EmployeeAccount
+from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from njango.nepdate import bs2ad
@@ -8,6 +8,7 @@ from .models import get_y_m_tuple_list
 
 
 CALENDER = 'BS'
+F_INCOME_TAX_DISCOUNT_RATE = 10
 
 
 def get_account_id(employee_object, account_type):
@@ -152,7 +153,7 @@ def get_employee_account(request):
 
         employee_response['allowence'] = allowence
         salary += allowence
-        employee_response['salay_allowence_included'] = salary
+        # employee_response['salay_allowence_included'] = salary
 
         # now calculate incentive if it has but not to add to salary just to
         # transact seperately
@@ -177,6 +178,7 @@ def get_employee_account(request):
                 pass
 
         employee_response['incentive'] = incentive
+        salary += incentive
 
         # Now the deduction part from the salary
         deductions = sorted(
@@ -221,7 +223,26 @@ def get_employee_account(request):
                 deduction_detail['others'][name][
                     'account_id'] = obj.explicit_acc.id
                 deduction += deduction_detail['others'][name]['amount']
-        employee_response['deduction'] = deduction
+
+        # Income tax logic
+        income_tax = 0
+        for obj in IncomeTaxRate.objects.all():
+            if obj.is_last:
+                if salary >= obj.start_from:
+                    income_tax = obj.tax_rate/100 * salary
+                    if obj.rate_over_tax_amount:
+                        income_tax += obj.rate_over_tax_amount/100 * income_tax
+            else:
+                if salary >= obj.start_from and salary <= obj.end_to:
+                    income_tax = obj.tax_rate/100 * salary
+                    if obj.rate_over_tax_amount:
+                        income_tax += obj.rate_over_tax_amount/100 * income_tax
+            if employee.sex == 'F':
+                income_tax -= F_INCOME_TAX_DISCOUNT_RATE/100 * income_tax
+
+        employee_response['income_tax'] = income_tax
+        employee_response['deduced_amount'] = deduction
+        employee_response['paid_amount'] = salary - deduction - income_tax
         employee_response['deduction_detail'] = deduction_detail
 
         return JsonResponse(employee_response)

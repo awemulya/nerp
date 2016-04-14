@@ -342,13 +342,14 @@ class ProTempore(models.Model):
 
 class IncomeTaxRate(models.Model):
     start_from = models.FloatField()
-    end_to = models.FloatField()
+    end_to = models.FloatField(null=True, blank=True)
     tax_rate = models.FloatField()
-
+    rate_over_tax_amount = models.FloatField(null=True, blank=True)
+    is_last = models.BooleanField(default=False)
     # Income tax ma female ko lago 10% discount(Suruma tax lagaera??)
 
     def __unicode__(self):
-        return u"From %f - %f is %f%"
+        return u"From %f" % (self.start_from)
 
 
 class PaymentRecord(models.Model):
@@ -359,6 +360,7 @@ class PaymentRecord(models.Model):
     allowence = models.FloatField(null=True, blank=True)
     incentive = models.FloatField(null=True, blank=True)
     deduced_amount = models.FloatField(null=True, blank=True)
+    income_tax = models.FloatField(null=True, blank=True)
     paid_amount = models.FloatField()
     # Deducted amount fields
     # How much incentive and how much allowence
