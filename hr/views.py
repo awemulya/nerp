@@ -116,7 +116,7 @@ def get_employee_account(request):
         #             p_from = date(p_from.year + 1, 1, p_from.day)
         #             total_month += 1
 
-        salary = employee.current_salary(
+        salary = employee.current_salary_by_month(
             CALENDER,
             paid_from_date.date(),
             paid_to_date.date()

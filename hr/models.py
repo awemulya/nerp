@@ -5,9 +5,9 @@ from django.utils import timezone
 from users.models import User
 from core.models import validate_in_fy
 from njango.fields import BSDateField, today
-from njango.nepdate import bs2ad
+from njango.nepdate import bs2ad, bs
 from django.core.validators import MaxValueValidator, MinValueValidator
-import calendar
+from calendar import monthrange as mr
 from datetime import date
 
 # from core.models import FiscalYear
@@ -60,6 +60,15 @@ def get_y_m_tuple_list(from_date, to_date):
                 from_date.day
                 )
     return return_list
+
+
+def are_side_months(from_date, to_date):
+    if from_date.year == to_date.year and to_date.month - from_date.month == 1:
+        return True
+    elif to_date.year - from_date.year == 1 and from_date.month - to_date.month == 11:
+        return True
+    else:
+        return False
 
 
 class AccountType(models.Model):
@@ -289,7 +298,7 @@ class Employee(models.Model):
     #                 salary += grade_salary + grade_number * grade_rate
     #     return salary
 
-    def current_salary(self, date_type, from_date, to_date):
+    def current_salary_by_month(self, date_type, from_date, to_date):
         grade_salary = self.designation.grade.salary_scale
         grade_number = self.designation.grade.grade_number
         grade_rate = self.designation.grade.grade_rate
@@ -300,12 +309,115 @@ class Employee(models.Model):
             else:
                 days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.appoint_date)))
 
-            years_worked = days_worked.days-1/365
+            years_worked = days_worked.days/365
             if years_worked <= grade_number:
                 salary += grade_salary + int(years_worked) * grade_rate
             elif years_worked > grade_number:
                 salary += grade_salary + grade_number * grade_rate
         return salary
+
+    def current_salary_by_day(self, date_type, from_date, to_date):
+        if from_date.year == to_date.year and from_date.month == to_date.month:
+            salary_pure_months = 0
+            lhs_month_salary = 0
+            month = date(from_date.year, from_date.month, 1)
+            rhs_month_salary = self.current_salary_by_month(
+                date_type,
+                month,
+                month
+                )
+            lhs_days = 0
+            if date_type == 'AD':
+                # We need to add because from and to in same month
+                # Will be different when many months
+                # because we cut them to slots
+                rhs_days = (to_date - from_date).days + 1
+
+                from_date_month_days = mr(month.year, month.month)[1]
+                to_date_month_days = from_date_month_days
+            else:
+                rhs_days = (date(*bs2ad(to_date)) - date(*bs2ad(from_date))).days + 1
+                from_date_month_days = bs[month.year][month.month-1]
+                to_date_month_days = from_date_month_days
+
+        elif are_side_months(from_date, to_date):
+            salary_pure_months = 0
+            lhs_month = date(from_date.year, from_date.month, 1)
+            rhs_month = date(to_date.year, to_date.month, 1)
+            lhs_month_salary = self.current_salary_by_month(
+                date_type,
+                lhs_month,
+                lhs_month
+                )
+            rhs_month_salary = self.current_salary_by_month(
+                date_type,
+                rhs_month,
+                rhs_month
+                )
+            if date_type == 'AD':
+                lhs_days = (rhs_month - from_date).days
+                rhs_days = (to_date - rhs_month).days + 1
+
+                from_date_month_days = mr(lhs_month.year, lhs_month.month)[1]
+                to_date_month_days = mr(rhs_month.year, rhs_month.month)[1]
+
+            else:
+                lhs_days = (date(*bs2ad(rhs_month)) - date(*bs2ad(from_date))).days
+                rhs_days = (date(*bs2ad(to_date)) - date(*bs2ad(rhs_month))).days +1
+
+                from_date_month_days = bs[lhs_month.year][lhs_month.month-1]
+                to_date_month_days = bs[rhs_month.year, rhs_month.month-1]
+        else:
+            # Get pure months
+            if from_date.month == 12:
+                from_date_m = date(from_date.year+1, 1, 1)
+            else:
+                from_date_m = date(from_date.year, from_date.month+1, 1)
+            if to_date.month == 1:
+                to_date_m = date(to_date.year-1, 12, 1)
+            else:
+                to_date_m = date(to_date.year, to_date.month-1, 1)
+            lhs_month = date(from_date.year, from_date.month, 1)
+            rhs_month = date(to_date.year, to_date.month, 1)
+            salary_pure_months = self.current_salary_by_month(
+                date_type,
+                from_date_m,
+                to_date_m
+                )
+            lhs_month_salary = self.current_salary_by_month(
+                date_type,
+                lhs_month,
+                lhs_month
+                )
+            rhs_month_salary = self.current_salary_by_month(
+                date_type,
+                rhs_month,
+                rhs_month
+                )
+            if date_type == 'AD':
+                lhs_days = (from_date_m - from_date).days
+                rhs_days = (to_date - to_date_m).days + 1
+
+                from_date_month_days = mr(lhs_month.year, lhs_month.month)[1]
+                to_date_month_days = mr(rhs_month.year, rhs_month.month)[1]
+
+            else:
+                lhs_days = (date(*bs2ad(from_date_m)) - date(*bs2ad(from_date))).days
+                rhs_days = (date(*bs2ad(to_date)) - date(*bs2ad(to_date_m))).days +1
+
+                from_date_month_days = bs[lhs_month.year][lhs_month.month-1]
+                to_date_month_days = bs[rhs_month.year][rhs_month.month-1]
+
+        lhs_salary = lhs_month_salary/from_date_month_days * lhs_days
+        rhs_salary = rhs_month_salary/to_date_month_days + rhs_days
+        salary = salary_pure_months + lhs_salary + rhs_salary
+        return salary
+
+        # grade_salary = self.designation.grade.salary_scale
+        # grade_number = self.designation.grade.grade_number
+        # grade_rate = self.designation.grade.grade_rate
+        # salary = 0
+        pass
 
     def __unicode__(self):
         return str(self.employee.full_name)
