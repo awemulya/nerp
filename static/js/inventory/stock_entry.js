@@ -21,22 +21,13 @@ function StockEntryViewModel(data) {
         history.pushState(id, id, window.location.href + id + '/');
     });
 
-    // self.table_view.rows.subscribeChanged(function ( newValue, oldValue) {
-    //     new_value_arr = [];
-    //     old_value_arr = [];
-    //     for ( a in oldValue ) {
-    //         old_value_arr.push(oldValue[a].account_no())
-    //     }
-
-    //     for ( b in newValue ) {
-    //         new_value_arr.push(newValue[a].account_no())
-    //     }
-    //     console.log(new_value_arr);
-    //     console.log(old_value_arr);
-
-
-
-    // }, this, 'beforeChange')
+    self.table_view.rows.subscribe(function (changes) {
+        if (changes[0].status == 'deleted') {
+            var account_no = changes[0].value.account_no();
+            var index = vm.existing_account_no().indexOf(account_no)
+            vm.existing_account_no().splice(index, 1);
+        }
+    }, null, 'arrayChange');
 
     self.save = function (item, event) {
         var diff = $(self.existing_account_no()).not(self.new_account_no()).get();
