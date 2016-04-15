@@ -11,9 +11,9 @@ function StockEntryViewModel(data) {
     for (var k in data)
         self[k] = ko.observable(data[k]);
 
-    var initial_account_no = self.inventory_existing_account_no()
+    initial_account_no = self.inventory_existing_account_no();
 
-    self.existing_account_no = ko.observableArray(initial_account_no)
+    self.existing_account_no = ko.observableArray(initial_account_no);
     self.new_account_no = ko.observableArray([]);
     self.table_view = new TableViewModel({rows: data.rows, argument: self}, StockEntryRow);
 
@@ -21,40 +21,48 @@ function StockEntryViewModel(data) {
         history.pushState(id, id, window.location.href + id + '/');
     });
 
+    // self.table_view.rows.subscribeChanged(function ( newValue, oldValue) {
+    //     new_value_arr = [];
+    //     old_value_arr = [];
+    //     for ( a in oldValue ) {
+    //         old_value_arr.push(oldValue[a].account_no())
+    //     }
+
+    //     for ( b in newValue ) {
+    //         new_value_arr.push(newValue[a].account_no())
+    //     }
+    //     console.log(new_value_arr);
+    //     console.log(old_value_arr);
+
+
+
+    // }, this, 'beforeChange')
+
     self.save = function (item, event) {
         var diff = $(self.existing_account_no()).not(self.new_account_no()).get();
-        console.log(initial_account_no);
-        console.log(self.existing_account_no());
-        console.log(self.new_account_no());
-        console.log(diff)
-//         $.ajax({
-//             type: "POST",
-//             url: '/inventory/save/purchase_order/',
-//             data: ko.toJSON(self),
-//             success: function (msg) {
-//                 if (typeof (msg.error_message) != 'undefined') {
-// //                    $('#message').html(msg.error_message);
-// //                    self.msg();
-//                     alert.error(msg.error_message);
-//                     self.status('errorlist');
-//                 }
-//                 else {
-//                     alert.success('Saved!');
-//                     if (msg.id)
-//                         self.id(msg.id);
-//                     $("#tbody > tr").each(function (i) {
-//                         $($("#tbody > tr")[i]).addClass('invalid-row');
-//                     });
-//                     for (var i in msg.rows) {
-//                         self.table_view.rows()[i].id = msg.rows[i];
-//                         $($("#tbody > tr")[i]).removeClass('invalid-row');
-//                     }
-//                 }
-//             }
-//            error: function(XMLHttpRequest, textStatus, errorThrown) {
-//                $('#message').html(XMLHttpRequest.responseText.message);
-//            }
-        // });
+        $.ajax({
+            type: "POST",
+            url: '/inventory/save/stock_entry/',
+            data: ko.toJSON(self),
+            success: function (msg) {
+                if (typeof (msg.error_message) != 'undefined') {
+                    alert.error(msg.error_message);
+                    self.status('errorlist');
+                }
+                else {
+                    alert.success('Saved!');
+                    if (msg.id)
+                        self.id(msg.id);
+                    $("#tbody > tr").each(function (i) {
+                        $($("#tbody > tr")[i]).addClass('invalid-row');
+                    });
+                    for (var i in msg.rows) {
+                        self.table_view.rows()[i].id = msg.rows[i];
+                        $($("#tbody > tr")[i]).removeClass('invalid-row');
+                    }
+                }
+            }
+        });
     }
 }
 
@@ -66,7 +74,7 @@ function StockEntryRow(row, stock_entry_vm) {
     self.unit = ko.observable();
     self.opening_stock = ko.observable();
     self.account_no = ko.observable();
-    self.opening_rate_vattable = ko.observable();
+    self.opening_rate_vattable = ko.observable(false);
     self.opening_rate = ko.observable();
     self.name = ko.observable();
 
@@ -77,14 +85,17 @@ function StockEntryRow(row, stock_entry_vm) {
 
     if (typeof(self.account_no()) == 'undefined') {
         self.account_no(max_of_array + 1 );
-        stock_entry_vm.existing_account_no.push(max_of_array + 1)
-        stock_entry_vm.new_account_no.push(max_of_array + 1)
-
+        stock_entry_vm.existing_account_no.push(max_of_array + 1);
+        stock_entry_vm.new_account_no.push(max_of_array + 1);
     };
 
 
     self.account_no.subscribeChanged(function (newValue, oldValue) {
         var index = vm.existing_account_no().indexOf(oldValue);
+        if (newValue == '') {
+            newValue = 0;
+        };
+        vm.new_account_no.push(parseInt(newValue));
         vm.existing_account_no().splice(index, 1);
         vm.existing_account_no.push(parseInt(newValue));
     });

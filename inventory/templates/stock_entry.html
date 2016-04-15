@@ -71,14 +71,16 @@
                 	<td data-bind="editableText: description"></td>
                 	<td data-bind="editableText: unit"></td>
                     {% if scenario == 'Create' %}
-	                	<td data-bind="editableText: opening_stock"></td>
+	                	<td data-bind="editableText: opening_stock, numeric: true"></td>
 					{% endif %}
-                	<td data-bind="editableText: account_no"></td>
+                	<td data-bind="editableText: account_no, numeric: true"></td>
                     <td>
                         <input class="hidden-print" type="checkbox" data-bind="checked: opening_rate_vattable">
                     </td>
-                	<td data-bind="editableText: opening_rate"></td>
-
+                	<td data-bind="editableText: opening_rate, numeric: true"></td>
+                    <td>
+                        <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
+                    </td>
                 </tr>
                 <!-- /ko -->
                 </tbody>

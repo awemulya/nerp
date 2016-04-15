@@ -135,6 +135,6 @@ urlpatterns = patterns('',
 
                        url(r'^stock_entry/$', views.stock_entry, name='create_stock_entry'),
                        url(r'^stock_entry/(?P<pk>[0-9]+)/$', views.stock_entry, name='update_stock_entry'),
-
+                       url(r'^save/stock_entry/$', views.save_stock_entry, name='save_entry_report'),
 
                        )
