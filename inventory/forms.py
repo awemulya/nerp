@@ -3,7 +3,7 @@ from django import forms
 from app.utils.forms import KOModelForm, UserModelChoiceField
 
 from models import Item, Category, Demand, PurchaseOrder, InventoryAccount, Handover, EntryReport, Depreciation, \
-    ItemLocation, ItemInstance, InstanceHistory, Expense
+    ItemLocation, ItemInstance, InstanceHistory, Expense, StockEntry
 
 from users.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -95,6 +95,12 @@ class DemandForm(KOModelForm):
 class PurchaseOrderForm(KOModelForm):
     class Meta:
         model = PurchaseOrder
+        exclude = ()
+
+
+class StockEntryForm(KOModelForm):
+    class Meta:
+        model = StockEntry
         exclude = ()
 
 
