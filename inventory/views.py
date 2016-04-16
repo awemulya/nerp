@@ -29,18 +29,22 @@ from users.models import group_required, User
 from inventory.filters import InventoryItemFilter
 
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, \
-    ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm, InstanceHistoryForm, ExpenseForm
+    ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm, InstanceHistoryForm, ExpenseForm, \
+    StockEntryForm
 
 from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Depreciation, Demand, ItemInstance, \
     DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InstanceHistory, \
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
-    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release, Expense
+    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release, Expense, \
+    StockEntry, StockEntryRow
 
 from inventory.serializers import QuotationComparisonSerializer, DepreciationSerializer, DemandSerializer, ItemSerializer, \
     PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
-    TransactionSerializer, ItemLocationSerializer, YearlyReportSerializer
+    TransactionSerializer, ItemLocationSerializer, YearlyReportSerializer, StockEntrySerializer
 from django.db import IntegrityError
+# from django.contrib import messages
+
 
 
 def list_transactions(request):
@@ -1700,3 +1704,80 @@ class QuotationComparisonPDF(VoucherPDF):
     model = QuotationComparison
     template_name = "pdf/quotation_comparison_pdf.html"
 
+
+class StockEntryList(ListView):
+    model = StockEntry
+
+
+@group_required('Store Keeper', 'Chief')
+def stock_entry(request, pk=None):
+    if pk:
+        obj = get_object_or_404(StockEntry, pk=pk)
+        scenario = 'Update'
+    else:
+        obj = StockEntry()
+        scenario = 'Create'
+    form = StockEntryForm(instance=obj)
+    object_data = StockEntrySerializer(obj).data
+    return render(request, 'stock_entry.html',
+                  {'form': form, 'data': object_data, 'scenario': scenario})
+
+@group_required('Store Keeper', 'Chief')
+def delete_stock_entry(request, id):
+    obj = get_object_or_404(StockEntry, id=id)
+    obj.delete()
+    return redirect(reverse('list_stock_entry'))
+
+
+@login_required
+def save_stock_entry(request):
+    params = json.loads(request.body)
+    dct = {'rows': {}}
+    if params.get('voucher_no') == '':
+        params['voucher_no'] = None
+    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date') }
+    if params.get('id'):
+        obj = StockEntry.objects.get(id=params.get('id'))
+    else:
+        obj = StockEntry()
+    model = StockEntryRow
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['name', 'unit', 'account_no']):
+                continue
+            values = {'sn': index + 1, 'name': row.get('name'),
+                      'description': row.get('description'),
+                      'unit': row.get('unit'), 'account_no': row.get('account_no'), 'opening_stock': row.get('opening_stock'),
+                      'opening_rate': row.get('opening_rate'), 'opening_rate_vattable': row.get('opening_rate_vattable'),
+                      'stock_entry': obj}
+            
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            # messages.add_message(request, messages.ERROR, 'Sending request to same company')
+            if not created:
+                submodel = save_model(submodel, values)
+                item = submodel.item
+                item.name = row.get('name')
+                item.description = row.get('description')
+                item.unit = row.get('unit') 
+            else:
+                item = Item(
+                    name=row.get('name'), 
+                    description=row.get('description'),
+                    unit=row.get('unit')
+                    )
+            item.save(account_no=row.get('account_no'), opening_balance=row.get('opening_stock'),
+                          opening_rate=row.get('opening_rate'), opening_rate_vattable=row.get('opening_rate_vattable'))
+            submodel.item = item
+            submodel.save()
+            dct['rows'][index] = submodel.id
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+    delete_rows(params.get('table_view').get('deleted_rows'), model)
+    return JsonResponse(dct)

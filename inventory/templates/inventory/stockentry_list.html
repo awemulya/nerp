@@ -1,0 +1,44 @@
+{% extends "inventory_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'List' %} {% trans 'Stock Entry' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "list_stock_entry" %}">{% trans 'Stock Enttry' %}</a></li>
+{% endblock %}
+
+{% block content %}
+
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+    {% load filters %}
+
+    {% autosort object_list as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+    <div class="well">
+    <table class="table table-striped">
+        <thead>
+        <th>{% anchor name _('Name') %}</th>
+        <th>{% anchor date 'Date' %}</th>
+
+        </thead>
+        <tbody>
+        {% for stock_entry in paginated_objects %}
+            <tr>
+                <td class="link">
+                    <a href="{% url 'update_stock_entry' stock_entry.id %}">{{ stock_entry.voucher_no }}</a>
+                </td>
+                <td>{{ stock_entry.date |default:''}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    {% paginate %}
+
+    <a class="btn btn-success btn-lg btn-raised"
+       href="{% url 'create_stock_entry' %}">{% trans 'New' %} {% trans 'Stock Entry' %}</a>
+
+{% endblock %}

@@ -67,6 +67,7 @@ INSTALLED_APPS = (
 )
 
 TIME_ZONE = 'Asia/Kathmandu'
+DEFAULT_CALENDAR = 'bs'
 USE_TZ = True
 USE_L10N = True
 USE_I18N = True
