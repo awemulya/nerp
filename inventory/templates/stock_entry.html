@@ -94,16 +94,10 @@
         <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
 
         {% if scenario == 'Update' %}
-            {# <a href="{% url 'convert_purchase_order' form.instance.id %}" #}
-               {# class="btn btn-info btn-raised btn-lg">{% trans 'Export as XLS' %}</a> #}
-            {# <a href="{% url 'purchase_order_as_pdf' form.instance.id %}" #}
-               {# class="btn btn-info btn-raised btn-lg">{% trans 'Export as PDF' %}</a> #}
-            {# <a class="btn btn-danger btn-raised btn-lg" #}
-               {# href="{% url 'delete_purchase_order' form.instance.id %}">{% trans 'Delete!' %}</a> #}
+            <a class="btn btn-danger btn-raised btn-lg"
+               href="{% url 'delete_stock_entry' form.instance.id %}">{% trans 'Delete!' %}</a>
         {% endif %}
 
-        {# <a class="btn btn-info btn-raised btn-lg" target="_blank" #}
-           {# data-bind="visible: $root.id(), attr: {'href': '/inventory/entry-report/purchase/'+$root.id()}">{% trans 'Entry Report' %}</a> #}
 
 
     </form>

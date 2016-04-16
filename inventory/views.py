@@ -1706,6 +1706,10 @@ class QuotationComparisonPDF(VoucherPDF):
     template_name = "pdf/quotation_comparison_pdf.html"
 
 
+class StockEntryList(ListView):
+    model = StockEntry
+
+
 @group_required('Store Keeper', 'Chief')
 def stock_entry(request, pk=None):
     if pk:
@@ -1719,6 +1723,11 @@ def stock_entry(request, pk=None):
     return render(request, 'stock_entry.html',
                   {'form': form, 'data': object_data, 'scenario': scenario})
 
+@group_required('Store Keeper', 'Chief')
+def delete_stock_entry(request, id):
+    obj = get_object_or_404(StockEntry, id=id)
+    obj.delete()
+    return redirect(reverse('list_stock_entry'))
 
 
 @login_required
@@ -1749,6 +1758,20 @@ def save_stock_entry(request):
             # messages.add_message(request, messages.ERROR, 'Sending request to same company')
             if not created:
                 submodel = save_model(submodel, values)
+                item = submodel.item
+                item.name = row.get('name')
+                item.description = row.get('description')
+                item.unit = row.get('unit') 
+            else:
+                item = Item(
+                    name=row.get('name'), 
+                    description=row.get('description'),
+                    unit=row.get('unit')
+                    )
+            item.save(account_no=row.get('account_no'), opening_balance=row.get('opening_stock'),
+                          opening_rate=row.get('opening_rate'), opening_rate_vattable=row.get('opening_rate_vattable'))
+            submodel.item = item
+            submodel.save()
             dct['rows'][index] = submodel.id
     except Exception as e:
         if hasattr(e, 'messages'):

@@ -1032,3 +1032,4 @@ class StockEntryRow(models.Model):
     opening_rate = models.FloatField(default=0)
     opening_rate_vattable = models.BooleanField(default=True)
     stock_entry = UnsavedForeignKey(StockEntry, related_name='rows')
+    item = models.OneToOneField(Item, on_delete=models.CASCADE, blank=True, null=True)
