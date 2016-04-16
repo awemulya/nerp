@@ -8,7 +8,8 @@ from njango.fields import BSDateField, today
 from njango.nepdate import bs2ad, bs
 from django.core.validators import MaxValueValidator, MinValueValidator
 from calendar import monthrange as mr
-from datetime import date
+from datetime import date, datetime
+import pdb
 
 # from core.models import FiscalYear
 # from solo.models import SingletonModel
@@ -305,6 +306,7 @@ class Employee(models.Model):
         salary = 0
         for year, month in get_y_m_tuple_list(from_date, to_date):
             if date_type == 'AD':
+                # appoint_date = datetime.strptime(self.appoint_date, '%Y-%m-%d')
                 days_worked = date(year, month, 1) - self.appoint_date
             else:
                 days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.appoint_date)))
@@ -339,6 +341,7 @@ class Employee(models.Model):
                 rhs_days = (date(*bs2ad(to_date)) - date(*bs2ad(from_date))).days + 1
                 from_date_month_days = bs[month.year][month.month-1]
                 to_date_month_days = from_date_month_days
+                pdb.set_trace()
 
         elif are_side_months(from_date, to_date):
             salary_pure_months = 0
@@ -366,7 +369,7 @@ class Employee(models.Model):
                 rhs_days = (date(*bs2ad(to_date)) - date(*bs2ad(rhs_month))).days +1
 
                 from_date_month_days = bs[lhs_month.year][lhs_month.month-1]
-                to_date_month_days = bs[rhs_month.year, rhs_month.month-1]
+                to_date_month_days = bs[rhs_month.year][rhs_month.month-1]
         else:
             # Get pure months
             if from_date.month == 12:
@@ -409,7 +412,7 @@ class Employee(models.Model):
                 to_date_month_days = bs[rhs_month.year][rhs_month.month-1]
 
         lhs_salary = lhs_month_salary/from_date_month_days * lhs_days
-        rhs_salary = rhs_month_salary/to_date_month_days + rhs_days
+        rhs_salary = rhs_month_salary/to_date_month_days * rhs_days
         salary = salary_pure_months + lhs_salary + rhs_salary
         return salary
 

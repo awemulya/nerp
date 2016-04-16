@@ -5,6 +5,7 @@ from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from njango.nepdate import bs2ad
 from .models import get_y_m_tuple_list
+import pdb
 
 
 CALENDER = 'BS'
@@ -86,6 +87,9 @@ def get_employee_account(request):
                 request.POST.get('paid_to_date', None), '%Y-%m-%d')
         except:
             error['paid_to_date'] = 'Incorrect Date Format'
+        if paid_to_date < paid_from_date:
+            error['invalid_date_range'] = 'Date: paid to must be greater than paid from'
+
         if error:
             return JsonResponse(error)
         # Now calculate all the values and give a good meaningful response
@@ -251,6 +255,16 @@ def get_employee_account(request):
         return HttpResponse('Damn no request.POST')
 
 
+def test(request):
+    emp = Employee.objects.get(id=1)
+    x = date(2072, 2, 1)
+    y = date(2072, 4, 25)
+
+    salary = emp.current_salary_by_day('BS', x, y)
+    salary1 = emp.current_salary_by_month('BS', x, y)
+    pdb.set_trace()
+
+    return HttpResponse(salary)
 # def calculate_salry(request):
 #     data = {}
 #     data['allowence'] = 0
