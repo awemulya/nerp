@@ -279,11 +279,11 @@ def get_employee_account(request):
 
 def test(request):
     emp = Employee.objects.get(id=1)
-    x = date(2072, 2, 1)
-    y = date(2072, 4, 25)
+    x = BSDate(2072, 3, 1)
+    y = BSDate(2072, 4, 32)
 
-    salary = emp.current_salary_by_day('BS', x, y)
-    salary1 = emp.current_salary_by_month('BS', x, y)
+    salary = emp.current_salary_by_day(x, y)
+    salary1 = emp.current_salary_by_month(x, y)
     pdb.set_trace()
 
     return HttpResponse(salary)

@@ -327,7 +327,10 @@ class Employee(models.Model):
                     except:
                         raise TypeError('Internal and external setting mismatch')
                 else:
-                    days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.appoint_date)))
+                    if isinstance(self.appoint_date, date):
+                        raise TypeError('Internal and external setting mismatch')
+                    else:
+                        days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.appoint_date)))
 
             years_worked = days_worked.days/365
             if years_worked <= grade_number:
