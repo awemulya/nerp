@@ -5,11 +5,23 @@ from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from njango.nepdate import bs2ad
 from .models import get_y_m_tuple_list
+from .bsdate import BSDate
 import pdb
 
 
 CALENDER = 'BS'
 F_INCOME_TAX_DISCOUNT_RATE = 10
+
+
+def bs_date2tuple(date_string):
+    as_list = date_string.split('-')
+    date_tuple = (
+        int(as_list[0]),
+        int(as_list[1]),
+        int(as_list[2])
+        )
+    # If possible varify this
+    return date_tuple
 
 
 def get_account_id(employee_object, account_type):
@@ -19,16 +31,12 @@ def get_account_id(employee_object, account_type):
     ).account.id
 
 
-def delta_month_date(date_type, p_from, p_to):
+def delta_month_date(p_from, p_to):
     y_m_tuple = get_y_m_tuple_list(p_from, p_to)
     total_month = len(y_m_tuple)
-
-    if date_type == "AD":
+    if type(p_from) == type(p_to):
         total_work_day = (p_to - p_from).days
-    else:
-        # import pdb
-        # pdb.set_trace()
-        total_work_day = (date(*bs2ad(p_to)) - date(*bs2ad(p_from))).days
+
 
     # Need to test this (this can be made a function)
     # if p_from.year == p_to.year:
@@ -76,28 +84,43 @@ def get_employee_account(request):
             employee_response['employee_id'] = employee.id
         else:
             error['employee'] = 'No such employee'
-        try:
-            # Validate it for bsdate
-            paid_from_date = datetime.strptime(
-                request.POST.get('paid_from_date', None), '%Y-%m-%d')
-        except:
-            error['paid_from_date'] = 'Incorrect Date Format'
-        try:
-            paid_to_date = datetime.strptime(
-                request.POST.get('paid_to_date', None), '%Y-%m-%d')
-        except:
-            error['paid_to_date'] = 'Incorrect Date Format'
+
+        if CALENDER == 'AD':
+            try:
+                # Validate it for bsdate
+                paid_from_date = datetime.strptime(
+                    request.POST.get('paid_from_date', None), '%Y-%m-%d').date()
+            except:
+                error['paid_from_date'] = 'Incorrect Date Format'
+            try:
+                paid_to_date = datetime.strptime(
+                    request.POST.get('paid_to_date', None), '%Y-%m-%d').date()
+            except:
+                error['paid_to_date'] = 'Incorrect Date Format'
+        else:
+            try:
+                paid_from_date = BSDate(bs_date2tuple(
+                    request.POST.get('paid_from_date', None), '%Y-%m-%d'
+                    ))
+            except:
+                error['paid_from_date'] = 'Incorrect BS Date'
+            try:
+                paid_to_date = BSDate(bs_date2tuple(
+                    request.POST.get('paid_to_date', None), '%Y-%m-%d'
+                    ))
+            except:
+                error['paid_from_date'] = 'Incorrect BS Date'
+
         if paid_to_date < paid_from_date:
-            error['invalid_date_range'] = 'Date: paid to must be greater than paid from'
+                error['invalid_date_range'] = 'Date: paid to must be greater than paid from'
 
         if error:
             return JsonResponse(error)
         # Now calculate all the values and give a good meaningful response
         # total_work_day = paid_to_date - paid_from_date
         total_month, total_work_day = delta_month_date(
-                                                       CALENDER,
-                                                       paid_from_date.date(),
-                                                       paid_to_date.date()
+                                                       paid_from_date,
+                                                       paid_to_date
                                                        )
         # total_work_day = 0
         # total_month = 0
@@ -121,9 +144,8 @@ def get_employee_account(request):
         #             total_month += 1
 
         salary = employee.current_salary_by_month(
-            CALENDER,
-            paid_from_date.date(),
-            paid_to_date.date()
+            paid_from_date,
+            paid_to_date
             )
 
         # total_month = paid_to_date.month - paid_from_date.month + 1

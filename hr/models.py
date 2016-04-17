@@ -9,6 +9,7 @@ from njango.nepdate import bs2ad, bs
 from django.core.validators import MaxValueValidator, MinValueValidator
 from calendar import monthrange as mr
 from datetime import date, datetime
+from hr.bsdate import BSDate
 import pdb
 
 # from core.models import FiscalYear
@@ -49,17 +50,31 @@ def get_y_m_tuple_list(from_date, to_date):
     while from_date <= to_date:
         return_list.append((from_date.year, from_date.month))
         if from_date.month < 12:
-            from_date = date(
-                from_date.year,
-                from_date.month + 1,
-                from_date.day
-                )
+            if type(from_date) == date:
+                from_date = date(
+                    from_date.year,
+                    from_date.month + 1,
+                    from_date.day
+                    )
+            else:
+                from_date = BSDate(
+                    from_date.year,
+                    from_date.month + 1,
+                    from_date.day
+                    )
         else:
-            from_date = date(
-                from_date.year + 1,
-                1,
-                from_date.day
-                )
+            if type(from_date) == date:
+                from_date = date(
+                    from_date.year + 1,
+                    1,
+                    from_date.day
+                    )
+            else:
+                from_date = BSDate(
+                    from_date.year + 1,
+                    1,
+                    from_date.day
+                    )
     return return_list
 
 
@@ -299,17 +314,20 @@ class Employee(models.Model):
     #                 salary += grade_salary + grade_number * grade_rate
     #     return salary
 
-    def current_salary_by_month(self, date_type, from_date, to_date):
+    def current_salary_by_month(self, from_date, to_date):
         grade_salary = self.designation.grade.salary_scale
         grade_number = self.designation.grade.grade_number
         grade_rate = self.designation.grade.grade_rate
         salary = 0
         for year, month in get_y_m_tuple_list(from_date, to_date):
-            if date_type == 'AD':
-                # appoint_date = datetime.strptime(self.appoint_date, '%Y-%m-%d')
-                days_worked = date(year, month, 1) - self.appoint_date
-            else:
-                days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.appoint_date)))
+            if type(from_date) == type(to_date):
+                if isinstance(from_date, date):
+                    try:
+                        days_worked = date(year, month, 1) - self.appoint_date
+                    except:
+                        raise TypeError('Internal and external setting mismatch')
+                else:
+                    days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.appoint_date)))
 
             years_worked = days_worked.days/365
             if years_worked <= grade_number:
@@ -318,99 +336,110 @@ class Employee(models.Model):
                 salary += grade_salary + grade_number * grade_rate
         return salary
 
-    def current_salary_by_day(self, date_type, from_date, to_date):
+    def current_salary_by_day(self, from_date, to_date):
         if from_date.year == to_date.year and from_date.month == to_date.month:
             salary_pure_months = 0
             lhs_month_salary = 0
-            month = date(from_date.year, from_date.month, 1)
+            lhs_days = 0
+            if type(from_date) == type(to_date):
+                if isinstance(from_date, date):
+                    month = date(from_date.year, from_date.month, 1)
+                    # We need to add because from and to in same month
+                    # Will be different when many months
+                    # because we cut them to slots
+                    rhs_days = (to_date - from_date).days + 1
+
+                    from_date_month_days = mr(month.year, month.month)[1]
+                    to_date_month_days = from_date_month_days
+                else:
+                    month = BSDate(from_date.year, from_date.month, 1)
+                    rhs_days = (to_date - from_date).days + 1
+                    from_date_month_days = bs[month.year][month.month-1]
+                    to_date_month_days = from_date_month_days
+                    # pdb.set_trace()
+
             rhs_month_salary = self.current_salary_by_month(
-                date_type,
                 month,
                 month
                 )
-            lhs_days = 0
-            if date_type == 'AD':
-                # We need to add because from and to in same month
-                # Will be different when many months
-                # because we cut them to slots
-                rhs_days = (to_date - from_date).days + 1
-
-                from_date_month_days = mr(month.year, month.month)[1]
-                to_date_month_days = from_date_month_days
-            else:
-                rhs_days = (date(*bs2ad(to_date)) - date(*bs2ad(from_date))).days + 1
-                from_date_month_days = bs[month.year][month.month-1]
-                to_date_month_days = from_date_month_days
-                pdb.set_trace()
 
         elif are_side_months(from_date, to_date):
             salary_pure_months = 0
-            lhs_month = date(from_date.year, from_date.month, 1)
-            rhs_month = date(to_date.year, to_date.month, 1)
+            if type(from_date) == type(to_date):
+                if isinstance(from_date, date):
+                    lhs_month = date(from_date.year, from_date.month, 1)
+                    rhs_month = date(to_date.year, to_date.month, 1)
+                    lhs_days = (rhs_month - from_date).days
+                    rhs_days = (to_date - rhs_month).days + 1
+
+                    from_date_month_days = mr(lhs_month.year, lhs_month.month)[1]
+                    to_date_month_days = mr(rhs_month.year, rhs_month.month)[1]
+
+                else:
+                    lhs_month = BSDate(from_date.year, from_date.month, 1)
+                    rhs_month = BSDate(to_date.year, to_date.month, 1)
+                    lhs_days = (rhs_month - from_date).days
+                    rhs_days = (to_date - rhs_month).days + 1
+
+                    from_date_month_days = bs[lhs_month.year][lhs_month.month-1]
+                    to_date_month_days = bs[rhs_month.year][rhs_month.month-1]
             lhs_month_salary = self.current_salary_by_month(
-                date_type,
                 lhs_month,
                 lhs_month
                 )
             rhs_month_salary = self.current_salary_by_month(
-                date_type,
                 rhs_month,
                 rhs_month
                 )
-            if date_type == 'AD':
-                lhs_days = (rhs_month - from_date).days
-                rhs_days = (to_date - rhs_month).days + 1
-
-                from_date_month_days = mr(lhs_month.year, lhs_month.month)[1]
-                to_date_month_days = mr(rhs_month.year, rhs_month.month)[1]
-
-            else:
-                lhs_days = (date(*bs2ad(rhs_month)) - date(*bs2ad(from_date))).days
-                rhs_days = (date(*bs2ad(to_date)) - date(*bs2ad(rhs_month))).days +1
-
-                from_date_month_days = bs[lhs_month.year][lhs_month.month-1]
-                to_date_month_days = bs[rhs_month.year][rhs_month.month-1]
         else:
             # Get pure months
-            if from_date.month == 12:
-                from_date_m = date(from_date.year+1, 1, 1)
-            else:
-                from_date_m = date(from_date.year, from_date.month+1, 1)
-            if to_date.month == 1:
-                to_date_m = date(to_date.year-1, 12, 1)
-            else:
-                to_date_m = date(to_date.year, to_date.month-1, 1)
-            lhs_month = date(from_date.year, from_date.month, 1)
-            rhs_month = date(to_date.year, to_date.month, 1)
+            if type(from_date) == type(to_date):
+                if isinstance(from_date, date):
+                    if from_date.month == 12:
+                        from_date_m = date(from_date.year+1, 1, 1)
+                    else:
+                        from_date_m = date(from_date.year, from_date.month+1, 1)
+                    if to_date.month == 1:
+                        to_date_m = date(to_date.year-1, 12, 1)
+                    else:
+                        to_date_m = date(to_date.year, to_date.month-1, 1)
+                    lhs_month = date(from_date.year, from_date.month, 1)
+                    rhs_month = date(to_date.year, to_date.month, 1)
+                    lhs_days = (from_date_m - from_date).days
+                    rhs_days = (to_date - to_date_m).days + 1
+
+                    from_date_month_days = mr(lhs_month.year, lhs_month.month)[1]
+                    to_date_month_days = mr(rhs_month.year, rhs_month.month)[1]
+
+                else:
+                    if from_date.month == 12:
+                        from_date_m = BSDate(from_date.year+1, 1, 1)
+                    else:
+                        from_date_m = BSDate(from_date.year, from_date.month+1, 1)
+                    if to_date.month == 1:
+                        to_date_m = BSDate(to_date.year-1, 12, 1)
+                    else:
+                        to_date_m = BSDate(to_date.year, to_date.month-1, 1)
+                    lhs_month = BSDate(from_date.year, from_date.month, 1)
+                    rhs_month = BSDate(to_date.year, to_date.month, 1)
+                    lhs_days = (from_date_m - from_date).days
+                    rhs_days = (to_date - to_date_m).days + 1
+
+                    from_date_month_days = bs[lhs_month.year][lhs_month.month-1]
+                    to_date_month_days = bs[rhs_month.year][rhs_month.month-1]
+
             salary_pure_months = self.current_salary_by_month(
-                date_type,
                 from_date_m,
                 to_date_m
                 )
             lhs_month_salary = self.current_salary_by_month(
-                date_type,
                 lhs_month,
                 lhs_month
                 )
             rhs_month_salary = self.current_salary_by_month(
-                date_type,
                 rhs_month,
                 rhs_month
                 )
-            if date_type == 'AD':
-                lhs_days = (from_date_m - from_date).days
-                rhs_days = (to_date - to_date_m).days + 1
-
-                from_date_month_days = mr(lhs_month.year, lhs_month.month)[1]
-                to_date_month_days = mr(rhs_month.year, rhs_month.month)[1]
-
-            else:
-                lhs_days = (date(*bs2ad(from_date_m)) - date(*bs2ad(from_date))).days
-                rhs_days = (date(*bs2ad(to_date)) - date(*bs2ad(to_date_m))).days +1
-
-                from_date_month_days = bs[lhs_month.year][lhs_month.month-1]
-                to_date_month_days = bs[rhs_month.year][rhs_month.month-1]
-
         lhs_salary = lhs_month_salary/from_date_month_days * lhs_days
         rhs_salary = rhs_month_salary/to_date_month_days * rhs_days
         salary = salary_pure_months + lhs_salary + rhs_salary
