@@ -9,7 +9,7 @@ from .bsdate import BSDate
 import pdb
 
 
-CALENDER = 'BS'
+CALENDAR = 'BS'
 F_INCOME_TAX_DISCOUNT_RATE = 10
 
 
@@ -85,7 +85,7 @@ def get_employee_account(request):
         else:
             error['employee'] = 'No such employee'
 
-        if CALENDER == 'AD':
+        if CALENDAR == 'AD':
             try:
                 # Validate it for bsdate
                 paid_from_date = datetime.strptime(
@@ -99,20 +99,23 @@ def get_employee_account(request):
                 error['paid_to_date'] = 'Incorrect Date Format'
         else:
             try:
-                paid_from_date = BSDate(bs_str2tuple(
-                    request.POST.get('paid_from_date', None), '%Y-%m-%d'
+
+                paid_from_date = BSDate(*bs_str2tuple(
+                    request.POST.get('paid_from_date', None)
                     ))
+
             except:
                 error['paid_from_date'] = 'Incorrect BS Date'
             try:
-                paid_to_date = BSDate(bs_str2tuple(
-                    request.POST.get('paid_to_date', None), '%Y-%m-%d'
+                paid_to_date = BSDate(*bs_str2tuple(
+                    request.POST.get('paid_to_date', None)
                     ))
             except:
                 error['paid_from_date'] = 'Incorrect BS Date'
 
         if paid_to_date < paid_from_date:
-                error['invalid_date_range'] = 'Date: paid to must be greater than paid from'
+            error['invalid_date_range'] = \
+                'Date: paid to must be greater than paid from'
 
         if error:
             return JsonResponse(error)
@@ -268,7 +271,6 @@ def get_employee_account(request):
 
         employee_response['income_tax'] = income_tax
         employee_response['deduced_amount'] = deduction
-        employee_response['paid_amount'] = salary - deduction - income_tax
         employee_response['deduction_detail'] = deduction_detail
 
         # Handle Pro Tempore
@@ -295,7 +297,8 @@ def get_employee_account(request):
         employee_response['pro_tempore_amount'] = p_t_amount
         employee_response['pro_tempore_ids'] = to_be_paid_pt_ids
 
-
+        employee_response['paid_amount'] = salary - deduction - income_tax +\
+            p_t_amount
 
         return JsonResponse(employee_response)
 

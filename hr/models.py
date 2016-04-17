@@ -509,6 +509,7 @@ class PaymentRecord(models.Model):
     incentive = models.FloatField(null=True, blank=True)
     deduced_amount = models.FloatField(null=True, blank=True)
     income_tax = models.FloatField(null=True, blank=True)
+    pro_tempore_amount = models.FloatField(null=True, blank=True)
     paid_amount = models.FloatField()
     # Deducted amount fields
     # How much incentive and how much allowence

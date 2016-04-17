@@ -60,6 +60,7 @@ class PaymentRowForm(forms.ModelForm):
             'incentive': NumberInput(attrs={'data-bind': "value: incentive"}),
             'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount"}),
             'income_tax': NumberInput(attrs={'data-bind': "value: income_tax"}),
+            'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount"}),
             'paid_amount': NumberInput(attrs={'data-bind': "value: paid_amount"}),
         }
 

@@ -35,7 +35,7 @@
     <div>
         <form data-bind="submit: saveAndAdd">
             
-            <div data-bind="foreach: rows">
+            <div class="row" data-bind="foreach: rows">
                 {{ r_form.paid_employee }}
                 {{ r_form.paid_from_date }}
                 {{ r_form.paid_to_date }}
@@ -48,6 +48,8 @@
                 {{ r_form.deduced_amount }}
                 {{ r_form.income_tax.label }}
                 {{ r_form.income_tax }}
+                {{ r_form.pro_tempore_amount.label }}
+                {{ r_form.pro_tempore_amount }}
                 {{ r_form.paid_amount.label }}
                 {{ r_form.paid_amount }}
 

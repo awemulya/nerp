@@ -43,6 +43,7 @@ function PaymentEntryRow() {
     self.incentive = ko.observable();
     self.deduced_amount = ko.observable();
     self.income_tax = ko.observable();
+    self.pro_tempore_amount = ko.observable();
     self.paid_amount = ko.observable();
     
     // Make here a observable function dat will set other parameters with employee id and date range
@@ -64,6 +65,7 @@ function PaymentEntryRow() {
                 self.incentive(data.incentive);
                 self.deduced_amount(data.deduced_amount);
                 self.income_tax(data.income_tax);
+                self.pro_tempore_amount(data.pro_tempore_amount);
                 self.paid_amount(data.paid_amount);
                 },
             error: function(errorThrown){
