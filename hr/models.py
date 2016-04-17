@@ -465,6 +465,7 @@ class ProTempore(models.Model):
                                        related_name="virtual_employee_post")
     appoint_date = BSDateField(default=today)
     dismiss_date = BSDateField(null=True, blank=True)
+    paid = models.BooleanField(default=False)
 
     def __unicode__(self):
         return str(self.id)

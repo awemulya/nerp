@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .forms import PaymentRowForm, PayrollEntryForm, GroupPayrollForm
-from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate
+from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from njango.nepdate import bs2ad
@@ -13,7 +13,7 @@ CALENDER = 'BS'
 F_INCOME_TAX_DISCOUNT_RATE = 10
 
 
-def bs_date2tuple(date_string):
+def bs_str2tuple(date_string):
     as_list = date_string.split('-')
     date_tuple = (
         int(as_list[0]),
@@ -99,13 +99,13 @@ def get_employee_account(request):
                 error['paid_to_date'] = 'Incorrect Date Format'
         else:
             try:
-                paid_from_date = BSDate(bs_date2tuple(
+                paid_from_date = BSDate(bs_str2tuple(
                     request.POST.get('paid_from_date', None), '%Y-%m-%d'
                     ))
             except:
                 error['paid_from_date'] = 'Incorrect BS Date'
             try:
-                paid_to_date = BSDate(bs_date2tuple(
+                paid_to_date = BSDate(bs_str2tuple(
                     request.POST.get('paid_to_date', None), '%Y-%m-%d'
                     ))
             except:
@@ -270,6 +270,32 @@ def get_employee_account(request):
         employee_response['deduced_amount'] = deduction
         employee_response['paid_amount'] = salary - deduction - income_tax
         employee_response['deduction_detail'] = deduction_detail
+
+        # Handle Pro Tempore
+        # paid flag should be set after transaction
+        pro_tempores = ProTempore.objects.filter(employee=employee)
+        p_t_amount = 0
+        to_be_paid_pt_ids = []
+        for p_t in pro_tempores:
+            if not p_t.paid:
+                if isinstance(p_t.appoint_date, date):
+                    p_t_amount += p_t.pro_tempore.current_salary_by_day(
+                        p_t.appoint_date,
+                        p_t.dismiss_date
+                    )
+
+                    to_be_paid_pt_ids.append(p_t.id)
+                else:
+                    p_t_amount += p_t.pro_tempore.current_salary_by_day(
+                        BSDate(*bs_str2tuple(p_t.appoint_date)),
+                        BSDate(*bs_str2tuple(p_t.dismiss_date))
+                    )
+                    to_be_paid_pt_ids.append(p_t.id)
+
+        employee_response['pro_tempore_amount'] = p_t_amount
+        employee_response['pro_tempore_ids'] = to_be_paid_pt_ids
+
+
 
         return JsonResponse(employee_response)
 
