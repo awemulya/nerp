@@ -118,6 +118,7 @@ class Transaction(models.Model):
     credit = models.FloatField()
     debit = models.FloatField()
     date_time = models.DateTimeField(default=timezone.now)
+    description = models.CharField(max_length=120)
 
     def __unicode__(self):
         return str(self.account.id)
