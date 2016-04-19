@@ -44,6 +44,7 @@ function PaymentEntryRow() {
     self.deduced_amount = ko.observable();
     self.income_tax = ko.observable();
     self.pro_tempore_amount = ko.observable();
+    self.salary = ko.observable();
     self.paid_amount = ko.observable();
     
     // Make here a observable function dat will set other parameters with employee id and date range
@@ -66,6 +67,7 @@ function PaymentEntryRow() {
                 self.deduced_amount(data.deduced_amount);
                 self.income_tax(data.income_tax);
                 self.pro_tempore_amount(data.pro_tempore_amount);
+                self.salary(data.salary);
                 self.paid_amount(data.paid_amount);
                 },
             error: function(errorThrown){
@@ -109,6 +111,25 @@ function PayrollEntry() {
     };
     self.addRow = function(event){
         self.rows.push(new PaymentEntryRow());
+        row_elements = $('.payment-row-table').children().children()
+        for(i=2; i<row_elements.length;i++ ){
+            ele = $(row_elements[i]).children();
+            for(j=0; j<ele.length;j++){
+                input_element = $(ele[j]).children()[0];
+                name_attr = $(input_element).attr('name');
+                id_attr = $(input_element).attr('id');
+                name_split = name_attr.split('-');
+                name_split[1] = String(i-1)
+                id_split = id_attr.split('-');
+                id_split[1] = String(i-1) 
+                $(input_element).attr('name', name_split.join('-'));
+                $(input_element).attr('id', id_split.join('-'));
+            };
+
+        };
+        // for(row of row_elements){
+        //     console.log(row.text())
+        // }
     };
     self.set_time_stamp = ko.computed(function(){
         // console.log('We are in timestamp function');

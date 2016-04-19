@@ -34,27 +34,32 @@
     </div>
     <div>
         <form data-bind="submit: saveAndAdd">
+        <table class="table payment-row-table" >
+            <tr data-bind="visible:rows().length>0" >
+                <th>Employee</th>
+                <th>Allowence</th>
+                <th>Incentive</th>
+                <th>Deduced Amount</th>
+                <th>Income Tax</th>
+                <th>Pro Tempore Amount</th>
+                <th>Salary</th>
+                <th>Paid Amount</th>
+            </tr>
             
-            <div class="row" data-bind="foreach: rows">
-                {{ r_form.paid_employee }}
-                {{ r_form.paid_from_date }}
-                {{ r_form.paid_to_date }}
-                {{ r_form.absent_days }}
-                {{ r_form.allowence.label }}
-                {{ r_form.allowence }}
-                {{ r_form.incentive.label }}
-                {{ r_form.incentive }}
-                {{ r_form.deduced_amount.label }}
-                {{ r_form.deduced_amount }}
-                {{ r_form.income_tax.label }}
-                {{ r_form.income_tax }}
-                {{ r_form.pro_tempore_amount.label }}
-                {{ r_form.pro_tempore_amount }}
-                {{ r_form.paid_amount.label }}
-                {{ r_form.paid_amount }}
-
+                <!-- ko foreach: rows -->
+                <tr>
+                        <td>{{ r_form.paid_employee }}</td>
+                        <td>{{ r_form.allowence }}</td>
+                        <td>{{ r_form.incentive }}</td>
+                        <td>{{ r_form.deduced_amount }}</td>
+                        <td>{{ r_form.income_tax }}</td>
+                        <td>{{ r_form.pro_tempore_amount }}</td>
+                        <td>{{ r_form.salary }}</td>
+                        <td>{{ r_form.paid_amount }}</td>
+                </tr>
+                <!-- /ko -->
         
-            </div>
+            </table>
             <input type="button" class="#" value="Add Another" data-bind="visible: switch_p_type, click: addRow">
             
             <input type="submit" class="#" value="Transact">

@@ -61,6 +61,7 @@ class PaymentRowForm(forms.ModelForm):
             'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount"}),
             'income_tax': NumberInput(attrs={'data-bind': "value: income_tax"}),
             'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount"}),
+            'salary': NumberInput(attrs={'data-bind': "value: salary"}),
             'paid_amount': NumberInput(attrs={'data-bind': "value: paid_amount"}),
         }
 
@@ -132,3 +133,6 @@ class EmployeeAccountInlineFormset(forms.models.BaseInlineFormSet):
                     raise forms.ValidationError(
                         _('Cannot have more than one type of %s' % acc_type_name))
             account_types.append(acc_type)
+
+
+PaymentRowFormSet = forms.formset_factory(PaymentRowForm)

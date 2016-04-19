@@ -1,16 +1,41 @@
 from django.shortcuts import render
-from .forms import PaymentRowForm, PayrollEntryForm, GroupPayrollForm
+from .forms import PaymentRowForm, PayrollEntryForm, GroupPayrollForm, PaymentRowFormSet
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from njango.nepdate import bs2ad
 from .models import get_y_m_tuple_list
 from .bsdate import BSDate
+from lxml import html
 import pdb
 
 
 CALENDAR = 'BS'
 F_INCOME_TAX_DISCOUNT_RATE = 10
+
+
+def get_underscore_formset(string):
+    # pdb.set_trace()
+
+    html_tree = html.fragment_fromstring(string, create_parent='tr')
+    for branch in html_tree:
+        for s_branch in branch:
+            if s_branch.tag == 'th':
+                s_branch.drop_tree()
+            elif s_branch.tag == 'td':
+                for ele in s_branch:
+                    input_id = ele.get('id')
+                    input_id_m = [o if o != '0' else '${$index}' for o in input_id.split('-')]
+                    ele.set('id', '-'.join(input_id_m))
+
+                    input_name = ele.get('name')
+                    input_name_m = [o if o != '0' else '${$index}' for o in input_name.split('-')]
+                    ele.set('id', '-'.join(input_name_m))
+                    # pdb.set_trace()
+        if branch.tag == 'tr':
+            branch.drop_tag()
+            # pdb.set_trace()
+    return html.tostring(html_tree)
 
 
 def bs_str2tuple(date_string):
@@ -233,6 +258,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 
     employee_response['pro_tempore_amount'] = p_t_amount
     employee_response['pro_tempore_ids'] = to_be_paid_pt_ids
+    employee_response['salary'] = salary
 
     employee_response['paid_amount'] = salary - deduction - income_tax +\
         p_t_amount
@@ -243,13 +269,15 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 # Create your views here.
 def payroll_entry(request):
     main_form = GroupPayrollForm(initial={'payroll_type': 'BRANCH'})
-    row_form = PaymentRowForm()
+    row_form = PaymentRowFormSet()[0]
+    # underscore_row_form = get_underscore_formset(str(row_form))
     return render(
         request,
         'payroll_entry.html',
         {
           'r_form': row_form,
-          'm_form': main_form
+          'm_form': main_form,
+          # 'u_f': underscore_row_form
         })
 
 
@@ -352,3 +380,4 @@ def test(request):
 
 #         # Now generate salary and dont transact here,
 #         # Trancsaction should be done when the row is saved
+
