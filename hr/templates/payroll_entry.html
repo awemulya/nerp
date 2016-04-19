@@ -31,6 +31,7 @@
         {{ m_form.from_date }}
         {{ m_form.to_date.label }}
         {{ m_form.to_date }}
+        <input type="button" value="Get Salary" data-bind="click: getGroupSalary, visible: !switch_p_type()">
     </div>
     <div>
         <form data-bind="submit: saveAndAdd">
@@ -64,7 +65,7 @@
             </table>
             <input type="button" class="#" value="Add Another" data-bind="visible: switch_p_type, click: addRow">
             
-            <input type="submit" class="#" value="Transact">
+            <input type="submit" class="#" value="Transact" data-bind="visible: rows().length>0">
         </form>
     </div>
     

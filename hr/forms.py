@@ -82,15 +82,17 @@ class PayrollEntryForm(forms.ModelForm):
 
 
 class GroupPayrollForm(forms.Form):
+    branch_choices = [(o.id, o.name) for o in BranchOffice.objects.all()]
+    branch_choices.insert(0, ('ALL', 'All'))
     payroll_type = forms.ChoiceField(
         choices=[
                  ('INDIVIDUAL', _('Individual')),
-                 ('BRANCH', _('Branch'))],
+                 ('GROUP', _('Group'))],
         widget=Select(attrs={'data-bind': 'value: payroll_type'})
                  )
     branch = forms.ChoiceField(
-        choices=[(o.id, o.name) for o in BranchOffice.objects.all()],
-        widget=Select(attrs={'data-bind': 'visible: !switch_p_type()'})
+        choices=branch_choices,
+        # widget=Select(attrs={'data-bind': 'visible: !switch_p_type()'})
         )
     from_date = forms.DateField(
         widget=DateInput(attrs={

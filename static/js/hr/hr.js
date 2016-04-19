@@ -147,6 +147,10 @@ function PayrollEntry() {
             };
         };
     });
+    self.getGroupSalary = function(){
+
+    };
+    
     
 
 };
