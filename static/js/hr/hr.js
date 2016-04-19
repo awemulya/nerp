@@ -109,12 +109,11 @@ function PayrollEntry() {
     self.saveAndAdd = function(){
         console.log('payment row saved');
     };
-    self.addRow = function(event){
-        self.rows.push(new PaymentEntryRow());
+    self.setup_formset = function(){
         row_elements = $('.payment-row-table').children().children()
         for(i=2; i<row_elements.length;i++ ){
             ele = $(row_elements[i]).children();
-            for(j=0; j<ele.length;j++){
+            for(j=0; j<ele.length-1;j++){
                 input_element = $(ele[j]).children()[0];
                 name_attr = $(input_element).attr('name');
                 id_attr = $(input_element).attr('id');
@@ -127,9 +126,14 @@ function PayrollEntry() {
             };
 
         };
-        // for(row of row_elements){
-        //     console.log(row.text())
-        // }
+    };
+    self.addRow = function(event){
+        self.rows.push(new PaymentEntryRow());
+        self.setup_formset();
+    };
+    self.removeRow = function(row){
+        self.rows.remove(row);
+        self.setup_formset();
     };
     self.set_time_stamp = ko.computed(function(){
         // console.log('We are in timestamp function');

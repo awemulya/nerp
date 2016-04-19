@@ -44,6 +44,7 @@
                 <th>Pro Tempore Amount</th>
                 <th>Salary</th>
                 <th>Paid Amount</th>
+                <th>Control</th>
             </tr>
             
                 <!-- ko foreach: rows -->
@@ -56,6 +57,7 @@
                         <td>{{ r_form.pro_tempore_amount }}</td>
                         <td>{{ r_form.salary }}</td>
                         <td>{{ r_form.paid_amount }}</td>
+                        <td><input type="button" value="Remove" data-bind="click: $parent.removeRow"></input></td>
                 </tr>
                 <!-- /ko -->
         
