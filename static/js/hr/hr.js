@@ -49,7 +49,7 @@ function PaymentEntryRow() {
     
     // Make here a observable function dat will set other parameters with employee id and date range
     self.setOtrParam = ko.computed(function(){
-        if(self.paid_employee() && self.paid_from_date() && self.paid_to_date()){
+        if(self.paid_employee() && self.paid_from_date() && self.paid_to_date() && vm.payroll_type()=="INDIVIDUAL" ){
         $.ajax({
             url: 'get_employee_account/',
             method: 'POST',
@@ -169,20 +169,33 @@ function PayrollEntry() {
                 paid_to_date: self.paid_to_date()
             },
             // async: true,
-            success: function (data) {
+            success: function (response) {
+                if(response.errors){
+                    self.paid_from_date_error(response.errors.paid_from_date)
+                    self.paid_to_date_error(response.errors.paid_to_date)
+                }else{
+                    console.log(response);
+                    self.rows([]);
+                    for(data of response.data){
+                        var row = new PaymentEntryRow()
+                        row.paid_employee(data.employee_id);
+                        row.allowance(data.allowance);
+                        row.incentive(data.incentive);
+                        row.deduced_amount(data.deduced_amount);
+                        row.income_tax(data.income_tax);
+                        row.pro_tempore_amount(data.pro_tempore_amount);
+                        row.salary(data.salary);
+                        row.paid_amount(data.paid_amount);
+                        self.rows.push(row);
+                    }
+                };
+
                 // Here mapping should be done
                 // console.log(data);
-                // self.allowance(data.allowance);
-                // self.incentive(data.incentive);
-                // self.deduced_amount(data.deduced_amount);
-                // self.income_tax(data.income_tax);
-                // self.pro_tempore_amount(data.pro_tempore_amount);
-                // self.salary(data.salary);
-                // self.paid_amount(data.paid_amount);
-                },
+            },
             error: function(errorThrown){
                 console.log(errorThrown);
-                },
+            },
 //            self.budget_heads = ko.observableArray(data);
         });
     };

@@ -318,7 +318,42 @@ def get_employee_account(request):
 
 
 def get_employees_account(request):
-    pass
+    error = {}
+    response = {}
+    data_list = []
+    if request.POST:
+        dates = verify_request_date(request)
+        if isinstance(dates, tuple):
+            paid_from_date, paid_to_date = dates
+        else:
+            error.update(dates)
+
+        if error:
+            response['errors'] = error
+            return JsonResponse(response)
+
+        branch = request.POST.get('branch', None)
+        if branch:
+            if branch == 'ALL':
+                employees = Employee.objects.all()
+            else:
+                employees = Employee.objects.filter(
+                    working_branch__id=int(branch)
+                )
+
+            for employee in employees:
+                data_dict = {'employee_id': employee.id}
+                employee_salary_detail = get_employee_salary_detail(
+                    employee,
+                    paid_from_date,
+                    paid_to_date
+                )
+
+                data_dict.update(employee_salary_detail)
+                data_list.append(data_dict)
+
+            response['data'] = data_list
+            return JsonResponse(response)
 
 
 def test(request):
