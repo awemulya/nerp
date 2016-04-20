@@ -41,7 +41,7 @@ payment_cycle = [('M', _('Monthly')),
 holder_type = [('EMPLOYEE', _("Employee's Account")),
                ('COMPANY', _('Company Account'))]
 
-# Allowence
+# allowance
 # When yearly than when to pay should be in setting
 
 
@@ -167,7 +167,7 @@ class Designation(models.Model):
 
 
 # This is bhatta
-class Allowence(models.Model):
+class Allowance(models.Model):
     # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
     name = models.CharField(max_length=100)
     employee_grade = models.ForeignKey(EmployeeGrade)
@@ -282,8 +282,8 @@ class Employee(models.Model):
     payment_halt = models.BooleanField(default=False)
     appoint_date = BSDateField(default=today)
     dismiss_date = BSDateField(null=True, blank=True)
-    # allowence will be added to salary 
-    allowences = models.ManyToManyField(Allowence, blank=True)
+    # allowance will be added to salary 
+    allowances = models.ManyToManyField(Allowance, blank=True)
     # incentive will have diff trancation
     incentives = models.ManyToManyField(Incentive, blank=True)
     # Permanent has extra functionality while deduction from salary
@@ -506,7 +506,7 @@ class PaymentRecord(models.Model):
     paid_from_date = BSDateField()
     paid_to_date = BSDateField()
     absent_days = models.PositiveIntegerField()
-    allowence = models.FloatField(null=True, blank=True)
+    allowance = models.FloatField(null=True, blank=True)
     incentive = models.FloatField(null=True, blank=True)
     deduced_amount = models.FloatField(null=True, blank=True)
     income_tax = models.FloatField(null=True, blank=True)
@@ -514,7 +514,7 @@ class PaymentRecord(models.Model):
     salary = models.FloatField(null=True, blank=True)
     paid_amount = models.FloatField()
     # Deducted amount fields
-    # How much incentive and how much allowence
+    # How much incentive and how much allowance
 
     def total_present_days(self):
         return self.paid_to_date - self.paid_from_date - self.absent_days
@@ -565,12 +565,12 @@ class CompanyAccount(models.Model):
 #         verbose_name = "Setup Income Tax Rate"
 
 
-#  Allowence in EmployeeRank
+#  allowance in EmployeeRank
 #  Incentive in Employee
 
 # to do
 # Maximim provision of grade rate upto 10 times ==> constant or variable
-# Manage Allowence, Incentive and Tax with  salary
+# Manage allowance, Incentive and Tax with  salary
 # Think about salary paused
 # niyukti **of
 

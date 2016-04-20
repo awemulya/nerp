@@ -56,7 +56,7 @@ class PaymentRowForm(forms.ModelForm):
             'paid_from_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date, visible: false",}),
             'paid_to_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date, visible:false"}),
             'absent_days': NumberInput(attrs={'data-bind': 'visible: false'}),
-            'allowence': NumberInput(attrs={'data-bind': "value: allowence"}),
+            'allowance': NumberInput(attrs={'data-bind': "value: allowance"}),
             'incentive': NumberInput(attrs={'data-bind': "value: incentive"}),
             'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount"}),
             'income_tax': NumberInput(attrs={'data-bind': "value: income_tax"}),

@@ -120,35 +120,35 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         paid_to_date
         )
 
-    # Now add allowence to the salary(salary = salary + allowence)
+    # Now add allowance to the salary(salary = salary + allowance)
     # Question here is do we need to deduct from incentove(I gues not)
-    for obj in employee.allowences.all():
-        allowence = 0
+    allowance = 0
+    for obj in employee.allowances.all():
         if obj.payment_cycle == 'Y':
             # check obj.year_payment_cycle_month to add to salary
             pass
         elif obj.payment_cycle == 'M':
             if obj.sum_type == 'AMOUNT':
-                allowence += obj.amount * total_month
+                allowance += obj.amount * total_month
             else:
-                allowence += obj.amount_rate / 100.0 * salary
+                allowance += obj.amount_rate / 100.0 * salary
         elif obj.payment_cycle == 'D':
             if obj.sum_type == 'AMOUNT':
-                allowence += obj.amount * total_work_day
+                allowance += obj.amount * total_work_day
             else:
                 # Does this mean percentage in daily wages
-                allowence += obj.amount_rate / 100.0 * salary
+                allowance += obj.amount_rate / 100.0 * salary
         else:
             # This is hourly case(Dont think we have it)
             pass
 
-    employee_response['allowence'] = allowence
-    salary += allowence
+    employee_response['allowance'] = allowance
+    salary += allowance
 
     # now calculate incentive if it has but not to add to salary just to
     # transact seperately
+    incentive = 0
     for obj in employee.incentives.all():
-        incentive = 0
         if obj.payment_cycle == 'Y':
             # check obj.year_payment_cycle_month to add to salary
             pass
@@ -168,7 +168,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             pass
 
     employee_response['incentive'] = incentive
-    salary += incentive
+    # salary += incentive
 
     # Now the deduction part from the salary
     deductions = sorted(
@@ -257,10 +257,12 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 
     employee_response['pro_tempore_amount'] = p_t_amount
     employee_response['pro_tempore_ids'] = to_be_paid_pt_ids
-    employee_response['salary'] = salary
+    # First allowence added to salary for deduction and income tax.
+    # For pure salary here added allowance should be duduced
+    employee_response['salary'] = salary - allowance
 
     employee_response['paid_amount'] = salary - deduction - income_tax +\
-        p_t_amount
+        p_t_amount + incentive
 
     return employee_response
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import AccountType, Account,EmployeeAccount, Transaction, EmployeeGrade, Employee, Designation, Incentive, Allowence, IncomeTaxRate, BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry
+from .models import AccountType, Account,EmployeeAccount, Transaction, EmployeeGrade, Employee, Designation, Incentive, Allowance, IncomeTaxRate, BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry
 from .forms import EmployeeAccountInlineFormset
 
 
@@ -40,7 +40,7 @@ admin.site.register(EmployeeGrade)
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Designation)
 admin.site.register(Incentive)
-admin.site.register(Allowence)
+admin.site.register(Allowance)
 admin.site.register(IncomeTaxRate)
 admin.site.register(BranchOffice)
 admin.site.register(Deduction)

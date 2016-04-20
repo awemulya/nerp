@@ -39,7 +39,7 @@ function PaymentEntryRow() {
     self.paid_from_date = ko.observable();
     self.paid_to_date = ko.observable();
     self.absent_days = ko.observable();
-    self.allowence = ko.observable();
+    self.allowance = ko.observable();
     self.incentive = ko.observable();
     self.deduced_amount = ko.observable();
     self.income_tax = ko.observable();
@@ -67,7 +67,7 @@ function PaymentEntryRow() {
                     vm.paid_to_date_error(response.errors.paid_to_date)
                 }else{
 
-                    self.allowence(response.data.allowence);
+                    self.allowance(response.data.allowance);
                     self.incentive(response.data.incentive);
                     self.deduced_amount(response.data.deduced_amount);
                     self.income_tax(response.data.income_tax);
@@ -172,7 +172,7 @@ function PayrollEntry() {
             success: function (data) {
                 // Here mapping should be done
                 // console.log(data);
-                // self.allowence(data.allowence);
+                // self.allowance(data.allowance);
                 // self.incentive(data.incentive);
                 // self.deduced_amount(data.deduced_amount);
                 // self.income_tax(data.income_tax);
