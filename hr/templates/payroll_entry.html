@@ -23,15 +23,26 @@
 {% endblock %}
 
 {% block  content %}
-    <div id="main">
-        {{ m_form.payroll_type.label }}
-        {{ m_form.payroll_type }}
-        {{ m_form.branch }}
-        {{ m_form.from_date.label }}
-        {{ m_form.from_date }}
-        {{ m_form.to_date.label }}
-        {{ m_form.to_date }}
-        <input type="button" value="Get Salary" data-bind="click: getGroupSalary, visible: !switch_p_type()">
+    <div id="main" class="row">
+        <div class="col-lg-3">
+            {{ m_form.payroll_type.label }}
+            {{ m_form.payroll_type }}
+            {{ m_form.branch }}
+        </div>
+        <div class="col-lg-3">
+            {{ m_form.from_date.label }}
+            {{ m_form.from_date }}
+            <p data-bind="text: paid_from_date_error"></p>
+        </div>
+        <div class="col-lg-3">
+            {{ m_form.to_date.label }}
+        
+            {{ m_form.to_date }}
+            <p data-bind="text: paid_to_date_error"></p>
+        </div>
+        <div class="col-lg-3">
+            <input type="button" value="Get Salary" data-bind="click: getGroupSalary, visible: !switch_p_type()">
+        </div>
     </div>
     <div>
         <form data-bind="submit: saveAndAdd">
@@ -47,25 +58,25 @@
                 <th>Paid Amount</th>
                 <th>Control</th>
             </tr>
-            
-                <!-- ko foreach: rows -->
-                <tr>
-                        <td>{{ r_form.paid_employee }}</td>
-                        <td>{{ r_form.allowence }}</td>
-                        <td>{{ r_form.incentive }}</td>
-                        <td>{{ r_form.deduced_amount }}</td>
-                        <td>{{ r_form.income_tax }}</td>
-                        <td>{{ r_form.pro_tempore_amount }}</td>
-                        <td>{{ r_form.salary }}</td>
-                        <td>{{ r_form.paid_amount }}</td>
-                        <td><input type="button" value="Remove" data-bind="click: $parent.removeRow"></input></td>
+
+            <!-- ko foreach: rows -->
+                <tr>     
+                    <td>{{ r_form.paid_employee }}</td>
+                    <td>{{ r_form.allowence }}</td>
+                    <td>{{ r_form.incentive }}</td>
+                    <td>{{ r_form.deduced_amount }}</td>
+                    <td>{{ r_form.income_tax }}</td>
+                    <td>{{ r_form.pro_tempore_amount }}</td>
+                    <td>{{ r_form.salary }}</td>
+                    <td>{{ r_form.paid_amount }}</td>
+                    <td><input type="button" value="Remove" data-bind="click: $parent.removeRow"></input></td>
                 </tr>
-                <!-- /ko -->
+            <!-- /ko -->
         
-            </table>
-            <input type="button" class="#" value="Add Another" data-bind="visible: switch_p_type, click: addRow">
-            
-            <input type="submit" class="#" value="Transact" data-bind="visible: rows().length>0">
+        </table>
+        <input type="button" class="#" value="Add Another" data-bind="visible: switch_p_type, click: addRow">
+        
+        <input type="submit" class="#" value="Transact" data-bind="visible: rows().length>0">
         </form>
     </div>
     

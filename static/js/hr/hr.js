@@ -60,16 +60,22 @@ function PaymentEntryRow() {
                 paid_to_date: self.paid_to_date()
             },
             // async: true,
-            success: function (data) {
-                console.log(data);
-                self.allowence(data.allowence);
-                self.incentive(data.incentive);
-                self.deduced_amount(data.deduced_amount);
-                self.income_tax(data.income_tax);
-                self.pro_tempore_amount(data.pro_tempore_amount);
-                self.salary(data.salary);
-                self.paid_amount(data.paid_amount);
-                },
+            success: function (response) {
+                console.log(response);
+                if(response.errors){
+                    vm.paid_from_date_error(response.errors.paid_from_date)
+                    vm.paid_to_date_error(response.errors.paid_to_date)
+                }else{
+
+                    self.allowence(response.data.allowence);
+                    self.incentive(response.data.incentive);
+                    self.deduced_amount(response.data.deduced_amount);
+                    self.income_tax(response.data.income_tax);
+                    self.pro_tempore_amount(response.data.pro_tempore_amount);
+                    self.salary(response.data.salary);
+                    self.paid_amount(response.data.paid_amount);
+                };
+            },
             error: function(errorThrown){
                 console.log(errorThrown);
                 },
@@ -91,6 +97,10 @@ function PayrollEntry() {
     // self.id = ko.observable();
     self.paid_from_date = ko.observable();
     self.paid_to_date = ko.observable();
+
+    self.paid_from_date_error = ko.observable();
+    self.paid_to_date_error = ko.observable();
+
     // self.entry_datetime=ko.observable();
     self.branch = ko.observable();
     

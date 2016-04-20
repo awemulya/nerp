@@ -43,7 +43,7 @@ def verify_request_date(request):
                     request.POST.get('paid_to_date', None)
                     ))
             except:
-                error['paid_from_date'] = 'Incorrect BS Date'
+                error['paid_to_date'] = 'Incorrect BS Date'
 
         if paid_to_date and paid_from_date:
             if paid_to_date < paid_from_date:
@@ -281,6 +281,7 @@ def payroll_entry(request):
 
 
 def get_employee_account(request):
+    response = {}
     error = {}
     if request.POST:
         employee_id = request.POST.get('paid_employee', None)
@@ -297,15 +298,18 @@ def get_employee_account(request):
             error.update(dates)
 
         if error:
-            return JsonResponse(error)
+            response['errors'] = error
+            return JsonResponse(response)
+
         # Now calculate all the values and give a good meaningful response
         # total_work_day = paid_to_date - paid_from_date
-        response = get_employee_salary_detail(
+        response['data'] = get_employee_salary_detail(
             employee,
             paid_from_date,
             paid_to_date
             )
 
+        # response.update(resp)
         return JsonResponse(response)
     else:
         return HttpResponse('Damn no request.POST')
