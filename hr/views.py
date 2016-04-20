@@ -6,7 +6,6 @@ from datetime import datetime, date
 from njango.nepdate import bs2ad
 from .models import get_y_m_tuple_list
 from .bsdate import BSDate
-from lxml import html
 import pdb
 
 
@@ -14,28 +13,72 @@ CALENDAR = 'BS'
 F_INCOME_TAX_DISCOUNT_RATE = 10
 
 
-def get_underscore_formset(string):
-    # pdb.set_trace()
+def verify_request_date(request):
+    error = {}
+    paid_from_date = None
+    paid_to_date = None
+    if request.POST:
+        if CALENDAR == 'AD':
+            try:
+                # Validate it for bsdate
+                paid_from_date = datetime.strptime(
+                    request.POST.get('paid_from_date', None), '%Y-%m-%d').date()
+            except:
+                error['paid_from_date'] = 'Incorrect Date Format'
+            try:
+                paid_to_date = datetime.strptime(
+                    request.POST.get('paid_to_date', None), '%Y-%m-%d').date()
+            except:
+                error['paid_to_date'] = 'Incorrect Date Format'
+        else:
+            try:
 
-    html_tree = html.fragment_fromstring(string, create_parent='tr')
-    for branch in html_tree:
-        for s_branch in branch:
-            if s_branch.tag == 'th':
-                s_branch.drop_tree()
-            elif s_branch.tag == 'td':
-                for ele in s_branch:
-                    input_id = ele.get('id')
-                    input_id_m = [o if o != '0' else '${$index}' for o in input_id.split('-')]
-                    ele.set('id', '-'.join(input_id_m))
+                paid_from_date = BSDate(*bs_str2tuple(
+                    request.POST.get('paid_from_date', None)
+                    ))
 
-                    input_name = ele.get('name')
-                    input_name_m = [o if o != '0' else '${$index}' for o in input_name.split('-')]
-                    ele.set('id', '-'.join(input_name_m))
-                    # pdb.set_trace()
-        if branch.tag == 'tr':
-            branch.drop_tag()
-            # pdb.set_trace()
-    return html.tostring(html_tree)
+            except:
+                error['paid_from_date'] = 'Incorrect BS Date'
+            try:
+                paid_to_date = BSDate(*bs_str2tuple(
+                    request.POST.get('paid_to_date', None)
+                    ))
+            except:
+                error['paid_from_date'] = 'Incorrect BS Date'
+
+        if paid_to_date and paid_from_date:
+            if paid_to_date < paid_from_date:
+                error['invalid_date_range'] = \
+                    'Date: paid to must be greater than paid from'
+
+        if error:
+            return error
+        else:
+            return paid_from_date, paid_to_date
+
+
+# def get_underscore_formset(string):
+#     # pdb.set_trace()
+
+#     html_tree = html.fragment_fromstring(string, create_parent='tr')
+#     for branch in html_tree:
+#         for s_branch in branch:
+#             if s_branch.tag == 'th':
+#                 s_branch.drop_tree()
+#             elif s_branch.tag == 'td':
+#                 for ele in s_branch:
+#                     input_id = ele.get('id')
+#                     input_id_m = [o if o != '0' else '${$index}' for o in input_id.split('-')]
+#                     ele.set('id', '-'.join(input_id_m))
+
+#                     input_name = ele.get('name')
+#                     input_name_m = [o if o != '0' else '${$index}' for o in input_name.split('-')]
+#                     ele.set('id', '-'.join(input_name_m))
+#                     # pdb.set_trace()
+#         if branch.tag == 'tr':
+#             branch.drop_tag()
+#             # pdb.set_trace()
+#     return html.tostring(html_tree)
 
 
 def bs_str2tuple(date_string):
@@ -294,37 +337,45 @@ def get_employee_account(request):
         else:
             error['employee'] = 'No such employee'
 
-        if CALENDAR == 'AD':
-            try:
-                # Validate it for bsdate
-                paid_from_date = datetime.strptime(
-                    request.POST.get('paid_from_date', None), '%Y-%m-%d').date()
-            except:
-                error['paid_from_date'] = 'Incorrect Date Format'
-            try:
-                paid_to_date = datetime.strptime(
-                    request.POST.get('paid_to_date', None), '%Y-%m-%d').date()
-            except:
-                error['paid_to_date'] = 'Incorrect Date Format'
+        # if CALENDAR == 'AD':
+        #     try:
+        #         # Validate it for bsdate
+        #         paid_from_date = datetime.strptime(
+        #             request.POST.get('paid_from_date', None), '%Y-%m-%d').date()
+        #     except:
+        #         error['paid_from_date'] = 'Incorrect Date Format'
+        #     try:
+        #         paid_to_date = datetime.strptime(
+        #             request.POST.get('paid_to_date', None), '%Y-%m-%d').date()
+        #     except:
+        #         error['paid_to_date'] = 'Incorrect Date Format'
+        # else:
+        #     try:
+
+        #         paid_from_date = BSDate(*bs_str2tuple(
+        #             request.POST.get('paid_from_date', None)
+        #             ))
+
+        #     except:
+        #         error['paid_from_date'] = 'Incorrect BS Date'
+        #     try:
+        #         paid_to_date = BSDate(*bs_str2tuple(
+        #             request.POST.get('paid_to_date', None)
+        #             ))
+        #     except:
+        #         error['paid_from_date'] = 'Incorrect BS Date'
+
+        dates = verify_request_date(request)
+
+        if isinstance(dates, tuple):
+            paid_from_date, paid_to_date = dates
         else:
-            try:
+            error.update(dates)
 
-                paid_from_date = BSDate(*bs_str2tuple(
-                    request.POST.get('paid_from_date', None)
-                    ))
-
-            except:
-                error['paid_from_date'] = 'Incorrect BS Date'
-            try:
-                paid_to_date = BSDate(*bs_str2tuple(
-                    request.POST.get('paid_to_date', None)
-                    ))
-            except:
-                error['paid_from_date'] = 'Incorrect BS Date'
-
-        if paid_to_date < paid_from_date:
-            error['invalid_date_range'] = \
-                'Date: paid to must be greater than paid from'
+        # pdb.set_trace()
+        # if paid_to_date < paid_from_date:
+        #     error['invalid_date_range'] = \
+        #         'Date: paid to must be greater than paid from'
 
         if error:
             return JsonResponse(error)
@@ -339,6 +390,10 @@ def get_employee_account(request):
         return JsonResponse(response)
     else:
         return HttpResponse('Damn no request.POST')
+
+
+def get_employees_account(request):
+    pass
 
 
 def test(request):

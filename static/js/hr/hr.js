@@ -92,6 +92,7 @@ function PayrollEntry() {
     self.paid_from_date = ko.observable();
     self.paid_to_date = ko.observable();
     // self.entry_datetime=ko.observable();
+    self.branch = ko.observable();
     
     self.switch_p_type  = ko.computed(function(){
         console.log(self.payroll_type)
@@ -148,7 +149,32 @@ function PayrollEntry() {
         };
     });
     self.getGroupSalary = function(){
-
+        $.ajax({
+            url: 'get_employees_account/',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                branch: self.branch(),
+                paid_from_date: self.paid_from_date(),
+                paid_to_date: self.paid_to_date()
+            },
+            // async: true,
+            success: function (data) {
+                // Here mapping should be done
+                // console.log(data);
+                // self.allowence(data.allowence);
+                // self.incentive(data.incentive);
+                // self.deduced_amount(data.deduced_amount);
+                // self.income_tax(data.income_tax);
+                // self.pro_tempore_amount(data.pro_tempore_amount);
+                // self.salary(data.salary);
+                // self.paid_amount(data.paid_amount);
+                },
+            error: function(errorThrown){
+                console.log(errorThrown);
+                },
+//            self.budget_heads = ko.observableArray(data);
+        });
     };
     
     

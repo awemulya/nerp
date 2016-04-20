@@ -92,7 +92,7 @@ class GroupPayrollForm(forms.Form):
                  )
     branch = forms.ChoiceField(
         choices=branch_choices,
-        # widget=Select(attrs={'data-bind': 'visible: !switch_p_type()'})
+        widget=Select(attrs={'data-bind': 'value: branch'})
         )
     from_date = forms.DateField(
         widget=DateInput(attrs={
