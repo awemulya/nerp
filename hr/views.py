@@ -1,9 +1,8 @@
 from django.shortcuts import render
-from .forms import PaymentRowForm, PayrollEntryForm, GroupPayrollForm, PaymentRowFormSet
+from .forms import GroupPayrollForm, PaymentRowFormSet
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
-from njango.nepdate import bs2ad
 from .models import get_y_m_tuple_list
 from .bsdate import BSDate
 import pdb
@@ -105,21 +104,6 @@ def delta_month_date(p_from, p_to):
     if type(p_from) == type(p_to):
         total_work_day = (p_to - p_from).days
 
-
-    # Need to test this (this can be made a function)
-    # if p_from.year == p_to.year:
-    #     total_month += p_from.month - p_to.month + 1
-    #     for ob in range(p_from.month, p_to.month + 1):
-    #         total_work_day += bs[p_from.year][ob-1]
-    # else:
-    #     while p_from <= p_to:
-    #         total_work_day += bs[p_from.year][p_from.month-1]
-    #         if p_from.month < 12:
-    #             p_from = date(p_from.year, p_from.month+1, p_from.day)
-    #             total_month += 1
-    #         else:
-    #             p_from = date(p_from.year + 1, 1, p_from.day)
-    #             total_month += 1
     return (total_month, total_work_day)
 
 
@@ -130,38 +114,11 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                                                    paid_from_date,
                                                    paid_to_date
                                                    )
-    # total_work_day = 0
-    # total_month = 0
-
-    # Need to test this (this can be made a function)
-    # if paid_from_date.year == paid_to_date.year:
-    #     total_month += paid_from_date.month - paid_to_date.month + 1
-    #     for ob in range(paid_from_date.month, paid_to_date.month + 1):
-    #         total_work_day += bs[paid_from_date.year][ob-1]
-    # else:
-    #     p_from = paid_from_date
-    #     p_to = paid_to_date
-
-    #     while p_from <= p_to:
-    #         total_work_day += bs[p_from.year][p_from.month-1]
-    #         if p_from.month < 12:
-    #             p_from = date(p_from.year, p_from.month+1, p_from.day)
-    #             total_month += 1
-    #         else:
-    #             p_from = date(p_from.year + 1, 1, p_from.day)
-    #             total_month += 1
 
     salary = employee.current_salary_by_month(
         paid_from_date,
         paid_to_date
         )
-
-    # total_month = paid_to_date.month - paid_from_date.month + 1
-
-    # if paid_from_date == paid_to_date:
-    #     salary = current_salary()
-    # else:
-    #     salary = current_salary(total_month - 1)
 
     # Now add allowence to the salary(salary = salary + allowence)
     # Question here is do we need to deduct from incentove(I gues not)
@@ -187,7 +144,6 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 
     employee_response['allowence'] = allowence
     salary += allowence
-    # employee_response['salay_allowence_included'] = salary
 
     # now calculate incentive if it has but not to add to salary just to
     # transact seperately
@@ -324,10 +280,6 @@ def payroll_entry(request):
         })
 
 
-# def group_payroll_branch(request):
-#     form = GroupPayrollForm()
-#     return render(request, 'group_payroll_branch.html', {'form': form})
-
 def get_employee_account(request):
     error = {}
     if request.POST:
@@ -337,45 +289,12 @@ def get_employee_account(request):
         else:
             error['employee'] = 'No such employee'
 
-        # if CALENDAR == 'AD':
-        #     try:
-        #         # Validate it for bsdate
-        #         paid_from_date = datetime.strptime(
-        #             request.POST.get('paid_from_date', None), '%Y-%m-%d').date()
-        #     except:
-        #         error['paid_from_date'] = 'Incorrect Date Format'
-        #     try:
-        #         paid_to_date = datetime.strptime(
-        #             request.POST.get('paid_to_date', None), '%Y-%m-%d').date()
-        #     except:
-        #         error['paid_to_date'] = 'Incorrect Date Format'
-        # else:
-        #     try:
-
-        #         paid_from_date = BSDate(*bs_str2tuple(
-        #             request.POST.get('paid_from_date', None)
-        #             ))
-
-        #     except:
-        #         error['paid_from_date'] = 'Incorrect BS Date'
-        #     try:
-        #         paid_to_date = BSDate(*bs_str2tuple(
-        #             request.POST.get('paid_to_date', None)
-        #             ))
-        #     except:
-        #         error['paid_from_date'] = 'Incorrect BS Date'
-
         dates = verify_request_date(request)
 
         if isinstance(dates, tuple):
             paid_from_date, paid_to_date = dates
         else:
             error.update(dates)
-
-        # pdb.set_trace()
-        # if paid_to_date < paid_from_date:
-        #     error['invalid_date_range'] = \
-        #         'Date: paid to must be greater than paid from'
 
         if error:
             return JsonResponse(error)
@@ -406,33 +325,3 @@ def test(request):
     pdb.set_trace()
 
     return HttpResponse(salary)
-
-
-# def calculate_salry(request):
-#     data = {}
-#     data['allowence'] = 0
-#     data['incentive'] = 0
-#     data['deduced'] = 0
-#     if request.POST:
-#         employee_id = request.POST.get('employee', None)
-#         pay_from = request.POST.get('paid_from_date', None)
-#         pay_to = request.POST.get('paid_to_date', None)
-
-#         employee = Employee.objects.get(id=employee_id)
-#         salary = employee.current_salary()
-#         # Now datao sanchai kosh
-#         if employee.is_permanent:
-#             sanchaya_deduction = 20 / 100 * salary
-#             # Transact sanchaya deduction to sanchaya kosh employee account
-#             salary = salary = sanchaya_deduction
-#         else:
-#             sanchaya_deduction = 10 / 100 * salary
-#             # Transact sanchaya deduction to sanchaya kosh employee account
-#             salary = salary = sanchaya_deduction
-
-#         # Transact Rs. 200 to Nagarik Lagani Kosh
-#         salary = salary - 200
-
-#         # Now generate salary and dont transact here,
-#         # Trancsaction should be done when the row is saved
-
