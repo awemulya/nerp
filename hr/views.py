@@ -3,7 +3,7 @@ from .forms import GroupPayrollForm, PaymentRowFormSet
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
-from calender import monthrange as mr
+from calendar import monthrange as mr
 from .models import get_y_m_tuple_list
 from .bsdate import BSDate
 from njango.nepdate import bs
