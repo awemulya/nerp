@@ -3,8 +3,10 @@ from .forms import GroupPayrollForm, PaymentRowFormSet
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
+from calender import monthrange as mr
 from .models import get_y_m_tuple_list
 from .bsdate import BSDate
+from njango.nepdate import bs
 import pdb
 
 
@@ -34,14 +36,14 @@ def verify_request_date(request):
 
                 paid_from_date = BSDate(*bs_str2tuple(
                     request.POST.get('paid_from_date', None)
-                    ))
+                ))
 
             except:
                 error['paid_from_date'] = 'Incorrect BS Date'
             try:
                 paid_to_date = BSDate(*bs_str2tuple(
                     request.POST.get('paid_to_date', None)
-                    ))
+                ))
             except:
                 error['paid_to_date'] = 'Incorrect BS Date'
 
@@ -86,7 +88,7 @@ def bs_str2tuple(date_string):
         int(as_list[0]),
         int(as_list[1]),
         int(as_list[2])
-        )
+    )
     # If possible varify this
     return date_tuple
 
@@ -101,9 +103,13 @@ def get_account_id(employee_object, account_type):
 def delta_month_date(p_from, p_to):
     y_m_tuple = get_y_m_tuple_list(p_from, p_to)
     total_month = len(y_m_tuple)
-    if type(p_from) == type(p_to):
-        total_work_day = (p_to - p_from).days
-
+    total_work_day = 0
+    if isinstance(p_from, date):
+        if type(p_from) == type(p_to):
+            for mon in y_m_tuple():
+                total_work_day += mr(*mon)[1]
+        else:
+            total_work_day += bs[mon[0]][mon[1] - 1]
     return (total_month, total_work_day)
 
 
@@ -111,14 +117,14 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     employee_response = {}
     employee_response['employee_id'] = employee.id
     total_month, total_work_day = delta_month_date(
-                                                   paid_from_date,
-                                                   paid_to_date
-                                                   )
+        paid_from_date,
+        paid_to_date
+    )
 
     salary = employee.current_salary_by_month(
         paid_from_date,
         paid_to_date
-        )
+    )
 
     # Now add allowance to the salary(salary = salary + allowance)
     # Question here is do we need to deduct from incentove(I gues not)
@@ -181,58 +187,60 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             deduction_detail[obj.in_acc_type.name]['amount'] = 0
             if obj.deduct_type == 'AMOUNT':
                 deduction_detail[obj.in_acc_type.name][
-                    'amount'] += obj.amount / 30.0 * total_work_day
+                    'amount'] += obj.amount * total_month
             else:
                 # Rate
                 deduction_detail[obj.in_acc_type.name][
                     'amount'] += obj.amount_rate / 100.0 * salary
+
             if employee.is_permanent:
                 if obj.in_acc_type.permanent_multiply_rate:
                     deduction_detail[obj.in_acc_type.name][
-                      'amount'] *= obj.in_acc_type.permanent_multiply_rate
+                        'amount'] *= obj.in_acc_type.permanent_multiply_rate
             deduction_detail[obj.in_acc_type.name][
                 'account_id'] = get_account_id(
                     employee,
                     obj.in_acc_type.name
-                    )
+            )
             deduction += deduction_detail[obj.in_acc_type.name]['amount']
 
         else:
             name = '_'.join(obj.name.split(' ')).lower()
-            deduction_detail['others'] = {}
-            deduction_detail['others'][name] = {}
-            deduction_detail['others'][name]['amount'] = 0
+            other_deduction = {}
+            other_deduction[name] = {}
+            other_deduction[name]['amount'] = 0
             # EXPLICIT ACC
             if obj.deduct_type == 'AMOUNT':
-                deduction_detail['others'][name][
-                    'amount'] += obj.amount / 30.0 * total_work_day
+                other_deduction[name][
+                    'amount'] += obj.amount * total_month
             else:
                 # Rate
-                deduction_detail['others'][name][
+                other_deduction[name][
                     'amount'] += obj.amount_rate / 100.0 * salary
-            deduction_detail['others'][name][
+            other_deduction[name][
                 'account_id'] = obj.explicit_acc.id
-            deduction += deduction_detail['others'][name]['amount']
+            deduction += other_deduction[name]['amount']
 
     # Income tax logic
     income_tax = 0
     for obj in IncomeTaxRate.objects.all():
         if obj.is_last:
             if salary >= obj.start_from:
-                income_tax = obj.tax_rate/100 * salary
+                income_tax = obj.tax_rate / 100 * salary
                 if obj.rate_over_tax_amount:
-                    income_tax += obj.rate_over_tax_amount/100 * income_tax
+                    income_tax += obj.rate_over_tax_amount / 100 * income_tax
         else:
             if salary >= obj.start_from and salary <= obj.end_to:
-                income_tax = obj.tax_rate/100 * salary
+                income_tax = obj.tax_rate / 100 * salary
                 if obj.rate_over_tax_amount:
-                    income_tax += obj.rate_over_tax_amount/100 * income_tax
+                    income_tax += obj.rate_over_tax_amount / 100 * income_tax
         if employee.sex == 'F':
-            income_tax -= F_INCOME_TAX_DISCOUNT_RATE/100 * income_tax
+            income_tax -= F_INCOME_TAX_DISCOUNT_RATE / 100 * income_tax
 
     employee_response['income_tax'] = income_tax
     employee_response['deduced_amount'] = deduction
     employee_response['deduction_detail'] = deduction_detail
+    employee_response['other_deduction'] = other_deduction
 
     # Handle Pro Tempore
     # paid flag should be set after transaction
@@ -260,6 +268,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     # First allowence added to salary for deduction and income tax.
     # For pure salary here added allowance should be duduced
     employee_response['salary'] = salary - allowance
+    employee_response['employee_bank_account_id'] = get_account_id(
+        employee, 'bank_account')
 
     employee_response['paid_amount'] = salary - deduction - income_tax +\
         p_t_amount + incentive
@@ -309,7 +319,7 @@ def get_employee_account(request):
             employee,
             paid_from_date,
             paid_to_date
-            )
+        )
 
         # response.update(resp)
         return JsonResponse(response)

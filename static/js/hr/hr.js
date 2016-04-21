@@ -30,6 +30,14 @@ $(document).ready(function () {
     // });
 });
 
+function Transaction(){
+    var self = this;
+    self.account_id = ko.observable();
+    self.debit = ko.observable();
+    self.credit = ko.observable();
+    self.description = ko.observable();
+};
+
 
 function PaymentEntryRow() {
     //debugger;
@@ -46,6 +54,7 @@ function PaymentEntryRow() {
     self.pro_tempore_amount = ko.observable();
     self.salary = ko.observable();
     self.paid_amount = ko.observable();
+    self.transactions = ko.observableArray();
     
     // Make here a observable function dat will set other parameters with employee id and date range
     self.setOtrParam = ko.computed(function(){
@@ -74,6 +83,46 @@ function PaymentEntryRow() {
                     self.pro_tempore_amount(response.data.pro_tempore_amount);
                     self.salary(response.data.salary);
                     self.paid_amount(response.data.paid_amount);
+
+            // Set transaction class here
+                    
+                // User account debit transaction
+                    
+                    // Salary + Allowance Transaction
+                    var sal_all_tran = new Transaction();
+                    sal_all_tran.account_id = response.data.employee_bank_account_id;
+                    sal_all_tran.debit = self.salary() + self.allowance();
+                    sal_all_tran.credit = 0;
+                    sal_all_tran.description = 'Salary + allowance amount';
+                    
+                    self.transactions.push(sal_all_tran);
+
+                    // Incentive Transaction
+                    if(self.incentive() > 0){
+                        var incentive_tran = new Transaction();
+                        incentive_tran.account_id = response.data.employee_bank_account_id;
+                        incentive_tran.debit = self.incentive();
+                        incentive_tran.credit = 0;
+                        incentive_tran.description = 'Employee Incentive Payment';
+                        self.transaction.push(incentive_tran);
+                    };
+
+                    // Pro tempore Transaction
+                    if(self.pro_tempore_amount() > 0){
+                        var prot_tran = new Transaction();
+                        prot_tran.account_id = response.data.employee_bank_account_id;
+                        prot_tran.debit = self.pro_tempore_amount();
+                        prot_tran.credit = 0;
+                        prot_tran.description = 'Pro Tempore Amount Payment';
+                        self.transaction.push(prot_tran);
+                    };
+                // User Account Credit Transaction OR Deductions
+                    for(deduction of deduction_detail){
+                        
+                    };
+
+
+
                 };
             },
             error: function(errorThrown){
