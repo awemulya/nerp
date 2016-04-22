@@ -63,7 +63,7 @@ function StockEntryRow(row, stock_entry_vm) {
     var self = this;
     self.description = ko.observable();
     self.unit = ko.observable();
-    self.opening_stock = ko.observable();
+    self.opening_stock = ko.observable(0);
     self.account_no = ko.observable();
     self.opening_rate_vattable = ko.observable(false);
     self.opening_rate = ko.observable();

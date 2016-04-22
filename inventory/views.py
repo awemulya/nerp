@@ -1745,7 +1745,7 @@ def save_stock_entry(request):
         obj = save_model(obj, object_values)
         dct['id'] = obj.id
         for index, row in enumerate(params.get('table_view').get('rows')):
-            if invalid(row, ['name', 'unit', 'account_no']):
+            if invalid(row, ['name', 'unit', 'account_no', 'opening_rate', 'opening_stock']):
                 continue
             values = {'sn': index + 1, 'name': row.get('name'),
                       'description': row.get('description'),
