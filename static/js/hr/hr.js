@@ -84,42 +84,73 @@ function PaymentEntryRow() {
                     self.salary(response.data.salary);
                     self.paid_amount(response.data.paid_amount);
 
-            // Set transaction class here
+            // // Set transaction class here
+            //         var company_credit_trans = function(credit_amount, description){
+            //             var company_trans = new Transaction()
+            //             company_trans.account_id = response.data.salary_giving_account_id;
+            //             company_trans.credit = credit_amount;
+            //             company_trans.debit = 0;
+            //             company_trans.description = description;
+            //             self.transactions.push(company_trans);
+            //         };
+            //     // User account debit transaction
                     
-                // User account debit transaction
+            //         // Salary + Allowance Transaction
+            //         var sal_all_tran = new Transaction();
+            //         sal_all_tran.account_id = response.data.employee_bank_account_id;
+            //         sal_all_tran.debit = self.salary() + self.allowance();
+            //         sal_all_tran.credit = 0;
+            //         sal_all_tran.description = 'Salary + allowance amount:';
                     
-                    // Salary + Allowance Transaction
-                    var sal_all_tran = new Transaction();
-                    sal_all_tran.account_id = response.data.employee_bank_account_id;
-                    sal_all_tran.debit = self.salary() + self.allowance();
-                    sal_all_tran.credit = 0;
-                    sal_all_tran.description = 'Salary + allowance amount';
+            //         company_credit_trans(
+            //             sal_all_tran.debit,
+            //             sal_all_tran.description + 'to EmployeeID#' + String(paid_employee());
+            //          );
                     
-                    self.transactions.push(sal_all_tran);
+            //         self.transactions.push(sal_all_tran);
 
-                    // Incentive Transaction
-                    if(self.incentive() > 0){
-                        var incentive_tran = new Transaction();
-                        incentive_tran.account_id = response.data.employee_bank_account_id;
-                        incentive_tran.debit = self.incentive();
-                        incentive_tran.credit = 0;
-                        incentive_tran.description = 'Employee Incentive Payment';
-                        self.transaction.push(incentive_tran);
-                    };
-
-                    // Pro tempore Transaction
-                    if(self.pro_tempore_amount() > 0){
-                        var prot_tran = new Transaction();
-                        prot_tran.account_id = response.data.employee_bank_account_id;
-                        prot_tran.debit = self.pro_tempore_amount();
-                        prot_tran.credit = 0;
-                        prot_tran.description = 'Pro Tempore Amount Payment';
-                        self.transaction.push(prot_tran);
-                    };
-                // User Account Credit Transaction OR Deductions
-                    for(deduction of deduction_detail){
+            //         // Incentive Transaction
+            //         if(self.incentive() > 0){
+            //             var incentive_tran = new Transaction();
+            //             incentive_tran.account_id = response.data.employee_bank_account_id;
+            //             incentive_tran.debit = self.incentive();
+            //             incentive_tran.credit = 0;
+            //             incentive_tran.description = 'Employee Incentive Payment';
                         
-                    };
+            //             company_credit_trans(
+            //                 incentive_tran.debit,
+            //                 sal_.description + 'to EmployeeID#' + String(paid_employee());
+            //             );
+
+            //             self.transactions.push(incentive_tran);
+            //         };
+
+            //         // Pro tempore Transaction
+            //         if(self.pro_tempore_amount() > 0){
+            //             var prot_tran = new Transaction();
+            //             prot_tran.account_id = response.data.employee_bank_account_id;
+            //             prot_tran.debit = self.pro_tempore_amount();
+            //             prot_tran.credit = 0;
+            //             prot_tran.description = 'Pro Tempore Amount Payment';
+            //             self.transactions.push(prot_tran);
+            //         };
+            //     // Employee Account Credit Transaction OR Deductions
+            //         for(deduction of response.deduction_detail){
+            //             var deduct_transaction = new Transaction()
+            //             var bank_transaction = new Transaction()
+            //             for(dat of deduction){
+            //                 deduct_transaction.account_id = dat.account_id;
+            //                 deduct_transaction.debit = dat.amount;
+            //                 bank_transaction.account_id = response.data.employee_bank_account_id;
+            //                 bank_transaction.credit = dat.amount;
+            //             };
+            //             deduct_transaction.credit = 0;
+            //             bank_transaction.debit = 0;
+            //             deduct_transaction.description = 'Pro Tempore Amount Payment';
+            //             bank_transaction.description = 'Pro Tempore Amount Payment';
+            //             self.transactions.push(deduct_transaction);
+            //             self.transactions.push(bank_transaction);
+            //         };
 
 
 

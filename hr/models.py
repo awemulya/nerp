@@ -3,14 +3,22 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from users.models import User
-from core.models import validate_in_fy
+# from core.models import validate_in_fy
 from njango.fields import BSDateField, today
 from njango.nepdate import bs2ad, bs
 from django.core.validators import MaxValueValidator, MinValueValidator
 from calendar import monthrange as mr
 from datetime import date, datetime
 from hr.bsdate import BSDate
-import pdb
+from .helpers import get_y_m_tuple_list, are_side_months, zero_for_none, none_for_zero
+# import pdb
+
+
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.db.models import F
+from django.db.models.signals import pre_delete
+from django.dispatch.dispatcher import receiver
 
 # from core.models import FiscalYear
 # from solo.models import SingletonModel
@@ -45,46 +53,240 @@ holder_type = [('EMPLOYEE', _("Employee's Account")),
 # When yearly than when to pay should be in setting
 
 
-def get_y_m_tuple_list(from_date, to_date):
-    return_list = []
-    while from_date <= to_date:
-        return_list.append((from_date.year, from_date.month))
-        if from_date.month < 12:
-            if type(from_date) == date:
-                from_date = date(
-                    from_date.year,
-                    from_date.month + 1,
-                    from_date.day
-                    )
-            else:
-                from_date = BSDate(
-                    from_date.year,
-                    from_date.month + 1,
-                    from_date.day
-                    )
+class Account(models.Model):
+    code = models.CharField(max_length=10, blank=True, null=True)
+    name = models.CharField(max_length=100)
+    current_dr = models.FloatField(null=True, blank=True)
+    current_cr = models.FloatField(null=True, blank=True)
+    opening_dr = models.FloatField(default=0)
+    opening_cr = models.FloatField(default=0)
+
+    def get_absolute_url(self):
+        return '/ledger/' + str(self.id)
+
+    # def get_last_day_last_transaction(self):
+    #     transactions = Transaction.objects.filter(account=self, date__lt=date.today()).order_by('-id', '-date')[:1]
+    #     if len(transactions) > 0:
+    #         return transactions[0]
+    #
+    # def get_last_transaction_before(self, before_date):
+    #     transactions = Transaction.objects.filter(account=self, date__lt=before_date).order_by('-id', '-date')[:1]
+    #     if len(transactions) > 0:
+    #         return transactions[0]
+    #
+    @property
+    def balance(self):
+        return self.get_balance()
+
+    def get_balance(self):
+        return zero_for_none(self.current_dr) - zero_for_none(self.current_cr)
+
+    def get_day_opening_dr(self, before_date=None):
+        if not before_date:
+            before_date = datetime.date.today()
+        transactions = Transaction.objects.filter(account=self, journal_entry__date__lt=before_date).order_by(
+            '-journal_entry__id', '-journal_entry__date')[:1]
+        if len(transactions) > 0:
+            return transactions[0].current_dr
+        return self.current_dr
+
+    def get_day_opening_cr(self, before_date=None):
+        if not before_date:
+            before_date = datetime.date.today()
+        transactions = Transaction.objects.filter(account=self, journal_entry__date__lt=before_date).order_by(
+            '-journal_entry__id', '-journal_entry__date')[:1]
+        if len(transactions) > 0:
+            return transactions[0].current_cr
+        return self.current_cr
+
+    # def get_day_opening(self, before_date=None):
+        if not before_date:
+            before_date = datetime.date.today()
+        transactions = Transaction.objects.filter(account=self, journal_entry__date__lt=before_date).order_by(
+            '-journal_entry__id', '-journal_entry__date')[:1]
+        if len(transactions) > 0:
+            return zero_for_none(transactions[0].current_dr) - zero_for_none(transactions[0].current_cr)
+        return self.opening_dr - self.opening_cr
+
+    # day_opening_dr = property(get_day_opening_dr)
+    # day_opening_cr = property(get_day_opening_cr)
+    #
+    # day_opening = property(get_day_opening)
+
+    def get_cr_amount(self, day):
+        # journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
+        transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
+            '-journal_entry__id', '-journal_entry__date')[:1]
+        if len(transactions) > 0:
+            return transactions[0].current_cr
+        return 0
+
+    def get_dr_amount(self, day):
+        # journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
+        transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
+            '-journal_entry__id', '-journal_entry__date')[:1]
+        if len(transactions) > 0:
+            return transactions[0].current_dr
+        return 0
+
+    # no need
+    def save(self, *args, **kwargs):
+        queryset = Account.objects.all()
+        original_name = self.name
+        nxt = 2
+        if not self.pk:
+            while queryset.filter(**{'name': self.name}):
+                self.name = original_name
+                end = '%s%s' % ('-', nxt)
+                if len(self.name) + len(end) > 100:
+                    self.name = self.name[:100 - len(end)]
+                self.name = '%s%s' % (self.name, end)
+                nxt += 1
+        return super(Account, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.name
+
+    # class Meta:
+    #     unique_together = ('name', 'company')
+
+
+class JournalEntry(models.Model):
+    date = models.DateField()
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    source = GenericForeignKey('content_type', 'object_id')
+
+    def __str__(self):
+        return str(self.content_type) + ': ' + str(self.object_id) + ' [' + str(self.date) + ']'
+
+    class Meta:
+        verbose_name_plural = u'Journal Entries'
+
+
+class Transaction(models.Model):
+    account = models.ForeignKey(Account)
+    dr_amount = models.FloatField(null=True, blank=True)
+    cr_amount = models.FloatField(null=True, blank=True)
+    current_dr = models.FloatField(null=True, blank=True)
+    current_cr = models.FloatField(null=True, blank=True)
+    journal_entry = models.ForeignKey(JournalEntry, null=True, related_name='transactions')
+
+    def get_balance(self):
+        return zero_for_none(self.current_dr) - zero_for_none(self.current_cr)
+
+    def __str__(self):
+        return str(self.account) + ' [' + str(self.dr_amount) + ' / ' + str(self.cr_amount) + ']'
+
+
+def alter(account, date, dr_difference, cr_difference):
+    Transaction.objects.filter(journal_entry__date__gt=date, account=account).update(
+        current_dr=none_for_zero(zero_for_none(F('current_dr')) + zero_for_none(dr_difference)),
+        current_cr=none_for_zero(zero_for_none(F('current_cr')) + zero_for_none(cr_difference)))
+
+
+def set_transactions(submodel, date, *args):
+    if isinstance(date, unicode):
+        date = datetime.datetime.strptime(date, '%Y-%m-%d')
+    journal_entry, created = JournalEntry.objects.get_or_create(
+        content_type=ContentType.objects.get_for_model(submodel), object_id=submodel.id,
+        defaults={
+            'date': date
+        })
+    for arg in args:
+        # transaction = Transaction(account=arg[1], dr_amount=arg[2])
+        if arg[1] == 'cash':
+            arg[1] = Account.objects.get(name='Cash')
+        matches = journal_entry.transactions.filter(account=arg[1])
+        if not matches:
+            transaction = Transaction()
+            transaction.account = arg[1]
+            if arg[0] == 'dr':
+                transaction.dr_amount = float(zero_for_none(arg[2]))
+                transaction.cr_amount = None
+                transaction.account.current_dr = none_for_zero(
+                    zero_for_none(transaction.account.current_dr) + transaction.dr_amount)
+                alter(arg[1], date, float(arg[2]), 0)
+            if arg[0] == 'cr':
+                transaction.cr_amount = float(zero_for_none(arg[2]))
+                transaction.dr_amount = None
+                transaction.account.current_cr = none_for_zero(
+                    zero_for_none(transaction.account.current_cr) + transaction.cr_amount)
+                alter(arg[1], date, 0, float(arg[2]))
+            transaction.current_dr = none_for_zero(
+                zero_for_none(transaction.account.get_dr_amount(date + datetime.timedelta(days=1)))
+                + zero_for_none(transaction.dr_amount))
+            transaction.current_cr = none_for_zero(
+                zero_for_none(transaction.account.get_cr_amount(date + datetime.timedelta(days=1)))
+                + zero_for_none(transaction.cr_amount))
         else:
-            if type(from_date) == date:
-                from_date = date(
-                    from_date.year + 1,
-                    1,
-                    from_date.day
-                    )
+            transaction = matches[0]
+            transaction.account = arg[1]
+
+            # cancel out existing dr_amount and cr_amount from current_dr and current_cr
+            # if transaction.dr_amount:
+            #     transaction.current_dr -= transaction.dr_amount
+            #     transaction.account.current_dr -= transaction.dr_amount
+            #
+            # if transaction.cr_amount:
+            #     transaction.current_cr -= transaction.cr_amount
+            #     transaction.account.current_cr -= transaction.cr_amount
+
+            # save new dr_amount and add it to current_dr/cr
+            if arg[0] == 'dr':
+                dr_difference = float(arg[2]) - zero_for_none(transaction.dr_amount)
+                cr_difference = zero_for_none(transaction.cr_amount) * -1
+                alter(arg[1], transaction.journal_entry.date, dr_difference, cr_difference)
+                transaction.dr_amount = float(arg[2])
+                transaction.cr_amount = None
             else:
-                from_date = BSDate(
-                    from_date.year + 1,
-                    1,
-                    from_date.day
-                    )
-    return return_list
+                cr_difference = float(arg[2]) - zero_for_none(transaction.cr_amount)
+                dr_difference = zero_for_none(transaction.dr_amount) * -1
+                alter(arg[1], transaction.journal_entry.date, dr_difference, cr_difference)
+                transaction.cr_amount = float(arg[2])
+                transaction.dr_amount = None
+
+            transaction.current_dr = none_for_zero(zero_for_none(transaction.current_dr) + dr_difference)
+            transaction.current_cr = none_for_zero(zero_for_none(transaction.current_cr) + cr_difference)
+            transaction.account.current_dr = none_for_zero(
+                zero_for_none(transaction.account.current_dr) + dr_difference)
+            transaction.account.current_cr = none_for_zero(
+                zero_for_none(transaction.account.current_cr) + cr_difference)
+
+        # the following code lies outside if,else block, inside for loop
+        transaction.account.save()
+        try:
+            journal_entry.transactions.add(transaction, bulk=False)
+        except TypeError:  # for Django <1.9
+            journal_entry.transactions.add(transaction)
 
 
-def are_side_months(from_date, to_date):
-    if from_date.year == to_date.year and to_date.month - from_date.month == 1:
-        return True
-    elif to_date.year - from_date.year == 1 and from_date.month - to_date.month == 11:
-        return True
-    else:
-        return False
+def delete_rows(rows, model):
+    for row in rows:
+        if row.get('id'):
+            instance = model.objects.get(id=row.get('id'))
+            try:
+                JournalEntry.objects.get(content_type=ContentType.objects.get_for_model(model),
+                                         model_id=instance.id).delete()
+            except:
+                pass
+            instance.delete()
+
+
+@receiver(pre_delete, sender=Transaction)
+def _transaction_delete(sender, instance, **kwargs):
+    transaction = instance
+    # cancel out existing dr_amount and cr_amount from account's current_dr and current_cr
+    if transaction.dr_amount:
+        transaction.account.current_dr -= transaction.dr_amount
+
+    if transaction.cr_amount:
+        transaction.account.current_cr -= transaction.cr_amount
+
+    alter(transaction.account, transaction.journal_entry.date, float(zero_for_none(transaction.dr_amount)) * -1,
+          float(zero_for_none(transaction.cr_amount)) * -1)
+
+    transaction.account.save()
 
 
 class AccountType(models.Model):
@@ -96,32 +298,32 @@ class AccountType(models.Model):
         return self.name
 
 
-class Account(models.Model):
-    # account_holder_type = models.CharField(choices=holder_type, max_length=50)
-    # account_type = models.ForeignKey(AccountType)
-    org_name = models.CharField(max_length=200)
-    branch = models.CharField(max_length=150)
-    acc_number = models.CharField(max_length=100)
-    description = models.CharField(max_length=256)
+# class Account(models.Model):
+#     # account_holder_type = models.CharField(choices=holder_type, max_length=50)
+#     # account_type = models.ForeignKey(AccountType)
+#     org_name = models.CharField(max_length=200)
+#     branch = models.CharField(max_length=150)
+#     acc_number = models.CharField(max_length=100)
+#     description = models.CharField(max_length=256)
 
-    def __unicode__(self):
-        return '[%s][%s]' % (
-                                   # self.account_type,
-                                   self.org_name,
-                                   self.acc_number,
-                                   # self.account_holder_type
-                                   )
+#     def __unicode__(self):
+#         return '[%s][%s]' % (
+#                                    # self.account_type,
+#                                    self.org_name,
+#                                    self.acc_number,
+#                                    # self.account_holder_type
+#                                    )
 
 
-class Transaction(models.Model):
-    account = models.ForeignKey(Account)
-    credit = models.FloatField()
-    debit = models.FloatField()
-    date_time = models.DateTimeField(default=timezone.now)
-    description = models.CharField(max_length=120)
+# class Transaction(models.Model):
+#     account = models.ForeignKey(Account)
+#     credit = models.FloatField()
+#     debit = models.FloatField()
+#     date_time = models.DateTimeField(default=timezone.now)
+#     description = models.CharField(max_length=120)
 
-    def __unicode__(self):
-        return str(self.account.id)
+#     def __unicode__(self):
+#         return str(self.account.id)
 
 # class InsuranceAccount(models.model):
 #     org_name = models.CharField(max_length=200)
