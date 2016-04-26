@@ -51,6 +51,9 @@
                 <th>Employee</th>
                 <th>Allowance</th>
                 <th>Incentive</th>
+                <!-- ko foreach: deduction_headings -->
+                     <th data-bind="text: $data" ></th>
+                <!-- /ko -->
                 <th>Deduced Amount</th>
                 <th>Income Tax</th>
                 <th>Pro Tempore Amount</th>
@@ -64,6 +67,9 @@
                     <td>{{ r_form.paid_employee }}</td>
                     <td>{{ r_form.allowance }}</td>
                     <td>{{ r_form.incentive }}</td>
+                    <!-- ko foreach: deduction_detail -->
+                        <td data-bind="text: amount" ></td>
+                    <!-- /ko -->
                     <td>{{ r_form.deduced_amount }}</td>
                     <td>{{ r_form.income_tax }}</td>
                     <td>{{ r_form.pro_tempore_amount }}</td>

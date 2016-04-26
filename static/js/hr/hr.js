@@ -55,7 +55,7 @@ function PaymentEntryRow() {
     self.pro_tempore_amount = ko.observable();
     self.salary = ko.observable();
     self.paid_amount = ko.observable();
-    self.transactions = ko.observableArray();
+    self.deduction_detail = ko.observableArray();
     
     // Make here a observable function dat will set other parameters with employee id and date range
     self.setOtrParam = ko.computed(function(){
@@ -84,6 +84,15 @@ function PaymentEntryRow() {
                     self.pro_tempore_amount(response.data.pro_tempore_amount);
                     self.salary(response.data.salary);
                     self.paid_amount(response.data.paid_amount);
+
+                    for(deduction of response.data.deduction_detail){
+                        var deduct = new DeductDetail()
+                        deduct.name = deduction.name;
+                        deduct.deduction_id=deduction.deduction_id;
+                        deduct.amount = deduction.amount;
+                        self.deduction_detail.push(deduct);
+                        // vm.deduction_headings.push(deduction.name)
+                    };
 
             // // Set transaction class here
             //         var company_credit_trans = function(credit_amount, description){
@@ -184,6 +193,8 @@ function PayrollEntry() {
 
     // self.entry_datetime=ko.observable();
     self.branch = ko.observable();
+
+    self.deduction_headings = ko.observableArray();
     
     self.switch_p_type  = ko.computed(function(){
         console.log(self.payroll_type)
