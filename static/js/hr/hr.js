@@ -197,7 +197,7 @@ function PayrollEntry() {
         };
     }); 
 
-    self.saveAndAdd = function(){
+    self.saveAndAdd = function(formElement){
         console.log('payment row saved');
     };
     self.setup_formset = function(){
@@ -269,6 +269,7 @@ function PayrollEntry() {
                         self.rows.push(row);
                     }
                 };
+                self.setup_formset();
 
                 // Here mapping should be done
                 // console.log(data);
