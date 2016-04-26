@@ -180,46 +180,41 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     deductions = sorted(
         Deduction.objects.all(), key=lambda obj: obj.priority)
     deduction = 0
-    deduction_detail = {}
+    deduction_detail = []
     for obj in deductions:
+        deduction_detail_object = {}
         if obj.deduction_for == 'EMPLOYEE ACC':
-            deduction_detail[obj.in_acc_type.name] = {}
-            deduction_detail[obj.in_acc_type.name]['amount'] = 0
+            deduction_detail_object['name'] = obj.in_acc_type.name
+            deduction_detail_object['deduction_id'] = obj.id
+            deduction_detail_object['amount'] = 0
+
             if obj.deduct_type == 'AMOUNT':
-                deduction_detail[obj.in_acc_type.name][
-                    'amount'] += obj.amount * total_month
+                deduction_detail_object['amount'] += obj.amount * total_month
             else:
                 # Rate
-                deduction_detail[obj.in_acc_type.name][
-                    'amount'] += obj.amount_rate / 100.0 * salary
+                deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
 
             if employee.is_permanent:
                 if obj.in_acc_type.permanent_multiply_rate:
-                    deduction_detail[obj.in_acc_type.name][
-                        'amount'] *= obj.in_acc_type.permanent_multiply_rate
-            deduction_detail[obj.in_acc_type.name][
-                'account_id'] = get_account_id(
-                    employee,
-                    obj.in_acc_type.name
-            )
-            deduction += deduction_detail[obj.in_acc_type.name]['amount']
+                    deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
+            deduction += deduction_detail_object['amount']
 
         else:
             name = '_'.join(obj.name.split(' ')).lower()
-            other_deduction = {}
-            other_deduction[name] = {}
-            other_deduction[name]['amount'] = 0
+            deduction_detail_object['name'] = name
+            deduction_detail_object['deduction_id'] = obj.id
+
+            deduction_detail_object['amount'] = 0
             # EXPLICIT ACC
             if obj.deduct_type == 'AMOUNT':
-                other_deduction[name][
+                deduction_detail_object[
                     'amount'] += obj.amount * total_month
             else:
                 # Rate
-                other_deduction[name][
+                deduction_detail_object[
                     'amount'] += obj.amount_rate / 100.0 * salary
-            other_deduction[name][
-                'account_id'] = obj.explicit_acc.id
-            deduction += other_deduction[name]['amount']
+            deduction += deduction_detail_object['amount']
+        deduction_detail.append(deduction_detail_object)
 
     # Income tax logic
     income_tax = 0
@@ -240,7 +235,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     employee_response['income_tax'] = income_tax
     employee_response['deduced_amount'] = deduction
     employee_response['deduction_detail'] = deduction_detail
-    employee_response['other_deduction'] = other_deduction
+    # employee_response['other_deduction'] = other_deduction
 
     # Handle Pro Tempore
     # paid flag should be set after transaction
