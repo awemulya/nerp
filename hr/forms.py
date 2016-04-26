@@ -45,10 +45,14 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class PaymentRowForm(forms.ModelForm):
+    deduced_amount = forms.FloatField(
+        widget=NumberInput(attrs={'data-bind': "value: deduced_amount"})
+    )
+
     class Meta:
         model = PaymentRecord
-        # exclude = ('paid_from_date', 'paid_to_date')
-        fields = '__all__'
+        exclude = ('deduction_detail',)
+        # fields = '__all__'
 
         # fields = ('name', 'title', 'birth_date')
         widgets = {
@@ -58,7 +62,7 @@ class PaymentRowForm(forms.ModelForm):
             'absent_days': NumberInput(attrs={'data-bind': 'visible: false'}),
             'allowance': NumberInput(attrs={'data-bind': "value: allowance"}),
             'incentive': NumberInput(attrs={'data-bind': "value: incentive"}),
-            'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount"}),
+            # 'deduction_detail': SelectMultiple(attrs={'data-bind': "value: deduced_amount"}),
             'income_tax': NumberInput(attrs={'data-bind': "value: income_tax"}),
             'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount"}),
             'salary': NumberInput(attrs={'data-bind': "value: salary"}),

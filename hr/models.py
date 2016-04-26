@@ -703,6 +703,11 @@ class IncomeTaxRate(models.Model):
         return u"From %f" % (self.start_from)
 
 
+class DeductionDetail(models.Model):
+    deduction = models.ForeignKey(Deduction, related_name='deduced_amount_detail')
+    amount = models.FloatField()
+
+
 class PaymentRecord(models.Model):
     paid_employee = models.ForeignKey(Employee)
     paid_from_date = BSDateField()
@@ -710,7 +715,7 @@ class PaymentRecord(models.Model):
     absent_days = models.PositiveIntegerField()
     allowance = models.FloatField(null=True, blank=True)
     incentive = models.FloatField(null=True, blank=True)
-    deduced_amount = models.FloatField(null=True, blank=True)
+    deduction_detail = models.ManyToManyField(DeductionDetail, blank=True)
     income_tax = models.FloatField(null=True, blank=True)
     pro_tempore_amount = models.FloatField(null=True, blank=True)
     salary = models.FloatField(null=True, blank=True)
@@ -728,6 +733,7 @@ class PaymentRecord(models.Model):
 class PayrollEntry(models.Model):
     entry_row = models.ManyToManyField(PaymentRecord)
     entry_datetime = models.DateTimeField(default=timezone.now)
+    approved = models.BooleanField(default=False)
 
 
 class EmployeeAccount(models.Model):
