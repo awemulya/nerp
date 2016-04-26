@@ -30,13 +30,13 @@ $(document).ready(function () {
     // });
 });
 
-function Transaction(){
-    var self = this;
-    self.account_id = ko.observable();
-    self.debit = ko.observable();
-    self.credit = ko.observable();
-    self.description = ko.observable();
-};
+// function Transaction(){
+//     var self = this;
+//     self.account_id = ko.observable();
+//     self.debit = ko.observable();
+//     self.credit = ko.observable();
+//     self.description = ko.observable();
+// };
 
 
 function PaymentEntryRow() {
