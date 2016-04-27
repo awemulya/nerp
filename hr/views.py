@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import GroupPayrollForm, PaymentRowFormSet
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, get_deduction_names
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
@@ -115,7 +115,7 @@ def delta_month_date(p_from, p_to):
 
 def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     employee_response = {}
-    employee_response['employee_id'] = employee.id
+    employee_response['paid_employee'] = employee.id
     total_month, total_work_day = delta_month_date(
         paid_from_date,
         paid_to_date
@@ -180,41 +180,52 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     deductions = sorted(
         Deduction.objects.all(), key=lambda obj: obj.priority)
     deduction = 0
-    deduction_detail = []
+    # deduction_detail = []
     for obj in deductions:
-        deduction_detail_object = {}
+        # deduction_detail_object = {}
         if obj.deduction_for == 'EMPLOYEE ACC':
-            deduction_detail_object['name'] = obj.in_acc_type.name
-            deduction_detail_object['deduction_id'] = obj.id
-            deduction_detail_object['amount'] = 0
+            # deduction_detail_object['name'] = obj.in_acc_type.name
+            # deduction_detail_object['deduction_id'] = obj.id
+            # deduction_detail_object['amount'] = 0
+            employee_response['%s_%s' %(obj.in_acc_type.name, obj.id)] = 0
 
             if obj.deduct_type == 'AMOUNT':
-                deduction_detail_object['amount'] += obj.amount * total_month
+                # deduction_detail_object['amount'] += obj.amount * total_month
+                employee_response['%s_%s' %(obj.in_acc_type.name, obj.id)] += obj.amount * total_month 
             else:
                 # Rate
-                deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
+                # deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
+                employee_response['%s_%s' %(obj.in_acc_type.name, obj.id)] += obj.amount_rate / 100.0 * salary
 
             if employee.is_permanent:
                 if obj.in_acc_type.permanent_multiply_rate:
-                    deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
-            deduction += deduction_detail_object['amount']
+                    # deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
+                    employee_response['%s_%s' %(obj.in_acc_type.name, obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
+            # deduction += deduction_detail_object['amount']
+            deduction += employee_response['%s_%s' %(obj.in_acc_type.name, obj.id)]
 
         else:
             name = '_'.join(obj.name.split(' ')).lower()
-            deduction_detail_object['name'] = name
-            deduction_detail_object['deduction_id'] = obj.id
+            # deduction_detail_object['name'] = name
+            # deduction_detail_object['deduction_id'] = obj.id
 
-            deduction_detail_object['amount'] = 0
+            # deduction_detail_object['amount'] = 0
+
+            employee_response['%s_%s' %(name, obj.id)] = 0
+            
             # EXPLICIT ACC
             if obj.deduct_type == 'AMOUNT':
-                deduction_detail_object[
-                    'amount'] += obj.amount * total_month
+                # deduction_detail_object[
+                #     'amount'] += obj.amount * total_month
+                employee_response['%s_%s' %(name, obj.id)] += obj.amount * total_month
             else:
                 # Rate
-                deduction_detail_object[
-                    'amount'] += obj.amount_rate / 100.0 * salary
-            deduction += deduction_detail_object['amount']
-        deduction_detail.append(deduction_detail_object)
+                # deduction_detail_object[
+                #     'amount'] += obj.amount_rate / 100.0 * salary
+                employee_response['%s_%s' %(name, obj.id)] += obj.amount_rate / 100.0 * salary
+            # deduction += deduction_detail_object['amount']
+            deduction += employee_response['%s_%s' %(name, obj.id)]
+        # deduction_detail.append(deduction_detail_object)
 
     # Income tax logic
     income_tax = 0
@@ -234,7 +245,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 
     employee_response['income_tax'] = income_tax
     employee_response['deduced_amount'] = deduction
-    employee_response['deduction_detail'] = deduction_detail
+    # employee_response['deduction_detail'] = deduction_detail
     # employee_response['other_deduction'] = other_deduction
 
     # Handle Pro Tempore
@@ -274,8 +285,15 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 
 # Create your views here.
 def payroll_entry(request):
-    main_form = GroupPayrollForm(initial={'payroll_type': 'BRANCH'})
+    ko_data = {}
+    ko_data['deduction_data'] = {}
+
+    for name, id in get_deduction_names():
+        ko_data['deduction_data']['%s_%s' %(name, id)] = ''
+
+    main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
     row_form = PaymentRowFormSet()[0]
+    deduction_form = DeductionFormSet()[0]
     # underscore_row_form = get_underscore_formset(str(row_form))
     return render(
         request,
@@ -283,7 +301,8 @@ def payroll_entry(request):
         {
           'r_form': row_form,
           'm_form': main_form,
-          # 'u_f': underscore_row_form
+          'deduction_form': deduction_form,
+          'ko_data': ko_data
         })
 
 

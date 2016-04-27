@@ -5,9 +5,10 @@
 {% load i18n %}
 
 {% block head_end %}
+<script src="{% static 'js/vendors/knockout-mapping-plugin.js' %}"></script>
     <script src="{% static 'js/hr/hr.js' %}"></script>
     <script>
-        // ko_data = {{data|jsonify}};
+        ko_data = {{ko_data|jsonify}};
     </script>
 {% endblock %}
 
@@ -51,9 +52,9 @@
                 <th>Employee</th>
                 <th>Allowance</th>
                 <th>Incentive</th>
-                <!-- ko foreach: deduction_headings -->
-                     <th data-bind="text: $data" ></th>
-                <!-- /ko -->
+                {% for field in deduction_form %}
+                    <th>{{ field.label }}</th>
+                {% endfor %}
                 <th>Deduced Amount</th>
                 <th>Income Tax</th>
                 <th>Pro Tempore Amount</th>
@@ -67,9 +68,9 @@
                     <td>{{ r_form.paid_employee }}</td>
                     <td>{{ r_form.allowance }}</td>
                     <td>{{ r_form.incentive }}</td>
-                    <!-- ko foreach: deduction_detail -->
-                        <td data-bind="text: amount" ></td>
-                    <!-- /ko -->
+                    {% for field in deduction_form %}
+                        <th>{{ field }}</th>
+                    {% endfor %}
                     <td>{{ r_form.deduced_amount }}</td>
                     <td>{{ r_form.income_tax }}</td>
                     <td>{{ r_form.pro_tempore_amount }}</td>

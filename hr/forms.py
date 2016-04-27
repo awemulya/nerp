@@ -4,7 +4,7 @@ from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#, MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
-
+from .models import Deduction
 
 # class DateSelectorWidget(MultiWidget):
 #     def __init__(self, attrs=None):
@@ -42,6 +42,31 @@ from django.utils.translation import ugettext_lazy as _
 #             return ''
 #         else:
 #             return str(D)
+
+def get_deduction_names():
+    deductions = Deduction.objects.all()
+    names = []
+    for obj in deductions:
+        if obj.deduction_for == 'EMPLOYEE ACC':
+            name = obj.in_acc_type.name
+        else:
+            name = '_'.join(obj.name.split(' ')).lower()
+        names.append((name, obj.id))
+    return names
+
+
+class DeductionForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        # extra = kwargs.pop('extra')
+        super(DeductionForm, self).__init__(*args, **kwargs)
+      
+        for name, id in get_deduction_names():
+            self.fields['deduction_%s' % id] = forms.FloatField(
+                label=' '.join(name.split('_')).title,
+                widget=NumberInput(attrs={'data-bind': "value: %s_%s" % (name, id)}),
+                )
+
 
 
 class PaymentRowForm(forms.ModelForm):
@@ -142,3 +167,4 @@ class EmployeeAccountInlineFormset(forms.models.BaseInlineFormSet):
 
 
 PaymentRowFormSet = forms.formset_factory(PaymentRowForm)
+DeductionFormSet = forms.formset_factory(DeductionForm)
