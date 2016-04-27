@@ -116,6 +116,8 @@ def delta_month_date(p_from, p_to):
 def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     employee_response = {}
     employee_response['paid_employee'] = employee.id
+    employee_response['employee_grade'] = employee.designation.grade.grade_name
+    employee_response['employee_designation'] = employee.designation.designation_name
     total_month, total_work_day = delta_month_date(
         paid_from_date,
         paid_to_date

@@ -53,6 +53,10 @@ function PaymentEntryRow(data) {
     var self = this;
     self.id = ko.observable();
     self.paid_employee = ko.observable();
+
+    self.employee_grade = ko.observable();
+    self.employee_designation = ko.observable();
+
     self.paid_from_date = ko.observable();
     self.paid_to_date = ko.observable();
     self.absent_days = ko.observable();
@@ -240,14 +244,21 @@ function PayrollEntry(data) {
             ele = $(row_elements[i]).children();
             for(j=0; j<ele.length-1;j++){
                 input_element = $(ele[j]).children()[0];
+                
                 name_attr = $(input_element).attr('name');
+                if(name_attr){    
+                    name_split = name_attr.split('-');
+                    name_split[1] = String(i-1)
+                    $(input_element).attr('name', name_split.join('-'));
+                };
+                
                 id_attr = $(input_element).attr('id');
-                name_split = name_attr.split('-');
-                name_split[1] = String(i-1)
-                id_split = id_attr.split('-');
-                id_split[1] = String(i-1) 
-                $(input_element).attr('name', name_split.join('-'));
-                $(input_element).attr('id', id_split.join('-'));
+                if(id_attr){    
+                    id_split = id_attr.split('-');
+                    id_split[1] = String(i-1) 
+                    $(input_element).attr('id', id_split.join('-'));
+                };
+                
             };
 
         };

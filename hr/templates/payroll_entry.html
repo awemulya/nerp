@@ -50,6 +50,10 @@
         <table class="table payment-row-table" >
             <tr data-bind="visible:rows().length>0" >
                 <th>Employee</th>
+                
+                <th>Employee Grade</th>
+                <th>Employee Designation</th>
+
                 <th>Allowance</th>
                 <th>Incentive</th>
                 {% for field in deduction_form %}
@@ -66,6 +70,10 @@
             <!-- ko foreach: rows -->
                 <tr>     
                     <td>{{ r_form.paid_employee }}</td>
+                   
+                    <td><b data-bind="text: employee_grade"></b></td>
+                    <td><b data-bind="text: employee_designation"></b></td>
+                   
                     <td>{{ r_form.allowance }}</td>
                     <td>{{ r_form.incentive }}</td>
                     {% for field in deduction_form %}
