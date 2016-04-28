@@ -112,8 +112,10 @@ def delta_month_date(p_from, p_to):
             total_work_day += bs[mon[0]][mon[1] - 1]
     return (total_month, total_work_day)
 
+
 def salary_deduction_unit():
     pass
+
 
 def salary_taxation_unit():
     pass
@@ -187,53 +189,59 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     # Now the deduction part from the salary
     deductions = sorted(
         Deduction.objects.all(), key=lambda obj: obj.priority)
+
+    # Addition of PF and bima to salary if employee is permanent
+    for item in deductions:
+        if employee.is_permanent:
+            if obj.add2_init_salary and obj.deduction_for == 'EMPLOYEE ACC':
+                if obj.deduct_type == 'AMOUNT':
+                    salary += obj.amount * total_month
+                else:
+                    # Rate
+                    salary += obj.amount_rate / 100.0 * salary
+
     deduction = 0
     # deduction_detail = []
     for obj in deductions:
         # deduction_detail_object = {}
         if obj.deduction_for == 'EMPLOYEE ACC':
-            # deduction_detail_object['name'] = obj.in_acc_type.name
-            # deduction_detail_object['deduction_id'] = obj.id
-            # deduction_detail_object['amount'] = 0
-            employee_response['%s_%s' %(obj.in_acc_type.name, obj.id)] = 0
+            if obj.add2_init_salary:
+                if obj.deduct_type == 'AMOUNT':
+                    salary += obj.amount * total_month
+                else:
+                    # Rate
+                    salary += obj.amount_rate / 100.0 * salary
 
-            if obj.deduct_type == 'AMOUNT':
-                # deduction_detail_object['amount'] += obj.amount * total_month
-                employee_response['%s_%s' %(obj.in_acc_type.name, obj.id)] += obj.amount * total_month 
-            else:
-                # Rate
-                # deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
-                employee_response['%s_%s' %(obj.in_acc_type.name, obj.id)] += obj.amount_rate / 100.0 * salary
+            employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] = 0
 
-            if employee.is_permanent:
-                if obj.in_acc_type.permanent_multiply_rate:
-                    # deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
-                    employee_response['%s_%s' %(obj.in_acc_type.name, obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
-            # deduction += deduction_detail_object['amount']
-            deduction += employee_response['%s_%s' %(obj.in_acc_type.name, obj.id)]
+            if employee.is_permanent or obj.with_temporary_employee:
+
+                if obj.deduct_type == 'AMOUNT':
+                    employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] += obj.amount * total_month
+                else:
+                    # Rate
+                    # deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
+                    employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] += obj.amount_rate / 100.0 * salary
+
+                if employee.is_permanent:
+                    if obj.in_acc_type.permanent_multiply_rate:
+                        # deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
+                        employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
+                # deduction += deduction_detail_object['amount']
+                deduction += employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)]
 
         else:
             name = '_'.join(obj.name.split(' ')).lower()
-            # deduction_detail_object['name'] = name
-            # deduction_detail_object['deduction_id'] = obj.id
+            employee_response['%s_%s' % (name, obj.id)] = 0
 
-            # deduction_detail_object['amount'] = 0
-
-            employee_response['%s_%s' %(name, obj.id)] = 0
-            
             # EXPLICIT ACC
             if obj.deduct_type == 'AMOUNT':
                 # deduction_detail_object[
                 #     'amount'] += obj.amount * total_month
-                employee_response['%s_%s' %(name, obj.id)] += obj.amount * total_month
+                employee_response['%s_%s' % (name, obj.id)] += obj.amount * total_month
             else:
-                # Rate
-                # deduction_detail_object[
-                #     'amount'] += obj.amount_rate / 100.0 * salary
-                employee_response['%s_%s' %(name, obj.id)] += obj.amount_rate / 100.0 * salary
-            # deduction += deduction_detail_object['amount']
-            deduction += employee_response['%s_%s' %(name, obj.id)]
-        # deduction_detail.append(deduction_detail_object)
+                employee_response['%s_%s' % (name, obj.id)] += obj.amount_rate / 100.0 * salary
+            deduction += employee_response['%s_%s' % (name, obj.id)]
 
     # Income tax logic
     income_tax = 0
@@ -297,7 +305,7 @@ def payroll_entry(request):
     ko_data['deduction_data'] = {}
 
     for name, id in get_deduction_names():
-        ko_data['deduction_data']['%s_%s' %(name, id)] = ''
+        ko_data['deduction_data']['%s_%s' % (name, id)] = ''
 
     main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
     row_form = PaymentRowFormSet()[0]

@@ -452,6 +452,8 @@ class Deduction(models.Model):
     priority = models.IntegerField(unique=True)
 
     with_temporary_employee = models.BooleanField(default=False)
+    # For permanent
+    add2_init_salary = models.BooleanField(default=False)
 
     def __unicode__(self):
         if self.deduct_type == 'AMOUNT':
