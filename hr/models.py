@@ -544,7 +544,7 @@ class Employee(models.Model):
                     else:
                         days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.appoint_date)))
 
-            years_worked = days_worked.days/365
+            years_worked = days_worked.days / 365
             if years_worked <= grade_number:
                 salary += grade_salary + int(years_worked) * grade_rate
             elif years_worked > grade_number:
@@ -611,9 +611,9 @@ class Employee(models.Model):
             if type(from_date) == type(to_date):
                 if isinstance(from_date, date):
                     if from_date.month == 12:
-                        from_date_m = date(from_date.year+1, 1, 1)
+                        from_date_m = date(from_date.year + 1, 1, 1)
                     else:
-                        from_date_m = date(from_date.year, from_date.month+1, 1)
+                        from_date_m = date(from_date.year, from_date.month + 1, 1)
                     if to_date.month == 1:
                         to_date_m = date(to_date.year-1, 12, 1)
                     else:
@@ -655,8 +655,8 @@ class Employee(models.Model):
                 rhs_month,
                 rhs_month
                 )
-        lhs_salary = lhs_month_salary/from_date_month_days * lhs_days
-        rhs_salary = rhs_month_salary/to_date_month_days * rhs_days
+        lhs_salary = lhs_month_salary / float(from_date_month_days) * lhs_days
+        rhs_salary = rhs_month_salary / float(to_date_month_days) * rhs_days
         salary = salary_pure_months + lhs_salary + rhs_salary
         return salary
 
