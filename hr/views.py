@@ -112,6 +112,12 @@ def delta_month_date(p_from, p_to):
             total_work_day += bs[mon[0]][mon[1] - 1]
     return (total_month, total_work_day)
 
+def salary_deduction_unit():
+    pass
+
+def salary_taxation_unit():
+    pass
+
 
 def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     employee_response = {}

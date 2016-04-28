@@ -451,11 +451,18 @@ class Deduction(models.Model):
     description = models.CharField(max_length=150)
     priority = models.IntegerField(unique=True)
 
+    with_temporary_employee = models.BooleanField(default=False)
+
     def __unicode__(self):
         if self.deduct_type == 'AMOUNT':
             return '%s, %f' % (self.name, self.amount)
         else:
             return '%s, %f' % (self.name, self.amount_rate)
+
+    def save(self, *args, **kwargs):
+        if self.explicit_acc:
+            self.with_temporary_employee = True
+        super(Deduction, self).save(*args, **kwargs)
 
 
 class Employee(models.Model):
