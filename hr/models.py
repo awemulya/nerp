@@ -666,6 +666,12 @@ class Employee(models.Model):
         # salary = 0
         pass
 
+    def has_account(self, account_type):
+        for i in self.accounts.all():
+            if i.employee_account.account_type == account_type:
+                return True
+        return False
+
     def __unicode__(self):
         return str(self.employee.full_name)
 

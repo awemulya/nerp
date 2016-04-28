@@ -205,16 +205,9 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     for obj in deductions:
         # deduction_detail_object = {}
         if obj.deduction_for == 'EMPLOYEE ACC':
-            if obj.add2_init_salary:
-                if obj.deduct_type == 'AMOUNT':
-                    salary += obj.amount * total_month
-                else:
-                    # Rate
-                    salary += obj.amount_rate / 100.0 * salary
-
             employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] = 0
 
-            if employee.is_permanent or obj.with_temporary_employee:
+            if (employee.is_permanent or obj.with_temporary_employee) and employee.has_account(obj.in_acc_type):
 
                 if obj.deduct_type == 'AMOUNT':
                     employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] += obj.amount * total_month
