@@ -193,12 +193,12 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     # Addition of PF and bima to salary if employee is permanent
     for item in deductions:
         if employee.is_permanent:
-            if obj.add2_init_salary and obj.deduction_for == 'EMPLOYEE ACC':
-                if obj.deduct_type == 'AMOUNT':
-                    salary += obj.amount * total_month
+            if item.add2_init_salary and item.deduction_for == 'EMPLOYEE ACC':
+                if item.deduct_type == 'AMOUNT':
+                    salary += item.amount * total_month
                 else:
                     # Rate
-                    salary += obj.amount_rate / 100.0 * salary
+                    salary += item.amount_rate / 100.0 * salary
 
     deduction = 0
     # deduction_detail = []
