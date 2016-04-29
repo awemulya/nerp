@@ -216,7 +216,7 @@ def drc_date_by_days(in_date, drc):
     return r_date
 
 
-def emp_salary_eligibility(emp, p_from, p_to, is_monthly):
+def emp_salary_eligibility(emp, p_from, p_to):
     from hr.models import PaymentRecord
     emp_record = PaymentRecord.objects.filter(paid_employee=emp)
     if emp_record:

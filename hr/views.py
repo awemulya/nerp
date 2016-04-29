@@ -269,13 +269,13 @@ def salary_detail_impure_months(employee, paid_from_date, paid_to_date):
 
 def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     errors = {}
-    if employee:
-        if isinstance(paid_from_date, date):
-            if emp_salary_eligibility(employee, paid_from_date, paid_to_date):
-                errors['row'] = 'Employee has not worked for a given date range yet'
-        else:
-            if emp_salary_eligibility(employee, paid_from_date, paid_to_date):
-                errors['row'] = 'Employee appoint date is less than salary from date'
+    eligible, error = emp_salary_eligibility(
+        employee,
+        paid_from_date,
+        paid_to_date
+    )
+    if not eligible:
+        errors['row'] = error
     employee_response = {}
     employee_response['paid_employee'] = employee.id
     employee_response['employee_grade'] = employee.designation.grade.grade_name
