@@ -1,14 +1,15 @@
 from __future__ import division
+from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render
 from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, get_deduction_names
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
+from njango.nepdate import bs
 from .models import get_y_m_tuple_list
 from .bsdate import BSDate
-from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure
-from njango.nepdate import bs
+from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, emp_salary_eligibility
 import pdb
 
 
@@ -33,6 +34,7 @@ def verify_request_date(request):
                     request.POST.get('paid_to_date', None), '%Y-%m-%d').date()
             except:
                 error['paid_to_date'] = 'Incorrect Date Format'
+
         else:
             try:
 
@@ -266,6 +268,14 @@ def salary_detail_impure_months(employee, paid_from_date, paid_to_date):
 
 
 def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
+    errors = {}
+    if employee:
+        if isinstance(paid_from_date, date):
+            if emp_salary_eligibility(employee, paid_from_date, paid_to_date):
+                errors['row'] = 'Employee has not worked for a given date range yet'
+        else:
+            if emp_salary_eligibility(employee, paid_from_date, paid_to_date):
+                errors['row'] = 'Employee appoint date is less than salary from date'
     employee_response = {}
     employee_response['paid_employee'] = employee.id
     employee_response['employee_grade'] = employee.designation.grade.grade_name
@@ -433,6 +443,11 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     employee_response['paid_amount'] = salary - deduction - income_tax +\
         p_t_amount + incentive
 
+    if errors:
+        for item in employee_response:
+            if item not in ('paid_employee', 'employee_grade', 'employee_designation'):
+                employee_response[item] = 0
+        employee_response['errors'] = errors
     return employee_response
 
 
@@ -519,15 +534,15 @@ def get_employees_account(request):
                 )
 
             for employee in employees:
-                data_dict = {'employee_id': employee.id}
+                # data_dict = {'employee_id': employee.id}
                 employee_salary_detail = get_employee_salary_detail(
                     employee,
                     paid_from_date,
                     paid_to_date
                 )
 
-                data_dict.update(employee_salary_detail)
-                data_list.append(data_dict)
+                # data_dict.update(employee_salary_detail)
+                data_list.append(employee_salary_detail)
 
             response['data'] = data_list
             return JsonResponse(response)

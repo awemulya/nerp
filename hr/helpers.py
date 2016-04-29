@@ -154,6 +154,93 @@ def delta_month_date_impure(p_from, p_to):
     return (total_month, total_days)
 
 
+def bsdate2str(date):
+    li = [str(x) for x in date.date_tuple()]
+    return '/'.join(li)
+
+
+def inc_1_day(in_date):
+    if isinstance(in_date, date):
+        month_days = mr(in_date.year, in_date.month)[1]
+        if in_date.month == 12 and in_date.day == month_days:
+            r_date = date(in_date.year + 1, 1, 1)
+        elif in_date.month < 12 and in_date.day == month_days:
+            r_date = date(in_date.year, in_date.month + 1, 1)
+        else:
+            r_date = date(in_date.year, in_date.month, in_date.day + 1)
+    else:
+        month_days = bs[in_date.year][in_date.month - 1]
+        if in_date.month == 12 and in_date.day == month_days:
+            r_date = BSDate(in_date.year + 1, 1, 1)
+        elif in_date.month < 12 and in_date.day == month_days:
+            r_date = BSDate(in_date.year, in_date.month + 1, 1)
+        else:
+            r_date = BSDate(in_date.year, in_date.month, in_date.day + 1)
+    return r_date
+
+
+def drc_1_day(in_date):
+    if isinstance(in_date, date):
+        # month_days = mr(in_date.year, in_date.month)[1]
+        if in_date.month == 1 and in_date.day == 1:
+            m_d = mr(in_date.year - 1, in_date.month)[1]
+            r_date = date(in_date.year - 1, 12, m_d)
+        elif in_date.month > 1 and in_date.day == 1:
+            m_d1 = mr(in_date.year, in_date.month - 1)[1]
+            r_date = date(in_date.year, in_date.month - 1, m_d1)
+        else:
+            r_date = date(in_date.year, in_date.month, in_date.day - 1)
+    else:
+        if in_date.month == 1 and in_date.day == 1:
+            # m_d = mr(in_date.year - 1, in_date.month)[1]
+            m_d = bs[in_date.year - 1][in_date.month - 1]
+            r_date = BSDate(in_date.year - 1, 12, m_d)
+        elif in_date.month > 1 and in_date.day == 1:
+            # m_d1 = mr(in_date.year, in_date.month - 1)[1]
+            m_d1 = bs[in_date.year][in_date.month - 2]
+            r_date = BSDate(in_date.year, in_date.month - 1, m_d1)
+        else:
+            r_date = BSDate(in_date.year, in_date.month, in_date.day - 1)
+    return r_date
+
+
+def inc_date_by_days(in_date, inc):
+    for c in range(0, inc):
+        r_date = inc_1_day(in_date)
+    return r_date
+
+
+def drc_date_by_days(in_date, drc):
+    for c in range(0, drc):
+        r_date = drc_1_day(in_date)
+    return r_date
+
+
+def emp_salary_eligibility(emp, p_from, p_to):
+    from hr.models import PaymentRecord
+    emp_record = sorted(PaymentRecord.objects.filter(
+        paid_employee=emp,
+    ), key=lambda pr: pr.paid_to_date, reverse=True)
+    if emp_record:
+        last_paid = emp_record[0].paid_to_date
+        if type(last_paid) != type(p_from):
+            raise TypeError('Internal and external setting mismatch')
+        if p_from <= last_paid:
+            if isinstance(p_from, date):
+                error_msg = 'Already paid for/upto date %s' % '{:%Y/%m/%d}'.format(p_from)
+            else:
+                error_msg = 'Already paid for/upto date %s' % bsdate2str(p_from)
+        elif p_from > inc_1_day(last_paid):
+            if isinstance(p_from, date):
+                error_msg = 'Missed payment from %s to %s' % ('{:%Y/%m/%d}'.format(inc_1_day(last_paid)), '{:%Y/%m/%d}'.format(drc_1_day(p_from)))
+            else:
+                error_msg = 'Missed payment from %s to %s' % (bsdate2str(inc_1_day(p_from)), bsdate2str(drc_1_day(p_from)))
+
+    else:
+        # Empployee has not got any payment yet
+        pass
+
+
 def empty_to_none(o):
     if o == '':
         return None
