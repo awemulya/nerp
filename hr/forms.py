@@ -43,6 +43,7 @@ from .models import Deduction
 #         else:
 #             return str(D)
 
+
 def get_deduction_names():
     deductions = Deduction.objects.all()
     names = []
@@ -60,13 +61,12 @@ class DeductionForm(forms.Form):
     def __init__(self, *args, **kwargs):
         # extra = kwargs.pop('extra')
         super(DeductionForm, self).__init__(*args, **kwargs)
-      
+
         for name, id in get_deduction_names():
             self.fields['deduction_%s' % id] = forms.FloatField(
                 label=' '.join(name.split('_')).title,
                 widget=NumberInput(attrs={'data-bind': "value: %s_%s" % (name, id)}),
                 )
-
 
 
 class PaymentRowForm(forms.ModelForm):
