@@ -216,29 +216,56 @@ def drc_date_by_days(in_date, drc):
     return r_date
 
 
-def emp_salary_eligibility(emp, p_from, p_to):
+def emp_salary_eligibility(emp, p_from, p_to, is_monthly):
     from hr.models import PaymentRecord
-    emp_record = sorted(PaymentRecord.objects.filter(
-        paid_employee=emp,
-    ), key=lambda pr: pr.paid_to_date, reverse=True)
+    emp_record = PaymentRecord.objects.filter(paid_employee=emp)
     if emp_record:
-        last_paid = emp_record[0].paid_to_date
-        if type(last_paid) != type(p_from):
-            raise TypeError('Internal and external setting mismatch')
-        if p_from <= last_paid:
-            if isinstance(p_from, date):
+        if isinstance(emp_record[0].paid_to_date, date):
+            emp_record = sorted(
+                emp_record,
+                key=lambda pr: pr.paid_to_date,
+                reverse=True
+            )
+        else:
+            emp_record = sorted(
+                emp_record,
+                key=lambda pr: BSDate(*(bs_str2tuple(pr.paid_to_date))),
+                reverse=True
+            )
+    if emp_record:
+        if isinstance(emp_record[0].paid_to_date, date):
+            last_paid = emp_record[0].paid_to_date
+        else:
+            last_paid = BSDate(*(bs_str2tuple(emp_record[0].paid_to_date)))
+    else:
+        if isinstance(emp.appoint_date, date):
+            last_paid = drc_1_day(emp.appoint_date)
+            never_paid = True
+        else:
+            last_paid = drc_1_day(BSDate(*(bs_str2tuple(emp.appoint_date))))
+            never_paid = True
+    if type(last_paid) != type(p_from):
+        raise TypeError('Internal and external setting mismatch')
+    if p_from <= last_paid:
+        if isinstance(p_from, date):
+            if never_paid:
+                error_msg = 'Employee has not worked yet for %s' % '{:%Y/%m/%d}'.format(p_from)
+            else:
                 error_msg = 'Already paid for/upto date %s' % '{:%Y/%m/%d}'.format(p_from)
+        else:
+            if never_paid:
+                error_msg = 'Employee has not worked yet for %s' % bsdate2str(p_from)
             else:
                 error_msg = 'Already paid for/upto date %s' % bsdate2str(p_from)
-        elif p_from > inc_1_day(last_paid):
-            if isinstance(p_from, date):
-                error_msg = 'Missed payment from %s to %s' % ('{:%Y/%m/%d}'.format(inc_1_day(last_paid)), '{:%Y/%m/%d}'.format(drc_1_day(p_from)))
-            else:
-                error_msg = 'Missed payment from %s to %s' % (bsdate2str(inc_1_day(p_from)), bsdate2str(drc_1_day(p_from)))
-
+    elif p_from > inc_1_day(last_paid):
+        if isinstance(p_from, date):
+            error_msg = 'Missed payment from %s to %s' % ('{:%Y/%m/%d}'.format(inc_1_day(last_paid)), '{:%Y/%m/%d}'.format(drc_1_day(p_from)))
+        else:
+            error_msg = 'Missed payment from %s to %s' % (bsdate2str(inc_1_day(p_from)), bsdate2str(drc_1_day(p_from)))
+    if error_msg:
+        return False, error_msg
     else:
-        # Empployee has not got any payment yet
-        pass
+        return True, None
 
 
 def empty_to_none(o):
