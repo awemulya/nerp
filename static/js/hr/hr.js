@@ -67,13 +67,22 @@ function PaymentEntryRow(data) {
     self.pro_tempore_amount = ko.observable();
     self.salary = ko.observable();
     self.paid_amount = ko.observable();
+    self.request_flag = ko.observable(true);
     
-    self.request_flag = true;
     // self.deduction_detail = ko.observableArray();
     // here we will do mapping instead
     
 
-    
+    self.employee_changed = function () {
+        console.log('We entered here successfully');
+        console.log(self.paid_employee())
+        self.request_flag(true); 
+        // self.setOtrParam();   
+        // if (event.originalEvent) { //user changed
+        // } else { // program changed
+    };
+
+
     // Make here a observable function dat will set other parameters with employee id and date range
     self.setOtrParam = ko.computed(function(){
         if(self.paid_employee() && self.paid_from_date() && self.paid_to_date() && vm.payroll_type()=="INDIVIDUAL" && self.request_flag){
@@ -93,8 +102,11 @@ function PaymentEntryRow(data) {
                     vm.paid_from_date_error(response.errors.paid_from_date)
                     vm.paid_to_date_error(response.errors.paid_to_date)
                 }else{
-                    self.request_flag = false;
-                    ko.mapping.fromJS(response.data, self);
+                    var mapping = {
+                        'ignore': ["paid_employee"]
+                    }
+                    self.request_flag(false);
+                    ko.mapping.fromJS(response.data, mapping, self);
                     // self.allowance(response.data.allowance);
                     // self.incentive(response.data.incentive);
                     // self.deduced_amount(response.data.deduced_amount);

@@ -81,7 +81,7 @@ class PaymentRowForm(forms.ModelForm):
 
         # fields = ('name', 'title', 'birth_date')
         widgets = {
-            'paid_employee': Select(attrs={'data-bind': "value: paid_employee"}),
+            'paid_employee': Select(attrs={'data-bind': "value: paid_employee, event:{ change: employee_changed}"}),
             'paid_from_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date, visible: false",}),
             'paid_to_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date, visible:false"}),
             'absent_days': NumberInput(attrs={'data-bind': 'visible: false'}),
