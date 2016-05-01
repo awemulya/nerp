@@ -59,6 +59,42 @@ def verify_request_date(request):
         if error:
             return error
         else:
+            monthly_payroll = request.POST.get(
+                'monthly_payroll',
+                None
+            )
+            if monthly_payroll == u'true':
+                if isinstance(paid_from_date, date):
+                    to_month_days = mr(
+                        paid_to_date.year,
+                        paid_to_date.month
+                    )[1]
+                    paid_from_date = date(
+                        paid_from_date.year,
+                        paid_from_date.month,
+                        1
+                    )
+                    paid_to_date = date(
+                        paid_to_date.year,
+                        paid_to_date.month,
+                        to_month_days
+                    )
+
+                else:
+                    to_month_days = bs[
+                        paid_to_date.year][
+                        paid_to_date.month - 1
+                    ]
+                    paid_from_date = BSDate(
+                        paid_from_date.year,
+                        paid_from_date.month,
+                        1
+                    )
+                    paid_to_date = BSDate(
+                        paid_to_date.year,
+                        paid_to_date.month,
+                        to_month_days
+                    )
             return paid_from_date, paid_to_date
 
 
@@ -280,6 +316,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     employee_response['paid_employee'] = employee.id
     employee_response['employee_grade'] = employee.designation.grade.grade_name
     employee_response['employee_designation'] = employee.designation.designation_name
+    
+    # This should be in if when we combine both monthly and daily payroll
     total_month, total_work_day = delta_month_date(
         paid_from_date,
         paid_to_date
@@ -448,6 +486,13 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             if item not in ('paid_employee', 'employee_grade', 'employee_designation'):
                 employee_response[item] = 0
         employee_response['row_error'] = row_error
+
+    if isinstance(paid_from_date, date):
+        employee_response['paid_from_date'] = '{:%Y-%m-%d}'.format(paid_from_date)
+        employee_response['paid_to_date'] = '{:%Y-%m-%d}'.format(paid_to_date)
+    else:
+        employee_response['paid_from_date'] = paid_from_date.as_string()
+        employee_response['paid_to_date'] = paid_to_date.as_string()
     return employee_response
 
 

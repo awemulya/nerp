@@ -27,7 +27,10 @@
     <div class="alert alert-danger" role="alert" data-bind="visible: invalid_date_range() != null">
         <span data-bind="text: invalid_date_range"></span>
     </div>
-
+    <div>
+        <label>Monthly Payroll </label>
+        <input type="checkbox" data-bind="checked: monthly_payroll"></input>
+    </div>
     <div id="main" class="row">
         <div class="col-lg-3">
             {{ m_form.payroll_type.label }}

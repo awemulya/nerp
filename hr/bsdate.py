@@ -28,6 +28,13 @@ class BSDate(object):
     def date_tuple(self):
         return (self._year, self._month, self._day)
 
+    def as_string(self):
+        return '%d-%d-%d' % (
+            self._year,
+            self._month,
+            self._day
+        )
+
     @property
     def year(self):
         return self._year

@@ -48,7 +48,7 @@ function PaymentRowWitDeduction(pwd_data){
 };
 
 
-function PaymentEntryRow(data) {
+function PaymentEntryRow(per_data) {
     //debugger;
     var self = this;
     self.id = ko.observable();
@@ -70,6 +70,7 @@ function PaymentEntryRow(data) {
     self.request_flag = ko.observable(true);
     self.row_error = ko.observable();
     
+    // self.employee_counter = ko.observable(0);
     // self.deduction_detail = ko.observableArray();
     // here we will do mapping instead
     
@@ -94,7 +95,8 @@ function PaymentEntryRow(data) {
             data: {
                 paid_employee: self.paid_employee(),
                 paid_from_date: self.paid_from_date(),
-                paid_to_date: self.paid_to_date()
+                paid_to_date: self.paid_to_date(),
+                monthly_payroll: vm.monthly_payroll()
             },
             // async: true,
             success: function (response) {
@@ -102,6 +104,7 @@ function PaymentEntryRow(data) {
                 if(response.errors){
                     // vm.paid_from_date_error(response.errors.paid_from_date)
                     // vm.paid_to_date_error(response.errors.paid_to_date)
+                    vm.rows([PaymentRowWitDeduction(ko_data),]);
                     // vm.rows([]);
                     if(response.errors.paid_from_date){
                         vm.paid_from_date_error(response.errors.paid_from_date);
@@ -126,7 +129,16 @@ function PaymentEntryRow(data) {
                         'ignore': ["paid_employee"]
                     }
                     self.request_flag(false);
+                    
                     ko.mapping.fromJS(response.data, mapping, self);
+                    if(typeof(response.data.row_error)=='undefined'){
+                        self.row_error(null);
+                    }
+                    
+                    // if(vm.rows.length == 1){
+                        vm.paid_from_date(response.data.paid_from_date);
+                        vm.paid_to_date(response.data.paid_to_date);
+                    // };
                 };
             },
             error: function(errorThrown){
@@ -156,6 +168,8 @@ function PayrollEntry(pr_data) {
 
     self.invalid_date_range = ko.observable();
 
+    self.monthly_payroll = ko.observable(true);
+
     // self.entry_datetime=ko.observable();
     self.branch = ko.observable();
 
@@ -174,6 +188,16 @@ function PayrollEntry(pr_data) {
             self.rows([]);
             self.rows.push(PaymentRowWitDeduction(pr_data));
             
+        }else{
+            self.rows([]);
+        };
+    });
+
+    self.m_p_changed = ko.computed(function(){
+        self.monthly_payroll();
+        if(self.payroll_type() == 'INDIVIDUAL'){
+            self.rows([]);
+            self.rows.push(PaymentRowWitDeduction(pr_data));
         }else{
             self.rows([]);
         };
@@ -216,7 +240,7 @@ function PayrollEntry(pr_data) {
         self.setup_formset();
     };
     self.set_time_stamp = ko.computed(function(){
-        // console.log('We are in timestamp function');
+        console.log('We are in timestamp function');
         if(self.paid_from_date() && self.paid_to_date()){
             for(let o of self.rows()){
                 // console.log(self.paid_from_date());
@@ -235,7 +259,8 @@ function PayrollEntry(pr_data) {
             data: {
                 branch: self.branch(),
                 paid_from_date: self.paid_from_date(),
-                paid_to_date: self.paid_to_date()
+                paid_to_date: self.paid_to_date(),
+                monthly_payroll: self.monthly_payroll()
             },
             // async: true,
             success: function (response) {
@@ -265,17 +290,25 @@ function PayrollEntry(pr_data) {
 
                     console.log(response);
                     self.rows([]);
+
+                    var c = 0;
                     for(data of response.data){
+                        c += 1;
                         // var row = new PaymentRowWitDeduction(data);
                         // var mapping = {
                         // 'employee_changed': function(){},
                         // };
                         var row = ko.mapping.fromJS(data);
-                        row.paid_from_date = ko.observable();
-                        row.paid_to_date = ko.observable();
+                        // We wont need this if server throws the date
+                        // row.paid_from_date = ko.observable();
+                        // row.paid_to_date = ko.observable();
                         row.employee_changed = function(){};
                         if(typeof(row.row_error)=='undefined'){
-                            row.row_error = ko.observable('');
+                            row.row_error = ko.observable();
+                        };
+                        if(c==1){
+                            self.paid_from_date(row.paid_from_date());
+                            self.paid_to_date(row.paid_to_date());
                         };
                         // row.paid_employee(data.employee_id);
                         // row.allowance(data.allowance);
