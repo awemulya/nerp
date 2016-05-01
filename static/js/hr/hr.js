@@ -207,27 +207,31 @@ function PayrollEntry(pr_data) {
         console.log('payment row saved');
     };
     self.setup_formset = function(){
-        row_elements = $('.payment-row-table').children().children()
-        for(i=2; i<row_elements.length;i++ ){
-            ele = $(row_elements[i]).children();
+        var row_elements = $('.payment-row-table').children().children();
+        // debugger;
+        var cntr = 0;
+        for(i=1; i<row_elements.length;i++ ){
+            var ele = $(row_elements[i]).children();
+            if(ele.children().length == 0){continue;};
             for(j=0; j<ele.length-1;j++){
-                input_element = $(ele[j]).children()[0];
-                
-                name_attr = $(input_element).attr('name');
+                var input_element = $(ele[j]).children()[0];
+                var name_attr = $(input_element).attr('name');
                 if(name_attr){    
-                    name_split = name_attr.split('-');
-                    name_split[1] = String(i-1)
+                    var name_split = name_attr.split('-');
+                    name_split[1] = String(cntr);
                     $(input_element).attr('name', name_split.join('-'));
+
                 };
                 
-                id_attr = $(input_element).attr('id');
+                var id_attr = $(input_element).attr('id');
                 if(id_attr){    
-                    id_split = id_attr.split('-');
-                    id_split[1] = String(i-1) 
+                    var id_split = id_attr.split('-');
+                    id_split[1] = String(cntr); 
                     $(input_element).attr('id', id_split.join('-'));
                 };
                 
             };
+            cntr ++;
 
         };
     };
