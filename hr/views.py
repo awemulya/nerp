@@ -268,14 +268,14 @@ def salary_detail_impure_months(employee, paid_from_date, paid_to_date):
 
 
 def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
-    errors = {}
+    row_error = None
     eligible, error = emp_salary_eligibility(
         employee,
         paid_from_date,
         paid_to_date
     )
     if not eligible:
-        errors['row'] = error
+        row_error = error
     employee_response = {}
     employee_response['paid_employee'] = employee.id
     employee_response['employee_grade'] = employee.designation.grade.grade_name
@@ -443,11 +443,11 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     employee_response['paid_amount'] = salary - deduction - income_tax +\
         p_t_amount + incentive
 
-    if errors:
+    if row_error:
         for item in employee_response:
             if item not in ('paid_employee', 'employee_grade', 'employee_designation'):
                 employee_response[item] = 0
-        employee_response['errors'] = errors
+        employee_response['row_error'] = row_error
     return employee_response
 
 

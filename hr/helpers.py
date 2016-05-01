@@ -183,7 +183,7 @@ def drc_1_day(in_date):
     if isinstance(in_date, date):
         # month_days = mr(in_date.year, in_date.month)[1]
         if in_date.month == 1 and in_date.day == 1:
-            m_d = mr(in_date.year - 1, in_date.month)[1]
+            m_d = mr(in_date.year - 1, 12)[1]
             r_date = date(in_date.year - 1, 12, m_d)
         elif in_date.month > 1 and in_date.day == 1:
             m_d1 = mr(in_date.year, in_date.month - 1)[1]
@@ -193,7 +193,7 @@ def drc_1_day(in_date):
     else:
         if in_date.month == 1 and in_date.day == 1:
             # m_d = mr(in_date.year - 1, in_date.month)[1]
-            m_d = bs[in_date.year - 1][in_date.month - 1]
+            m_d = bs[in_date.year - 1][12 - 1]
             r_date = BSDate(in_date.year - 1, 12, m_d)
         elif in_date.month > 1 and in_date.day == 1:
             # m_d1 = mr(in_date.year, in_date.month - 1)[1]
@@ -218,6 +218,7 @@ def drc_date_by_days(in_date, drc):
 
 def emp_salary_eligibility(emp, p_from, p_to):
     from hr.models import PaymentRecord
+    error_msg = None
     emp_record = PaymentRecord.objects.filter(paid_employee=emp)
     if emp_record:
         if isinstance(emp_record[0].paid_to_date, date):
@@ -261,7 +262,7 @@ def emp_salary_eligibility(emp, p_from, p_to):
         if isinstance(p_from, date):
             error_msg = 'Missed payment from %s to %s' % ('{:%Y/%m/%d}'.format(inc_1_day(last_paid)), '{:%Y/%m/%d}'.format(drc_1_day(p_from)))
         else:
-            error_msg = 'Missed payment from %s to %s' % (bsdate2str(inc_1_day(p_from)), bsdate2str(drc_1_day(p_from)))
+            error_msg = 'Missed payment from %s to %s' % (bsdate2str(inc_1_day(last_paid)), bsdate2str(drc_1_day(p_from)))
     if error_msg:
         return False, error_msg
     else:

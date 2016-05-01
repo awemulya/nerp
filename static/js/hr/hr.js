@@ -30,10 +30,10 @@ $(document).ready(function () {
     // });
 });
 
-function PaymentRowWitDeduction(data){
-    if(data.deduction_data){
+function PaymentRowWitDeduction(pwd_data){
+    if(pwd_data.deduction_data){
         var PER = new PaymentEntryRow();
-        var DeductionPER = ko.mapping.fromJS(data.deduction_data);
+        var DeductionPER = ko.mapping.fromJS(pwd_data.deduction_data);
         return $.extend(PER, DeductionPER);
     }else{
         var PER = new PaymentEntryRow();
@@ -68,6 +68,7 @@ function PaymentEntryRow(data) {
     self.salary = ko.observable();
     self.paid_amount = ko.observable();
     self.request_flag = ko.observable(true);
+    self.row_error = ko.observable('');
     
     // self.deduction_detail = ko.observableArray();
     // here we will do mapping instead
@@ -107,93 +108,6 @@ function PaymentEntryRow(data) {
                     }
                     self.request_flag(false);
                     ko.mapping.fromJS(response.data, mapping, self);
-                    // self.allowance(response.data.allowance);
-                    // self.incentive(response.data.incentive);
-                    // self.deduced_amount(response.data.deduced_amount);
-                    // self.income_tax(response.data.income_tax);
-                    // self.pro_tempore_amount(response.data.pro_tempore_amount);
-                    // self.salary(response.data.salary);
-                    // self.paid_amount(response.data.paid_amount);
-
-                    // for(deduction of response.data.deduction_detail){
-                    //     var deduct = new DeductDetail()
-                    //     deduct.name = deduction.name;
-                    //     deduct.deduction_id=deduction.deduction_id;
-                    //     deduct.amount = deduction.amount;
-                    //     self.deduction_detail.push(deduct);
-                    //     // vm.deduction_headings.push(deduction.name)
-                    // };
-
-            // // Set transaction class here
-            //         var company_credit_trans = function(credit_amount, description){
-            //             var company_trans = new Transaction()
-            //             company_trans.account_id = response.data.salary_giving_account_id;
-            //             company_trans.credit = credit_amount;
-            //             company_trans.debit = 0;
-            //             company_trans.description = description;
-            //             self.transactions.push(company_trans);
-            //         };
-            //     // User account debit transaction
-                    
-            //         // Salary + Allowance Transaction
-            //         var sal_all_tran = new Transaction();
-            //         sal_all_tran.account_id = response.data.employee_bank_account_id;
-            //         sal_all_tran.debit = self.salary() + self.allowance();
-            //         sal_all_tran.credit = 0;
-            //         sal_all_tran.description = 'Salary + allowance amount:';
-                    
-            //         company_credit_trans(
-            //             sal_all_tran.debit,
-            //             sal_all_tran.description + 'to EmployeeID#' + String(paid_employee());
-            //          );
-                    
-            //         self.transactions.push(sal_all_tran);
-
-            //         // Incentive Transaction
-            //         if(self.incentive() > 0){
-            //             var incentive_tran = new Transaction();
-            //             incentive_tran.account_id = response.data.employee_bank_account_id;
-            //             incentive_tran.debit = self.incentive();
-            //             incentive_tran.credit = 0;
-            //             incentive_tran.description = 'Employee Incentive Payment';
-                        
-            //             company_credit_trans(
-            //                 incentive_tran.debit,
-            //                 sal_.description + 'to EmployeeID#' + String(paid_employee());
-            //             );
-
-            //             self.transactions.push(incentive_tran);
-            //         };
-
-            //         // Pro tempore Transaction
-            //         if(self.pro_tempore_amount() > 0){
-            //             var prot_tran = new Transaction();
-            //             prot_tran.account_id = response.data.employee_bank_account_id;
-            //             prot_tran.debit = self.pro_tempore_amount();
-            //             prot_tran.credit = 0;
-            //             prot_tran.description = 'Pro Tempore Amount Payment';
-            //             self.transactions.push(prot_tran);
-            //         };
-            //     // Employee Account Credit Transaction OR Deductions
-            //         for(deduction of response.deduction_detail){
-            //             var deduct_transaction = new Transaction()
-            //             var bank_transaction = new Transaction()
-            //             for(dat of deduction){
-            //                 deduct_transaction.account_id = dat.account_id;
-            //                 deduct_transaction.debit = dat.amount;
-            //                 bank_transaction.account_id = response.data.employee_bank_account_id;
-            //                 bank_transaction.credit = dat.amount;
-            //             };
-            //             deduct_transaction.credit = 0;
-            //             bank_transaction.debit = 0;
-            //             deduct_transaction.description = 'Pro Tempore Amount Payment';
-            //             bank_transaction.description = 'Pro Tempore Amount Payment';
-            //             self.transactions.push(deduct_transaction);
-            //             self.transactions.push(bank_transaction);
-            //         };
-
-
-
                 };
             },
             error: function(errorThrown){
@@ -209,7 +123,7 @@ function PaymentEntryRow(data) {
 
 };
 
-function PayrollEntry(data) {
+function PayrollEntry(pr_data) {
     //debugger;
     var self = this;
     self.payroll_type = ko.observable();
@@ -227,25 +141,22 @@ function PayrollEntry(data) {
     self.deduction_headings = ko.observableArray();
     
     self.switch_p_type  = ko.computed(function(){
-        console.log(self.payroll_type)
         if(self.payroll_type()=="INDIVIDUAL"){
-            // if(data.deduction_data){
-            //     ko.mapping.fromJS(data.deduction_data, PaymentEntryRow);
-            //     console.log(PaymentEntryRow);
-            // };        
-            if( self.rows().length == 0){    
-                // var DeductionPER = ko.mapping.fromJS(data.deduction_data);
-                // var PER = new PaymentEntryRow();
-                // var PaymentRow = $.extend(DeductionPER, PER);
-                self.rows.push(PaymentRowWitDeduction(data));
-                // self.rows.push(new PaymentEntryRow(data))
-            };
             return true;
         }else{
-            self.rows([])
             return false;
         };
     }); 
+
+    self.clear_row = ko.computed(function(){
+        if(self.switch_p_type() == true){
+            self.rows([]);
+            self.rows.push(PaymentRowWitDeduction(pr_data));
+            
+        }else{
+            self.rows([]);
+        };
+    });
 
     self.saveAndAdd = function(formElement){
         console.log('payment row saved');
@@ -276,7 +187,7 @@ function PayrollEntry(data) {
         };
     };
     self.addRow = function(event){
-        self.rows.push(new PaymentRowWitDeduction(data));
+        self.rows.push(new PaymentRowWitDeduction(pr_data));
         self.setup_formset();
     };
     self.removeRow = function(row){
@@ -315,9 +226,16 @@ function PayrollEntry(data) {
                     self.rows([]);
                     for(data of response.data){
                         // var row = new PaymentRowWitDeduction(data);
+                        // var mapping = {
+                        // 'employee_changed': function(){},
+                        // };
                         var row = ko.mapping.fromJS(data);
                         row.paid_from_date = ko.observable();
                         row.paid_to_date = ko.observable();
+                        row.employee_changed = function(){};
+                        if(typeof(row.row_error)=='undefined'){
+                            row.row_error = ko.observable('');
+                        };
                         // row.paid_employee(data.employee_id);
                         // row.allowance(data.allowance);
                         // row.incentive(data.incentive);
