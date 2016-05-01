@@ -68,7 +68,7 @@ function PaymentEntryRow(per_data) {
     self.salary = ko.observable();
     self.paid_amount = ko.observable();
     self.request_flag = ko.observable(true);
-    self.row_error = ko.observable();
+    self.row_errors = ko.observableArray();
     
     // self.employee_counter = ko.observable(0);
     // self.deduction_detail = ko.observableArray();
@@ -131,8 +131,8 @@ function PaymentEntryRow(per_data) {
                     self.request_flag(false);
                     
                     ko.mapping.fromJS(response.data, mapping, self);
-                    if(typeof(response.data.row_error)=='undefined'){
-                        self.row_error(null);
+                    if(typeof(response.data.row_errors)=='undefined'){
+                        self.row_errors([]);
                     }
                     
                     // if(vm.rows.length == 1){
@@ -306,8 +306,8 @@ function PayrollEntry(pr_data) {
                         // row.paid_from_date = ko.observable();
                         // row.paid_to_date = ko.observable();
                         row.employee_changed = function(){};
-                        if(typeof(row.row_error)=='undefined'){
-                            row.row_error = ko.observable();
+                        if(typeof(row.row_errors)=='undefined'){
+                            row.row_errors = ko.observableArray([]);
                         };
                         if(c==1){
                             self.paid_from_date(row.paid_from_date());

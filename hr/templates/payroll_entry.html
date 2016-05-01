@@ -75,10 +75,12 @@
             </tr>
 
             <!-- ko foreach: rows -->
-                <tr data-bind="visible: row_error() != null, css: {danger: true}">
-                    <td colspan="100%" data-bind="text: row_error"></td>
-                </tr>
-                <tr data-bind="css: {danger: row_error() != null}">                     
+                <!-- ko foreach: row_errors -->
+                    <tr data-bind="css: {danger: true}">
+                        <td colspan="100%" data-bind="text: $data"></td>
+                    </tr>
+                <!-- /ko -->
+                <tr data-bind="css: {danger: row_errors().length > 0}">                     
                     <td>{{ r_form.paid_employee }}</td>
                    
                     <td><b data-bind="text: employee_grade"></b></td>
