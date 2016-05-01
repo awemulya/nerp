@@ -24,18 +24,22 @@
 {% endblock %}
 
 {% block  content %}
+    <div class="alert alert-danger" role="alert" data-bind="visible: invalid_date_range() != null">
+        <span data-bind="text: invalid_date_range"></span>
+    </div>
+
     <div id="main" class="row">
         <div class="col-lg-3">
             {{ m_form.payroll_type.label }}
             {{ m_form.payroll_type }}
             {{ m_form.branch }}
         </div>
-        <div class="col-lg-3">
+        <div class="col-lg-3" data-bind="css:{'bg-danger': paid_from_date_error() != null}">
             {{ m_form.from_date.label }}
             {{ m_form.from_date }}
             <p data-bind="text: paid_from_date_error"></p>
         </div>
-        <div class="col-lg-3">
+        <div class="col-lg-3" data-bind="css:{'bg-danger': paid_from_date_error() != null}">
             {{ m_form.to_date.label }}
         
             {{ m_form.to_date }}
@@ -68,10 +72,10 @@
             </tr>
 
             <!-- ko foreach: rows -->
-                <tr data-bind="visible: row_error() != '', css: {danger: true}">
+                <tr data-bind="visible: row_error() != null, css: {danger: true}">
                     <td colspan="100%" data-bind="text: row_error"></td>
                 </tr>
-                <tr data-bind="css: {danger: row_error() != ''}">                     
+                <tr data-bind="css: {danger: row_error() != null}">                     
                     <td>{{ r_form.paid_employee }}</td>
                    
                     <td><b data-bind="text: employee_grade"></b></td>

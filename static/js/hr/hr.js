@@ -68,7 +68,7 @@ function PaymentEntryRow(data) {
     self.salary = ko.observable();
     self.paid_amount = ko.observable();
     self.request_flag = ko.observable(true);
-    self.row_error = ko.observable('');
+    self.row_error = ko.observable();
     
     // self.deduction_detail = ko.observableArray();
     // here we will do mapping instead
@@ -100,9 +100,28 @@ function PaymentEntryRow(data) {
             success: function (response) {
                 console.log(response);
                 if(response.errors){
-                    vm.paid_from_date_error(response.errors.paid_from_date)
-                    vm.paid_to_date_error(response.errors.paid_to_date)
+                    // vm.paid_from_date_error(response.errors.paid_from_date)
+                    // vm.paid_to_date_error(response.errors.paid_to_date)
+                    // vm.rows([]);
+                    if(response.errors.paid_from_date){
+                        vm.paid_from_date_error(response.errors.paid_from_date);
+                    }else{
+                        vm.paid_from_date_error(null);
+                    };
+                    if(response.errors.paid_to_date){
+                        vm.paid_to_date_error(response.errors.paid_to_date);
+                    }else{
+                        vm.paid_to_date_error(null);
+                    };
+                    if(response.errors.invalid_date_range){
+                        vm.invalid_date_range(response.errors.invalid_date_range);
+                    }else{
+                        vm.invalid_date_range(null);
+                    };
                 }else{
+                    vm.paid_from_date_error(null);
+                    vm.paid_to_date_error(null);
+                    vm.invalid_date_range(null);
                     var mapping = {
                         'ignore': ["paid_employee"]
                     }
@@ -134,6 +153,8 @@ function PayrollEntry(pr_data) {
 
     self.paid_from_date_error = ko.observable();
     self.paid_to_date_error = ko.observable();
+
+    self.invalid_date_range = ko.observable();
 
     // self.entry_datetime=ko.observable();
     self.branch = ko.observable();
@@ -219,9 +240,29 @@ function PayrollEntry(pr_data) {
             // async: true,
             success: function (response) {
                 if(response.errors){
-                    self.paid_from_date_error(response.errors.paid_from_date)
-                    self.paid_to_date_error(response.errors.paid_to_date)
+                    self.rows([]);
+                    if(response.errors.paid_from_date){
+                        self.paid_from_date_error(response.errors.paid_from_date);
+                    }else{
+                        self.paid_from_date_error(null);
+                    };
+                    if(response.errors.paid_to_date){
+                        self.paid_to_date_error(response.errors.paid_to_date);
+                    }else{
+                        self.paid_to_date_error(null);
+                    };
+                    if(response.errors.invalid_date_range){
+                        self.invalid_date_range(response.errors.invalid_date_range);
+                    }else{
+                        self.invalid_date_range(null);
+                    };
+
                 }else{
+                    self.paid_from_date_error(null);
+                    self.paid_to_date_error(null);
+                    self.invalid_date_range(null);
+
+
                     console.log(response);
                     self.rows([]);
                     for(data of response.data){
