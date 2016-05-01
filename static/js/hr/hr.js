@@ -208,7 +208,6 @@ function PayrollEntry(pr_data) {
     };
     self.setup_formset = function(){
         var row_elements = $('.payment-row-table').children().children();
-        // debugger;
         var cntr = 0;
         for(i=1; i<row_elements.length;i++ ){
             var ele = $(row_elements[i]).children();
