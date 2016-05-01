@@ -126,12 +126,14 @@ class GroupPayrollForm(forms.Form):
     from_date = forms.DateField(
         widget=DateInput(attrs={
             'data-bind': 'value: paid_from_date',
+            'placeholder': 'YYYY-MM-DD',
             'is_required': True
             }),
         )
     to_date = forms.DateField(
         widget=DateInput(attrs={
             'data-bind': 'value: paid_to_date',
+            'placeholder': 'YYYY-MM-DD',
             'is_required': True
             }),
         )
