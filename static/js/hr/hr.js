@@ -173,7 +173,9 @@ function PayrollEntry(pr_data) {
     // self.entry_datetime=ko.observable();
     self.branch = ko.observable();
 
-    self.deduction_headings = ko.observableArray();
+    // self.deduction_headings = ko.observableArray();
+
+    self.messages = ko.observableArray();
     
     self.switch_p_type  = ko.computed(function(){
         if(self.payroll_type()=="INDIVIDUAL"){
@@ -244,16 +246,37 @@ function PayrollEntry(pr_data) {
     };
     self.set_time_stamp = ko.computed(function(){
         console.log('We are in timestamp function');
-        if(self.paid_from_date() && self.paid_to_date()){
-            for(let o of self.rows()){
-                // console.log(self.paid_from_date());
-                // console.log(self.paid_to_date());
-                o.paid_from_date(self.paid_from_date());
-                o.paid_to_date(self.paid_to_date());
-                // console.log('value set')
+        if(self.payroll_type() != 'GROUP'){
+            
+            if(self.paid_from_date() && self.paid_to_date()){
+                for(let o of self.rows()){
+                    // console.log(self.paid_from_date());
+                    // console.log(self.paid_to_date());
+                    o.paid_from_date(self.paid_from_date());
+                    o.paid_to_date(self.paid_to_date());
+                    // console.log('value set')
+                };
             };
         };
     });
+
+    self.group_date_update = ko.computed(function(){
+        alert('Group date update');
+        if(self.payroll_type() == 'GROUP'){
+            var has_error = false;
+            for(ro of self.rows()){
+                if(self.paid_from_date() != ro.paid_from_date() || self.paid_to_date() != ro.paid_to_date()){
+                    has_error = true;
+                    self.messages.push('Your date range has been updated. Press Get Salary button to get updated values');
+                    break;
+                };
+            };
+            if(!has_error){
+                self.messages([]);
+            };
+        };
+    });
+
     self.getGroupSalary = function(){
         $.ajax({
             url: 'get_employees_account/',
