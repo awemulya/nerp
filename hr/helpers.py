@@ -1,3 +1,4 @@
+from __future__ import division
 from datetime import date
 from bsdate import BSDate
 from njango.nepdate import bs

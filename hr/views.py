@@ -316,14 +316,14 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     employee_response['paid_employee'] = employee.id
     employee_response['employee_grade'] = employee.designation.grade.grade_name
     employee_response['employee_designation'] = employee.designation.designation_name
-    
+
     # This should be in if when we combine both monthly and daily payroll
-    total_month, total_work_day = delta_month_date(
+    total_month, total_work_day = delta_month_date_impure(
         paid_from_date,
         paid_to_date
     )
 
-    salary = employee.current_salary_by_month(
+    salary = employee.current_salary_by_day(
         paid_from_date,
         paid_to_date
     )
