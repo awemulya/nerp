@@ -5,6 +5,7 @@ from njango.models import TranslatableNumberModel
 from njango.nepdate import bs, bs2ad, tuple_from_string, ad2bs, string_from_tuple
 from njango.utils import get_calendar
 from django.utils.translation import ugettext_lazy as _
+
 from users.templatetags.filters import localize
 
 FISCAL_YEARS = (
@@ -257,3 +258,16 @@ def validate_in_fy(value):
         value_tuple = bs2ad(value)
     if not bs2ad(fiscal_year_start) <= value_tuple <= bs2ad(fiscal_year_end):
         raise ValidationError('%s %s' % (localize(value), _('is not in current fiscal year.')))
+
+
+class Currency(models.Model):
+    code = models.CharField(max_length=3)
+    name = models.CharField(max_length=100)
+    latest_usd_rate = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = u'Currencies'
+        db_table = 'currency'
+
+    def __str__(self):
+        return self.code + ' - ' + self.name
