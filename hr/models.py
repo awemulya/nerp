@@ -473,8 +473,14 @@ class Employee(models.Model):
     # working_branch = models.CharField(max_length=100)
     # Employee ko section or branch coz he can be in another branch and paid from central
     sex_choice = [('M', _('Male')), ('F', _('Female'))]
+    marital_statuses = [('M', _('Married')), ('U', _('Unmarried'))]
     employee = models.OneToOneField(User)
     sex = models.CharField(choices=sex_choice, max_length=1)
+    marital_status = models.CharField(
+        default='U',
+        max_length=1,
+        choices=marital_statuses
+    )
     designation = models.ForeignKey(Designation)
     pan_number = models.CharField(max_length=100)
     working_branch = models.ForeignKey(BranchOffice)
