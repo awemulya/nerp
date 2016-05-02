@@ -22,8 +22,23 @@ function ImprestVM(data) {
             alert.error('There can only be one initial deposit!');
             return false;
         }
-        self.add_transaction({'type': 'initial_deposit'})
+        self.add_transaction({'type': 'initial_deposit'});
+    }
 
+    self.add_replenishment_received = function () {
+        self.add_transaction({'type': 'replenishment_received'});
+    }
+
+    self.add_gon_fund_transfer = function () {
+        self.add_transaction({'type': 'gon_fund_transfer', 'name': 'Ka-7-15 Transfer'});
+    }
+
+    self.add_payment = function () {
+        self.add_transaction({'type': 'payment'});
+    }
+
+    self.add_liquidation = function () {
+        self.add_transaction({'type': 'liquidation'});
     }
 
     self.count_transaction_types = function (type) {

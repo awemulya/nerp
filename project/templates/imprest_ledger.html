@@ -65,7 +65,7 @@
                         </td>
                         <td data-bind="editableText: name">
                         </td>
-                        <td data-bind="editableText: wa_no">
+                        <td data-bind="editableText: wa_no, disable_content_editable: type() != 'initial_deposit'">
                         </td>
                         <td data-bind="editableText: ref">
                         </td>
@@ -106,6 +106,23 @@
                    data-bind="click: add_initial_deposit, enable: count_transaction_types('initial_deposit')()==0">
                     {% trans 'Initial Deposit' %}
                 </button>
+                
+                <button class="btn btn-default btn-raised" data-bind="click: add_replenishment_received">
+                    {% trans 'Replenishment Received' %}
+                </button>
+                
+                <button class="btn btn-default btn-raised" data-bind="click: add_gon_fund_transfer">
+                    {% trans 'GON Fund Transfer' %}
+                </button>
+                
+                <button class="btn btn-default btn-raised" data-bind="click: add_payment">
+                    {% trans 'Payment' %}
+                </button>
+                
+                <button class="btn btn-default btn-raised" data-bind="click: add_liquidation">
+                    {% trans 'Liquidation' %}
+                </button>
+                
             </div>
             <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
         </form>
