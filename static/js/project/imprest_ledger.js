@@ -50,13 +50,23 @@ function ImprestVM(data) {
         })
     }
 
-    self.save = function () {
+    self.sort = function () {
         self.table_view.rows.sort(function (l, r) {
             var l_date = new Date(l.date());
             var r_date = new Date(r.date());
             return l_date.getTime() > r_date.getTime();
         });
-        
+
+        // Always keep initial_deposit on top
+        self.table_view.rows.sort(function (l, r) {
+            return r.type() == 'initial_deposit';
+        });
+    }
+    
+    self.sort();
+
+    self.save = function () {
+        self.sort();
         var initial_deposits = self.count_transaction_types('initial_deposit')();
         if (initial_deposits < 1) {
             alert.error('Initial Deposit is required!');
