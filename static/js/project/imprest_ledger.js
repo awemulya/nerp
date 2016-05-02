@@ -15,6 +15,8 @@ function ImprestVM(data) {
         }
         var initial_deposit = new ImprestTransaction(transaction_data);
         self.table_view.rows.push(initial_deposit);
+        // Add focus to name of new row
+        $('table.imprest-ledger tr').eq(2 + self.table_view.rows().length).find('.name').focus();
     }
 
     self.add_initial_deposit = function () {
@@ -51,6 +53,7 @@ function ImprestVM(data) {
     }
 
     self.sort = function () {
+        // Sort ascending by date
         self.table_view.rows.sort(function (l, r) {
             var l_date = new Date(l.date());
             var r_date = new Date(r.date());
@@ -62,7 +65,7 @@ function ImprestVM(data) {
             return r.type() == 'initial_deposit';
         });
     }
-    
+
     self.sort();
 
     self.save = function () {

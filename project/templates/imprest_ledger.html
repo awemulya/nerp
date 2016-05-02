@@ -30,7 +30,7 @@
             {% csrf_token %}
 
             <div data-bind="with: table_view">
-                <table class="table table-striped table-responsive table-bordered center-headings">
+                <table class="table table-striped table-responsive table-bordered center-headings imprest-ledger">
                     <thead>
                     <tr>
                         <th rowspan="3">{% trans 'S.N.' %}</th>
@@ -63,7 +63,7 @@
                         <td>
                             <span data-bind="text:  $index()+1, localize: true"> </span>
                         </td>
-                        <td data-bind="editableText: name">
+                        <td data-bind="editableText: name" class="name">
                         </td>
                         <td data-bind="editableText: wa_no, disable_editable: type() != 'initial_deposit'">
                         </td>
