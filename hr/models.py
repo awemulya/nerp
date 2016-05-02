@@ -292,7 +292,10 @@ def _transaction_delete(sender, instance, **kwargs):
 class AccountType(models.Model):
     name = models.CharField(max_length=150, choices=acc_type, unique=True)
     description = models.CharField(max_length=250)
-    permanent_multiply_rate = models.PositiveIntegerField(null=True, blank=True)
+    permanent_multiply_rate = models.PositiveIntegerField(
+        null=True,
+        blank=True
+    )
 
     def __unicode__(self):
         return self.name
@@ -385,8 +388,8 @@ class Allowance(models.Model):
         validators=[
             MaxValueValidator(12),
             MinValueValidator(1)
-                ],
-        )
+        ],
+    )
     description = models.CharField(max_length=250)
 
     def __unicode__(self):
@@ -414,8 +417,8 @@ class Incentive(models.Model):
         validators=[
             MaxValueValidator(12),
             MinValueValidator(1)
-                ],
-        )
+        ],
+    )
     description = models.CharField(max_length=250)
 
     def __unicode__(self):
@@ -501,7 +504,7 @@ class Employee(models.Model):
     payment_halt = models.BooleanField(default=False)
     appoint_date = BSDateField(default=today)
     dismiss_date = BSDateField(null=True, blank=True)
-    # allowance will be added to salary 
+    # allowance will be added to salary
     allowances = models.ManyToManyField(Allowance, blank=True)
     # incentive will have diff trancation
     incentives = models.ManyToManyField(Incentive, blank=True)
@@ -577,14 +580,14 @@ class Employee(models.Model):
                 else:
                     month = BSDate(from_date.year, from_date.month, 1)
                     rhs_days = (to_date - from_date).days + 1
-                    from_date_month_days = bs[month.year][month.month-1]
+                    from_date_month_days = bs[month.year][month.month - 1]
                     to_date_month_days = from_date_month_days
                     # pdb.set_trace()
 
             rhs_month_salary = self.current_salary_by_month(
                 month,
                 month
-                )
+            )
 
         elif are_side_months(from_date, to_date):
             salary_pure_months = 0
@@ -604,16 +607,16 @@ class Employee(models.Model):
                     lhs_days = (rhs_month - from_date).days
                     rhs_days = (to_date - rhs_month).days + 1
 
-                    from_date_month_days = bs[lhs_month.year][lhs_month.month-1]
-                    to_date_month_days = bs[rhs_month.year][rhs_month.month-1]
+                    from_date_month_days = bs[lhs_month.year][lhs_month.month - 1]
+                    to_date_month_days = bs[rhs_month.year][rhs_month.month - 1]
             lhs_month_salary = self.current_salary_by_month(
                 lhs_month,
                 lhs_month
-                )
+            )
             rhs_month_salary = self.current_salary_by_month(
                 rhs_month,
                 rhs_month
-                )
+            )
         else:
             # Get pure months
             if type(from_date) == type(to_date):
@@ -654,15 +657,15 @@ class Employee(models.Model):
             salary_pure_months = self.current_salary_by_month(
                 from_date_m,
                 to_date_m
-                )
+            )
             lhs_month_salary = self.current_salary_by_month(
                 lhs_month,
                 lhs_month
-                )
+            )
             rhs_month_salary = self.current_salary_by_month(
                 rhs_month,
                 rhs_month
-                )
+            )
         lhs_salary = lhs_month_salary / float(from_date_month_days) * lhs_days
         rhs_salary = rhs_month_salary / float(to_date_month_days) * rhs_days
         salary = salary_pure_months + lhs_salary + rhs_salary
@@ -727,7 +730,10 @@ class IncomeTaxRate(models.Model):
 
 
 class DeductionDetail(models.Model):
-    deduction = models.ForeignKey(Deduction, related_name='deduced_amount_detail')
+    deduction = models.ForeignKey(
+        Deduction,
+        related_name='deduced_amount_detail'
+    )
     amount = models.FloatField()
 
 
@@ -762,13 +768,13 @@ class PayrollEntry(models.Model):
 class EmployeeAccount(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     account = models.OneToOneField(
-                                    Account,
-                                    on_delete=models.CASCADE,
-                                    related_name='employee_account',
-                                    )
+        Account,
+        on_delete=models.CASCADE,
+        related_name='employee_account',
+    )
     account_type = models.ForeignKey(
-                                    AccountType
-                                    )
+        AccountType
+    )
 
     class Meta:
         unique_together = (("employee", "account"),)
@@ -776,10 +782,10 @@ class EmployeeAccount(models.Model):
 
 class CompanyAccount(models.Model):
     account = models.OneToOneField(
-                                    Account,
-                                    on_delete=models.CASCADE,
-                                    related_name='company_account'
-                                    )
+        Account,
+        on_delete=models.CASCADE,
+        related_name='company_account'
+    )
 
 # class HrConfig(dbsettings.Group):
 #     sk_deduction_rate = models.PositiveIntegerField()
