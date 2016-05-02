@@ -146,4 +146,27 @@ function ImprestTransaction(row, imprest_vm) {
         if (self.type() == 'payment')
             return self.usd_equivalent();
     });
+
+    self.effect = ko.computed(function () {
+        var amt;
+        if (self.entry_type() == 'dr') {
+            amt = parseFloat(self.amount_usd());
+        } else {
+            amt = parseFloat(self.usd_equivalent()) * -1;
+        }
+        return empty_to_zero(amt);
+    });
+
+    self.balance = function (root, index) {
+        return ko.computed(function () {
+            var bal = 0;
+            $(root.table_view.rows()).each(function (i) {
+                if (i <= index()) {
+                    bal += root.table_view.rows()[i].effect();
+                }
+            });
+            return bal;
+        })
+    }
+
 }

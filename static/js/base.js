@@ -1140,7 +1140,7 @@ function empty_or_undefined(o) {
 }
 
 function empty_to_zero(o) {
-    if (o == '' || typeof o == 'undefined')
+    if (o == '' || typeof o == 'undefined' || isNaN(o))
         return 0;
     return parseFloat(o);
 }
