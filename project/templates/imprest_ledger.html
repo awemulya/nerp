@@ -48,7 +48,7 @@
                         <th rowspan="2">{% trans 'Amount in USD' %}</th>
                         <th rowspan="2">{% trans 'Description' %}</th>
                         <th rowspan="2">{% trans 'Date' %}</th>
-                        <th rowspan="2">{% trans 'Currency (NRS)' %}</th>
+                        <th rowspan="2">{% trans 'Amount in NRS' %}</th>
                         <th rowspan="2">{% trans 'Ex. Rate' %}</th>
                         <th colspan="2">{% trans 'Equivalent US$' %}</th>
                     </tr>
@@ -65,23 +65,23 @@
                         </td>
                         <td data-bind="editableText: name">
                         </td>
-                        <td data-bind="editableText: wa_no, disable_content_editable: type() != 'initial_deposit'">
+                        <td data-bind="editableText: wa_no, no_content_editable: type() != 'initial_deposit'">
                         </td>
-                        <td data-bind="editableText: ref">
+                        <td data-bind="editableText: ref, no_content_editable: entry_type()=='cr'">
                         </td>
-                        <td data-bind="editableText: date">
-                        </td>
-                        <td>
+                        <td data-bind="editableText: date, no_content_editable: entry_type()=='cr'">
                         </td>
                         <td>
                         </td>
-                        <td data-bind="editableText: description">
+                        <td>
                         </td>
-                        <td data-bind="editableText: date">
+                        <td data-bind="editableText: description, no_content_editable: entry_type()=='dr'">
+                        </td>
+                        <td data-bind="editableText: date, no_content_editable: entry_type()=='dr'">
                         </td>
                         <td>
                         </td>
-                        <td data-bind="editableText: exchange_rate">
+                        <td data-bind="editableText: exchange_rate, no_content_editable: entry_type()=='dr'">
                         </td>
                         <td>
                         </td>

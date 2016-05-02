@@ -319,6 +319,20 @@ ko.bindingHandlers.disable_content_editable = {
     }
 }
 
+ko.bindingHandlers.no_content_editable = {
+    init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+    },
+    update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+        if (valueAccessor()) {
+            $(element).text('');
+            $(element).removeAttr('contenteditable');
+        }
+        else {
+            $(element).attr('contenteditable', true);
+        }
+    }
+}
+
 ko.bindingHandlers.readOnly = {
     update: function (element, valueAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor());

@@ -101,4 +101,12 @@ function ImprestTransaction(row, imprest_vm) {
     for (var k in row) {
         self[k] = ko.observable(row[k]);
     }
+
+    self.entry_type = function () {
+        if ($.inArray(self.type(), ['initial_deposit', 'replenishment_received']) != -1) {
+            return 'dr';
+        } else {
+            return 'cr';
+        }
+    }
 }
