@@ -495,3 +495,7 @@ td + td {
    margin-left: -200px;
    margin-top: -200px;
 }
+
+.center-headings th{
+    text-align: center;
+}
