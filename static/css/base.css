@@ -499,3 +499,7 @@ td + td {
 .center-headings th{
     text-align: center;
 }
+
+tr.total{
+    font-weight: bold;
+}
