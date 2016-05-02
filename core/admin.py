@@ -1,7 +1,7 @@
 from django.contrib import admin
 from app.utils.translation import TranslationAdmin
 from core.models import FiscalYear, Donor, Activity, BudgetHead, Employee, Party, Account, TaxScheme, BudgetBalance, \
-    Language
+    Language, Currency
 
 
 class LanguageAdmin(admin.ModelAdmin):
@@ -23,6 +23,7 @@ class TaxSchemeAdmin(TranslationAdmin):
 
 admin.site.register(Party, PartyAdmin)
 admin.site.register(FiscalYear)
+admin.site.register(Currency)
 admin.site.register(Donor, TranslationAdmin)
 admin.site.register(Activity, TranslationAdmin)
 admin.site.register(BudgetHead, TranslationAdmin)
@@ -31,3 +32,4 @@ admin.site.register(Employee, TranslationAdmin)
 admin.site.register(Account, TranslationAdmin)
 admin.site.register(TaxScheme, TaxSchemeAdmin)
 admin.site.register(Language, LanguageAdmin)
+
