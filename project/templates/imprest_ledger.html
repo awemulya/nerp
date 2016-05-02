@@ -1,0 +1,15 @@
+{% extends '_imprest_base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Imprest Ledger' %} -  {{ fy }}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "imprest_ledger" %}">{% trans 'Imprest Ledger' %}</a></li>
+{% endblock %}
+
+{% block content %}
+
+    {{ object_list }}
+
+{% endblock %}

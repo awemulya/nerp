@@ -18,6 +18,7 @@ urlpatterns = patterns('',
                        (r'^inventory/', include('inventory.urls')),
                        (r'^library/', include('ils.urls')),
                        (r'^training/', include('training.urls')),
+                       (r'^project/', include('project.urls')),
                        (r'^key/', include('key.urls')),
 
                        (r'^admin/settings/', include('dbsettings.urls')),

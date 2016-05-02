@@ -1,7 +1,7 @@
 from django.db import models
 from njango.fields import BSDateField, today
 
-from core.models import Currency, FiscalYear
+from core.models import Currency, FiscalYear, validate_in_fy
 
 IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_transfer', 'GON Fund Transfer'),
                              ('replenishment_received', 'Replenishment Received'),
@@ -11,7 +11,7 @@ IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_
 class ImprestTransaction(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(max_length=255, choices=IMPREST_TRANSACTION_TYPES)
-    date = BSDateField(null=True, blank=True, default=today)
+    date = BSDateField(null=True, blank=True, default=today, validators=[validate_in_fy])
     wa_no = models.CharField(max_length=10, verbose_name='Withdrawal Application No.', null=True, blank=True)
     ref = models.CharField(max_length=10, verbose_name='Reference', null=True, blank=True)
     amount = models.FloatField()
