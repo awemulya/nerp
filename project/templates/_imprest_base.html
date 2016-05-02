@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n filters %}
 
 {% block breadcrumbs %}
     <li><a href="">{% trans 'Project Account' %}</a></li>
+{% endblock %}
+
+{% block breadcrumbs_before_print %}
+    {% trans 'Fiscal Year' %}:
+    {{ 'core.models.app_setting.fiscal_year'|setting|fiscal_year|localize }}
 {% endblock %}
