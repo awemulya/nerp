@@ -247,9 +247,18 @@ ko.bindingHandlers.editableText = {
             }
         });
     },
-    update: function (element, valueAccessor) {
+    update: function (element, valueAccessor, allBindingsAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor());
         $(element).text(value);
+        if (allBindingsAccessor().disable_editable) {
+            var accessor = allBindingsAccessor().disable_editable;
+            if (accessor) {
+                $(element).text('');
+                $(element).removeAttr('contenteditable');
+            } else {
+                $(element).attr('contenteditable', true);
+            }
+        }
     }
 };
 

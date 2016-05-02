@@ -65,23 +65,23 @@
                         </td>
                         <td data-bind="editableText: name">
                         </td>
-                        <td data-bind="editableText: wa_no, no_content_editable: type() != 'initial_deposit'">
+                        <td data-bind="editableText: wa_no, disable_editable: type() != 'initial_deposit'">
                         </td>
-                        <td data-bind="editableText: ref, no_content_editable: entry_type()=='cr'">
+                        <td data-bind="editableText: ref, disable_editable: entry_type()=='cr'">
                         </td>
-                        <td data-bind="editableText: date, no_content_editable: entry_type()=='cr'">
-                        </td>
-                        <td>
+                        <td data-bind="editableText: date, disable_editable: entry_type()=='cr'">
                         </td>
                         <td>
                         </td>
-                        <td data-bind="editableText: description, no_content_editable: entry_type()=='dr'">
+                        <td>
                         </td>
-                        <td data-bind="editableText: date, no_content_editable: entry_type()=='dr'">
+                        <td data-bind="editableText: description, disable_editable: entry_type()=='dr'">
+                        </td>
+                        <td data-bind="editableText: date, disable_editable: entry_type()=='dr'">
                         </td>
                         <td>
                         </td>
-                        <td data-bind="editableText: exchange_rate, no_content_editable: entry_type()=='dr'">
+                        <td data-bind="editableText: exchange_rate, disable_editable: entry_type()=='dr'">
                         </td>
                         <td>
                         </td>
