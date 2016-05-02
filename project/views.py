@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.views.generic import ListView
 
 from core.models import FiscalYear
-from project.models import ImprestTransaction
+from models import ImprestTransaction
+from serializers import ImprestTransactionSerializer
 
 
 def imprest_ledger(request):
@@ -25,6 +26,7 @@ class ImprestLedger(ListView):
     def get_context_data(self, **kwargs):
         context_data = super(ImprestLedger, self).get_context_data(**kwargs)
         context_data['fy'] = self.get_fy()
+        context_data['data'] = ImprestTransactionSerializer(context_data['object_list'], many=True).data
         return context_data
 
     def get_queryset(self):

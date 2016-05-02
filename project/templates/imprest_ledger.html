@@ -29,38 +29,85 @@
         <form method="post" enctype="multipart/form-data" data-bind="submit: save" name="demand-form">
             {% csrf_token %}
 
+            <div data-bind="with: table_view">
+                <table class="table table-striped table-responsive table-bordered center-headings">
+                    <thead>
+                    <tr>
+                        <th rowspan="3">{% trans 'S.N.' %}</th>
+                        <th rowspan="3">{% trans 'Particular(s)' %}</th>
+                        <th colspan="5">{% trans 'Amount Received/Replenished' %}</th>
+                        <th colspan="6">{% trans 'Payment from Imprest Account' %}</th>
+                        <th rowspan="3">{% trans 'Balance in USD' %}</th>
+                        <th rowspan="3" class="hidden-print"></th>
+                    </tr>
+                    <tr>
+                        <th rowspan="2">{% trans 'WA No.' %}</th>
+                        <th rowspan="2">{% trans 'Ref' %}</th>
+                        <th rowspan="2">{% trans 'Date' %}</th>
+                        <th rowspan="2">{% trans 'NRs' %}</th>
+                        <th rowspan="2">{% trans 'Amount in USD' %}</th>
+                        <th rowspan="2">{% trans 'Description' %}</th>
+                        <th rowspan="2">{% trans 'Date' %}</th>
+                        <th rowspan="2">{% trans 'Currency (NRS)' %}</th>
+                        <th rowspan="2">{% trans 'Ex. Rate' %}</th>
+                        <th colspan="2">{% trans 'Equivalent US$' %}</th>
+                    </tr>
+                    <tr>
+                        <th>{% trans 'Reimbursement to Ka.7.17' %}</th>
+                        <th>{% trans 'Payment from Imprest Account' %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- ko foreach: rows -->
+                    <tr>
+                        <td>
+                            <span data-bind="text:  $index()+1, localize: true"> </span>
+                        </td>
+                        <td data-bind="editableText: name">
+                        </td>
+                        <td data-bind="editableText: wa_no">
+                        </td>
+                        <td data-bind="editableText: ref">
+                        </td>
+                        <td data-bind="editableText: date">
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td data-bind="editableText: description">
+                        </td>
+                        <td data-bind="editableText: date">
+                        </td>
+                        <td>
+                        </td>
+                        <td data-bind="editableText: exchange_rate">
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td><a href="#" class="close tiny secondary hidden-print" data-bind="click: $parent.removeRow">x</a></td>
 
-            <table class="table table-striped table-responsive table-bordered center-headings">
-                <thead>
-                <tr>
-                    <th rowspan="3">{% trans 'S.N.' %}</th>
-                    <th rowspan="3">{% trans 'Particular(s)' %}</th>
-                    <th colspan="5">{% trans 'Amount Received/Replenished' %}</th>
-                    <th colspan="6">{% trans 'Payment from Imprest Account' %}</th>
-                    <th rowspan="3">{% trans 'Balance in USD' %}</th>
-                </tr>
-                <tr>
-                    <th rowspan="2">{% trans 'WA No.' %}</th>
-                    <th rowspan="2">{% trans 'Ref' %}</th>
-                    <th rowspan="2">{% trans 'Date' %}</th>
-                    <th rowspan="2">{% trans 'NRs' %}</th>
-                    <th rowspan="2">{% trans 'Amount in USD' %}</th>
-                    <th rowspan="2">{% trans 'Description' %}</th>
-                    <th rowspan="2">{% trans 'Date' %}</th>
-                    <th rowspan="2">{% trans 'Currency (NRS)' %}</th>
-                    <th rowspan="2">{% trans 'Ex. Rate' %}</th>
-                    <th colspan="2">{% trans 'Equivalent US$' %}</th>
-                </tr>
-                <tr>
-                    <th>{% trans 'Reimbursement to Ka.7.17' %}</th>
-                    <th>{% trans 'Payment from Imprest Account' %}</th>
-                </tr>
-                </thead>
-                <tbody>
+                    </tr>
+                    <!-- /ko -->
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+                {#                <a class="btn btn-default btn-raised" data-bind="click: addRow">#}
+                {#                    {% trans 'Add New Row' %}#}
+                {#                </a>#}
 
+            </div>
+            <div class="transaction-buttons hidden-print">
+                <button class="btn btn-default btn-raised"
+                   data-bind="click: add_initial_deposit, enable: count_transaction_types('initial_deposit')()==0">
+                    {% trans 'Initial Deposit' %}
+                </button>
+            </div>
+            <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
         </form>
 
     </div>
