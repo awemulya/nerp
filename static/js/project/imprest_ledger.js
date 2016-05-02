@@ -113,6 +113,8 @@ function ImprestTransaction(row, imprest_vm) {
     self.wa_no = ko.observable();
     self.ref = ko.observable();
     self.date = ko.observable();
+    self.amount_nrs = ko.observable();
+    self.amount_usd = ko.observable();
     self.description = ko.observable();
     self.exchange_rate = ko.observable();
     self.type = ko.observable();
@@ -128,4 +130,20 @@ function ImprestTransaction(row, imprest_vm) {
             return 'cr';
         }
     }
+
+    self.usd_equivalent = ko.computed(function () {
+        if (self.entry_type() == 'cr' && isAN(self.amount_nrs()) && isAN(self.exchange_rate())) {
+            return parseFloat(self.amount_nrs()) / parseFloat(self.exchange_rate());
+        }
+    });
+
+    self.usd_reimbursement = ko.computed(function () {
+        if (self.type() == 'gon_fund_transfer')
+            return self.usd_equivalent();
+    });
+
+    self.usd_payment = ko.computed(function () {
+        if (self.type() == 'payment')
+            return self.usd_equivalent();
+    });
 }

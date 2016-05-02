@@ -71,21 +71,21 @@
                         </td>
                         <td data-bind="editableText: date, disable_editable: entry_type()=='cr'">
                         </td>
-                        <td>
+                        <td data-bind="editableText: amount_nrs, disable_editable: entry_type()=='cr' || type() == 'initial_deposit'">
                         </td>
-                        <td>
+                        <td data-bind="editableText: amount_usd, disable_editable: entry_type()=='cr'">
                         </td>
                         <td data-bind="editableText: description, disable_editable: entry_type()=='dr'">
                         </td>
                         <td data-bind="editableText: date, disable_editable: entry_type()=='dr'">
                         </td>
-                        <td>
+                        <td data-bind="editableText: amount_nrs, disable_editable: entry_type()=='dr'">
                         </td>
                         <td data-bind="editableText: exchange_rate, disable_editable: entry_type()=='dr'">
                         </td>
-                        <td>
+                        <td data-bind="text: usd_reimbursement">
                         </td>
-                        <td>
+                        <td data-bind="text: usd_payment">
                         </td>
                         <td>
                         </td>
@@ -120,31 +120,31 @@
             </div>
             <div class="transaction-buttons hidden-print">
                 <button class="btn btn-default btn-raised"
-                   data-bind="click: add_initial_deposit, enable: count_transaction_types('initial_deposit')()==0">
+                        data-bind="click: add_initial_deposit, enable: count_transaction_types('initial_deposit')()==0">
                     <i class="fa fa-plus-circle"></i>
                     {% trans 'Initial Deposit' %}
                 </button>
-                
+
                 <button class="btn btn-default btn-raised" data-bind="click: add_replenishment_received">
                     <i class="fa fa-plus-circle"></i>
                     {% trans 'Replenishment Received' %}
                 </button>
-                
+
                 <button class="btn btn-default btn-raised" data-bind="click: add_gon_fund_transfer">
                     <i class="fa fa-minus-circle"></i>
                     {% trans 'GON Fund Transfer' %}
                 </button>
-                
+
                 <button class="btn btn-default btn-raised" data-bind="click: add_payment">
                     <i class="fa fa-minus-circle"></i>
                     {% trans 'Payment' %}
                 </button>
-                
+
                 <button class="btn btn-default btn-raised" data-bind="click: add_liquidation">
                     <i class="fa fa-minus-circle"></i>
                     {% trans 'Liquidation' %}
                 </button>
-                
+
             </div>
             <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
         </form>
