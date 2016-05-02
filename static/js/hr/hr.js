@@ -207,7 +207,23 @@ function PayrollEntry(pr_data) {
 
     self.saveAndAdd = function(formElement){
         console.log('payment row saved');
+        $.ajax({
+            url: 'save_payroll_entry/',
+            method: 'POST',
+            dataType: 'json',
+            data: $(formElement).serialize(),
+            // async: true,
+            success: function (response) {
+                console.log(response);
+                
+            },
+            error: function(errorThrown){
+                console.log(errorThrown);
+                },
+//            self.budget_heads = ko.observableArray(data);
+        });
     };
+    
     self.setup_formset = function(){
         var row_elements = $('.payment-row-table').children().children();
         var cntr = 0;

@@ -603,3 +603,8 @@ def test(request):
     pdb.set_trace()
 
     return HttpResponse(salary)
+
+
+def save_payroll_entry(request):
+    pdb.set_trace()
+    pass
