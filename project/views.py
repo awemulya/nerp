@@ -31,5 +31,5 @@ class ImprestLedger(ListView):
 
     def get_queryset(self):
         qs = super(ImprestLedger, self).get_queryset()
-        qs.filter(fy=self.get_fy())
+        qs = qs.filter(fy=self.get_fy())
         return qs
