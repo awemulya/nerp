@@ -130,21 +130,13 @@ function ImprestTransaction(row, imprest_vm) {
             return 'cr';
         }
     }
+    
+    self.nrs_equivalent = ko.computed(function () {
+        return empty_to_blank(parseFloat(self.amount_usd()) * parseFloat(self.exchange_rate()));
+    });
 
     self.usd_equivalent = ko.computed(function () {
-        if (self.entry_type() == 'cr' && isAN(self.amount_nrs()) && isAN(self.exchange_rate())) {
-            return parseFloat(self.amount_nrs()) / parseFloat(self.exchange_rate());
-        }
-    });
-
-    self.usd_reimbursement = ko.computed(function () {
-        if (self.type() == 'gon_fund_transfer')
-            return self.usd_equivalent();
-    });
-
-    self.usd_payment = ko.computed(function () {
-        if (self.type() == 'payment')
-            return self.usd_equivalent();
+        return empty_to_blank(parseFloat(self.amount_nrs()) / parseFloat(self.exchange_rate()));
     });
 
     self.effect = ko.computed(function () {
@@ -152,12 +144,12 @@ function ImprestTransaction(row, imprest_vm) {
         if (self.entry_type() == 'dr') {
             amt = parseFloat(self.amount_usd());
         } else {
-            amt = parseFloat(self.usd_equivalent()) * -1;
+            amt = parseFloat(self.usd_equivalent() || 0) * -1;
         }
         return empty_to_zero(amt);
     });
 
-    self.balance = function (root, index) {
+    self.usd_balance = function (root, index) {
         return ko.computed(function () {
             var bal = 0;
             $(root.table_view.rows()).each(function (i) {
@@ -165,7 +157,13 @@ function ImprestTransaction(row, imprest_vm) {
                     bal += root.table_view.rows()[i].effect();
                 }
             });
-            return bal;
+            return empty_to_blank(bal);
+        })
+    }
+    
+    self.nrs_balance = function (root, index) {
+        return ko.computed(function () {
+            return empty_to_blank(parseFloat(self.usd_balance(root, index)() || 0) * self.exchange_rate());
         })
     }
 

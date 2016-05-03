@@ -1145,6 +1145,12 @@ function empty_to_zero(o) {
     return parseFloat(o);
 }
 
+function empty_to_blank(o) {
+    if (o == '' || typeof o == 'undefined' || isNaN(o))
+        return '';
+    return parseFloat(o);
+}
+
 function round2(n) {
     if (n == 0) {
         return 0;
