@@ -23,4 +23,4 @@ class ImprestTransaction(models.Model):
     fy = models.ForeignKey(FiscalYear)
 
     def __str__(self):
-        return self.name
+        return self.name or self.get_type_display()

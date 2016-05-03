@@ -6,8 +6,12 @@ $(document).ready(function () {
 
 function ImprestVM(data) {
     var self = this;
+    
+    self.status = ko.observable('Loading...');
 
-    self.table_view = new TableViewModel({rows: data, argument: self}, ImprestTransaction);
+    self.table_view = new TableViewModel({rows: data.rows, argument: self}, ImprestTransaction);
+
+    self.fy_id = ko.observable(data.fy_id);
 
     self.add_transaction = function (transaction_data) {
         if (!transaction_data['name']) {
@@ -78,37 +82,39 @@ function ImprestVM(data) {
             alert.error('There can only be one initial deposit!');
             return false;
         }
-        //$.ajax({
-        //    type: "POST",
-        //    url: '/inventory/save/demand_forms/',
-        //    data: ko.toJSON(self),
-        //    success: function (msg) {
-        //        if (typeof (msg.error_message) != 'undefined') {
-        //            alert.error(msg.error_message);
-        //        }
-        //        else {
-        //            alert.success('Saved!');
-        //            self.status('Requested');
-        //            if (msg.id)
-        //                self.id(msg.id);
-        //            $("#tbody > tr").each(function (i) {
-        //                $($("#tbody > tr")[i]).addClass('invalid-row');
-        //            });
-        //            for (var i in msg.rows) {
-        //                self.table_view.rows()[i].id = msg.rows[i];
-        //                $($("#tbody > tr")[i]).removeClass('invalid-row');
-        //            }
-        //        }
-        //    },
-        //    error: function (XMLHttpRequest, textStatus, errorThrown) {
-        //        alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
-        //    }
-        //});
+        $.ajax({
+            type: "POST",
+            url: '/project/imprest_ledger/save/',
+            data: ko.toJSON(self),
+            success: function (msg) {
+                if (typeof (msg.error_message) != 'undefined') {
+                    alert.error(msg.error_message);
+                }
+                else {
+                    alert.success('Saved!');
+                    self.status('Requested');
+                    if (msg.id)
+                        self.id(msg.id);
+                    $("#tbody > tr").each(function (i) {
+                        $($("#tbody > tr")[i]).addClass('invalid-row');
+                    });
+                    for (var i in msg.rows) {
+                        self.table_view.rows()[i].id = msg.rows[i];
+                        $($("#tbody > tr")[i]).removeClass('invalid-row');
+                    }
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
+            }
+        });
     }
 }
 
 function ImprestTransaction(row, imprest_vm) {
     var self = this;
+    
+    self.id = ko.observable();
     self.name = ko.observable();
     self.wa_no = ko.observable();
     self.ref = ko.observable();
@@ -131,7 +137,7 @@ function ImprestTransaction(row, imprest_vm) {
             return 'cr';
         }
     }
-    
+
     self.nrs_equivalent = ko.computed(function () {
         return empty_to_blank(parseFloat(self.amount_usd()) * parseFloat(self.exchange_rate()));
     });
@@ -161,7 +167,7 @@ function ImprestTransaction(row, imprest_vm) {
             return empty_to_blank(bal);
         })
     }
-    
+
     self.nrs_balance = function (root, index) {
         return ko.computed(function () {
             return empty_to_blank(parseFloat(self.usd_balance(root, index)() || 0) * self.exchange_rate());
