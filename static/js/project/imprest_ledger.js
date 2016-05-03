@@ -9,7 +9,7 @@ function ImprestVM(data) {
     
     self.status = ko.observable('Loading...');
 
-    self.table_view = new TableViewModel({rows: data.rows, argument: self}, ImprestTransaction);
+    self.table_view = new TableViewModel({rows: data.rows, argument: self, auto_add_first: false}, ImprestTransaction);
 
     self.fy_id = ko.observable(data.fy_id);
 
@@ -49,7 +49,7 @@ function ImprestVM(data) {
 
     self.count_transaction_types = function (type) {
         return ko.computed(function () {
-            var transactions = ko.utils.arrayFilter(vm.table_view.rows(), function (row) {
+            var transactions = ko.utils.arrayFilter(self.table_view.rows(), function (row) {
                 return row.type() == type;
             });
             return transactions.length;
@@ -108,6 +108,10 @@ function ImprestVM(data) {
                 alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
             }
         });
+    }
+    
+    if (!self.table_view.rows().length){
+        self.add_initial_deposit();
     }
 }
 
