@@ -113,6 +113,7 @@ function ImprestTransaction(row, imprest_vm) {
     self.wa_no = ko.observable();
     self.ref = ko.observable();
     self.date = ko.observable();
+    self.date_of_payment = ko.observable();
     self.amount_nrs = ko.observable();
     self.amount_usd = ko.observable();
     self.description = ko.observable();
