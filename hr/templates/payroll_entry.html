@@ -53,9 +53,6 @@
             {{ m_form.to_date }}
             <p data-bind="text: paid_to_date_error"></p>
         </div>
-        <div class="col-lg-3">
-            <input type="button" value="Get Salary" data-bind="click: getGroupSalary, visible: !switch_p_type()">
-        </div>
     </div>
     <div>
         <form data-bind="submit: saveAndAdd">

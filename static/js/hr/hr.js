@@ -69,6 +69,7 @@ function PaymentEntryRow(per_data) {
     self.paid_amount = ko.observable();
     self.request_flag = ko.observable(true);
     self.row_errors = ko.observableArray();
+    self.disable_input = ko.observable(false);
     
     // self.employee_counter = ko.observable(0);
     // self.deduction_detail = ko.observableArray();
@@ -176,6 +177,8 @@ function PayrollEntry(pr_data) {
     // self.deduction_headings = ko.observableArray();
 
     self.messages = ko.observableArray();
+
+    self.employee_options = ko.observableArray();
     
     self.switch_p_type  = ko.computed(function(){
         if(self.payroll_type()=="INDIVIDUAL"){
@@ -211,7 +214,7 @@ function PayrollEntry(pr_data) {
             url: 'save_payroll_entry/',
             method: 'POST',
             dataType: 'json',
-            data: $(formElement).serialize(),
+            data: $(formElement).find("input[type='hidden'], :input:not(:hidden)").serialize(),
             // async: true,
             success: function (response) {
                 console.log(response);
@@ -276,24 +279,41 @@ function PayrollEntry(pr_data) {
         };
     });
 
-    self.group_date_update = ko.computed(function(){
-        alert('Group date update');
-        if(self.payroll_type() == 'GROUP'){
-            var has_error = false;
-            for(ro of self.rows()){
-                if(self.paid_from_date() != ro.paid_from_date() || self.paid_to_date() != ro.paid_to_date()){
-                    has_error = true;
-                    self.messages.push('Your date range has been updated. Press Get Salary button to get updated values');
-                    break;
-                };
-            };
-            if(!has_error){
-                self.messages([]);
-            };
-        };
-    });
+    // self.group_date_update = ko.computed(function(){
+        
+    //     if(self.payroll_type() == 'GROUP'){
+    //         var has_error = false;
+    //         for(ro of self.rows()){
+    //             if(self.paid_from_date() != ro.paid_from_date() || self.paid_to_date() != ro.paid_to_date()){
+    //                 has_error = true;
+    //                 self.getGroupSalary();
+    //                 break;
+    //             };
+    //         };
+    //         if(!has_error){
+    //             self.messages([]);
+    //         };
+    //     };
+    // });
 
-    self.getGroupSalary = function(){
+    // self.group_changed = function(){
+    //     if(self.payroll_type() == 'GROUP'){
+    //         self.getGroupSalary()
+    //     }else{
+    //         // Update employee options
+    //     };
+    // };
+     
+    // self.disable_input = ko.computed(function(){
+    //     if(self.payroll_type() == 'GROUP'){
+    //         return true;
+    //     }else{
+    //         return false;
+    //     };
+    // });
+
+    self.getGroupSalary = ko.computed(function(){
+        if(self.paid_from_date() && self.paid_to_date() && self.branch() && self.payroll_type() == 'GROUP')
         $.ajax({
             url: 'get_employees_account/',
             method: 'POST',
@@ -373,10 +393,8 @@ function PayrollEntry(pr_data) {
             },
 //            self.budget_heads = ko.observableArray(data);
         });
-    };
-    
-    
-
+    });
+        
 };
 
 

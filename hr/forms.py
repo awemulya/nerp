@@ -65,13 +65,13 @@ class DeductionForm(forms.Form):
         for name, id in get_deduction_names():
             self.fields['deduction_%s' % id] = forms.FloatField(
                 label=' '.join(name.split('_')).title,
-                widget=NumberInput(attrs={'data-bind': "value: %s_%s" % (name, id)}),
+                widget=NumberInput(attrs={'data-bind': "value: %s_%s, disable: disable_input" % (name, id)}),
                 )
 
 
 class PaymentRowForm(forms.ModelForm):
     deduced_amount = forms.FloatField(
-        widget=NumberInput(attrs={'data-bind': "value: deduced_amount"})
+        widget=NumberInput(attrs={'data-bind': "value: deduced_amount, disable: disable_input"})
     )
 
     class Meta:
@@ -81,17 +81,17 @@ class PaymentRowForm(forms.ModelForm):
 
         # fields = ('name', 'title', 'birth_date')
         widgets = {
-            'paid_employee': Select(attrs={'data-bind': "value: paid_employee, event:{ change: employee_changed}"}),
-            'paid_from_date': DateInput(attrs={'data-bind': "value:$parent.paid_from_date", 'type': 'hidden'}),
-            'paid_to_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date", 'type': 'hidden'}),
-            'absent_days': NumberInput(attrs={'data-bind': 'visible: false'}),
-            'allowance': NumberInput(attrs={'data-bind': "value: allowance"}),
-            'incentive': NumberInput(attrs={'data-bind': "value: incentive"}),
+            'paid_employee': Select(attrs={'data-bind': "value: paid_employee, event:{ change: employee_changed}, disable: disable_input"}),
+            'paid_from_date': DateInput(attrs={'data-bind': "value:$parent.paid_from_date, disable: disable_input", 'type': 'hidden'}),
+            'paid_to_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date, disable: disable_input", 'type': 'hidden'}),
+            'absent_days': NumberInput(attrs={'data-bind': "visible: false, disable: disable_input"}),
+            'allowance': NumberInput(attrs={'data-bind': "value: allowance, disable: disable_input"}),
+            'incentive': NumberInput(attrs={'data-bind': "value: incentive, disable: disable_input"}),
             # 'deduction_detail': SelectMultiple(attrs={'data-bind': "value: deduced_amount"}),
-            'income_tax': NumberInput(attrs={'data-bind': "value: income_tax"}),
-            'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount"}),
-            'salary': NumberInput(attrs={'data-bind': "value: salary"}),
-            'paid_amount': NumberInput(attrs={'data-bind': "value: paid_amount"}),
+            'income_tax': NumberInput(attrs={'data-bind': "value: income_tax, disable: disable_input"}),
+            'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount, disable: disable_input"}),
+            'salary': NumberInput(attrs={'data-bind': "value: salary, disable: disable_input"}),
+            'paid_amount': NumberInput(attrs={'data-bind': "value: paid_amount, disable: disable_input"}),
         }
 
     def __init__(self, *args, **kwargs):
