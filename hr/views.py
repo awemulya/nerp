@@ -609,3 +609,23 @@ def test(request):
 def save_payroll_entry(request):
     pdb.set_trace()
     pass
+
+
+def get_employee_options(request):
+    if request.POST:
+        # pdb.set_trace()
+        branch = request.POST.get('branch', None)
+        if branch:
+            if branch == 'ALL':
+                employees = Employee.objects.all()
+            else:
+                employees = Employee.objects.filter(
+                    working_branch__id=int(branch)
+                )
+            opt_list = [{'name': e.employee.full_name, 'id': e.id} for e in employees]
+            return JsonResponse({'opt_data': opt_list})
+        else:
+            return HttpResponse('No branch')
+    else:
+        pdb.set_trace()
+        return HttpResponse('No POST')

@@ -394,7 +394,67 @@ function PayrollEntry(pr_data) {
 //            self.budget_heads = ko.observableArray(data);
         });
     });
-        
+    self.get_employee_options = ko.computed(function(){
+        $.ajax({
+            url: 'get_employee_options/',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                branch: self.branch()? self.branch() : 'ALL'
+                // paid_from_date: self.paid_from_date(),
+                // paid_to_date: self.paid_to_date(),
+                // monthly_payroll: self.monthly_payroll()
+            },
+            // async: true,
+            success: function (response) {
+                for(emp of response.opt_data){
+                    emp.disable = ko.observable(false);
+                };
+                self.employee_options(response.opt_data);
+            },
+            error: function(errorThrown){
+                console.log(errorThrown);
+                },
+//            self.budget_heads = ko.observableArray(data);
+        });    
+    });
+    self.set_option_disable = function(option, item){
+        if(typeof(item) != 'undefined'){
+            ko.applyBindingsToNode(option, {disable: item.disable}, item);
+        };
+    };
+    self.selected_employees = ko.computed(function(){
+        var sel_e = [];
+        for(row of self.rows()){
+            if(typeof(row.paid_employee()) != 'undefined'){
+                sel_e.push(row.paid_employee());
+            };
+        };
+        return sel_e;
+    });
+    self.update_employee_options = ko.computed(function(){
+        if(self.payroll_type() == 'INDIVIDUAL'){
+            for(opt of self.employee_options()){
+                if($.inArray(opt.id, self.selected_employees()) != -1){
+                    opt.disable(true);
+                };
+            };
+        };
+    });
+    self.del_row_ind_gc = ko.computed(function(){
+        if(self.payroll_type() == 'INDIVIDUAL' && self.branch()){    
+            for(roo of self.rows()){
+                if(!roo.paid_employee() && roo.employee_designation && roo.employee_grade()){
+                    self.rows.remove(roo);
+                            
+                };
+            };
+            if(self.rows().length == 0){
+                console.log('gfhfgjfggh');
+                self.rows.push(new PaymentRowWitDeduction(pr_data));                        
+            };
+        };
+    });
 };
 
 

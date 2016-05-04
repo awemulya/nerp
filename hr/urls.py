@@ -6,6 +6,7 @@ urlpatterns = patterns('',
                        url(r'^test/$', views.test, name='test'),
                        url(r'^get_employee_account/$', views.get_employee_account, name='get_employee_account'),
                        url(r'^get_employees_account/$', views.get_employees_account, name='get_employees_account'),
-                       url(r'^save_payroll_entry/$', views.save_payroll_entry, name='save_payroll_entry')
+                       url(r'^save_payroll_entry/$', views.save_payroll_entry, name='save_payroll_entry'),
+                       url(r'^get_employee_options/$', views.get_employee_options, name='get_employee_options')
                        # url(r'^by_branch/$', views.group_payroll_branch, name='group_payroll_branch'),
                        )
