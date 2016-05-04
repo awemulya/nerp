@@ -5,43 +5,48 @@ from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#,
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
 from .models import Deduction
+from datetime import date
+from hr.bsdate import BSDate
 
-# class DateSelectorWidget(MultiWidget):
-#     def __init__(self, attrs=None):
-#         # create choices for days, months, years
-#         # example below, the rest snipped for brevity.
-#         days = [(day, day) for day in range(1, 30)]
-#         years = [(year, year) for year in (2011, 2012, 2013)]
-#         months = [(month, month) for month in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)]
-#         _widgets = (
-#             Select(attrs=attrs, choices=days),
-#             Select(attrs=attrs, choices=months),
-#             Select(attrs=attrs, choices=years),
-#         )
-#         super(DateSelectorWidget, self).__init__(_widgets, attrs)
 
-#     def decompress(self, value):
-#         if value:
-#             return [value.day, value.month, value.year]
-#         return [None, None, None]
+class DateSelectorWidget(forms.widgets.MultiWidget):
+    def __init__(self, attrs=None, c_attrs=None):
+        # create choices for days, months, years
+        # example below, the rest snipped for brevity.
+        days = [(day, day) for day in range(1, 30)]
+        years = [(year, year) for year in (2011, 2012, 2013, 2014, 2015)]
+        months = [(month, month) for month in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)]
+        _widgets = (
+            Select(attrs=c_attrs['year'], choices=years),
+            Select(attrs=c_attrs['month'], choices=months),
+            Select(attrs=c_attrs['day'], choices=days),
+        )
+        super(DateSelectorWidget, self).__init__(_widgets, attrs)
 
-#     def format_output(self, rendered_widgets):
-#         return ''.join(rendered_widgets)
+    def decompress(self, value):
+        if value:
+            return [value.day, value.month, value.year]
+        return [None, None, None]
 
-#     def value_from_datadict(self, data, files, name):
-#         datelist = [
-#             widget.value_from_datadict(data, files, name + '_%s' % i)
-#             for i, widget in enumerate(self.widgets)]
-#         try:
-#             D = date(
-#                 day=int(datelist[0]),
-#                 month=int(datelist[1]),
-#                 year=int(datelist[2]),
-#             )
-#         except ValueError:
-#             return ''
-#         else:
-#             return str(D)
+    def format_output(self, rendered_widgets):
+        return ''.join(rendered_widgets)
+
+    def value_from_datadict(self, data, files, name):
+        datelist = [
+            widget.value_from_datadict(data, files, name + '_%s' % i)
+            for i, widget in enumerate(self.widgets)]
+        try:
+            # Apply this for both BS and AD
+            D = date(
+                day=int(datelist[0]),
+                month=int(datelist[1]),
+                year=int(datelist[2]),
+            )
+        except ValueError:
+            return ''
+        else:
+            # Format date in our format
+            return '{:%Y-%m-%d}'.format(D)
 
 
 def get_deduction_names():
@@ -66,7 +71,7 @@ class DeductionForm(forms.Form):
             self.fields['deduction_%s' % id] = forms.FloatField(
                 label=' '.join(name.split('_')).title,
                 widget=NumberInput(attrs={'data-bind': "value: %s_%s, disable: disable_input" % (name, id)}),
-                )
+            )
 
 
 class PaymentRowForm(forms.ModelForm):
@@ -109,6 +114,17 @@ class PayrollEntryForm(forms.ModelForm):
             'entry_datetime': DateTimeInput(attrs={})
         }
 
+from_date_attrs = {
+    'year': {'data-bind': 'value: from_year'},
+    'month': {'data-bind': 'value: from_month'},
+    'day': {'data-bind': "value: from_day, visible: monthly_payroll()"}
+}
+to_date_attrs = {
+    'year': {'data-bind': 'value: to_year'},
+    'month': {'data-bind': 'value: to_month'},
+    'day': {'data-bind': "value: to_day, visible: monthly_payroll()"}
+}
+
 
 class GroupPayrollForm(forms.Form):
     branch_choices = [(o.id, o.name) for o in BranchOffice.objects.all()]
@@ -118,25 +134,31 @@ class GroupPayrollForm(forms.Form):
                  ('INDIVIDUAL', _('Individual')),
                  ('GROUP', _('Group'))],
         widget=Select(attrs={'data-bind': 'value: payroll_type'})
-                 )
+    )
     branch = forms.ChoiceField(
         choices=branch_choices,
         widget=Select(attrs={'data-bind': 'value: branch'})
-        )
+    )
+    # from_date = forms.DateField(
+    #     widget=DateInput(attrs={
+    #         'data-bind': 'value: paid_from_date',
+    #         'placeholder': 'YYYY-MM-DD',
+    #         'is_required': True
+    #     }),
+    # )
+    # to_date = forms.DateField(
+    #     widget=DateInput(attrs={
+    #         'data-bind': 'value: paid_to_date',
+    #         'placeholder': 'YYYY-MM-DD',
+    #         'is_required': True
+    #     }),
+    # )
     from_date = forms.DateField(
-        widget=DateInput(attrs={
-            'data-bind': 'value: paid_from_date',
-            'placeholder': 'YYYY-MM-DD',
-            'is_required': True
-            }),
-        )
+        widget=DateSelectorWidget(c_attrs=from_date_attrs)
+    )
     to_date = forms.DateField(
-        widget=DateInput(attrs={
-            'data-bind': 'value: paid_to_date',
-            'placeholder': 'YYYY-MM-DD',
-            'is_required': True
-            }),
-        )
+        widget=DateSelectorWidget(c_attrs=to_date_attrs)
+    )
 
 
 # class EmployeeForm(forms.ModelForm):

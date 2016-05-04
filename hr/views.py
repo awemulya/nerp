@@ -487,12 +487,19 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                 employee_response[item] = 0
         employee_response['row_errors'] = row_errors
 
-    if isinstance(paid_from_date, date):
-        employee_response['paid_from_date'] = '{:%Y-%m-%d}'.format(paid_from_date)
-        employee_response['paid_to_date'] = '{:%Y-%m-%d}'.format(paid_to_date)
-    else:
-        employee_response['paid_from_date'] = paid_from_date.as_string()
-        employee_response['paid_to_date'] = paid_to_date.as_string()
+    # if isinstance(paid_from_date, date):
+        # employee_response['paid_from_date'] = '{:%Y-%m-%d}'.format(paid_from_date)
+    employee_response['from_year'] = str(paid_from_date.year)
+    employee_response['from_month'] = str(paid_from_date.month)
+    employee_response['from_day'] = str(paid_from_date.day)
+
+    # employee_response['paid_to_date'] = '{:%Y-%m-%d}'.format(paid_to_date)
+    employee_response['to_year'] = str(paid_to_date.year)
+    employee_response['to_month'] = str(paid_to_date.month)
+    employee_response['to_day'] = str(paid_to_date.day)
+    # else:
+    #     employee_response['paid_from_date'] = paid_from_date.as_string()
+    #     employee_response['paid_to_date'] = paid_to_date.as_string()
     employee_response['disable_input'] = 'true'
     return employee_response
 
