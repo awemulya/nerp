@@ -31,14 +31,26 @@ $(document).ready(function () {
 });
 
 function PaymentRowWitDeduction(pwd_data){
+    var PER = new PaymentEntryRow();
     if(pwd_data.deduction_data){
         var PER = new PaymentEntryRow();
         var DeductionPER = ko.mapping.fromJS(pwd_data.deduction_data);
-        return $.extend(PER, DeductionPER);
-    }else{
-        var PER = new PaymentEntryRow();
-        return PER;
+        $.extend(PER, DeductionPER);
     };
+
+    if(pwd_data.incentive_data){
+        var PER = new PaymentEntryRow();
+        var IncentivePER = ko.mapping.fromJS(pwd_data.incentive_data);
+        $.extend(PER, IncentivePER);
+    };
+    if(pwd_data.allowance_data){
+        var PER = new PaymentEntryRow();
+        var AllowancePER = ko.mapping.fromJS(pwd_data.allowance_data);
+        $.extend(PER, AllowancePER);
+    };
+
+    return PER;
+
     // var self = this;
     // self.deduction_id = ko.observable();
     // self.name = ko.observable();
@@ -208,23 +220,35 @@ function PayrollEntry(pr_data) {
         };
     });
 
+    
     self.saveAndAdd = function(formElement){
-        console.log('payment row saved');
-        $.ajax({
-            url: 'save_payroll_entry/',
-            method: 'POST',
-            dataType: 'json',
-            data: $(formElement).find("input[type='hidden'], :input:not(:hidden)").serialize(),
-            // async: true,
-            success: function (response) {
-                console.log(response);
-                
-            },
-            error: function(errorThrown){
-                console.log(errorThrown);
+        var has_error = false;
+        for(row of self.rows()){
+            if(row.row_errors().length > 0){
+                // here has true should be true 
+                has_error = false;
+                self.messages.push('Remove rows with warnings to Save the entry');
+            };
+        };
+        if(!has_error){
+            // debugger;
+            var post_data = $(formElement).find("input[type='hidden'], :input:not(:hidden)").serialize() + '&row_count=' + String(self.rows().length);
+            $.ajax({
+                url: 'save_payroll_entry/',
+                method: 'POST',
+                dataType: 'json',
+                data: post_data,
+                // async: true,
+                success: function (response) {
+                    console.log(response);
+                    
                 },
-//            self.budget_heads = ko.observableArray(data);
-        });
+                error: function(errorThrown){
+                    console.log(errorThrown);
+                    },
+    //            self.budget_heads = ko.observableArray(data);
+            });
+        };
     };
     
     self.setup_formset = function(){

@@ -493,7 +493,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     else:
         employee_response['paid_from_date'] = paid_from_date.as_string()
         employee_response['paid_to_date'] = paid_to_date.as_string()
-    employee_response['disable_input'] = 'true'
+    employee_response['disable_input'] = False
     return employee_response
 
 
@@ -501,10 +501,18 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 def payroll_entry(request):
     ko_data = {}
     ko_data['deduction_data'] = {}
+    ko_data['incentive_data'] = {}
+    ko_data['allowance_data'] = {}
     ko_data['calender'] = CALENDAR
 
     for name, id in get_deduction_names():
         ko_data['deduction_data']['%s_%s' % (name, id)] = ''
+
+    for name, id in get_incentive_names():
+        ko_data['incentive_data']['%s_%s' % (name, id)] = ''
+
+    for name, id in get_allowance_names():
+        ko_data['allowance_data']['%s_%s' % (name, id)] = ''
 
     main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
     row_form = PaymentRowFormSet()[0]
@@ -608,8 +616,17 @@ def test(request):
 
 
 def save_payroll_entry(request):
-    pdb.set_trace()
-    pass
+    if request.POST:
+        row_count = request.POST('row_count', None)
+        if row_count:
+            for i in range(0, int(row_count)):
+
+                # Similar if we need all details of incentive and allowence
+                deductions = []
+                for ded in Deduction.objects.all():
+                    amount = request.POST.get('form-%d-deduction_%d' % (i, ded.id), None)
+                    if amount:
+                        deductions.append(DeductionDetail.objects.create(deduction_id=ded.id, amount=amount)
 
 
 def get_employee_options(request):

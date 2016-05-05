@@ -4,7 +4,7 @@ from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#, MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
-from .models import Deduction
+from .models import Deduction, Incentive, Allowance
 
 # class DateSelectorWidget(MultiWidget):
 #     def __init__(self, attrs=None):
@@ -49,9 +49,35 @@ def get_deduction_names():
     names = []
     for obj in deductions:
         if obj.deduction_for == 'EMPLOYEE ACC':
-            name = obj.in_acc_type.name
+            name = '_'.join(obj.in_acc_type.name.split(' ')).lower
         else:
             name = '_'.join(obj.name.split(' ')).lower()
+        names.append((name, obj.id))
+    return names
+
+
+def get_incentive_names():
+    incentives = Incentive.objects.all()
+    names = []
+    for obj in incentives:
+        # if obj.deduction_for == 'EMPLOYEE ACC':
+        #     name = obj.in_acc_type.name
+        # else:
+        #     name = '_'.join(obj.name.split(' ')).lower()
+        name = '_'.join(obj.name.split(' ')).lower()
+        names.append((name, obj.id))
+    return names
+
+
+def get_allowance_names():
+    allowances = Allowance.objects.all()
+    names = []
+    for obj in allowances:
+        # if obj.deduction_for == 'EMPLOYEE ACC':
+        #     name = obj.in_acc_type.name
+        # else:
+        #     name = '_'.join(obj.name.split(' ')).lower()
+        name = '_'.join(obj.name.split(' ')).lower()
         names.append((name, obj.id))
     return names
 
@@ -66,13 +92,39 @@ class DeductionForm(forms.Form):
             self.fields['deduction_%s' % id] = forms.FloatField(
                 label=' '.join(name.split('_')).title,
                 widget=NumberInput(attrs={'data-bind': "value: %s_%s, disable: disable_input" % (name, id)}),
-                )
+            )
+
+
+class IncentiveForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        # extra = kwargs.pop('extra')
+        super(IncentiveForm, self).__init__(*args, **kwargs)
+
+        for name, id in get_incentive_names():
+            self.fields['incentive_%s' % id] = forms.FloatField(
+                label=' '.join(name.split('_')).title,
+                widget=NumberInput(attrs={'data-bind': "value: %s_%s, disable: disable_input" % (name, id)}),
+            )
+
+
+class AllowanceForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        # extra = kwargs.pop('extra')
+        super(AllowanceForm, self).__init__(*args, **kwargs)
+
+        for name, id in get_allowance_names():
+            self.fields['allowance_%s' % id] = forms.FloatField(
+                label=' '.join(name.split('_')).title,
+                widget=NumberInput(attrs={'data-bind': "value: %s_%s, disable: disable_input" % (name, id)}),
+            )
 
 
 class PaymentRowForm(forms.ModelForm):
-    deduced_amount = forms.FloatField(
-        widget=NumberInput(attrs={'data-bind': "value: deduced_amount, disable: disable_input"})
-    )
+    # deduced_amount = forms.FloatField(
+    #     widget=NumberInput(attrs={'data-bind': "value: deduced_amount, disable: disable_input"})
+    # )
 
     class Meta:
         model = PaymentRecord
@@ -87,7 +139,7 @@ class PaymentRowForm(forms.ModelForm):
             'absent_days': NumberInput(attrs={'data-bind': "visible: false, disable: disable_input"}),
             'allowance': NumberInput(attrs={'data-bind': "value: allowance, disable: disable_input"}),
             'incentive': NumberInput(attrs={'data-bind': "value: incentive, disable: disable_input"}),
-            # 'deduction_detail': SelectMultiple(attrs={'data-bind': "value: deduced_amount"}),
+            'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount, disable: disable_input"}),
             'income_tax': NumberInput(attrs={'data-bind': "value: income_tax, disable: disable_input"}),
             'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount, disable: disable_input"}),
             'salary': NumberInput(attrs={'data-bind': "value: salary, disable: disable_input"}),
@@ -170,3 +222,5 @@ class EmployeeAccountInlineFormset(forms.models.BaseInlineFormSet):
 
 PaymentRowFormSet = forms.formset_factory(PaymentRowForm)
 DeductionFormSet = forms.formset_factory(DeductionForm)
+IncentiveFormSet = forms.formset_factory(IncentiveForm)
+AllowanceFormSet = forms.formset_factory(AllowanceForm)

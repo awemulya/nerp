@@ -737,6 +737,22 @@ class DeductionDetail(models.Model):
     amount = models.FloatField()
 
 
+class IncentiveDetail(models.Model):
+    Incentive = models.ForeignKey(
+        Deduction,
+        related_name='incentive_amount_detail'
+    )
+    amount = models.FloatField()
+
+
+class AllowanceDetail(models.Model):
+    Incentive = models.ForeignKey(
+        Allowance,
+        related_name='allowance_amount_detail'
+    )
+    amount = models.FloatField()
+
+
 class PaymentRecord(models.Model):
     paid_employee = models.ForeignKey(Employee)
     paid_from_date = BSDateField()
@@ -744,7 +760,10 @@ class PaymentRecord(models.Model):
     absent_days = models.PositiveIntegerField()
     allowance = models.FloatField(null=True, blank=True)
     incentive = models.FloatField(null=True, blank=True)
+    deduced_amount = models.FloatField(null=True, blank=True)
     deduction_detail = models.ManyToManyField(DeductionDetail, blank=True)
+    incentive_detail = models.ManyToManyField(IncentiveDetail, blank=True)
+    allowance_detail = models.ManyToManyField(AllowanceDetail, blank=True)
     income_tax = models.FloatField(null=True, blank=True)
     pro_tempore_amount = models.FloatField(null=True, blank=True)
     salary = models.FloatField(null=True, blank=True)
