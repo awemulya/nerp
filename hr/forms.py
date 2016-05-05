@@ -117,24 +117,26 @@ class GroupPayrollForm(forms.Form):
         choices=[
                  ('INDIVIDUAL', _('Individual')),
                  ('GROUP', _('Group'))],
-        widget=Select(attrs={'data-bind': 'value: payroll_type'})
+        widget=Select(attrs={'data-bind': 'value: payroll_type', 'class': 'form-control'})
                  )
     branch = forms.ChoiceField(
         choices=branch_choices,
-        widget=Select(attrs={'data-bind': 'value: branch'})
+        widget=Select(attrs={'data-bind': 'value: branch', 'class': 'form-control'})
         )
     from_date = forms.DateField(
         widget=DateInput(attrs={
             'data-bind': 'value: paid_from_date',
             'placeholder': 'YYYY-MM-DD',
-            'is_required': True
+            'is_required': True,
+            'class': 'form-control'
             }),
         )
     to_date = forms.DateField(
         widget=DateInput(attrs={
             'data-bind': 'value: paid_to_date',
             'placeholder': 'YYYY-MM-DD',
-            'is_required': True
+            'is_required': True,
+            'class': 'form-control',
             }),
         )
 
