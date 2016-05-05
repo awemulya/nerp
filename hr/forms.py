@@ -20,6 +20,9 @@ class DateSelectorWidget(forms.widgets.MultiWidget):
             Select(attrs=c_attrs['year'], choices=years),
             Select(attrs=c_attrs['month'], choices=months),
             Select(attrs=c_attrs['day'], choices=days),
+            # Select(attrs=attrs, choices=years),
+            # Select(attrs=attrs, choices=months),
+            # Select(attrs=attrs, choices=days),
         )
         super(DateSelectorWidget, self).__init__(_widgets, attrs)
 
@@ -154,10 +157,24 @@ class GroupPayrollForm(forms.Form):
     #     }),
     # )
     from_date = forms.DateField(
-        widget=DateSelectorWidget(c_attrs=from_date_attrs)
+        widget=DateSelectorWidget(
+            c_attrs=from_date_attrs,
+            # attrs={
+            #     'data-bind': 'value: paid_from_date',
+            #     # 'placeholder': 'YYYY-MM-DD',
+            #     'is_required': True
+            # }
+        )
     )
     to_date = forms.DateField(
-        widget=DateSelectorWidget(c_attrs=to_date_attrs)
+        widget=DateSelectorWidget(
+            c_attrs=to_date_attrs,
+            # attrs={
+            #     'data-bind': 'value: paid_to_date',
+            #     # 'placeholder': 'YYYY-MM-DD',
+            #     'is_required': True
+            # }
+        )
     )
 
 

@@ -171,19 +171,63 @@ function PayrollEntry(pr_data) {
     self.to_month = ko.observable();
     self.to_day = ko.observable();
     
+    // self.paid_from_date = ko.computed(function(){
+    //     read: function(){    
+    //         if(self.from_year() && self.from_month() && self.from_day()){
+    //             // console.log('inside');
+    //             return self.from_year() + '-' + self.from_month() + '-' + self.from_day();
+    //         };
+    //     },
+    //     write: function(date){
+    //         self.paid_from_date(date);
+    //     }
+    //     owner: self
+    // });
+
+    // self.paid_to_date = ko.computed(function(){
+    //     read: function(){    
+    //         if(self.to_year() && self.to_month() && self.to_day()){
+    //             return self.to_year() + '-' + self.to_month() + '-' + self.to_day();
+    //         };
+    //         // if(self.from_year() && self.from_month() && self.from_day()){
+    //         //     // console.log('inside');
+    //         //     return self.from_year() + '-' + self.from_month() + '-' + self.from_day();
+    //         // };
+    //     },
+    //     write: function(date){
+    //         self.paid_to_date(date);
+    //     },
+    //     owner: self
+    // });
+    // ==
     self.paid_from_date = ko.computed(function(){
+        // read: function(){    
         if(self.from_year() && self.from_month() && self.from_day()){
-            console.log('inside');
+            // console.log('inside');
             return self.from_year() + '-' + self.from_month() + '-' + self.from_day();
         };
+        // },
+        // write: function(date){
+        //     self.paid_from_date(date);
+        // }
+        // owner: self
     });
 
     self.paid_to_date = ko.computed(function(){
+        // read: function(){    
         if(self.to_year() && self.to_month() && self.to_day()){
             return self.to_year() + '-' + self.to_month() + '-' + self.to_day();
         };
+            // if(self.from_year() && self.from_month() && self.from_day()){
+            //     // console.log('inside');
+            //     return self.from_year() + '-' + self.from_month() + '-' + self.from_day();
+            // };
+        // },
+        // write: function(date){
+        //     self.paid_to_date(date);
+        // },
+        // owner: self
     });
-    // ==
 
     // self.paid_from_date = ko.observable();
     // self.paid_to_date = ko.observable();
@@ -394,8 +438,15 @@ function PayrollEntry(pr_data) {
                         };
                         if(c==1){
                             // Cannot write here to ko.computed observable
-                            self.paid_from_date(row.paid_from_date());
-                            self.paid_to_date(row.paid_to_date());
+                            // self.paid_from_date(row.paid_from_date());
+                            self.from_year(row.from_year());
+                            self.from_month(row.from_month());
+                            self.from_day(row.from_day());
+                            
+                            // self.paid_to_date(row.paid_to_date());
+                            self.to_year(row.to_year());
+                            self.to_month(row.to_month());
+                            self.to_day(row.to_day());
                         };
                         // row.paid_employee(data.employee_id);
                         // row.allowance(data.allowance);
