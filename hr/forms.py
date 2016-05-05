@@ -1,5 +1,6 @@
 from django import forms
 # from datetime import date
+from app.utils.forms import HTML5BootstrapModelForm
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#, MultiWidget
 from njango.fields import BSDateField, today
@@ -69,7 +70,7 @@ class DeductionForm(forms.Form):
                 )
 
 
-class PaymentRowForm(forms.ModelForm):
+class PaymentRowForm(HTML5BootstrapModelForm):
     deduced_amount = forms.FloatField(
         widget=NumberInput(attrs={'data-bind': "value: deduced_amount, disable: disable_input"})
     )
