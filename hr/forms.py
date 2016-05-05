@@ -14,7 +14,7 @@ class DateSelectorWidget(forms.widgets.MultiWidget):
         # create choices for days, months, years
         # example below, the rest snipped for brevity.
         days = [(day, day) for day in range(1, 30)]
-        years = [(year, year) for year in (2011, 2012, 2013, 2014, 2015)]
+        years = [(year, year) for year in (2070, 2011, 2012, 2013, 2014, 2015)]
         months = [(month, month) for month in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)]
         _widgets = (
             Select(attrs=c_attrs['year'], choices=years),
@@ -90,8 +90,8 @@ class PaymentRowForm(forms.ModelForm):
         # fields = ('name', 'title', 'birth_date')
         widgets = {
             'paid_employee': Select(attrs={'data-bind': "value: paid_employee, event:{ change: employee_changed}, disable: disable_input, options: $parent.employee_options, optionsText: 'name', optionsValue: 'id', optionsCaption: 'Select Employee',optionsAfterRender: $parent.set_option_disable"}),
-            'paid_from_date': DateInput(attrs={'data-bind': "value:$parent.paid_from_date, disable: disable_input", 'type': 'hidden'}),
-            'paid_to_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date, disable: disable_input", 'type': 'hidden'}),
+            'paid_from_date': DateInput(attrs={'data-bind': "value: paid_from_date, disable: disable_input"}),
+            'paid_to_date': DateInput(attrs={'data-bind': "value: paid_to_date, disable: disable_input"}),
             'absent_days': NumberInput(attrs={'data-bind': "visible: false, disable: disable_input"}),
             'allowance': NumberInput(attrs={'data-bind': "value: allowance, disable: disable_input"}),
             'incentive': NumberInput(attrs={'data-bind': "value: incentive, disable: disable_input"}),
@@ -120,12 +120,12 @@ class PayrollEntryForm(forms.ModelForm):
 from_date_attrs = {
     'year': {'data-bind': 'value: from_year'},
     'month': {'data-bind': 'value: from_month'},
-    'day': {'data-bind': "value: from_day, visible: monthly_payroll()"}
+    'day': {'data-bind': "value: from_day, visible: !monthly_payroll()"}
 }
 to_date_attrs = {
     'year': {'data-bind': 'value: to_year'},
     'month': {'data-bind': 'value: to_month'},
-    'day': {'data-bind': "value: to_day, visible: monthly_payroll()"}
+    'day': {'data-bind': "value: to_day, visible: !monthly_payroll()"}
 }
 
 

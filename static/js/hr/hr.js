@@ -137,8 +137,8 @@ function PaymentEntryRow(per_data) {
                     }
                     
                     // if(vm.rows.length == 1){
-                        vm.paid_from_date(response.data.paid_from_date);
-                        vm.paid_to_date(response.data.paid_to_date);
+                        // vm.paid_from_date(response.data.paid_from_date);
+                        // vm.paid_to_date(response.data.paid_to_date);
                     // };
                 };
             },
@@ -256,18 +256,18 @@ function PayrollEntry(pr_data) {
         };
     }); 
 
-    self.clear_row = ko.computed(function(){
-        if(self.switch_p_type() == true){
-            self.rows([]);
-            self.rows.push(PaymentRowWitDeduction(pr_data));
+    // self.clear_row = ko.computed(function(){
+    //     if(self.switch_p_type() == true){
+    //         self.rows([]);
+    //         self.rows.push(PaymentRowWitDeduction(pr_data));
             
-        }else{
-            self.rows([]);
-        };
-    });
+    //     }else{
+    //         self.rows([]);
+    //     };
+    // });
 
     self.m_p_changed = ko.computed(function(){
-        self.monthly_payroll();
+        // self.monthly_payroll();
         if(self.payroll_type() == 'INDIVIDUAL'){
             self.rows([]);
             self.rows.push(PaymentRowWitDeduction(pr_data));
@@ -331,6 +331,8 @@ function PayrollEntry(pr_data) {
         self.rows.remove(row);
         self.setup_formset();
     };
+    
+    // This is important dont delete this
     self.set_time_stamp = ko.computed(function(){
         console.log('We are in timestamp function');
         if(self.payroll_type() != 'GROUP'){
@@ -439,14 +441,14 @@ function PayrollEntry(pr_data) {
                         if(c==1){
                             // Cannot write here to ko.computed observable
                             // self.paid_from_date(row.paid_from_date());
-                            self.from_year(row.from_year());
-                            self.from_month(row.from_month());
-                            self.from_day(row.from_day());
+                            // self.from_year(row.from_year());
+                            // self.from_month(row.from_month());
+                            // self.from_day(row.from_day());
                             
-                            // self.paid_to_date(row.paid_to_date());
-                            self.to_year(row.to_year());
-                            self.to_month(row.to_month());
-                            self.to_day(row.to_day());
+                            // // self.paid_to_date(row.paid_to_date());
+                            // self.to_year(row.to_year());
+                            // self.to_month(row.to_month());
+                            // self.to_day(row.to_day());
                         };
                         // row.paid_employee(data.employee_id);
                         // row.allowance(data.allowance);

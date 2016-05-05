@@ -63,6 +63,9 @@
                 <th>Employee Grade</th>
                 <th>Employee Designation</th>
 
+                <th>From xxxxxxxxx</th>
+                <th>To xxxxxxxxxx</th>
+                
                 <th>Allowance</th>
                 <th>Incentive</th>
                 {% for field in deduction_form %}
@@ -87,6 +90,9 @@
                    
                     <td><b data-bind="text: employee_grade"></b></td>
                     <td><b data-bind="text: employee_designation"></b></td>
+                    
+                    <td>{{ r_form.paid_from_date }}</td>
+                    <td>{{ r_form.paid_to_date }}</td>
                    
                     <td>{{ r_form.allowance }}</td>
                     <td>{{ r_form.incentive }}</td>
