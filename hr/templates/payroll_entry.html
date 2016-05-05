@@ -63,12 +63,12 @@
                 <th>Employee Grade</th>
                 <th>Employee Designation</th>
                 
-                {% for field in deduction_form %}
+                {% for field in allowance_form %}
                     <th>{{ field.label }}</th>
                 {% endfor %}
                 <th>Total Allowance</th>
                 
-                {% for field in deduction_form %}
+                {% for field in incentive_form %}
                     <th>{{ field.label }}</th>
                 {% endfor %}
                 <th>Total Incentive</th>
@@ -97,12 +97,21 @@
                     <td><b data-bind="text: employee_grade"></b></td>
                     <td><b data-bind="text: employee_designation"></b></td>
                    
+                    {% for field in allowance_form %}
+                        <th>{{ field }}</th>
+                    {% endfor %}
                     <td>{{ r_form.allowance }}</td>
+                    
+                    {% for field in incentive_form %}
+                        <th>{{ field }}</th>
+                    {% endfor %}
                     <td>{{ r_form.incentive }}</td>
+                    
                     {% for field in deduction_form %}
                         <th>{{ field }}</th>
                     {% endfor %}
                     <td>{{ r_form.deduced_amount }}</td>
+                    
                     <td>{{ r_form.income_tax }}</td>
                     <td>{{ r_form.pro_tempore_amount }}</td>
                     <td>{{ r_form.salary }}</td>

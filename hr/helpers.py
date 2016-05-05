@@ -38,6 +38,14 @@ def get_y_m_tuple_list(from_date, to_date):
     return return_list
 
 
+def month_cnt_inrange(month, frm, to):
+    cnt = 0
+    for y, m in get_y_m_tuple_list(frm, to):
+        if month == m:
+            cnt += 1
+    return cnt
+
+
 def are_side_months(from_date, to_date):
     if from_date.year == to_date.year and to_date.month - from_date.month == 1:
         return True
@@ -157,7 +165,7 @@ def delta_month_date_impure(p_from, p_to):
 
 def bsdate2str(date):
     li = [str(x) for x in date.date_tuple()]
-    return '/'.join(li)
+    return '-'.join(li)
 
 
 def inc_1_day(in_date):
@@ -251,17 +259,17 @@ def emp_salary_eligibility(emp, p_from, p_to):
     if p_from <= last_paid:
         if isinstance(p_from, date):
             if never_paid:
-                error_msg = 'Employee has not worked yet for %s' % '{:%Y/%m/%d}'.format(p_from)
+                error_msg = 'Employee has not worked yet for %s. Appointed on %s' % ('{:%Y-%m-%d}'.format(p_from), '{:%Y-%m-%d}'.format(emp.appoint_date))
             else:
-                error_msg = 'Already paid for/upto date %s' % '{:%Y/%m/%d}'.format(p_from)
+                error_msg = 'Already paid for/upto date %s' % '{:%Y-%m-%d}'.format(p_from)
         else:
             if never_paid:
-                error_msg = 'Employee has not worked yet for %s' % bsdate2str(p_from)
+                error_msg = 'Employee has not worked yet for %s. Appointed on %s' % (bsdate2str(p_from), emp.appoint_date)
             else:
                 error_msg = 'Already paid for/upto date %s' % bsdate2str(p_from)
     elif p_from > inc_1_day(last_paid):
         if isinstance(p_from, date):
-            error_msg = 'Missed payment from %s to %s' % ('{:%Y/%m/%d}'.format(inc_1_day(last_paid)), '{:%Y/%m/%d}'.format(drc_1_day(p_from)))
+            error_msg = 'Missed payment from %s to %s' % ('{:%Y/%m/%d}'.format(inc_1_day(last_paid)), '{:%Y-%m-%d}'.format(drc_1_day(p_from)))
         else:
             error_msg = 'Missed payment from %s to %s' % (bsdate2str(inc_1_day(last_paid)), bsdate2str(drc_1_day(p_from)))
     if error_msg:

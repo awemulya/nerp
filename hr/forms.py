@@ -4,7 +4,7 @@ from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#, MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
-from .models import Deduction, Incentive, Allowance
+from .models import Deduction, IncentiveName, AllowanceName
 
 # class DateSelectorWidget(MultiWidget):
 #     def __init__(self, attrs=None):
@@ -57,7 +57,7 @@ def get_deduction_names():
 
 
 def get_incentive_names():
-    incentives = Incentive.objects.all()
+    incentives = IncentiveName.objects.all()
     names = []
     for obj in incentives:
         # if obj.deduction_for == 'EMPLOYEE ACC':
@@ -70,7 +70,7 @@ def get_incentive_names():
 
 
 def get_allowance_names():
-    allowances = Allowance.objects.all()
+    allowances = AllowanceName.objects.all()
     names = []
     for obj in allowances:
         # if obj.deduction_for == 'EMPLOYEE ACC':
@@ -89,9 +89,9 @@ class DeductionForm(forms.Form):
         super(DeductionForm, self).__init__(*args, **kwargs)
 
         for name, id in get_deduction_names():
-            self.fields['deduction_%s' % id] = forms.FloatField(
-                label=' '.join(name.split('_')).title,
-                widget=NumberInput(attrs={'data-bind': "value: %s_%s, disable: disable_input" % (name, id)}),
+            self.fields['deduction_%d' % id] = forms.FloatField(
+                label=' '.join(name.split('_')).title(),
+                widget=NumberInput(attrs={'data-bind': "value: deduction_%s, disable: disable_input" % (id)}),
             )
 
 
@@ -102,9 +102,9 @@ class IncentiveForm(forms.Form):
         super(IncentiveForm, self).__init__(*args, **kwargs)
 
         for name, id in get_incentive_names():
-            self.fields['incentive_%s' % id] = forms.FloatField(
-                label=' '.join(name.split('_')).title,
-                widget=NumberInput(attrs={'data-bind': "value: %s_%s, disable: disable_input" % (name, id)}),
+            self.fields['incentive_%d' % id] = forms.FloatField(
+                label=' '.join(name.split('_')).title(),
+                widget=NumberInput(attrs={'data-bind': "value: incentive_%s, disable: disable_input" % (id)}),
             )
 
 
@@ -115,9 +115,9 @@ class AllowanceForm(forms.Form):
         super(AllowanceForm, self).__init__(*args, **kwargs)
 
         for name, id in get_allowance_names():
-            self.fields['allowance_%s' % id] = forms.FloatField(
-                label=' '.join(name.split('_')).title,
-                widget=NumberInput(attrs={'data-bind': "value: %s_%s, disable: disable_input" % (name, id)}),
+            self.fields['allowance_%d' % id] = forms.FloatField(
+                label=' '.join(name.split('_')).title(),
+                widget=NumberInput(attrs={'data-bind': "value: allowance_%s, disable: disable_input" % (id)}),
             )
 
 

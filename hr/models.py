@@ -45,7 +45,7 @@ deduct_for = [('EMPLOYEE ACC', _('For employee Account')),
 payment_cycle = [('M', _('Monthly')),
                  ('Y', _('Yearly')),
                  ('D', _('Daily')),
-                 ('H', _('Hourly'))]
+                 ]
 holder_type = [('EMPLOYEE', _("Employee's Account")),
                ('COMPANY', _('Company Account'))]
 
@@ -406,7 +406,7 @@ class AllowanceName(models.Model):
 # This is bhatta
 class Allowance(models.Model):
     # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
-    name = models.ForeignKey(AllowanceName, null=True, blank=True, related_name="allowences")
+    name = models.ForeignKey(AllowanceName, null=True, blank=True, related_name="allowances")
     employee_grade = models.ForeignKey(EmployeeGrade)
     # Any one out of two should be filled
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
@@ -444,7 +444,7 @@ class IncentiveName(models.Model):
 # This is incentive(for motivation)
 class Incentive(models.Model):
     # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
-    name = models.ForeignKey(IncentiveName, null=True, blank=True)
+    name = models.ForeignKey(IncentiveName, null=True, blank=True, related_name='incentives')
     employee_grade = models.ForeignKey(EmployeeGrade)
     # Any one of the two should be filled
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
