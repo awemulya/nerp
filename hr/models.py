@@ -371,6 +371,32 @@ class Designation(models.Model):
         return self.designation_name
 
 
+# class OtherIncomes(models.Model):
+#     inc_type_choices = (('INCENTIVE'),('Incentive'), ('ALLOWANCE'),('Allowance'))
+#     income_type = models.CharField(choices=inc_type_choices)
+#     name = models.CharField(max_length=100)
+#     employee_grade = models.ForeignKey(EmployeeGrade)
+#     sum_type = models.CharField(max_length=50, choices=deduct_choice)
+#     amount = models.FloatField(null=True, blank=True)
+#     amount_rate = models.FloatField(null=True, blank=True)
+#     payment_cycle = models.CharField(max_length=50, choices=payment_cycle)
+#     year_payment_cycle_month = models.PositiveIntegerField(
+#         null=True,
+#         blank=True,
+#         validators=[
+#             MaxValueValidator(12),
+#             MinValueValidator(1)
+#         ],
+#     )
+#     description = models.CharField(max_length=250)
+
+#     def __unicode__(self):
+#             if self.sum_type == 'AMOUNT':
+#                 return '%s-%s %s- %f' % (self.income_type, self.employee_grade, self.name, self.amount)
+#             else:
+#                 return '%s-%s %s- %f' % (self.income_type, self.employee_grade, self.name, self.amount_rate)
+
+
 # This is bhatta
 class Allowance(models.Model):
     # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]

@@ -49,7 +49,7 @@ def get_deduction_names():
     names = []
     for obj in deductions:
         if obj.deduction_for == 'EMPLOYEE ACC':
-            name = '_'.join(obj.in_acc_type.name.split(' ')).lower
+            name = '_'.join(obj.in_acc_type.name.split(' ')).lower()
         else:
             name = '_'.join(obj.name.split(' ')).lower()
         names.append((name, obj.id))

@@ -1,8 +1,8 @@
 from __future__ import division
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, get_deduction_names
-from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names
+from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, Incentive, Allowance
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -537,6 +537,8 @@ def payroll_entry(request):
     main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
     row_form = PaymentRowFormSet()[0]
     deduction_form = DeductionFormSet()[0]
+    incentive_form = IncentiveFormSet()[0]
+    allowance_form = AllowanceFormSet()[0]
     # underscore_row_form = get_underscore_formset(str(row_form))
     return render(
         request,
@@ -545,6 +547,8 @@ def payroll_entry(request):
           'r_form': row_form,
           'm_form': main_form,
           'deduction_form': deduction_form,
+          'allowance_form': allowance_form,
+          'incentive_form': incentive_form,
           'ko_data': ko_data
         })
 
@@ -646,7 +650,7 @@ def save_payroll_entry(request):
                 for ded in Deduction.objects.all():
                     amount = request.POST.get('form-%d-deduction_%d' % (i, ded.id), None)
                     if amount:
-                        deductions.append(DeductionDetail.objects.create(deduction_id=ded.id, amount=amount)
+                        deductions.append(DeductionDetail.objects.create(deduction_id=ded.id, amount=amount))
 
 
 def get_employee_options(request):
