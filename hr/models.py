@@ -395,12 +395,18 @@ class Designation(models.Model):
 #                 return '%s-%s %s- %f' % (self.income_type, self.employee_grade, self.name, self.amount)
 #             else:
 #                 return '%s-%s %s- %f' % (self.income_type, self.employee_grade, self.name, self.amount_rate)
+class AllowanceName(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=250)
+
+    def __unicode__(self):
+        return self.name
 
 
 # This is bhatta
 class Allowance(models.Model):
     # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
-    name = models.CharField(max_length=100)
+    name = models.ForeignKey(AllowanceName, null=True, blank=True, related_name="allowences")
     employee_grade = models.ForeignKey(EmployeeGrade)
     # Any one out of two should be filled
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
@@ -416,7 +422,6 @@ class Allowance(models.Model):
             MinValueValidator(1)
         ],
     )
-    description = models.CharField(max_length=250)
 
     def __unicode__(self):
         if self.sum_type == 'AMOUNT':
@@ -424,11 +429,22 @@ class Allowance(models.Model):
         else:
             return '%s, %f' % (self.name, self.amount_rate)
 
+    class Meta:
+            unique_together = (("name", "employee_grade"),)
+
+
+class IncentiveName(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=250)
+
+    def __unicode__(self):
+        return self.name
+
 
 # This is incentive(for motivation)
 class Incentive(models.Model):
     # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
-    name = models.CharField(max_length=100)
+    name = models.ForeignKey(IncentiveName, null=True, blank=True)
     employee_grade = models.ForeignKey(EmployeeGrade)
     # Any one of the two should be filled
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
@@ -445,13 +461,15 @@ class Incentive(models.Model):
             MinValueValidator(1)
         ],
     )
-    description = models.CharField(max_length=250)
 
     def __unicode__(self):
         if self.sum_type == 'AMOUNT':
             return '%s, %f' % (self.name, self.amount)
         else:
             return '%s, %f' % (self.name, self.rate)
+
+    class Meta:
+            unique_together = (("name", "employee_grade"),)
 
 
 class BranchOffice(models.Model):
@@ -531,9 +549,9 @@ class Employee(models.Model):
     appoint_date = BSDateField(default=today)
     dismiss_date = BSDateField(null=True, blank=True)
     # allowance will be added to salary
-    allowances = models.ManyToManyField(Allowance, blank=True)
+    allowances = models.ManyToManyField(AllowanceName, blank=True)
     # incentive will have diff trancation
-    incentives = models.ManyToManyField(Incentive, blank=True)
+    incentives = models.ManyToManyField(IncentiveName, blank=True)
     # Permanent has extra functionality while deduction from salary
     is_permanent = models.BooleanField(default=False)
     # deductions need to be removed from this table

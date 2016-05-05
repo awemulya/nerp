@@ -62,13 +62,22 @@
                 
                 <th>Employee Grade</th>
                 <th>Employee Designation</th>
-
-                <th>Allowance</th>
-                <th>Incentive</th>
+                
                 {% for field in deduction_form %}
                     <th>{{ field.label }}</th>
                 {% endfor %}
-                <th>Deduced Amount</th>
+                <th>Total Allowance</th>
+                
+                {% for field in deduction_form %}
+                    <th>{{ field.label }}</th>
+                {% endfor %}
+                <th>Total Incentive</th>
+                
+                {% for field in deduction_form %}
+                    <th>{{ field.label }}</th>
+                {% endfor %}
+                
+                <th>Total Deduced Amount</th>
                 <th>Income Tax</th>
                 <th>Pro Tempore Amount</th>
                 <th>Salary</th>
