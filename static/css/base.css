@@ -478,3 +478,15 @@ td div.btn-group {
 .add_selected_party {
     margin: 0 !important;
 }
+
+/*Payroll css*/
+#main input {
+    margin-top:2px;
+}
+#main select {
+    width: 140px;
+    margin-top: 2px
+}
+
+
+/*End of Payroll css*/
