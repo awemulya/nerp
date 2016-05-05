@@ -188,18 +188,18 @@ function PayrollEntry(pr_data) {
         };
     }); 
 
-    self.clear_row = ko.computed(function(){
-        if(self.switch_p_type() == true){
-            self.rows([]);
-            self.rows.push(PaymentRowWitDeduction(pr_data));
+    // self.clear_row = ko.computed(function(){
+    //     if(self.switch_p_type() == true){
+    //         self.rows([]);
+    //         self.rows.push(PaymentRowWitDeduction(pr_data));
             
-        }else{
-            self.rows([]);
-        };
-    });
+    //     }else{
+    //         self.rows([]);
+    //     };
+    // });
 
     self.m_p_changed = ko.computed(function(){
-        self.monthly_payroll();
+        // self.monthly_payroll();
         if(self.payroll_type() == 'INDIVIDUAL'){
             self.rows([]);
             self.rows.push(PaymentRowWitDeduction(pr_data));

@@ -501,6 +501,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 def payroll_entry(request):
     ko_data = {}
     ko_data['deduction_data'] = {}
+    ko_data['calender'] = CALENDAR
 
     for name, id in get_deduction_names():
         ko_data['deduction_data']['%s_%s' % (name, id)] = ''

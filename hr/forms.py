@@ -94,9 +94,9 @@ class PaymentRowForm(forms.ModelForm):
             'paid_amount': NumberInput(attrs={'data-bind': "value: paid_amount, disable: disable_input"}),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(PaymentRowForm, self).__init__(*args, **kwargs)
-        self.fields["paid_employee"].choices = [("", _("Select Employee")),] + list(self.fields["paid_employee"].choices)[1:]
+    # def __init__(self, *args, **kwargs):
+    #     super(PaymentRowForm, self).__init__(*args, **kwargs)
+    #     self.fields["paid_employee"].choices = [("", _("Select Employee")),] + list(self.fields["paid_employee"].choices)[1:]
 
 
 class PayrollEntryForm(forms.ModelForm):
