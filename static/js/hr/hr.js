@@ -33,18 +33,18 @@ $(document).ready(function () {
 function PaymentRowWitDeduction(pwd_data){
     var PER = new PaymentEntryRow();
     if(pwd_data.deduction_data){
-        var PER = new PaymentEntryRow();
+        // var PER = new PaymentEntryRow();
         var DeductionPER = ko.mapping.fromJS(pwd_data.deduction_data);
         $.extend(PER, DeductionPER);
     };
 
     if(pwd_data.incentive_data){
-        var PER = new PaymentEntryRow();
+        // var PER = new PaymentEntryRow();
         var IncentivePER = ko.mapping.fromJS(pwd_data.incentive_data);
         $.extend(PER, IncentivePER);
     };
     if(pwd_data.allowance_data){
-        var PER = new PaymentEntryRow();
+        // var PER = new PaymentEntryRow();
         var AllowancePER = ko.mapping.fromJS(pwd_data.allowance_data);
         $.extend(PER, AllowancePER);
     };
