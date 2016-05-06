@@ -684,7 +684,7 @@ def save_payroll_entry(request):
         save_response = {}
         # pdb.set_trace()
         # pass
-        row_count = request.POST('row_count', None)
+        row_count = request.POST.get('row_count', None)
         payment_records = []
         if row_count:
             for i in range(0, int(row_count)):
@@ -692,20 +692,20 @@ def save_payroll_entry(request):
                 # Similar if we need all details of incentive and allowence
                 deductions = []
                 for ded in Deduction.objects.all():
-                    amount = request.POST.get('form-%d-deduction_%d' % (i, ded.id), None)
+                    amount = float(request.POST.get('form-%d-deduction_%d' % (i, ded.id), None))
                     if amount:
-                        deductions.append(DeductionDetail.objects.create(deduction_id=ded.id, amount=amount).id)
+                        deductions.append(DeductionDetail.objects.create(deduction_id=ded.id, amount=amount))
                 allowances = []
                 for allowance_name in AllowanceName.objects.all():
-                    amount = request.POST.get('form-%d-allowance_%d' % (i, allowance_name.id), None)
+                    amount = float(request.POST.get('form-%d-allowance_%d' % (i, allowance_name.id), None))
                     if amount:
-                        allowances.append(AllowanceDetail.objects.create(allowance_id=allowance_name.id, amount=amount).id)
+                        allowances.append(AllowanceDetail.objects.create(allowance_id=allowance_name.id, amount=amount))
 
                 incentives = []
                 for incentive_name in IncentiveName.objects.all():
-                    amount = request.POST.get('form-%d-incentive_%d' % (i, incentive_name.id), None)
+                    amount = float(request.POST.get('form-%d-incentive_%d' % (i, incentive_name.id), None))
                     if amount:
-                        incentives.append(IncentiveDetail.objects.create(incentive_id=incentive_name.id, amount=amount).id)
+                        incentives.append(IncentiveDetail.objects.create(incentive_id=incentive_name.id, amount=amount))
 
                 p_r = PaymentRecord()
                 p_r.paid_employee_id = int(request.POST.get('form-%d-paid_employee' % (i), None))
@@ -722,20 +722,24 @@ def save_payroll_entry(request):
                     p_r.paid_to_date = to_date
 
                 p_r.absent_days = 0
-                p_r.allowance = int(request.POST.get('form-%d-allowance' % (i), None))
-                p_r.incentive = int(request.POST.get('form-%d-incentive' % (i), None))
-                p_r.deduction_detail = deductions
-                p_r.incentive_detail = incentives
-                p_r.allowance_detail = allowances
-                p_r.income_tax = int(request.POST.get('form-%d-income_tax' % (i), None))
-                p_r.pro_tempore_amount = int(request.POST.get('form-%d-pro_tempore_amount' % (i), None))
-                p_r.salary = int(request.POST.get('form-%d-salary' % (i), None))
-                p_r.paid_amount = int(request.POST.get('form-%d-paid_amount' % (i), None))
+                p_r.allowance = float(request.POST.get('form-%d-allowance' % (i), None))
+                p_r.incentive = float(request.POST.get('form-%d-incentive' % (i), None))
+                p_r.income_tax = float(request.POST.get('form-%d-income_tax' % (i), None))
+                p_r.pro_tempore_amount = float(request.POST.get('form-%d-pro_tempore_amount' % (i), None))
+                p_r.salary = float(request.POST.get('form-%d-salary' % (i), None))
+                p_r.paid_amount = float(request.POST.get('form-%d-paid_amount' % (i), None))
                 p_r.save()
+                p_r.deduction_detail.add(*deductions)
+                p_r.incentive_detail.add(*incentives)
+                p_r.allowance_detail.add(*allowances)
+
                 payment_records.append(p_r.id)
-            PayrollEntry.objects.create(
-                entry_row=payment_records,
-            )
+            p_e = PayrollEntry()
+            p_e.save()
+            p_e.add(*payment_records)
+            # PayrollEntry.objects.create(
+            #     entry_row=payment_records,
+            # )
             save_response['entry_saved'] = True
             save_response['entry_approved'] = False
             save_response['entry_transacted'] = False

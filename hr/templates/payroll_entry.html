@@ -127,10 +127,11 @@
             
             <input type="submit" class="#" value="Save" data-bind="visible: rows().length>0">
         </form>
-        <input type="button" class="#" value="Approve" data-bind="visible: rows().length > 0 && !entry_approved(), click: approve_entry">
+        <input type="button" class="#" value="Approve" data-bind="visible: rows().length > 0 && !entry_approved() && entry_saved(), click: approve_entry">
         <input type="button" class="#" value="Approved" data-bind="visible: rows().length > 0 && entry_approved()">
         <input type="button" class="#" value="Transact" data-bind="visible: rows().length > 0 && entry_approved() && !entry_transacted(), click: transact">
         <input type="button" class="#" value="Transacted" data-bind="visible: rows().length > 0 && entry_approved() && entry_transacted()">
+        <input type="button" class="#" value="Delete Entry" data-bind="click: entry_delete, visible: entry_saved()">
     </div>
     
 {% endblock %}
