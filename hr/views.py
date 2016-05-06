@@ -2,7 +2,7 @@ from __future__ import division
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render
 from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names
-from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail
+from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -681,7 +681,11 @@ def test(request):
 
 def save_payroll_entry(request):
     if request.POST:
+        save_response = {}
+        # pdb.set_trace()
+        # pass
         row_count = request.POST('row_count', None)
+        payment_records = []
         if row_count:
             for i in range(0, int(row_count)):
 
@@ -702,6 +706,40 @@ def save_payroll_entry(request):
                     amount = request.POST.get('form-%d-incentive_%d' % (i, incentive_name.id), None)
                     if amount:
                         incentives.append(IncentiveDetail.objects.create(incentive_id=incentive_name.id, amount=amount).id)
+
+                p_r = PaymentRecord()
+                p_r.paid_employee_id = int(request.POST.get('form-%d-paid_employee' % (i), None))
+
+                # Save according to calender settin`g
+                from_date = request.POST.get('form-%d-paid_from_date' % (i), None)
+                to_date = request.POST.get('form-%d-paid_to_date' % (i), None)
+
+                if(CALENDAR == 'AD'):
+                    p_r.paid_from_date = datetime.strptime(from_date, '%Y-%m-%d')
+                    p_r.paid_to_date = datetime.strptime(from_date, '%Y-%m-%d')
+                else:
+                    p_r.paid_from_date = from_date
+                    p_r.paid_to_date = to_date
+
+                p_r.absent_days = 0
+                p_r.allowance = int(request.POST.get('form-%d-allowance' % (i), None))
+                p_r.incentive = int(request.POST.get('form-%d-incentive' % (i), None))
+                p_r.deduction_detail = deductions
+                p_r.incentive_detail = incentives
+                p_r.allowance_detail = allowances
+                p_r.income_tax = int(request.POST.get('form-%d-income_tax' % (i), None))
+                p_r.pro_tempore_amount = int(request.POST.get('form-%d-pro_tempore_amount' % (i), None))
+                p_r.salary = int(request.POST.get('form-%d-salary' % (i), None))
+                p_r.paid_amount = int(request.POST.get('form-%d-paid_amount' % (i), None))
+                p_r.save()
+                payment_records.append(p_r.id)
+            PayrollEntry.objects.create(
+                entry_row=payment_records,
+            )
+            save_response['entry_saved'] = True
+            save_response['entry_approved'] = False
+            save_response['entry_transacted'] = False
+            return JsonResponse(save_response)
 
 
 def get_employee_options(request):

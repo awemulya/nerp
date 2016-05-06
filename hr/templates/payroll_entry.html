@@ -56,77 +56,81 @@
     </div>
     <div>
         <form data-bind="submit: saveAndAdd">
-        <table class="table payment-row-table" >
-            <tr data-bind="visible:rows().length>0" >
-                <th>Employee</th>
-                
-                <th>Employee Grade</th>
-                <th>Employee Designation</th>
-                
-                {% for field in allowance_form %}
-                    <th>{{ field.label }}</th>
-                {% endfor %}
-                <th>Total Allowance</th>
-                
-                {% for field in incentive_form %}
-                    <th>{{ field.label }}</th>
-                {% endfor %}
-                <th>Total Incentive</th>
-                
-                {% for field in deduction_form %}
-                    <th>{{ field.label }}</th>
-                {% endfor %}
-                
-                <th>Total Deduced Amount</th>
-                <th>Income Tax</th>
-                <th>Pro Tempore Amount</th>
-                <th>Salary</th>
-                <th>Paid Amount</th>
-                <th>Control</th>
-            </tr>
-
-            <!-- ko foreach: rows -->
-                <!-- ko foreach: row_errors -->
-                    <tr data-bind="css: {warning: true}">
-                        <td colspan="100%" data-bind="text: $data"></td>
-                    </tr>
-                <!-- /ko -->
-                <tr data-bind="css: {warning: row_errors().length > 0}">                     
-                    <td>{{ r_form.paid_employee }}</td>
-                   
-                    <td><b data-bind="text: employee_grade"></b></td>
-                    <td><b data-bind="text: employee_designation"></b></td>
-                   
+            <table class="table payment-row-table" >
+                <tr data-bind="visible:rows().length>0" >
+                    <th>Employee</th>
+                    
+                    <th>Employee Grade</th>
+                    <th>Employee Designation</th>
+                    
                     {% for field in allowance_form %}
-                        <th>{{ field }}</th>
+                        <th>{{ field.label }}</th>
                     {% endfor %}
-                    <td>{{ r_form.allowance }}</td>
+                    <th>Total Allowance</th>
                     
                     {% for field in incentive_form %}
-                        <th>{{ field }}</th>
+                        <th>{{ field.label }}</th>
                     {% endfor %}
-                    <td>{{ r_form.incentive }}</td>
+                    <th>Total Incentive</th>
                     
                     {% for field in deduction_form %}
-                        <th>{{ field }}</th>
+                        <th>{{ field.label }}</th>
                     {% endfor %}
-                    <td>{{ r_form.deduced_amount }}</td>
                     
-                    <td>{{ r_form.income_tax }}</td>
-                    <td>{{ r_form.pro_tempore_amount }}</td>
-                    <td>{{ r_form.salary }}</td>
-                    <td>{{ r_form.paid_amount }}</td>
-                    <td><input type="button" value="Remove" data-bind="click: $parent.removeRow"></input></td>
-                    <td>{{ r_form.paid_from_date }}</td>
-                    <td>{{ r_form.paid_to_date }}</td>
+                    <th>Total Deduced Amount</th>
+                    <th>Income Tax</th>
+                    <th>Pro Tempore Amount</th>
+                    <th>Salary</th>
+                    <th>Paid Amount</th>
+                    <th>Control</th>
                 </tr>
-            <!-- /ko -->
-        
-        </table>
-        <input type="button" class="#" value="Add Another" data-bind="visible: switch_p_type, click: addRow">
-        
-        <input type="submit" class="#" value="Save" data-bind="visible: rows().length>0">
+
+                <!-- ko foreach: rows -->
+                    <!-- ko foreach: row_errors -->
+                        <tr data-bind="css: {warning: true}">
+                            <td colspan="100%" data-bind="text: $data"></td>
+                        </tr>
+                    <!-- /ko -->
+                    <tr data-bind="css: {warning: row_errors().length > 0}">                     
+                        <td>{{ r_form.paid_employee }}</td>
+                       
+                        <td><b data-bind="text: employee_grade"></b></td>
+                        <td><b data-bind="text: employee_designation"></b></td>
+                       
+                        {% for field in allowance_form %}
+                            <th>{{ field }}</th>
+                        {% endfor %}
+                        <td>{{ r_form.allowance }}</td>
+                        
+                        {% for field in incentive_form %}
+                            <th>{{ field }}</th>
+                        {% endfor %}
+                        <td>{{ r_form.incentive }}</td>
+                        
+                        {% for field in deduction_form %}
+                            <th>{{ field }}</th>
+                        {% endfor %}
+                        <td>{{ r_form.deduced_amount }}</td>
+                        
+                        <td>{{ r_form.income_tax }}</td>
+                        <td>{{ r_form.pro_tempore_amount }}</td>
+                        <td>{{ r_form.salary }}</td>
+                        <td>{{ r_form.paid_amount }}</td>
+                        <td><input type="button" value="Remove" data-bind="click: $parent.removeRow"></input></td>
+                        <td>{{ r_form.paid_from_date }}</td>
+                        <td>{{ r_form.paid_to_date }}</td>
+                    </tr>
+                <!-- /ko -->
+            
+            </table>
+            <input type="button" class="#" value="Add Another" data-bind="visible: switch_p_type, click: addRow">
+            
+            <input type="submit" class="#" value="Save" data-bind="visible: rows().length>0">
         </form>
+        <input type="button" class="#" value="Approve" data-bind="visible: rows().length > 0 && !entry_approved(), click: approve_entry">
+        <input type="button" class="#" value="Approved" data-bind="visible: rows().length > 0 && entry_approved()">
+        <input type="button" class="#" value="Transact" data-bind="visible: rows().length > 0 && entry_approved() && !entry_transacted(), click: transact">
+        <input type="button" class="#" value="Transacted" data-bind="visible: rows().length > 0 && entry_approved() && entry_transacted()">
     </div>
     
 {% endblock %}

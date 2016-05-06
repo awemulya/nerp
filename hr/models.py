@@ -826,6 +826,7 @@ class PayrollEntry(models.Model):
     entry_row = models.ManyToManyField(PaymentRecord)
     entry_datetime = models.DateTimeField(default=timezone.now)
     approved = models.BooleanField(default=False)
+    transacted = models.BooleanField(default=False)
 
 
 class EmployeeAccount(models.Model):

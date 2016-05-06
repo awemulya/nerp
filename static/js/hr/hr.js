@@ -170,6 +170,12 @@ function PaymentEntryRow(per_data) {
 function PayrollEntry(pr_data) {
     //debugger;
     var self = this;
+
+    self.entry_id = ko.observable();
+    self.entry_saved = ko.observable('false');
+    self.entry_approved = ko.observable('false');
+    self.entry_transacted = ko.observable('false');
+
     self.payroll_type = ko.observable();
     self.rows = ko.observableArray([]);
     // self.id = ko.observable();
@@ -232,7 +238,7 @@ function PayrollEntry(pr_data) {
         };
         if(!has_error){
             // debugger;
-            var post_data = $(formElement).find("input[type='hidden'], :input:not(:hidden)").serialize() + '&row_count=' + String(self.rows().length);
+            var post_data = $(formElement).find("input[type='hidden'], :input:not(:hidden), select").serialize() + '&row_count=' + String(self.rows().length);
             $.ajax({
                 url: 'save_payroll_entry/',
                 method: 'POST',
