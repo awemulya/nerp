@@ -131,7 +131,7 @@
         <input type="button" class="#" value="Approved" data-bind="visible: rows().length > 0 && entry_approved()">
         <input type="button" class="#" value="Transact" data-bind="visible: rows().length > 0 && entry_approved() && !entry_transacted(), click: transact">
         <input type="button" class="#" value="Transacted" data-bind="visible: rows().length > 0 && entry_approved() && entry_transacted()">
-        <input type="button" class="#" value="Delete Entry" data-bind="click: entry_delete, visible: entry_saved()">
+        <!-- <input type="button" class="#" value="Delete Entry" data-bind="click: entry_delete, visible: entry_saved()"> -->
     </div>
     
 {% endblock %}

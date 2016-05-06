@@ -828,6 +828,9 @@ class PayrollEntry(models.Model):
     approved = models.BooleanField(default=False)
     transacted = models.BooleanField(default=False)
 
+    def __unicode__(self):
+        return 'Emtry on %s' % str(self.entry_datetime)
+
 
 class EmployeeAccount(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)

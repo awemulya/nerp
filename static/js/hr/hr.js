@@ -177,14 +177,45 @@ function PayrollEntry(pr_data) {
     self.entry_transacted = ko.observable(false);
 
     self.approve_entry = function(){
+        $.ajax({
+                url: 'approve_entry/' + String(self.entry_id()),
+                method: 'GET',
+                dataType: 'json',
+                // data: post_data,
+                // async: true,
+                success: function (response) {
+                    console.log(response);
+                    self.entry_approved(response.entry_approved);
+                    
+                },
+                error: function(errorThrown){
+                    console.log(errorThrown);
+                    },
+    //            self.budget_heads = ko.observableArray(data);
+            });
 
     };
     self.transact = function(){
         
     };
-    self.entry_delete = function(){
-        
-    };
+    // self.entry_delete = function(){
+    //     $.ajax({
+    //             url: 'delete_entry/' + String(self.entry_id()),
+    //             method: 'GET',
+    //             dataType: 'json',
+    //             // data: post_data,
+    //             // async: true,
+    //             success: function (response) {
+    //                 console.log(response);
+                    
+                    
+    //             },
+    //             error: function(errorThrown){
+    //                 console.log(errorThrown);
+    //                 },
+    // //            self.budget_heads = ko.observableArray(data);
+    //         });
+    // };
 
     self.payroll_type = ko.observable();
     self.rows = ko.observableArray([]);

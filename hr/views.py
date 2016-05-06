@@ -748,10 +748,14 @@ def save_payroll_entry(request):
             return JsonResponse(save_response)
 
 
-def approve_entry(request):
-    pass
+# Should have permissions
+def approve_entry(request, pk=None):
+    payroll_entry = PayrollEntry.objects.get(pk=pk)
+    payroll_entry.approved = True
+    return JsonResponse({'entry_approved': True})
 
 
+# Should have permissions
 def delete_entry(request, pk=None):
     payroll_entry = PayrollEntry.objects.get(pk=pk)
     payment_recordid_set = [p.id for p in payroll_entry.entry_row.all()]
@@ -772,6 +776,10 @@ def delete_entry(request, pk=None):
         for rid_id in record_incentive_detail:
             IncentiveDetail.objects.get(id=rid_id).delete()
     return JsonResponse({'success': True, 'id': pk})
+
+
+def transact(request, pk=None):
+    pass
 
 
 def get_employee_options(request):
