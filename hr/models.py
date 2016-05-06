@@ -782,16 +782,16 @@ class DeductionDetail(models.Model):
 
 
 class IncentiveDetail(models.Model):
-    Incentive = models.ForeignKey(
-        Deduction,
+    incentive = models.ForeignKey(
+        IncentiveName,
         related_name='incentive_amount_detail'
     )
     amount = models.FloatField()
 
 
 class AllowanceDetail(models.Model):
-    Incentive = models.ForeignKey(
-        Allowance,
+    allowance = models.ForeignKey(
+        AllowanceName,
         related_name='allowance_amount_detail'
     )
     amount = models.FloatField()

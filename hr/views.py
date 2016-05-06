@@ -2,7 +2,7 @@ from __future__ import division
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import render
 from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names
-from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName
+from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -404,7 +404,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                     if cnt:
                         if obj.sum_type == 'AMOUNT':
                             employee_response['incentive_%d' % (_name.id)] = obj.amount * cnt
-                            allowance += obj.amount * cnt
+                            incentive += obj.amount * cnt
                         else:
                             employee_response['incentive_%d' % (_name.id)] = 0
                     else:
@@ -690,7 +690,18 @@ def save_payroll_entry(request):
                 for ded in Deduction.objects.all():
                     amount = request.POST.get('form-%d-deduction_%d' % (i, ded.id), None)
                     if amount:
-                        deductions.append(DeductionDetail.objects.create(deduction_id=ded.id, amount=amount))
+                        deductions.append(DeductionDetail.objects.create(deduction_id=ded.id, amount=amount).id)
+                allowances = []
+                for allowance_name in AllowanceName.objects.all():
+                    amount = request.POST.get('form-%d-allowance_%d' % (i, allowance_name.id), None)
+                    if amount:
+                        allowances.append(AllowanceDetail.objects.create(allowance_id=allowance_name.id, amount=amount).id)
+
+                incentives = []
+                for incentive_name in IncentiveName.objects.all():
+                    amount = request.POST.get('form-%d-incentive_%d' % (i, incentive_name.id), None)
+                    if amount:
+                        incentives.append(IncentiveDetail.objects.create(incentive_id=incentive_name.id, amount=amount).id)
 
 
 def get_employee_options(request):
