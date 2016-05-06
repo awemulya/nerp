@@ -741,10 +741,37 @@ def save_payroll_entry(request):
             # PayrollEntry.objects.create(
             #     entry_row=payment_records,
             # )
+            save_response['entry_id'] = p_e.id
             save_response['entry_saved'] = True
             save_response['entry_approved'] = False
             save_response['entry_transacted'] = False
             return JsonResponse(save_response)
+
+
+def approve_entry(request):
+    pass
+
+
+def delete_entry(request, pk=None):
+    payroll_entry = PayrollEntry.objects.get(pk=pk)
+    payment_recordid_set = [p.id for p in payroll_entry.entry_row.all()]
+    # pdb.set_trace()
+    # payroll_entry.entry_row_set.clear()
+    payroll_entry.delete()
+
+    for pr_id in payment_recordid_set:
+        p_r = PaymentRecord.objects.get(id=pr_id)
+        record_deduction_detail = [rdd.id for rdd in p_r.deduction_detail.all()]
+        record_allowance_detail = [rad.id for rad in p_r.allowance_detail.all()]
+        record_incentive_detail = [rid.id for rid in p_r.incentive_detail.all()]
+        p_r.delete()
+        for rdd_id in record_deduction_detail:
+            DeductionDetail.objects.get(id=rdd_id).delete()
+        for rad_id in record_allowance_detail:
+            AllowanceDetail.objects.get(id=rad_id).delete()
+        for rid_id in record_incentive_detail:
+            IncentiveDetail.objects.get(id=rid_id).delete()
+    return JsonResponse({'success': True, 'id': pk})
 
 
 def get_employee_options(request):
