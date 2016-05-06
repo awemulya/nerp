@@ -228,6 +228,7 @@ def drc_date_by_days(in_date, drc):
 def emp_salary_eligibility(emp, p_from, p_to):
     from hr.models import PaymentRecord
     error_msg = None
+    never_paid = None
     emp_record = PaymentRecord.objects.filter(paid_employee=emp)
     if emp_record:
         if isinstance(emp_record[0].paid_to_date, date):
@@ -261,12 +262,12 @@ def emp_salary_eligibility(emp, p_from, p_to):
             if never_paid:
                 error_msg = 'Employee has not worked yet for %s. Appointed on %s' % ('{:%Y-%m-%d}'.format(p_from), '{:%Y-%m-%d}'.format(emp.appoint_date))
             else:
-                error_msg = 'Already paid for/upto date %s' % '{:%Y-%m-%d}'.format(p_from)
+                error_msg = 'Already paid for/upto date %s. Last paid upto %s' % ('{:%Y-%m-%d}'.format(p_from), '{:%Y-%m-%d}'.format(last_paid))
         else:
             if never_paid:
                 error_msg = 'Employee has not worked yet for %s. Appointed on %s' % (bsdate2str(p_from), emp.appoint_date)
             else:
-                error_msg = 'Already paid for/upto date %s' % bsdate2str(p_from)
+                error_msg = 'Already paid for/upto date %s. Last paid upto %s' % (bsdate2str(p_from), bsdate2str(last_paid))
     elif p_from > inc_1_day(last_paid):
         if isinstance(p_from, date):
             error_msg = 'Missed payment from %s to %s' % ('{:%Y/%m/%d}'.format(inc_1_day(last_paid)), '{:%Y-%m-%d}'.format(drc_1_day(p_from)))
