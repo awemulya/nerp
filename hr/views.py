@@ -722,6 +722,7 @@ def save_payroll_entry(request):
                     p_r.paid_to_date = to_date
 
                 p_r.absent_days = 0
+                p_r.allowance = float(request.POST.get('form-%d-deduced_amount' % (i), None))
                 p_r.allowance = float(request.POST.get('form-%d-allowance' % (i), None))
                 p_r.incentive = float(request.POST.get('form-%d-incentive' % (i), None))
                 p_r.income_tax = float(request.POST.get('form-%d-income_tax' % (i), None))
@@ -736,7 +737,7 @@ def save_payroll_entry(request):
                 payment_records.append(p_r.id)
             p_e = PayrollEntry()
             p_e.save()
-            p_e.add(*payment_records)
+            p_e.entry_row.add(*payment_records)
             # PayrollEntry.objects.create(
             #     entry_row=payment_records,
             # )

@@ -125,7 +125,7 @@
             </table>
             <input type="button" class="#" value="Add Another" data-bind="visible: switch_p_type, click: addRow">
             
-            <input type="submit" class="#" value="Save" data-bind="visible: rows().length>0">
+            <input type="submit" class="#" value="Save" data-bind="visible: rows().length>0 && !entry_saved()">
         </form>
         <input type="button" class="#" value="Approve" data-bind="visible: rows().length > 0 && !entry_approved() && entry_saved(), click: approve_entry">
         <input type="button" class="#" value="Approved" data-bind="visible: rows().length > 0 && entry_approved()">
