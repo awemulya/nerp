@@ -681,10 +681,18 @@ def test(request):
 
 def save_payroll_entry(request):
     if request.POST:
+        # pdb.set_trace()
+        # return None
         save_response = {}
         # pdb.set_trace()
         # pass
         row_count = request.POST.get('row_count', None)
+        from_date = request.POST.get('paid_from_date', None)
+        to_date = request.POST.get('paid_to_date', None)
+        is_monthly_payroll = True if request.POST.get('monthly_payroll', None) == 'true' else False
+        request_branch = request.POST.get('branch', None)
+        branch = None if request_branch == 'ALL' else int(request_branch)
+
         payment_records = []
         if row_count:
             for i in range(0, int(row_count)):
@@ -711,8 +719,8 @@ def save_payroll_entry(request):
                 p_r.paid_employee_id = int(request.POST.get('form-%d-paid_employee' % (i), None))
 
                 # Save according to calender settin`g
-                from_date = request.POST.get('form-%d-paid_from_date' % (i), None)
-                to_date = request.POST.get('form-%d-paid_to_date' % (i), None)
+                # from_date = request.POST.get('form-%d-paid_from_date' % (i), None)
+                # to_date = request.POST.get('form-%d-paid_to_date' % (i), None)
 
                 if(CALENDAR == 'AD'):
                     p_r.paid_from_date = datetime.strptime(from_date, '%Y-%m-%d')
@@ -736,6 +744,8 @@ def save_payroll_entry(request):
 
                 payment_records.append(p_r.id)
             p_e = PayrollEntry()
+            p_e.branch_id = branch
+            p_e.is_monthly_payroll = is_monthly_payroll
             p_e.save()
             p_e.entry_row.add(*payment_records)
             # PayrollEntry.objects.create(

@@ -824,6 +824,8 @@ class PaymentRecord(models.Model):
 
 class PayrollEntry(models.Model):
     entry_row = models.ManyToManyField(PaymentRecord)
+    branch = models.ForeignKey(BranchOffice, null=True, blank=True)
+    is_monthly_payroll = models.BooleanField(default=False)
     entry_datetime = models.DateTimeField(default=timezone.now)
     approved = models.BooleanField(default=False)
     transacted = models.BooleanField(default=False)
