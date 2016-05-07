@@ -118,6 +118,7 @@ function PaymentEntryRow(per_data) {
                     // vm.paid_from_date_error(response.errors.paid_from_date)
                     // vm.paid_to_date_error(response.errors.paid_to_date)
                     vm.rows([PaymentRowWitDeduction(ko_data),]);
+                    // vm.selected_employees([]);
                     // vm.rows([]);
                     if(response.errors.paid_from_date){
                         vm.paid_from_date_error(response.errors.paid_from_date);
@@ -283,7 +284,7 @@ function PayrollEntry(pr_data) {
             var post_data = $(formElement).serialize() +
                 '&row_count=' + String(self.rows().length) +
                 '&paid_from_date=' + self.paid_from_date() +
-                '&paid_to_date=' + self.paid_to_date() +
+                '&paid_to_date=' + self.paid_to_date() +    
                 '&branch=' + self.branch() +
                 '&monthly_payroll=' + self.monthly_payroll();
             $.ajax({
@@ -504,6 +505,7 @@ function PayrollEntry(pr_data) {
             ko.applyBindingsToNode(option, {disable: item.disable}, item);
         };
     };
+    // self.selected_employees = ko.observableArray();
     self.selected_employees = ko.computed(function(){
         var sel_e = [];
         for(row of self.rows()){
@@ -512,16 +514,20 @@ function PayrollEntry(pr_data) {
             };
         };
         return sel_e;
+        // self.selected_employees(sel_e);
     });
     self.update_employee_options = ko.computed(function(){
         if(self.payroll_type() == 'INDIVIDUAL'){
             for(opt of self.employee_options()){
                 if($.inArray(opt.id, self.selected_employees()) != -1){
                     opt.disable(true);
+                }else{
+                    opt.disable(false);
                 };
             };
         };
     });
+    // Removes row with designation and grade and no employee selected
     self.del_row_ind_gc = ko.computed(function(){
         if(self.payroll_type() == 'INDIVIDUAL' && self.branch()){    
             for(roo of self.rows()){
