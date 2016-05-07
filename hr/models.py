@@ -845,6 +845,7 @@ class PayrollEntry(models.Model):
                 str(row.paid_from_date),
                 str(row.paid_to_date)
             )
+            break
         return '%s-%s-%s-Entry on %s. ' % (
             branch_name,
             typ,
