@@ -27,8 +27,8 @@
         </tr>
         {% for obj in objects %}
             <tr>
-                <td><a href={% url 'entry_detail' obj.id %}}>{{ obj }}</a></td>
-                <td><a href={% url 'delete_entry' obj.id %}}>Delete</a></td>
+                <td><a href={% url 'entry_detail' obj.id %}>{{ obj }}</a></td>
+                <td><a href={% url 'delete_entry' obj.id %}>Delete</a></td>
             </tr>
         {% endfor %}
     </table>
