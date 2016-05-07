@@ -166,13 +166,16 @@ ko.bindingHandlers.localize = {
     update: function (element, valueAccessor, allBindingsAccessor) {
 
         var lang_code = window.lang;
+        var original_text;
 
-        if (allBindingsAccessor().editableText)
+        if (allBindingsAccessor().editableText) {
             var accessor = allBindingsAccessor().editableText;
-        else if (allBindingsAccessor().value)
+        }
+        else if (allBindingsAccessor().value) {
             var accessor = allBindingsAccessor().value;
+        }
         else if (allBindingsAccessor().text) {
-            var original_text = allBindingsAccessor().text;
+            original_text = allBindingsAccessor().text;
             if (typeof original_text == 'function') {
                 original_text = original_text();
             }
@@ -200,7 +203,10 @@ ko.bindingHandlers.localize = {
             }
         }
 
-        var txt = localize(original_text, lang_code);
+        if (allBindingsAccessor().disable_editable)
+            original_text = '';
+
+        var txt = localize(empty_to_blank(original_text), lang_code);
 
         $(element).html(txt);
         $(element).val(txt);

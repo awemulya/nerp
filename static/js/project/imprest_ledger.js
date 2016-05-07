@@ -6,7 +6,7 @@ $(document).ready(function () {
 
 function ImprestVM(data) {
     var self = this;
-    
+
     self.status = ko.observable('Loading...');
 
     self.table_view = new TableViewModel({rows: data.rows, argument: self, auto_add_first: false}, ImprestTransaction);
@@ -102,6 +102,7 @@ function ImprestVM(data) {
                         self.table_view.rows()[i].id = msg.rows[i];
                         $($("#tbody > tr")[i]).removeClass('invalid-row');
                     }
+                    self.table_view.deleted_rows([]);
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -109,15 +110,15 @@ function ImprestVM(data) {
             }
         });
     }
-    
-    if (!self.table_view.rows().length){
+
+    if (!self.table_view.rows().length) {
         self.add_initial_deposit();
     }
 }
 
 function ImprestTransaction(row, imprest_vm) {
     var self = this;
-    
+
     self.id = ko.observable();
     self.name = ko.observable();
     self.wa_no = ko.observable();
