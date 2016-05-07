@@ -95,12 +95,12 @@ function ImprestVM(data) {
                     self.status('Requested');
                     if (msg.id)
                         self.id(msg.id);
-                    $("#tbody > tr").each(function (i) {
-                        $($("#tbody > tr")[i]).addClass('invalid-row');
+                    $("tbody > tr:not(.total)").each(function (i, el) {
+                        $(el).addClass('invalid-row');
                     });
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
-                        $($("#tbody > tr")[i]).removeClass('invalid-row');
+                        $($("tbody > tr")[i]).removeClass('invalid-row');
                     }
                     self.table_view.deleted_rows([]);
                 }

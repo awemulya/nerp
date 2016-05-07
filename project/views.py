@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import ListView
 
-from app.utils.helpers import save_model
+from app.utils.helpers import save_model, invalid
 from core.models import FiscalYear
 from inventory.models import delete_rows
 from models import ImprestTransaction
@@ -52,6 +52,8 @@ def save_imprest_ledger(request):
     fy_id = params.get('fy_id')
     try:
         for index, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['date']):
+                continue
             values = {'date': row.get('date', ''),
                       'name': row.get('name'),
                       'type': row.get('type'),
