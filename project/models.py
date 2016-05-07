@@ -39,6 +39,7 @@ class ExpenditureCategory(models.Model):
 
     class Meta(object):
         ordering = ('order',)
+        verbose_name_plural = 'Expenditure Categories'
 
 
 class Expenditure(models.Model):
