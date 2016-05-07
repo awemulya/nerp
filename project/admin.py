@@ -1,17 +1,17 @@
 from django.contrib import admin
 from adminsortable2.admin import SortableAdminMixin
 
-from .models import ImprestTransaction, ExpenditureCategory, Expenditure
+from .models import ImprestTransaction, Expense, ExpenseCategory
 
 
-class ExpenditureCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
+class ExpenseCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
     pass
 
 
-class ExpenditureAdmin(SortableAdminMixin, admin.ModelAdmin):
+class ExpenseAdmin(SortableAdminMixin, admin.ModelAdmin):
     pass
 
 
 admin.site.register(ImprestTransaction)
-admin.site.register(ExpenditureCategory, ExpenditureCategoryAdmin)
-admin.site.register(Expenditure, ExpenditureAdmin)
+admin.site.register(ExpenseCategory, ExpenseCategoryAdmin)
+admin.site.register(Expense, ExpenseAdmin)

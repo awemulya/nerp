@@ -26,7 +26,7 @@ class ImprestTransaction(models.Model):
         return self.name or self.get_type_display()
 
 
-class ExpenditureCategory(models.Model):
+class ExpenseCategory(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, blank=True, null=True)
     order = models.PositiveIntegerField(default=0)
@@ -42,10 +42,10 @@ class ExpenditureCategory(models.Model):
         verbose_name_plural = 'Expenditure Categories'
 
 
-class Expenditure(models.Model):
+class Expense(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, blank=True, null=True)
-    category = models.ManyToManyField(ExpenditureCategory, blank=True)
+    category = models.ManyToManyField(ExpenseCategory, blank=True)
     order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
