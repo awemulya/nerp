@@ -502,7 +502,8 @@ class Deduction(models.Model):
     # For permanent
     add2_init_salary = models.BooleanField(default=False)
 
-    taxable = models.BooleanField(default=False)
+    # If true we can deduct while calculating taxable amount
+    is_tax_free = models.BooleanField(default=False)
 
     def __unicode__(self):
         if self.deduct_type == 'AMOUNT':

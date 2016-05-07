@@ -1,4 +1,5 @@
 from __future__ import division
+from core.models import FiscalYear
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
@@ -16,6 +17,11 @@ import pdb
 
 CALENDAR = 'BS'
 F_INCOME_TAX_DISCOUNT_RATE = 10
+if CALENDAR == 'BS':
+    CURRENT_FISCAL_YEAR = (
+        BSDate(*FiscalYear.start()),
+        BSDate(*FiscalYear.end())
+    )
 
 
 def verify_request_date(request):
@@ -99,37 +105,80 @@ def verify_request_date(request):
             return paid_from_date, paid_to_date
 
 
-# def get_underscore_formset(string):
-#     # pdb.set_trace()
-
-#     html_tree = html.fragment_fromstring(string, create_parent='tr')
-#     for branch in html_tree:
-#         for s_branch in branch:
-#             if s_branch.tag == 'th':
-#                 s_branch.drop_tree()
-#             elif s_branch.tag == 'td':
-#                 for ele in s_branch:
-#                     input_id = ele.get('id')
-#                     input_id_m = [o if o != '0' else '${$index}' for o in input_id.split('-')]
-#                     ele.set('id', '-'.join(input_id_m))
-
-#                     input_name = ele.get('name')
-#                     input_name_m = [o if o != '0' else '${$index}' for o in input_name.split('-')]
-#                     ele.set('id', '-'.join(input_name_m))
-#                     # pdb.set_trace()
-#         if branch.tag == 'tr':
-#             branch.drop_tag()
-#             # pdb.set_trace()
-#     return html.tostring(html_tree)
-
-
 def salary_deduction_unit():
     pass
 
 
-def salary_taxation_unit():
-    pass
+def salary_taxation_unit(employee, CURRENT_FISCAL_YEAR):
+    # First calculate all the uncome of employee
+    total_month, total_work_day = delta_month_date_impure(
+        *CURRENT_FISCAL_YEAR
+    )
+    salary = employee.current_salary_by_day(
+        *CURRENT_FISCAL_YEAR
+    )
+    allowance = 0
 
+    for obj in employee.allowances.all():
+
+        if obj.payment_cycle == 'Y':
+            # check obj.year_payment_cycle_month to add to salary
+            cnt = month_cnt_inrange(
+                obj.year_payment_cycle_month,
+                *CURRENT_FISCAL_YEAR
+            )
+            if cnt:
+                if obj.sum_type == 'AMOUNT':
+                    allowance += obj.amount * cnt
+                else:
+                    allowance += obj.amount_rate / 100.0 * salary
+
+        elif obj.payment_cycle == 'M':
+            if obj.sum_type == 'AMOUNT':
+                allowance += obj.amount * total_month
+            else:
+                allowance += obj.amount_rate / 100.0 * salary
+        elif obj.payment_cycle == 'D':
+            if obj.sum_type == 'AMOUNT':
+                allowance += obj.amount * total_work_day
+            else:
+                # Does this mean percentage in daily wages
+                allowance += obj.amount_rate / 100.0 * salary
+
+
+
+    # now calculate incentive if it has but not to add to salary just to
+    # transact seperately
+    incentive = 0
+    for obj in employee.incentives.all():
+        # pdb.set_trace()
+        if obj.payment_cycle == 'Y':
+            # check obj.year_payment_cycle_month to add to salary
+            cnt = month_cnt_inrange(
+                obj.year_payment_cycle_month,
+                *CURRENT_FISCAL_YEAR
+            )
+            if cnt:
+                if obj.sum_type == 'AMOUNT':
+                    incentive += obj.amount * cnt
+                else:
+                    incentive += obj.amount_rate / 100.0 * salary
+
+        elif obj.payment_cycle == 'M':
+            if obj.sum_type == 'AMOUNT':
+                incentive += obj.amount * total_month
+            else:
+                incentive += obj.amount_rate / 100.0 * salary
+        elif obj.payment_cycle == 'D':
+            if obj.sum_type == 'AMOUNT':
+                incentive += obj.amount * total_work_day
+            else:
+                # Does this mean percentage in daily wages
+                incentive += obj.amount_rate / 100.0 * salary
+
+    salary += incentive + allowance
+
+    # Add deduction model amounts which is taxable i,e taxable = True
 
 # def salary_detail_impure_months(employee, paid_from_date, paid_to_date):
 #     employee_response = {}
@@ -329,6 +378,19 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         paid_to_date
     )
 
+    deductions = sorted(
+        Deduction.objects.all(), key=lambda obj: obj.priority)
+
+    # Addition of PF and bima to salary if employee is permanent
+    for item in deductions:
+        if employee.is_permanent:
+            if item.add2_init_salary and item.deduction_for == 'EMPLOYEE ACC':
+                if item.deduct_type == 'AMOUNT':
+                    salary += item.amount * total_month
+                else:
+                    # Rate
+                    salary += item.amount_rate / 100.0 * salary
+
     # Now add allowance to the salary(salary = salary + allowance)
     # Question here is do we need to deduct from incentove(I gues not)
     allowance = 0
@@ -382,7 +444,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             employee_response['allowance_%d' % (_name.id)] = 0
 
     employee_response['allowance'] = allowance
-    salary += allowance
+    # salary += allowance
 
     # now calculate incentive if it has but not to add to salary just to
     # transact seperately
@@ -439,19 +501,6 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     # salary += incentive
 
     # Now the deduction part from the salary
-    deductions = sorted(
-        Deduction.objects.all(), key=lambda obj: obj.priority)
-
-    # Addition of PF and bima to salary if employee is permanent
-    for item in deductions:
-        if employee.is_permanent:
-            if item.add2_init_salary and item.deduction_for == 'EMPLOYEE ACC':
-                if item.deduct_type == 'AMOUNT':
-                    salary += item.amount * total_month
-                else:
-                    # Rate
-                    salary += item.amount_rate / 100.0 * salary
-
     deduction = 0
     # deduction_detail = []
     for obj in deductions:
@@ -540,7 +589,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         employee, 'bank_account')
 
     employee_response['paid_amount'] = salary - deduction - income_tax +\
-        p_t_amount + incentive
+        p_t_amount + incentive + allowance
 
     if row_errors:
         for item in employee_response:

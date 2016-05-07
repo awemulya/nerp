@@ -40,9 +40,17 @@ def get_y_m_tuple_list(from_date, to_date):
 
 def month_cnt_inrange(month, frm, to):
     cnt = 0
-    for y, m in get_y_m_tuple_list(frm, to):
-        if month == m:
-            cnt += 1
+    if month == frm.month == to.month:
+        delta_days = (to - frm).days
+        if isinstance(frm, date):
+            month_total_days = mr(frm.year, frm.month)[1]
+        else:
+            month_total_days = bs[frm.year][frm.month - 1]
+        cnt += delta_days / month_total_days
+    else:
+        for y, m in get_y_m_tuple_list(frm, to):
+            if month == m:
+                cnt += 1
     return cnt
 
 
