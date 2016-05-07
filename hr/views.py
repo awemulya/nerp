@@ -444,7 +444,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             employee_response['allowance_%d' % (_name.id)] = 0
 
     employee_response['allowance'] = allowance
-    # salary += allowance
+    salary += allowance
 
     # now calculate incentive if it has but not to add to salary just to
     # transact seperately
@@ -589,7 +589,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         employee, 'bank_account')
 
     employee_response['paid_amount'] = salary - deduction - income_tax +\
-        p_t_amount + incentive + allowance
+        p_t_amount + incentive
 
     if row_errors:
         for item in employee_response:
