@@ -116,7 +116,7 @@
                         <td>{{ r_form.pro_tempore_amount }}</td>
                         <td>{{ r_form.salary }}</td>
                         <td>{{ r_form.paid_amount }}</td>
-                        <td><input type="button" value="Remove" data-bind="click: $parent.removeRow"></input></td>
+                        <td><input type="button" value="Remove" data-bind="click: $parent.removeRow, visible: !$parent.entry_saved()"></input></td>
                         <td>{{ r_form.paid_from_date }}</td>
                         <td>{{ r_form.paid_to_date }}</td>
                     </tr>

@@ -130,177 +130,177 @@ def salary_taxation_unit():
     pass
 
 
-def salary_detail_impure_months(employee, paid_from_date, paid_to_date):
-    employee_response = {}
-    employee_response['paid_employee'] = employee.id
-    employee_response['employee_grade'] = employee.designation.grade.grade_name
-    employee_response['employee_designation'] = employee.designation.designation_name
-    # Watchout
-    total_month, total_work_day = delta_month_date_impure(
-        paid_from_date,
-        paid_to_date
-    )
-    # watchout
+# def salary_detail_impure_months(employee, paid_from_date, paid_to_date):
+#     employee_response = {}
+#     employee_response['paid_employee'] = employee.id
+#     employee_response['employee_grade'] = employee.designation.grade.grade_name
+#     employee_response['employee_designation'] = employee.designation.designation_name
+#     # Watchout
+#     total_month, total_work_day = delta_month_date_impure(
+#         paid_from_date,
+#         paid_to_date
+#     )
+#     # watchout
 
-    salary = employee.current_salary_by_day(
-        paid_from_date,
-        paid_to_date
-    )
+#     salary = employee.current_salary_by_day(
+#         paid_from_date,
+#         paid_to_date
+#     )
 
-    # Now add allowance to the salary(salary = salary + allowance)
-    # Question here is do we need to deduct from incentove(I gues not)
-    allowance = 0
-    for obj in employee.allowances.all():
-        if obj.payment_cycle == 'Y':
-            # check obj.year_payment_cycle_month to add to salary
-            pass
-        elif obj.payment_cycle == 'M':
-            if obj.sum_type == 'AMOUNT':
-                allowance += obj.amount * total_month
-            else:
-                allowance += obj.amount_rate / 100.0 * salary
-        elif obj.payment_cycle == 'D':
-            if obj.sum_type == 'AMOUNT':
-                allowance += obj.amount * total_work_day
-            else:
-                # Does this mean percentage in daily wages
-                allowance += obj.amount_rate / 100.0 * salary
-        else:
-            # This is hourly case(Dont think we have it)
-            pass
+#     # Now add allowance to the salary(salary = salary + allowance)
+#     # Question here is do we need to deduct from incentove(I gues not)
+#     allowance = 0
+#     for obj in employee.allowances.all():
+#         if obj.payment_cycle == 'Y':
+#             # check obj.year_payment_cycle_month to add to salary
+#             pass
+#         elif obj.payment_cycle == 'M':
+#             if obj.sum_type == 'AMOUNT':
+#                 allowance += obj.amount * total_month
+#             else:
+#                 allowance += obj.amount_rate / 100.0 * salary
+#         elif obj.payment_cycle == 'D':
+#             if obj.sum_type == 'AMOUNT':
+#                 allowance += obj.amount * total_work_day
+#             else:
+#                 # Does this mean percentage in daily wages
+#                 allowance += obj.amount_rate / 100.0 * salary
+#         else:
+#             # This is hourly case(Dont think we have it)
+#             pass
 
-    employee_response['allowance'] = allowance
-    salary += allowance
+#     employee_response['allowance'] = allowance
+#     salary += allowance
 
-    # now calculate incentive if it has but not to add to salary just to
-    # transact seperately
-    incentive = 0
-    for obj in employee.incentives.all():
-        if obj.payment_cycle == 'Y':
-            # check obj.year_payment_cycle_month to add to salary
-            pass
-        elif obj.payment_cycle == 'M':
-            if obj.sum_type == 'AMOUNT':
-                incentive += obj.amount * total_month
-            else:
-                incentive += obj.amount_rate / 100.0 * salary
-        elif obj.payment_cycle == 'D':
-            if obj.sum_type == 'AMOUNT':
-                incentive += obj.amount * total_work_day
-            else:
-                # Does this mean percentage in daily wages
-                incentive += obj.amount_rate / 100.0 * salary
-        else:
-            # This is hourly case(Dont think we have it)
-            pass
+#     # now calculate incentive if it has but not to add to salary just to
+#     # transact seperately
+#     incentive = 0
+#     for obj in employee.incentives.all():
+#         if obj.payment_cycle == 'Y':
+#             # check obj.year_payment_cycle_month to add to salary
+#             pass
+#         elif obj.payment_cycle == 'M':
+#             if obj.sum_type == 'AMOUNT':
+#                 incentive += obj.amount * total_month
+#             else:
+#                 incentive += obj.amount_rate / 100.0 * salary
+#         elif obj.payment_cycle == 'D':
+#             if obj.sum_type == 'AMOUNT':
+#                 incentive += obj.amount * total_work_day
+#             else:
+#                 # Does this mean percentage in daily wages
+#                 incentive += obj.amount_rate / 100.0 * salary
+#         else:
+#             # This is hourly case(Dont think we have it)
+#             pass
 
-    employee_response['incentive'] = incentive
-    # salary += incentive
+#     employee_response['incentive'] = incentive
+#     # salary += incentive
 
-    # Now the deduction part from the salary
-    deductions = sorted(
-        Deduction.objects.all(), key=lambda obj: obj.priority)
+#     # Now the deduction part from the salary
+#     deductions = sorted(
+#         Deduction.objects.all(), key=lambda obj: obj.priority)
 
-    # Addition of PF and bima to salary if employee is permanent
-    for item in deductions:
-        if employee.is_permanent:
-            if item.add2_init_salary and item.deduction_for == 'EMPLOYEE ACC':
-                if item.deduct_type == 'AMOUNT':
-                    salary += item.amount * total_month
-                else:
-                    # Rate
-                    salary += item.amount_rate / 100.0 * salary
+#     # Addition of PF and bima to salary if employee is permanent
+#     for item in deductions:
+#         if employee.is_permanent:
+#             if item.add2_init_salary and item.deduction_for == 'EMPLOYEE ACC':
+#                 if item.deduct_type == 'AMOUNT':
+#                     salary += item.amount * total_month
+#                 else:
+#                     # Rate
+#                     salary += item.amount_rate / 100.0 * salary
 
-    deduction = 0
-    # deduction_detail = []
-    for obj in deductions:
-        # deduction_detail_object = {}
-        if obj.deduction_for == 'EMPLOYEE ACC':
-            employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] = 0
+#     deduction = 0
+#     # deduction_detail = []
+#     for obj in deductions:
+#         # deduction_detail_object = {}
+#         if obj.deduction_for == 'EMPLOYEE ACC':
+#             employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] = 0
 
-            if (employee.is_permanent or obj.with_temporary_employee) and employee.has_account(obj.in_acc_type):
+#             if (employee.is_permanent or obj.with_temporary_employee) and employee.has_account(obj.in_acc_type):
 
-                if obj.deduct_type == 'AMOUNT':
-                    employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] += obj.amount * total_month
-                else:
-                    # Rate
-                    # deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
-                    employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] += obj.amount_rate / 100.0 * salary
+#                 if obj.deduct_type == 'AMOUNT':
+#                     employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] += obj.amount * total_month
+#                 else:
+#                     # Rate
+#                     # deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
+#                     employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] += obj.amount_rate / 100.0 * salary
 
-                if employee.is_permanent:
-                    if obj.in_acc_type.permanent_multiply_rate:
-                        # deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
-                        employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
-                # deduction += deduction_detail_object['amount']
-                deduction += employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)]
+#                 if employee.is_permanent:
+#                     if obj.in_acc_type.permanent_multiply_rate:
+#                         # deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
+#                         employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
+#                 # deduction += deduction_detail_object['amount']
+#                 deduction += employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)]
 
-        else:
-            name = '_'.join(obj.name.split(' ')).lower()
-            employee_response['%s_%s' % (name, obj.id)] = 0
+#         else:
+#             name = '_'.join(obj.name.split(' ')).lower()
+#             employee_response['%s_%s' % (name, obj.id)] = 0
 
-            # EXPLICIT ACC
-            if obj.deduct_type == 'AMOUNT':
-                # deduction_detail_object[
-                #     'amount'] += obj.amount * total_month
-                employee_response['%s_%s' % (name, obj.id)] += obj.amount * total_month
-            else:
-                employee_response['%s_%s' % (name, obj.id)] += obj.amount_rate / 100.0 * salary
-            deduction += employee_response['%s_%s' % (name, obj.id)]
+#             # EXPLICIT ACC
+#             if obj.deduct_type == 'AMOUNT':
+#                 # deduction_detail_object[
+#                 #     'amount'] += obj.amount * total_month
+#                 employee_response['%s_%s' % (name, obj.id)] += obj.amount * total_month
+#             else:
+#                 employee_response['%s_%s' % (name, obj.id)] += obj.amount_rate / 100.0 * salary
+#             deduction += employee_response['%s_%s' % (name, obj.id)]
 
-    # Income tax logic
-    income_tax = 0
-    for obj in IncomeTaxRate.objects.all():
-        if obj.is_last:
-            if salary >= obj.start_from:
-                income_tax = obj.tax_rate / 100 * salary
-                if obj.rate_over_tax_amount:
-                    income_tax += obj.rate_over_tax_amount / 100 * income_tax
-        else:
-            if salary >= obj.start_from and salary <= obj.end_to:
-                income_tax = obj.tax_rate / 100 * salary
-                if obj.rate_over_tax_amount:
-                    income_tax += obj.rate_over_tax_amount / 100 * income_tax
-        if employee.sex == 'F':
-            income_tax -= F_INCOME_TAX_DISCOUNT_RATE / 100 * income_tax
+#     # Income tax logic
+#     income_tax = 0
+#     for obj in IncomeTaxRate.objects.all():
+#         if obj.is_last:
+#             if salary >= obj.start_from:
+#                 income_tax = obj.tax_rate / 100 * salary
+#                 if obj.rate_over_tax_amount:
+#                     income_tax += obj.rate_over_tax_amount / 100 * income_tax
+#         else:
+#             if salary >= obj.start_from and salary <= obj.end_to:
+#                 income_tax = obj.tax_rate / 100 * salary
+#                 if obj.rate_over_tax_amount:
+#                     income_tax += obj.rate_over_tax_amount / 100 * income_tax
+#         if employee.sex == 'F':
+#             income_tax -= F_INCOME_TAX_DISCOUNT_RATE / 100 * income_tax
 
-    employee_response['income_tax'] = income_tax
-    employee_response['deduced_amount'] = deduction
-    # employee_response['deduction_detail'] = deduction_detail
-    # employee_response['other_deduction'] = other_deduction
+#     employee_response['income_tax'] = income_tax
+#     employee_response['deduced_amount'] = deduction
+#     # employee_response['deduction_detail'] = deduction_detail
+#     # employee_response['other_deduction'] = other_deduction
 
-    # Handle Pro Tempore
-    # paid flag should be set after transaction
-    pro_tempores = ProTempore.objects.filter(employee=employee)
-    p_t_amount = 0
-    to_be_paid_pt_ids = []
-    for p_t in pro_tempores:
-        if not p_t.paid:
-            if isinstance(p_t.appoint_date, date):
-                p_t_amount += p_t.pro_tempore.current_salary_by_day(
-                    p_t.appoint_date,
-                    p_t.dismiss_date
-                )
+#     # Handle Pro Tempore
+#     # paid flag should be set after transaction
+#     pro_tempores = ProTempore.objects.filter(employee=employee)
+#     p_t_amount = 0
+#     to_be_paid_pt_ids = []
+#     for p_t in pro_tempores:
+#         if not p_t.paid:
+#             if isinstance(p_t.appoint_date, date):
+#                 p_t_amount += p_t.pro_tempore.current_salary_by_day(
+#                     p_t.appoint_date,
+#                     p_t.dismiss_date
+#                 )
 
-                to_be_paid_pt_ids.append(p_t.id)
-            else:
-                p_t_amount += p_t.pro_tempore.current_salary_by_day(
-                    BSDate(*bs_str2tuple(p_t.appoint_date)),
-                    BSDate(*bs_str2tuple(p_t.dismiss_date))
-                )
-                to_be_paid_pt_ids.append(p_t.id)
+#                 to_be_paid_pt_ids.append(p_t.id)
+#             else:
+#                 p_t_amount += p_t.pro_tempore.current_salary_by_day(
+#                     BSDate(*bs_str2tuple(p_t.appoint_date)),
+#                     BSDate(*bs_str2tuple(p_t.dismiss_date))
+#                 )
+#                 to_be_paid_pt_ids.append(p_t.id)
 
-    employee_response['pro_tempore_amount'] = p_t_amount
-    employee_response['pro_tempore_ids'] = to_be_paid_pt_ids
-    # First allowence added to salary for deduction and income tax.
-    # For pure salary here added allowance should be duduced
-    employee_response['salary'] = salary - allowance
-    employee_response['employee_bank_account_id'] = get_account_id(
-        employee, 'bank_account')
+#     employee_response['pro_tempore_amount'] = p_t_amount
+#     employee_response['pro_tempore_ids'] = to_be_paid_pt_ids
+#     # First allowence added to salary for deduction and income tax.
+#     # For pure salary here added allowance should be duduced
+#     employee_response['salary'] = salary - allowance
+#     employee_response['employee_bank_account_id'] = get_account_id(
+#         employee, 'bank_account')
 
-    employee_response['paid_amount'] = salary - deduction - income_tax +\
-        p_t_amount + incentive
+#     employee_response['paid_amount'] = salary - deduction - income_tax +\
+#         p_t_amount + incentive
 
-    return employee_response
+#     return employee_response
 
 
 def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
@@ -722,7 +722,7 @@ def save_payroll_entry(request):
                     p_r.paid_to_date = to_date
 
                 p_r.absent_days = 0
-                p_r.allowance = float(request.POST.get('form-%d-deduced_amount' % (i), None))
+                p_r.deduced_amount = float(request.POST.get('form-%d-deduced_amount' % (i), None))
                 p_r.allowance = float(request.POST.get('form-%d-allowance' % (i), None))
                 p_r.incentive = float(request.POST.get('form-%d-incentive' % (i), None))
                 p_r.income_tax = float(request.POST.get('form-%d-income_tax' % (i), None))
@@ -752,6 +752,7 @@ def save_payroll_entry(request):
 def approve_entry(request, pk=None):
     payroll_entry = PayrollEntry.objects.get(pk=pk)
     payroll_entry.approved = True
+    payroll_entry.save()
     return JsonResponse({'entry_approved': True})
 
 
@@ -776,6 +777,108 @@ def delete_entry(request, pk=None):
         for rid_id in record_incentive_detail:
             IncentiveDetail.objects.get(id=rid_id).delete()
     return JsonResponse({'success': True, 'id': pk})
+
+
+def entry_detail(request, pk=None):
+    # ko_data contains entry main properties
+    ko_data = {}
+    rows = []
+
+    all_allowances = AllowanceName.objects.all()
+    all_incentives = IncentiveName.objects.all()
+    all_deductions = Deduction.objects.all()
+
+    allowance_titles = []
+    incentive_titles = []
+    deduction_titles = []
+
+    for ob in all_allowances:
+        a_title = _(ob.name.title())
+        allowance_titles.append(a_title)
+    for ob in all_incentives:
+        i_title = _(ob.name.title())
+        incentive_titles.append(i_title)
+    for ob in all_deductions:
+        if ob.deduction_for == 'EMPLOYEE ACC':
+            d_name = '_'.join(ob.in_acc_type.name.split(' ')).lower()
+        else:
+            d_name = '_'.join(ob.name.split(' ')).lower()
+        d_title = ' '.join(d_name.split('_')).title()
+        deduction_titles.append(d_title)
+
+    if pk:
+        p_e = PayrollEntry.objects.get(id=pk)
+        ko_data['entry_id'] = p_e.id
+        ko_data['entry_approved'] = p_e.approved
+        ko_data['entry_transacted'] = p_e.transacted
+
+        entry_rows = p_e.entry_row.all()
+
+        paid_from_date = entry_rows[0].paid_from_date
+        paid_to_date = entry_rows[0].paid_to_date
+        if isinstance(paid_from_date, date):
+            paid_from_date = '{:%Y/%m/%d}'.format(entry_rows[0].paid_from_date)
+            paid_to_date = '{:%Y/%m/%d}'.format(entry_rows[0].paid_from_date)
+
+        for row in entry_rows:
+            entry_row_data = {}
+            emp = row.paid_employee
+            entry_row_data['employee'] = (emp)
+            entry_row_data['employee_designation'] = (row.paid_employee.designation)
+            entry_row_data['employee_grade'] = (row.paid_employee.designation.grade)
+
+            allowance_amounts = []
+            for obj in all_allowances:
+                a_amount = 0
+                for allowance_n, amount in [(a.allowance, a.amount) for a in row.allowance_detail.all()]:
+                    if obj == allowance_n:
+                        a_amount = amount
+                        break
+                allowance_amounts.append(a_amount)
+            entry_row_data['allowance_data'] = allowance_amounts
+            entry_row_data['total_allowance'] = (row.allowance)
+
+            incentive_amounts = []
+            for obj in all_incentives:
+                i_amount = 0
+                for incentive_n, amount in [(a.incentive, a.amount) for a in row.incentive_detail.all()]:
+                    if obj == incentive_n:
+                        i_amount = amount
+                        break
+                incentive_amounts.append(i_amount)
+            entry_row_data['incentive_data'] = incentive_amounts
+            entry_row_data['total_incentive'] = (row.incentive)
+
+            deduction_amounts = []
+            for obj in all_deductions:
+                d_amount = 0
+                for deduction, amount in [(a.deduction, a.amount) for a in row.deduction_detail.all()]:
+                    if obj == deduction:
+                        d_amount = amount
+                        break
+                deduction_amounts.append(d_amount)
+            entry_row_data['deduction_data'] = deduction_amounts
+            entry_row_data['deduced_amount'] = row.deduced_amount
+
+            entry_row_data['income_tax'] = (row.income_tax)
+            entry_row_data['pro_tempore_amount'] = (row.pro_tempore_amount)
+            entry_row_data['salary'] = (row.salary)
+            entry_row_data['paid_amount'] = (row.paid_amount)
+            rows.append(entry_row_data)
+
+        return render(
+            request,
+            'entry_detail.html',
+            {
+                'paid_from_date': paid_from_date,
+                'paid_to_date': paid_to_date,
+                'rows': rows,
+                'allowance_titles': allowance_titles,
+                'incentive_titles': incentive_titles,
+                'deduction_titles': deduction_titles,
+                'ko_data': ko_data
+            }
+        )
 
 
 def transact(request, pk=None):

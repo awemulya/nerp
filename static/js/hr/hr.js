@@ -288,6 +288,7 @@ function PayrollEntry(pr_data) {
                 // async: true,
                 success: function (response) {
                     console.log(response);
+                    self.entry_id(response.entry_id);
                     self.entry_saved(response.entry_saved);
                     self.entry_approved(response.entry_approved);
                     self.entry_transacted(response.entry_transacted);
