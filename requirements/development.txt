@@ -24,3 +24,4 @@ jsonfield
 openpyxl
 WeasyPrint
 requests
+django-admin-sortable2

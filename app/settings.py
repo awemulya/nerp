@@ -1,4 +1,5 @@
 import os
+
 from django.contrib import messages
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -53,6 +54,7 @@ INSTALLED_APPS = (
     'froala_editor',
     'haystack',
     'sorl.thumbnail',
+    'adminsortable2',
     'njango',
 
     'users',

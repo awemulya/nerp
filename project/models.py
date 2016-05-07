@@ -24,3 +24,30 @@ class ImprestTransaction(models.Model):
 
     def __str__(self):
         return self.name or self.get_type_display()
+
+
+class ExpenditureCategory(models.Model):
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=10, blank=True, null=True)
+    order = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        st = self.name
+        if self.code:
+            st = st + ' - ' + self.code
+        return st
+
+    class Meta(object):
+        ordering = ('order',)
+
+
+class Expenditure(models.Model):
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=10, blank=True, null=True)
+    category = models.ManyToManyField(ExpenditureCategory, blank=True)
+
+    def __str__(self):
+        st = self.name
+        if self.code:
+            st = st + ' - ' + self.code
+        return st
