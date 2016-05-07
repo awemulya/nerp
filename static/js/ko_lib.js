@@ -173,6 +173,9 @@ ko.bindingHandlers.localize = {
             var accessor = allBindingsAccessor().value;
         else if (allBindingsAccessor().text) {
             var original_text = allBindingsAccessor().text;
+            if (typeof original_text == 'function') {
+                original_text = original_text();
+            }
         }
 
         if (typeof accessor == 'function') {
@@ -190,6 +193,7 @@ ko.bindingHandlers.localize = {
                 accessor(value);
             }
         }
+
         if (typeof valueAccessor() == 'number') {
             if (isAN(value)) {
                 original_text = parseFloat(value).toFixed(valueAccessor());
