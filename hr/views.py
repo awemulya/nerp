@@ -1,6 +1,7 @@
 from __future__ import division
 from django.utils.translation import ugettext_lazy as _
-from django.shortcuts import render
+from django.core.urlresolvers import reverse
+from django.shortcuts import render, redirect
 from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry
 from django.http import HttpResponse, JsonResponse
@@ -786,7 +787,7 @@ def delete_entry(request, pk=None):
             AllowanceDetail.objects.get(id=rad_id).delete()
         for rid_id in record_incentive_detail:
             IncentiveDetail.objects.get(id=rid_id).delete()
-    return JsonResponse({'success': True, 'id': pk})
+    return redirect(reverse('entry_list'))
 
 
 def entry_detail(request, pk=None):
@@ -893,6 +894,18 @@ def entry_detail(request, pk=None):
                 'ko_data': ko_data
             }
         )
+
+
+def entry_list(request):
+    entries = PayrollEntry.objects.all()
+    return render(
+        request,
+        'entry_list.html',
+        {
+            'objects': entries,
+        }
+    )
+    pass
 
 
 def transact_entry(request, pk=None):

@@ -831,7 +831,26 @@ class PayrollEntry(models.Model):
     transacted = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return 'Emtry on %s' % str(self.entry_datetime)
+        if self.branch:
+            branch_name = self.branch.name
+        else:
+            branch_name = "All branch"
+        if self.is_monthly_payroll:
+            typ = "Monthly"
+        else:
+            typ = "Custom Date range"
+        timestamp = ''
+        for row in self.entry_row.all():
+            timestamp = "From %s to %s" % (
+                str(row.paid_from_date),
+                str(row.paid_to_date)
+            )
+        return '%s-%s-%s-Entry on %s. ' % (
+            branch_name,
+            typ,
+            timestamp,
+            str(self.entry_datetime),
+        )
 
 
 class EmployeeAccount(models.Model):

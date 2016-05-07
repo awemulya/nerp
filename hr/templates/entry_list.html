@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% load filters %}
+{% load i18n %}
+
+{% block head_end %}
+
+{% endblock %}
+
+{% block alert %}
+
+    <!-- <div id="alert_placeholder">
+        <ul data-bind="foreach: errors.items" class="alert-error">
+            <li>
+                Budget for "<span data-bind="text: budget.name()"></span>" from source "<span data-bind="text: source"></span>" exceeds
+            </li>
+        </ul>
+    </div> -->
+{% endblock %}
+
+{% block  content %}
+    <table class="table payment-row-table" >
+        <tr>
+            <th>Payroll Entries</th>
+            <th>Controls</th>
+        </tr>
+        {% for obj in objects %}
+            <tr>
+                <td><a href={% url 'entry_detail' obj.id %}}>{{ obj }}</a></td>
+                <td><a href={% url 'delete_entry' obj.id %}}>Delete</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    
+    
+{% endblock %}
