@@ -5,8 +5,8 @@
 {% load i18n %}
 
 {% block head_end %}
-<script src="{% static 'js/vendors/knockout-mapping-plugin.js' %}"></script>
-    <script src="{% static 'js/hr/hr.js' %}"></script>
+
+    <script src="{% static 'js/hr/entry_detail.js' %}"></script>
     <script>
         ko_data = {{ko_data|jsonify}};
     </script>
@@ -24,6 +24,18 @@
 {% endblock %}
 
 {% block  content %}
+    <table>
+        <tr>
+            <th>Paid From : </th>
+            <td>{{ paid_from_date }}</td>
+            <th>Paid To : </th>
+            <td>{{ paid_to_date }}</td>
+        </tr>
+        <tr>
+            <th>Branch : </th>
+            <td>{{ branch }}</td>
+        </tr>
+    </table>
     <table class="table payment-row-table" >
         <tr>
             <th>Employee</th>
@@ -83,14 +95,14 @@
     {% endfor %}
 
             
-     </table>
+    </table>
                
         
 
-    <!-- <input type="button" class="#" value="Approve" data-bind="visible: rows().length > 0 && !entry_approved() && entry_saved(), click: approve_entry">
-    <input type="button" class="#" value="Approved" data-bind="visible: rows().length > 0 && entry_approved()">
-    <input type="button" class="#" value="Transact" data-bind="visible: rows().length > 0 && entry_approved() && !entry_transacted(), click: transact">
-    <input type="button" class="#" value="Transacted" data-bind="visible: rows().length > 0 && entry_approved() && entry_transacted()"> -->
+    <input type="button" class="#" value="Approve" data-bind="visible: !entry_approved(), click: approve_entry">
+    <input type="button" class="#" value="Approved" data-bind="visible: entry_approved()">
+    <input type="button" class="#" value="Transact" data-bind="visible: entry_approved() && !entry_transacted(), click: transact">
+    <input type="button" class="#" value="Transacted" data-bind="visible: entry_approved() && entry_transacted()">
     
     
 {% endblock %}

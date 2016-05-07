@@ -792,6 +792,7 @@ def delete_entry(request, pk=None):
 def entry_detail(request, pk=None):
     # ko_data contains entry main properties
     ko_data = {}
+
     rows = []
 
     all_allowances = AllowanceName.objects.all()
@@ -826,6 +827,8 @@ def entry_detail(request, pk=None):
 
         paid_from_date = entry_rows[0].paid_from_date
         paid_to_date = entry_rows[0].paid_to_date
+        branch = p_e.branch.name if p_e.branch else "From All Branch"
+
         if isinstance(paid_from_date, date):
             paid_from_date = '{:%Y/%m/%d}'.format(entry_rows[0].paid_from_date)
             paid_to_date = '{:%Y/%m/%d}'.format(entry_rows[0].paid_from_date)
@@ -882,6 +885,7 @@ def entry_detail(request, pk=None):
             {
                 'paid_from_date': paid_from_date,
                 'paid_to_date': paid_to_date,
+                'branch': branch,
                 'rows': rows,
                 'allowance_titles': allowance_titles,
                 'incentive_titles': incentive_titles,
@@ -891,7 +895,7 @@ def entry_detail(request, pk=None):
         )
 
 
-def transact(request, pk=None):
+def transact_entry(request, pk=None):
     pass
 
 
