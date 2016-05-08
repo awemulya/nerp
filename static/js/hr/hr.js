@@ -269,12 +269,22 @@ function PayrollEntry(pr_data) {
     });
 
     
+    // Data Changing parameters when changed should reser self.save, approve,transact to default
+    self.set_save_param_to_default = ko.computed(function(){
+       console.log('xxxxx')
+        self.entry_id = ko.observable();
+        self.entry_saved(false);
+        self.entry_approved(false);
+        self.entry_transacted(false);
+    });
+
+
     self.saveAndAdd = function(formElement){
         var has_error = false;
         for(row of self.rows()){
             if(row.row_errors().length > 0){
                 // here has true should be true 
-                has_error = false;
+                has_error = true;
                 self.messages.push('Remove rows with warnings to Save the entry');
             };
         };

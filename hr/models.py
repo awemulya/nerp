@@ -406,8 +406,19 @@ class AllowanceName(models.Model):
 # This is bhatta
 class Allowance(models.Model):
     # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
-    name = models.ForeignKey(AllowanceName, null=True, blank=True, related_name="allowances")
+    name = models.ForeignKey(
+        AllowanceName,
+        null=True,
+        blank=True,
+        related_name="allowances"
+    )
     employee_grade = models.ForeignKey(EmployeeGrade)
+    account = models.OneToOneField(
+        AllowanceAccount,
+        null=True,
+        blank=True,
+        related_name='allowance_account'
+    )
     # Any one out of two should be filled
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
     amount = models.FloatField(null=True, blank=True)
@@ -429,6 +440,15 @@ class Allowance(models.Model):
         else:
             return '%s, %f' % (self.name, self.amount_rate)
 
+    def save(self, *args, **kwargs):
+        account_name = self.name + str(self.id)
+        account_obj = Account.objects.create(name=account_name)
+        allowance_account = AllowanceAccount.objects.create(
+            account=account_obj,
+        )
+        self.account = allowance_account
+        super(Incentive, self).save(*args, **kwargs)
+
     class Meta:
             unique_together = (("name", "employee_grade"),)
 
@@ -444,8 +464,19 @@ class IncentiveName(models.Model):
 # This is incentive(for motivation)
 class Incentive(models.Model):
     # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
-    name = models.ForeignKey(IncentiveName, null=True, blank=True, related_name='incentives')
+    name = models.ForeignKey(
+        IncentiveName,
+        null=True,
+        blank=True,
+        related_name='incentives'
+    )
     employee_grade = models.ForeignKey(EmployeeGrade)
+    account = models.OneToOneField(
+        IncentiveAccount,
+        null=True,
+        blank=True,
+        related_name='incentive_account'
+    )
     # Any one of the two should be filled
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
     amount = models.FloatField(null=True, blank=True)
@@ -468,6 +499,15 @@ class Incentive(models.Model):
         else:
             return '%s, %f' % (self.name, self.rate)
 
+    def save(self, *args, **kwargs):
+        account_name = self.name + str(self.id)
+        account_obj = Account.objects.create(name=account_name)
+        incentive_account = IncentiveAccount.objects.create(
+            account=account_obj,
+        )
+        self.account = incentive_account
+        super(Incentive, self).save(*args, **kwargs)
+
     class Meta:
             unique_together = (("name", "employee_grade"),)
 
@@ -485,6 +525,12 @@ class BranchOffice(models.Model):
 class Deduction(models.Model):
     # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
     name = models.CharField(max_length=150)
+    account = models.OneToOneField(
+        DeductionAccount,
+        null=True,
+        blank=True,
+        related_name='deduction_account'
+    )
     # Below only one out of two should be active
     deduct_type = models.CharField(max_length=50, choices=deduct_choice)
     deduction_for = models.CharField(max_length=50, choices=deduct_for)
@@ -515,6 +561,12 @@ class Deduction(models.Model):
     def save(self, *args, **kwargs):
         if self.explicit_acc:
             self.with_temporary_employee = True
+        account_name = self.name + str(self.id)
+        account_obj = Account.objects.create(name=account_name)
+        deduction_account = DeductionAccount.objects.create(
+            account=account_obj,
+        )
+        self.account = deduction_account
         super(Deduction, self).save(*args, **kwargs)
 
 
@@ -842,7 +894,7 @@ class PayrollEntry(models.Model):
         else:
             typ = "Custom Date range"
         timestamp = ''
-        for row in self.entry_row.all():
+        for row in self.entry_rows.all():
             timestamp = "From %s to %s" % (
                 str(row.paid_from_date),
                 str(row.paid_to_date)
