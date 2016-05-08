@@ -839,16 +839,16 @@ def save_payroll_entry(request):
                 p_r.salary = float(request.POST.get('form-%d-salary' % (i), None))
                 p_r.paid_amount = float(request.POST.get('form-%d-paid_amount' % (i), None))
                 p_r.save()
-                p_r.deduction_detail.add(*deductions)
-                p_r.incentive_detail.add(*incentives)
-                p_r.allowance_detail.add(*allowances)
+                p_r.deduction_details.add(*deductions)
+                p_r.incentive_details.add(*incentives)
+                p_r.allowance_details.add(*allowances)
 
                 payment_records.append(p_r.id)
             p_e = PayrollEntry()
             p_e.branch_id = branch
             p_e.is_monthly_payroll = is_monthly_payroll
             p_e.save()
-            p_e.entry_row.add(*payment_records)
+            p_e.entry_rows.add(*payment_records)
             # PayrollEntry.objects.create(
             #     entry_row=payment_records,
             # )
@@ -870,22 +870,22 @@ def approve_entry(request, pk=None):
 # Should have permissions
 def delete_entry(request, pk=None):
     payroll_entry = PayrollEntry.objects.get(pk=pk)
-    payment_recordid_set = [p.id for p in payroll_entry.entry_row.all()]
+    payment_recordid_set = [p.id for p in payroll_entry.entry_rows.all()]
     # pdb.set_trace()
     # payroll_entry.entry_row_set.clear()
     payroll_entry.delete()
 
     for pr_id in payment_recordid_set:
         p_r = PaymentRecord.objects.get(id=pr_id)
-        record_deduction_detail = [rdd.id for rdd in p_r.deduction_detail.all()]
-        record_allowance_detail = [rad.id for rad in p_r.allowance_detail.all()]
-        record_incentive_detail = [rid.id for rid in p_r.incentive_detail.all()]
+        record_deduction_details = [rdd.id for rdd in p_r.deduction_details.all()]
+        record_allowance_details = [rad.id for rad in p_r.allowance_details.all()]
+        record_incentive_details = [rid.id for rid in p_r.incentive_details.all()]
         p_r.delete()
-        for rdd_id in record_deduction_detail:
+        for rdd_id in record_deduction_details:
             DeductionDetail.objects.get(id=rdd_id).delete()
-        for rad_id in record_allowance_detail:
+        for rad_id in record_allowance_details:
             AllowanceDetail.objects.get(id=rad_id).delete()
-        for rid_id in record_incentive_detail:
+        for rid_id in record_incentive_details:
             IncentiveDetail.objects.get(id=rid_id).delete()
     return redirect(reverse('entry_list'))
 
@@ -924,7 +924,7 @@ def entry_detail(request, pk=None):
         ko_data['entry_approved'] = p_e.approved
         ko_data['entry_transacted'] = p_e.transacted
 
-        entry_rows = p_e.entry_row.all()
+        entry_rows = p_e.entry_rows.all()
 
         paid_from_date = entry_rows[0].paid_from_date
         paid_to_date = entry_rows[0].paid_to_date
@@ -944,7 +944,7 @@ def entry_detail(request, pk=None):
             allowance_amounts = []
             for obj in all_allowances:
                 a_amount = 0
-                for allowance_n, amount in [(a.allowance, a.amount) for a in row.allowance_detail.all()]:
+                for allowance_n, amount in [(a.allowance, a.amount) for a in row.allowance_details.all()]:
                     if obj == allowance_n:
                         a_amount = amount
                         break
@@ -955,7 +955,7 @@ def entry_detail(request, pk=None):
             incentive_amounts = []
             for obj in all_incentives:
                 i_amount = 0
-                for incentive_n, amount in [(a.incentive, a.amount) for a in row.incentive_detail.all()]:
+                for incentive_n, amount in [(a.incentive, a.amount) for a in row.incentive_details.all()]:
                     if obj == incentive_n:
                         i_amount = amount
                         break
@@ -966,7 +966,7 @@ def entry_detail(request, pk=None):
             deduction_amounts = []
             for obj in all_deductions:
                 d_amount = 0
-                for deduction, amount in [(a.deduction, a.amount) for a in row.deduction_detail.all()]:
+                for deduction, amount in [(a.deduction, a.amount) for a in row.deduction_details.all()]:
                     if obj == deduction:
                         d_amount = amount
                         break
@@ -1008,10 +1008,6 @@ def entry_list(request):
     pass
 
 
-def transact_entry(request, pk=None):
-    pass
-
-
 def get_employee_options(request):
     if request.POST:
         # pdb.set_trace()
@@ -1030,3 +1026,38 @@ def get_employee_options(request):
     else:
         pdb.set_trace()
         return HttpResponse('No POST')
+
+
+def transact_entry(request, pk=None):
+    p_e = PayrollEntry.objects.get(id=pk)
+
+    for entry in p_e.entry_rows.all():
+        employee = entry.paid_employee
+        salary = p_e.salary
+
+        employee_salary_account = employee.accounts.all().filter(
+            employee_account__is_salary_account=True
+        )
+        salary_giving_account = Account.objects.filter(
+            company_account__is_salary_giving=True
+        )
+        # First ma slary and allowance transact grade_name
+        # SET TRANSACTION HERE FOR SALARY: DR IN EMP ACC
+        set_transactions(
+            entry,
+            entry.entry_datetime,
+            *['dr', employee_salary_account, salary]
+        )
+        # SET TRANSACTION HERE FOR SALARY: CR IN EMP ACC
+        set_transactions(
+            entry,
+            entry.entry_datetime,
+            *['cr', salary_giving_account, salary]
+        )
+
+        for allowance in employee.allowance_detail.all():
+            pass
+
+        # Then deduction transact garne
+        # Then allowance transact garne
+

@@ -195,8 +195,8 @@ def set_transactions(submodel, date, *args):
         })
     for arg in args:
         # transaction = Transaction(account=arg[1], dr_amount=arg[2])
-        if arg[1] == 'cash':
-            arg[1] = Account.objects.get(name='Cash')
+        # if arg[1] == 'cash':
+        #     arg[1] = Account.objects.get(name='Cash')
         matches = journal_entry.transactions.filter(account=arg[1])
         if not matches:
             transaction = Transaction()
@@ -371,30 +371,30 @@ class Designation(models.Model):
         return self.designation_name
 
 
-# class OtherIncomes(models.Model):
-#     inc_type_choices = (('INCENTIVE'),('Incentive'), ('ALLOWANCE'),('Allowance'))
-#     income_type = models.CharField(choices=inc_type_choices)
-#     name = models.CharField(max_length=100)
-#     employee_grade = models.ForeignKey(EmployeeGrade)
-#     sum_type = models.CharField(max_length=50, choices=deduct_choice)
-#     amount = models.FloatField(null=True, blank=True)
-#     amount_rate = models.FloatField(null=True, blank=True)
-#     payment_cycle = models.CharField(max_length=50, choices=payment_cycle)
-#     year_payment_cycle_month = models.PositiveIntegerField(
-#         null=True,
-#         blank=True,
-#         validators=[
-#             MaxValueValidator(12),
-#             MinValueValidator(1)
-#         ],
-#     )
-#     description = models.CharField(max_length=250)
+class DeductionAccount(models.Model):
+    account = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='deduction_ledger'
+    )
 
-#     def __unicode__(self):
-#             if self.sum_type == 'AMOUNT':
-#                 return '%s-%s %s- %f' % (self.income_type, self.employee_grade, self.name, self.amount)
-#             else:
-#                 return '%s-%s %s- %f' % (self.income_type, self.employee_grade, self.name, self.amount_rate)
+
+class AllowanceAccount(models.Model):
+    account = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='allowance_ledger'
+    )
+
+
+class IncentiveAccount(models.Model):
+    account = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='incentive_ledger'
+    )
+
+
 class AllowanceName(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=250)
@@ -807,9 +807,9 @@ class PaymentRecord(models.Model):
     allowance = models.FloatField(null=True, blank=True)
     incentive = models.FloatField(null=True, blank=True)
     deduced_amount = models.FloatField(null=True, blank=True)
-    deduction_detail = models.ManyToManyField(DeductionDetail, blank=True)
-    incentive_detail = models.ManyToManyField(IncentiveDetail, blank=True)
-    allowance_detail = models.ManyToManyField(AllowanceDetail, blank=True)
+    deduction_details = models.ManyToManyField(DeductionDetail, blank=True)
+    incentive_details = models.ManyToManyField(IncentiveDetail, blank=True)
+    allowance_details = models.ManyToManyField(AllowanceDetail, blank=True)
     income_tax = models.FloatField(null=True, blank=True)
     pro_tempore_amount = models.FloatField(null=True, blank=True)
     salary = models.FloatField(null=True, blank=True)
@@ -825,7 +825,7 @@ class PaymentRecord(models.Model):
 
 
 class PayrollEntry(models.Model):
-    entry_row = models.ManyToManyField(PaymentRecord)
+    entry_rows = models.ManyToManyField(PaymentRecord)
     branch = models.ForeignKey(BranchOffice, null=True, blank=True)
     is_monthly_payroll = models.BooleanField(default=False)
     entry_datetime = models.DateTimeField(default=timezone.now)
@@ -866,6 +866,7 @@ class EmployeeAccount(models.Model):
     account_type = models.ForeignKey(
         AccountType
     )
+    is_salary_account = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (("employee", "account"),)
@@ -877,6 +878,8 @@ class CompanyAccount(models.Model):
         on_delete=models.CASCADE,
         related_name='company_account'
     )
+    is_salary_giving = models.BooleanField(default=False)
+
 
 # class HrConfig(dbsettings.Group):
 #     sk_deduction_rate = models.PositiveIntegerField()
