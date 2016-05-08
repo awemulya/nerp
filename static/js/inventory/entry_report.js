@@ -53,6 +53,7 @@ function EntryReportVM(data) {
                 }
                 else {
                     alert.success('Saved!');
+                    self.table_view.deleted_rows([]);
                     if (msg.id)
                         self.id(msg.id);
                     $("#tbody > tr").each(function (i) {
