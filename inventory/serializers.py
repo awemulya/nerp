@@ -6,7 +6,24 @@ from inventory.models import PartyQuotation, QuotationComparison, QuotationCompa
     PurchaseOrderRow, HandoverRow, Handover, \
     EntryReport, EntryReportRow, JournalEntry, InspectionRow, Inspection, Transaction, ItemLocation, Depreciation, \
     ItemInstance, \
-    Release, YearlyReport, YearlyReportRow
+    Release, YearlyReport, YearlyReportRow, StockEntry, StockEntryRow, InventoryAccount
+
+
+class StockEntryRowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StockEntryRow
+
+
+class StockEntrySerializer(serializers.ModelSerializer):
+    rows = StockEntryRowSerializer(many=True)
+    inventory_existing_account_no = serializers.SerializerMethodField()
+
+    class Meta:
+        model = StockEntry
+
+    def get_inventory_existing_account_no(self, obj):
+        return list(InventoryAccount.objects.all().values_list('account_no', flat=True))
+
 
 
 class YearlyReportRowSerializer(serializers.ModelSerializer):

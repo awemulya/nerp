@@ -32,48 +32,51 @@
             <p class="alert-error" role='alert'>{% trans "Your username and password didn't match. Please try again." %}</p>
         {% endif %}
         <div class="well">
-        <form method="post" action="{% url 'login' %}"
-              id="user_login_new">{% csrf_token %}
-            {% if state %}
-                {{ state }}
-            {% endif %}
-            {% if next %}
-                <input type="hidden" name="next" value="{{ next }}"/>
-            {% endif %}
-            <div class="required">
-                <label for="id_username">{% trans "Username" %}:</label>
-                <input type="text" class="form-control" name="username" id="id_username" value="{{ username }}" required autofocus/>
-            </div>
+            <form method="post" action="{% url 'login' %}"
+                  id="user_login_new">{% csrf_token %}
+                {% if state %}
+                    {{ state }}
+                {% endif %}
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}"/>
+                {% endif %}
+                <div class="required">
+                    <label for="id_username">{% trans "Username" %}:</label>
+                    <input type="text" class="form-control" name="username" id="id_username" value="{{ username }}" required
+                           autofocus/>
+                </div>
 
-            <div class="form-group">
-                <label for="id_password">{% trans "Password" %}:</label>
-                <input type="password" name="password" class="form-control" id="id_password" value="{{ username }}" required/>
-            </div>
+                <div class="form-group">
+                    <label for="id_password">{% trans "Password" %}:</label>
+                    <input type="password" name="password" class="form-control" id="id_password" value="{{ username }}" required/>
+                </div>
 
-            <div >
-                <input type="checkbox" id="remember_me" name="remember_me" value="true"/>
-                <label for="remember_me">{% trans "Remember Me" %}</label>
-            </div>
-            </div>
+                <div>
+                    <input type="checkbox" id="remember_me" name="remember_me" value="true"/>
+                    <label for="remember_me">{% trans "Remember Me" %}</label>
+                </div>
+        </div>
 
-            <div>
-                <input type="submit" value="Log In" class="btn btn-info btn-lg btn-raised"/>
-            </div>
+        <div>
+            <input type="submit" value="Log In" class="btn btn-info btn-lg btn-raised"/>
+        </div>
         </form>
 
 
     </div>
 
-    </div>
+</div>
+<script src='{% static "js/libs/jquery-2.1.4.min.js" %}'></script>
+<script src='{% static "js/libs/bootstrap.min.js" %}'></script>
+<script src="{% static 'js/libs/material.min.js' %}"></script>
+<script src="{% static 'js/libs/ripples.min.js' %}"></script>
 
-    <script src="{% static 'js/vendors/jquery.js' %}"></script>
-    <script src="{% static 'js/bootstrap/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap/material/material.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap/material/ripples.min.js' %}"></script>
-
-    <script>
-        $.material.init();
-    </script>
+<script>
+    $.material.init();
+    $(function () {
+        $("input:text").eq(0)[0].focus()
+    });
+</script>
 
 </body>
 </html>
