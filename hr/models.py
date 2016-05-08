@@ -548,7 +548,10 @@ class Deduction(models.Model):
     # Explit acc is only specified when deduction for is explicit_acc
     explicit_acc = models.ForeignKey(Account, null=True, blank=True)
     # In which type of account to make deduction transaction when deduction for is employee acc
-    in_acc_type = models.ForeignKey(AccountType)
+    in_acc_type = models.ForeignKey(
+        AccountType,
+        related_name='in_account_type'
+    )
     # transact_in = models.CharField(choice=acc_type)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
@@ -928,7 +931,8 @@ class EmployeeAccount(models.Model):
         related_name='employee_account',
     )
     account_type = models.ForeignKey(
-        AccountType
+        AccountType,
+        related_name='employee_account_type'
     )
     is_salary_account = models.BooleanField(default=False)
 

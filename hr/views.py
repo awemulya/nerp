@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names
-from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry
+from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -1055,8 +1055,78 @@ def transact_entry(request, pk=None):
             *['cr', salary_giving_account, salary]
         )
 
-        for allowance in employee.allowance_detail.all():
-            pass
+        for allowance_details_item in entry.allowance_details.all():
+            a_account = allowance_details_item.account.account
+            a_amount = allowance_details_item.amount
+
+            set_transactions(
+                entry,
+                entry.entry_datetime,
+                *['dr', employee_salary_account, a_amount]
+            )
+            set_transactions(
+                entry,
+                entry.entry_datetime,
+                *['dr', a_account, a_amount]
+            )
+            set_transactions(
+                entry,
+                entry.entry_datetime,
+                *['cr', salary_giving_account, a_amount]
+            )
+
+        for incentive_details_item in entry.incentive_details.all():
+            i_account = incentive_details_item.account.account
+            i_amount = incentive_details_item.amount
+
+            set_transactions(
+                entry,
+                entry.entry_datetime,
+                *['dr', employee_salary_account, i_amount]
+            )
+            set_transactions(
+                entry,
+                entry.entry_datetime,
+                *['dr', i_account, i_amount]
+            )
+            set_transactions(
+                entry,
+                entry.entry_datetime,
+                *['cr', salary_giving_account, i_amount]
+            )
+
+        for deduction_details_item in entry.deduction_details.all():
+            d_account = deduction_details_item.account.account
+            d_amount = deduction_details_item.amount
+            deduction_obj = deduction_details_item.deduction
+
+            if deduction_obj.deduction_for == 'EXPLICIT ACC':
+                d_dr_account = deduction_obj.explicit_acc
+            else:
+                d_dr_account_type = deduction_obj.in_acc_type
+                d_dr_account = employee.accounts.all().filter(
+                    employee_account__account_type=d_dr_account_type
+                )
+            set_transactions(
+                entry,
+                entry.entry_datetime,
+                *['cr', employee_salary_account, d_amount]
+            )
+            # Missing in deduction acccount
+            set_transactions(
+                entry,
+                entry.entry_datetime,
+                *['dr', d_dr_account, i_amount]
+            )
+            set_transactions(
+                entry,
+                entry.entry_datetime,
+                *['dr', d_account, i_amount]
+            )
+    return JsonResponse({'entry_transacted': True})
+
+
+
 
         # Then deduction transact garne
         # Then allowance transact garne
