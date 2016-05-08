@@ -100,7 +100,7 @@ MIDDLEWARE_CLASSES = (
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
     'njango.middleware.CalendarMiddleware',
-    'key.middleware.KeyMiddleware',
+    # 'key.middleware.KeyMiddleware',
 )
 
 HAYSTACK_CONNECTIONS = {
