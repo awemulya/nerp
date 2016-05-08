@@ -1123,7 +1123,12 @@ def transact_entry(request, pk=None):
                 entry.entry_datetime,
                 *['dr', d_account, i_amount]
             )
-    return JsonResponse({'entry_transacted': True})
+    p_e.entry_transacted = True
+    p_e.save()
+    if request.is_ajax():
+        return JsonResponse({'entry_transacted': True})
+    else:
+        return redirect(reverse('entry_list'))
 
 
 

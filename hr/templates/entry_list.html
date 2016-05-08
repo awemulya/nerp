@@ -24,11 +24,18 @@
         <tr>
             <th>Payroll Entries</th>
             <th>Controls</th>
+            <th>Transaction Status</th>
         </tr>
         {% for obj in objects %}
             <tr>
                 <td><a href={% url 'entry_detail' obj.id %}>{{ obj }}</a></td>
-                <td><a href={% url 'delete_entry' obj.id %}>Delete</a></td>
+                <td><a href={% url 'delete_entry' obj.id %}><button type="button">Delete</button></a></td>
+                {% if obj.entry_transacted %}
+                    <td>Entry Transacted</td>
+                {% else %}
+                    <td><a href={% url 'transact_entry' obj.id %}><button type="button">Transact</a></button></td>
+                {% endif %}
+
             </tr>
         {% endfor %}
     </table>
