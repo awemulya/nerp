@@ -378,6 +378,9 @@ class DeductionAccount(models.Model):
         related_name='deduction_ledger'
     )
 
+    def __unicode__(self):
+        return self.account.name
+
 
 class AllowanceAccount(models.Model):
     account = models.OneToOneField(
@@ -386,6 +389,9 @@ class AllowanceAccount(models.Model):
         related_name='allowance_ledger'
     )
 
+    def __unicode__(self):
+        return self.account.name
+
 
 class IncentiveAccount(models.Model):
     account = models.OneToOneField(
@@ -393,6 +399,9 @@ class IncentiveAccount(models.Model):
         on_delete=models.CASCADE,
         related_name='incentive_ledger'
     )
+
+    def __unicode__(self):
+        return self.account.name
 
 
 class AllowanceName(models.Model):
@@ -441,13 +450,14 @@ class Allowance(models.Model):
             return '%s, %f' % (self.name, self.amount_rate)
 
     def save(self, *args, **kwargs):
-        account_name = self.name + str(self.id)
-        account_obj = Account.objects.create(name=account_name)
-        allowance_account = AllowanceAccount.objects.create(
-            account=account_obj,
-        )
-        self.account = allowance_account
-        super(Incentive, self).save(*args, **kwargs)
+        if not self.account:
+            account_name = self.name.name + '-' + str(self.id)
+            account_obj = Account.objects.create(name=account_name)
+            allowance_account = AllowanceAccount.objects.create(
+                account=account_obj,
+            )
+            self.account = allowance_account
+        super(Allowance, self).save(*args, **kwargs)
 
     class Meta:
             unique_together = (("name", "employee_grade"),)
@@ -500,12 +510,13 @@ class Incentive(models.Model):
             return '%s, %f' % (self.name, self.rate)
 
     def save(self, *args, **kwargs):
-        account_name = self.name + str(self.id)
-        account_obj = Account.objects.create(name=account_name)
-        incentive_account = IncentiveAccount.objects.create(
-            account=account_obj,
-        )
-        self.account = incentive_account
+        if not self.account:
+            account_name = self.name.name + '-' + str(self.id)
+            account_obj = Account.objects.create(name=account_name)
+            incentive_account = IncentiveAccount.objects.create(
+                account=account_obj,
+            )
+            self.account = incentive_account
         super(Incentive, self).save(*args, **kwargs)
 
     class Meta:
@@ -561,11 +572,12 @@ class Deduction(models.Model):
     def save(self, *args, **kwargs):
         if self.explicit_acc:
             self.with_temporary_employee = True
-        account_name = self.name + str(self.id)
-        account_obj = Account.objects.create(name=account_name)
-        deduction_account = DeductionAccount.objects.create(
-            account=account_obj,
-        )
+        if not self.account:
+            account_name = self.name + '-' +str(self.id)
+            account_obj = Account.objects.create(name=account_name)
+            deduction_account = DeductionAccount.objects.create(
+                account=account_obj,
+            )
         self.account = deduction_account
         super(Deduction, self).save(*args, **kwargs)
 
