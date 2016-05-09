@@ -3,8 +3,9 @@ from core.models import FiscalYear
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
+from django.contrib.contenttypes.models import ContentType
 from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names
-from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions
+from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -636,8 +637,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     # First allowence added to salary for deduction and income tax.
     # For pure salary here added allowance should be duduced
     employee_response['salary'] = salary - allowance
-    employee_response['employee_bank_account_id'] = get_account_id(
-        employee, 'bank_account')
+    # employee_response['employee_bank_account_id'] = get_account_id(
+    #     employee, 'bank_account')
 
     employee_response['paid_amount'] = salary - deduction - income_tax +\
         p_t_amount + incentive
@@ -870,9 +871,17 @@ def approve_entry(request, pk=None):
 # Should have permissions
 def delete_entry(request, pk=None):
     payroll_entry = PayrollEntry.objects.get(pk=pk)
-    payment_recordid_set = [p.id for p in payroll_entry.entry_rows.all()]
+    payment_records_rows = payroll_entry.entry_rows.all()
+    payment_recordid_set = [p.id for p in payment_records_rows]
     # pdb.set_trace()
     # payroll_entry.entry_row_set.clear()
+
+    # Delete Transaction Here
+    # delete_rows(
+    #     payment_records_rows,
+    #     PaymentRecord
+    # )
+
     payroll_entry.delete()
 
     for pr_id in payment_recordid_set:
@@ -880,7 +889,15 @@ def delete_entry(request, pk=None):
         record_deduction_details = [rdd.id for rdd in p_r.deduction_details.all()]
         record_allowance_details = [rad.id for rad in p_r.allowance_details.all()]
         record_incentive_details = [rid.id for rid in p_r.incentive_details.all()]
+
+        try:
+            JournalEntry.objects.get(content_type=ContentType.objects.get_for_model(p_r),
+                                     model_id=pr_id.id).delete()
+        except:
+            pass
+
         p_r.delete()
+
         for rdd_id in record_deduction_details:
             DeductionDetail.objects.get(id=rdd_id).delete()
         for rad_id in record_allowance_details:
@@ -1033,96 +1050,113 @@ def transact_entry(request, pk=None):
 
     for entry in p_e.entry_rows.all():
         employee = entry.paid_employee
-        salary = p_e.salary
+        salary = entry.salary
 
         employee_salary_account = employee.accounts.all().filter(
             employee_account__is_salary_account=True
-        )
+        )[0]
         salary_giving_account = Account.objects.filter(
             company_account__is_salary_giving=True
-        )
+        )[0]
         # First ma slary and allowance transact grade_name
         # SET TRANSACTION HERE FOR SALARY: DR IN EMP ACC
         set_transactions(
             entry,
-            entry.entry_datetime,
-            *['dr', employee_salary_account, salary]
+            p_e.entry_datetime,
+            *[
+                ('dr', employee_salary_account, salary),
+                ('cr', salary_giving_account, salary),
+            ]
         )
         # SET TRANSACTION HERE FOR SALARY: CR IN EMP ACC
-        set_transactions(
-            entry,
-            entry.entry_datetime,
-            *['cr', salary_giving_account, salary]
-        )
+        # set_transactions(
+        #     entry,
+        #     p_e.entry_datetime,
+        #     *['cr', salary_giving_account, salary]
+        # )
 
         for allowance_details_item in entry.allowance_details.all():
-            a_account = allowance_details_item.account.account
+            a_account = allowance_details_item.allowance.allowances.all().filter(employee_grade=employee.designation.grade)[0].account.account
             a_amount = allowance_details_item.amount
 
             set_transactions(
                 entry,
-                entry.entry_datetime,
-                *['dr', employee_salary_account, a_amount]
+                p_e.entry_datetime,
+                *[
+                    ('dr', employee_salary_account, a_amount),
+                    ('dr', a_account, a_amount),
+                    ('cr', salary_giving_account, a_amount),
+                ]
             )
-            set_transactions(
-                entry,
-                entry.entry_datetime,
-                *['dr', a_account, a_amount]
-            )
-            set_transactions(
-                entry,
-                entry.entry_datetime,
-                *['cr', salary_giving_account, a_amount]
-            )
+            # set_transactions(
+            #     entry,
+            #     p_e.entry_datetime,
+            #     *['dr', a_account, a_amount]
+            # )
+            # set_transactions(
+            #     entry,
+            #     p_e.entry_datetime,
+            #     *['cr', salary_giving_account, a_amount]
+            # )
 
         for incentive_details_item in entry.incentive_details.all():
-            i_account = incentive_details_item.account.account
+            i_account = incentive_details_item.incentive.incentives.all().filter(employee_grade=employee.designation.grade)[0].account.account
             i_amount = incentive_details_item.amount
 
             set_transactions(
                 entry,
-                entry.entry_datetime,
-                *['dr', employee_salary_account, i_amount]
+                p_e.entry_datetime,
+                *[
+                    ('dr', employee_salary_account, i_amount),
+                    ('dr', i_account, i_amount),
+                    ('cr', employee_salary_account, i_amount),
+                ]
             )
-            set_transactions(
-                entry,
-                entry.entry_datetime,
-                *['dr', i_account, i_amount]
-            )
-            set_transactions(
-                entry,
-                entry.entry_datetime,
-                *['cr', salary_giving_account, i_amount]
-            )
+            # set_transactions(
+            #     entry,
+            #     p_e.entry_datetime,
+            #     *['dr', i_account, i_amount]
+            # )
+            # set_transactions(
+            #     entry,
+            #     p_e.entry_datetime,
+            #     *['cr', salary_giving_account, i_amount]
+            # )
 
         for deduction_details_item in entry.deduction_details.all():
-            d_account = deduction_details_item.account.account
-            d_amount = deduction_details_item.amount
             deduction_obj = deduction_details_item.deduction
+            d_account = deduction_obj.account.account
+            d_amount = deduction_details_item.amount
 
             if deduction_obj.deduction_for == 'EXPLICIT ACC':
                 d_dr_account = deduction_obj.explicit_acc
             else:
                 d_dr_account_type = deduction_obj.in_acc_type
                 d_dr_account = employee.accounts.all().filter(
-                    employee_account__account_type=d_dr_account_type
-                )
+                    employee_account__other_account_type=d_dr_account_type,
+                    employee_account__account_meta_type='OTHER_ACCOUNT',
+                )[0]
+
             set_transactions(
                 entry,
-                entry.entry_datetime,
-                *['cr', employee_salary_account, d_amount]
+                p_e.entry_datetime,
+                *[
+                    ('cr', employee_salary_account, d_amount),
+                    ('dr', d_dr_account, d_amount),
+                    ('dr', d_account, d_amount),
+                ]
             )
             # Missing in deduction acccount
-            set_transactions(
-                entry,
-                entry.entry_datetime,
-                *['dr', d_dr_account, i_amount]
-            )
-            set_transactions(
-                entry,
-                entry.entry_datetime,
-                *['dr', d_account, i_amount]
-            )
+            # set_transactions(
+            #     entry,
+            #     p_e.entry_datetime,
+            #     *['dr', d_dr_account, i_amount]
+            # )
+            # set_transactions(
+            #     entry,
+            #     p_e.entry_datetime,
+            #     *['dr', d_account, i_amount]
+            # )
     p_e.entry_transacted = True
     p_e.save()
     if request.is_ajax():

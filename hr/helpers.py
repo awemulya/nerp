@@ -78,7 +78,7 @@ def get_account_id(employee_object, account_type):
     from hr.models import EmployeeAccount
     return EmployeeAccount.objects.get(
         employee=employee_object,
-        account_type__name=account_type
+        other_account_type=account_type
     ).account.id
 
 

@@ -8,7 +8,8 @@ from njango.fields import BSDateField, today
 from njango.nepdate import bs2ad, bs
 from django.core.validators import MaxValueValidator, MinValueValidator
 from calendar import monthrange as mr
-from datetime import date, datetime
+from datetime import date
+import datetime
 from hr.bsdate import BSDate
 from .helpers import get_y_m_tuple_list, are_side_months, zero_for_none, none_for_zero
 # import pdb
@@ -19,6 +20,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import F
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
+import pdb
 
 # from core.models import FiscalYear
 # from solo.models import SingletonModel
@@ -35,8 +37,7 @@ from django.dispatch.dispatcher import receiver
 # Account type name should be same as fieldname in employee account with small letter and underscope
 # That is field name for 'BANK ACCOUNT' in employee model 
 # will be 'bank_account'
-acc_type = [('bank_account', _('Bank Account')),
-            ('insurance_account', _('Insurance Account')),
+acc_type = [('insurance_account', _('Insurance Account')),
             ('nalakosh_account', _('Nagarik Lagani Kosh Account')),
             ('sanchayakosh_account', _('Sanchayakosh Account'))]
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
@@ -792,7 +793,7 @@ class Employee(models.Model):
 
     def has_account(self, account_type):
         for i in self.accounts.all():
-            if i.employee_account.account_type == account_type:
+            if i.employee_account.other_account_type == account_type:
                 return True
         return False
 
@@ -930,9 +931,18 @@ class EmployeeAccount(models.Model):
         on_delete=models.CASCADE,
         related_name='employee_account',
     )
-    account_type = models.ForeignKey(
+    account_meta_type = models.CharField(
+        max_length=100,
+        choices=(
+            ('BANK_ACCOUNT', _('Employee Bank Account')),
+            ('OTHER_ACCOUNT', _('Other Employee Account')),
+        ),
+    )
+    other_account_type = models.ForeignKey(
         AccountType,
-        related_name='employee_account_type'
+        related_name='employee_account_type',
+        null=True,
+        blank=True
     )
     is_salary_account = models.BooleanField(default=False)
 

@@ -33,7 +33,7 @@
                 {% if obj.entry_transacted %}
                     <td>Entry Transacted</td>
                 {% else %}
-                    <td><a href={% url 'transact_entry' obj.id %}><button type="button">Transact</a></button></td>
+                    <td><a href={% url 'transact_entry' obj.id %}><button type="button">Transact</button></a></td>
                 {% endif %}
 
             </tr>

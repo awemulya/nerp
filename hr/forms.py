@@ -208,24 +208,39 @@ class EmployeeAccountInlineFormset(forms.models.BaseInlineFormSet):
         if any(self.errors):
             return
         account_types = []
+        bank_account_count = 0
         cntr = 0
         for form in self.forms:
             if form.cleaned_data:
-                acc_type = form.cleaned_data['account_type']
+                other_account_type = form.cleaned_data['other_account_type']
                 is_salary_account = form.cleaned_data['is_salary_account']
-                if is_salary_account:
-                    cntr += 1
-                    # import pdb
-                    # pdb.set_trace()
-                if acc_type in account_types:
-                    acc_type_name = _(acc_type.name)
-                    raise forms.ValidationError(
-                        _('Cannot have more than one type of %s' % acc_type_name))
-                elif cntr > 1:
-                    raise forms.ValidationError(
-                        _('Cannot have more than one salary account'))
-            account_types.append(acc_type)
+                account_meta_type = form.cleaned_data['account_meta_type']
 
+                if account_meta_type == 'BANK_ACCOUNT':
+                    if other_account_type:
+                        raise forms.ValidationError(
+                            _('Employee Bank account cant have account type %s. Should be None type' % other_account_type))
+                    if is_salary_account:
+                        cntr += 1
+                    bank_account_count += 1
+                else:
+                    if not other_account_type:
+                        raise forms.ValidationError(
+                            _('Employee Other account on account meta type need other account type'))
+                    if is_salary_account:
+                        raise forms.ValidationError(
+                            _('Only Employee bank account be a salary account'))
+                    if other_account_type in account_types:
+                        acc_type_name = _(other_account_type.name)
+                        raise forms.ValidationError(
+                            _('Cannot have more than one type of %s' % acc_type_name))
+                    account_types.append(other_account_type)
+                if cntr > 1:
+                    raise forms.ValidationError(
+                            _('Cannot have more than one salary account'))
+        if bank_account_count == 0:
+            raise forms.ValidationError(
+                _('Employee Needs at least one bank account'))
 
 PaymentRowFormSet = forms.formset_factory(PaymentRowForm)
 DeductionFormSet = forms.formset_factory(DeductionForm)
