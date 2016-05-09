@@ -865,7 +865,10 @@ def approve_entry(request, pk=None):
     payroll_entry = PayrollEntry.objects.get(pk=pk)
     payroll_entry.approved = True
     payroll_entry.save()
-    return JsonResponse({'entry_approved': True})
+    if request.is_ajax():
+        return JsonResponse({'entry_approved': True})
+    else:
+        return redirect(reverse('entry_list'))
 
 
 # Should have permissions
@@ -891,8 +894,8 @@ def delete_entry(request, pk=None):
         record_incentive_details = [rid.id for rid in p_r.incentive_details.all()]
 
         try:
-            JournalEntry.objects.get(content_type=ContentType.objects.get_for_model(p_r),
-                                     model_id=pr_id.id).delete()
+            JournalEntry.objects.get(content_type=ContentType.objects.get_for_model(PaymentRecord),
+                                     object_id=p_r.id).delete()
         except:
             pass
 
@@ -1157,7 +1160,7 @@ def transact_entry(request, pk=None):
             #     p_e.entry_datetime,
             #     *['dr', d_account, i_amount]
             # )
-    p_e.entry_transacted = True
+    p_e.transacted = True
     p_e.save()
     if request.is_ajax():
         return JsonResponse({'entry_transacted': True})
