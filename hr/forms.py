@@ -296,7 +296,37 @@ class IncentiveForm(forms.ModelForm):
 
 
 class DeductionForm(forms.ModelForm):
-    pass    
+    def clean(self):
+        cleaned_data = super(DeductionForm, self).clean()
+        sum_type = cleaned_data.get("sum_type")
+        amount = cleaned_data.get("amount")
+        amount_rate = cleaned_data.get("amount_rate")
+
+        deduction_for = cleaned_data.get("deduction_for")
+        explicit_acc = cleaned_data.get("explicit_acc")
+        in_acc_type = cleaned_data.get("in_acc_type")
+
+        if sum_type == 'AMOUNT' and not amount:
+            self.add_error(
+                'amount',
+                'Need amount field to be filled up when Sum Type is Amount'
+            )
+        elif sum_type == 'RATE' and not amount_rate:
+            self.add_error(
+                'amount_rate',
+                'Need amount rate field to be filled up when Sum Type is Rate'
+            )
+        if deduction_for == 'EXPLICIT ACC' and not explicit_acc:
+            self.add_error(
+                'explicit_acc',
+                'This field is required with Deduction for Explicit Account'
+            )
+        elif deduction_for == 'EMPLOYEE ACC' and not in_acc_type:
+            self.add_error(
+                'in_acc_type',
+                'This field is required with Deduction for Employee Account'
+            )
+
 
 
 PaymentRowFormSet = forms.formset_factory(PaymentRowForm)

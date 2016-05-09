@@ -587,6 +587,14 @@ class Deduction(models.Model):
             return '%s, %f' % (self.name, self.amount_rate)
 
     def save(self, *args, **kwargs):
+        if self.deduction_for == 'EMPLOYEE ACC':
+            self.explicit_acc = None
+        elif self.deduction_for == 'EXPLICIT ACC':
+            self.in_acc_type = None
+        if self.sum_type == 'AMOUNT':
+            self.amount_rate = None
+        elif self.sum_type == 'RATE':
+            self.amount = None
         if self.explicit_acc:
             self.with_temporary_employee = True
         if not self.account:
