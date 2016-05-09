@@ -458,6 +458,13 @@ class Allowance(models.Model):
                 account=account_obj,
             )
             self.account = allowance_account
+        if self.sum_type == 'AMOUNT':
+            self.amount_rate = None
+        elif self.sum_type == 'RATE':
+            self.amount = None
+        if self.payment_cycle is not 'Y':
+            self.year_payment_cycle_month = None
+
         super(Allowance, self).save(*args, **kwargs)
 
     class Meta:
@@ -518,6 +525,12 @@ class Incentive(models.Model):
                 account=account_obj,
             )
             self.account = incentive_account
+        if self.sum_type == 'AMOUNT':
+            self.amount_rate = None
+        elif self.sum_type == 'RATE':
+            self.amount = None
+        if self.payment_cycle is not 'Y':
+            self.year_payment_cycle_month = None
         super(Incentive, self).save(*args, **kwargs)
 
     class Meta:
