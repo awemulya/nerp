@@ -82,11 +82,11 @@ def get_allowance_names():
     return names
 
 
-class DeductionForm(forms.Form):
+class DeductionDataForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         # extra = kwargs.pop('extra')
-        super(DeductionForm, self).__init__(*args, **kwargs)
+        super(DeductionDataForm, self).__init__(*args, **kwargs)
 
         for name, id in get_deduction_names():
             self.fields['deduction_%d' % id] = forms.FloatField(
@@ -95,11 +95,11 @@ class DeductionForm(forms.Form):
             )
 
 
-class IncentiveForm(forms.Form):
+class IncentiveDataForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         # extra = kwargs.pop('extra')
-        super(IncentiveForm, self).__init__(*args, **kwargs)
+        super(IncentiveDataForm, self).__init__(*args, **kwargs)
 
         for name, id in get_incentive_names():
             self.fields['incentive_%d' % id] = forms.FloatField(
@@ -108,11 +108,11 @@ class IncentiveForm(forms.Form):
             )
 
 
-class AllowanceForm(forms.Form):
+class AllowanceDataForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         # extra = kwargs.pop('extra')
-        super(AllowanceForm, self).__init__(*args, **kwargs)
+        super(AllowanceDataForm, self).__init__(*args, **kwargs)
 
         for name, id in get_allowance_names():
             self.fields['allowance_%d' % id] = forms.FloatField(
@@ -242,7 +242,64 @@ class EmployeeAccountInlineFormset(forms.models.BaseInlineFormSet):
             raise forms.ValidationError(
                 _('Employee Needs at least one bank account'))
 
+
+class AllowanceForm(forms.ModelForm):
+    def clean(self):
+        cleaned_data = super(AllowanceForm, self).clean()
+        sum_type = cleaned_data.get("sum_type")
+        amount = cleaned_data.get("amount")
+        amount_rate = cleaned_data.get("amount_rate")
+        payment_cycle = cleaned_data.get("payment_cycle")
+        year_payment_cycle_month = cleaned_data.get("year_payment_cycle_month")
+
+        if sum_type == 'AMOUNT' and not amount:
+            self.add_error(
+                'amount',
+                'Need amount field to be filled up when Sum Type is Amount'
+            )
+        elif sum_type == 'RATE' and not amount_rate:
+            self.add_error(
+                'amount_rate',
+                'Need amount rate field to be filled up when Sum Type is Rate'
+            )
+        if payment_cycle == 'Y' and not year_payment_cycle_month:
+            self.add_error(
+                'year_payment_cycle_month',
+                'This field is needed if it is a yearly allowance'
+            )
+
+
+class IncentiveForm(forms.ModelForm):
+    def clean(self):
+        cleaned_data = super(IncentiveForm, self).clean()
+        sum_type = cleaned_data.get("sum_type")
+        amount = cleaned_data.get("amount")
+        amount_rate = cleaned_data.get("amount_rate")
+        payment_cycle = cleaned_data.get("payment_cycle")
+        year_payment_cycle_month = cleaned_data.get("year_payment_cycle_month")
+
+        if sum_type == 'AMOUNT' and not amount:
+            self.add_error(
+                'amount',
+                'Need amount field to be filled up when Sum Type is Amount'
+            )
+        elif sum_type == 'RATE' and not amount_rate:
+            self.add_error(
+                'amount_rate',
+                'Need amount rate field to be filled up when Sum Type is Rate'
+            )
+        if payment_cycle == 'Y' and not year_payment_cycle_month:
+            self.add_error(
+                'year_payment_cycle_month',
+                'This field is needed if it is a yearly allowance'
+            )
+
+
+class DeductionForm(forms.ModelForm):
+    pass    
+
+
 PaymentRowFormSet = forms.formset_factory(PaymentRowForm)
-DeductionFormSet = forms.formset_factory(DeductionForm)
-IncentiveFormSet = forms.formset_factory(IncentiveForm)
-AllowanceFormSet = forms.formset_factory(AllowanceForm)
+DeductionFormSet = forms.formset_factory(DeductionDataForm)
+IncentiveFormSet = forms.formset_factory(IncentiveDataForm)
+AllowanceFormSet = forms.formset_factory(AllowanceDataForm)
