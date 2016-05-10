@@ -39,7 +39,7 @@ class ExpenseCategory(models.Model):
 
     class Meta(object):
         ordering = ('order',)
-        verbose_name_plural = 'Expenditure Categories'
+        verbose_name_plural = 'Expense Categories'
 
 
 class Expense(models.Model):
@@ -56,3 +56,13 @@ class Expense(models.Model):
 
     class Meta(object):
         ordering = ('order',)
+
+
+class ExpenseRow(models.Model):
+    category = models.ForeignKey(ExpenseCategory)
+    expense = models.ForeignKey(Expense)
+    amount = models.FloatField()
+    fy = models.ForeignKey(FiscalYear)
+
+    def __str__(self):
+        return str(self.fy) + '-' + str(self.category) + ' - ' + str(self.expense) + ' : ' + str(self.amount)
