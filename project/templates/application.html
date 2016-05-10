@@ -44,7 +44,7 @@
                     <tbody>
                     <!-- ko foreach: categories -->
                     <tr class="category">
-                        <td></td>
+                        <td data-bind="text: String.fromCharCode($index()+65)"></td>
                         <td colspan="6"><a data-bind="text: full_name()" target="_blank"></a></td>
                     </tr>
                     <tr>
