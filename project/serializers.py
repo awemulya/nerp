@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from models import ImprestTransaction, ExpenseRow
+from models import ImprestTransaction, ExpenseRow, ExpenseCategory
 
 
 class ImprestTransactionSerializer(serializers.ModelSerializer):
@@ -10,3 +10,7 @@ class ImprestTransactionSerializer(serializers.ModelSerializer):
 class ExpenseRowSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExpenseRow
+
+class ExpenseCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExpenseCategory

@@ -130,7 +130,7 @@ function ImprestTransaction(row, imprest_vm) {
     self.description = ko.observable();
     self.exchange_rate = ko.observable();
     self.type = ko.observable();
-
+    
     for (var k in row) {
         self[k] = ko.observable(row[k]);
     }

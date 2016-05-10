@@ -1,7 +1,7 @@
 from django.contrib import admin
 from adminsortable2.admin import SortableAdminMixin
 
-from .models import ImprestTransaction, Expense, ExpenseCategory
+from .models import ImprestTransaction, Expense, ExpenseCategory, ExpenseRow
 
 
 class ExpenseCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
@@ -15,3 +15,4 @@ class ExpenseAdmin(SortableAdminMixin, admin.ModelAdmin):
 admin.site.register(ImprestTransaction)
 admin.site.register(ExpenseCategory, ExpenseCategoryAdmin)
 admin.site.register(Expense, ExpenseAdmin)
+admin.site.register(ExpenseRow)
