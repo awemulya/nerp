@@ -3,6 +3,14 @@ $(document).ready(function () {
     ko.applyBindings(vm);
 });
 
+function RowVM(data, category_vm){
+    var self = this;
+    self.category_vm = category_vm;
+    self.category_id = data.category;
+    self.id = ko.observable(data.id);
+    self.amount = ko.observable(data.amount);
+}
+
 function CategoryVM(category_instance) {
     var self = this;
     self.instance = category_instance;
@@ -20,6 +28,10 @@ function CategoryVM(category_instance) {
     }
 
     self.rows = ko.observableArray();
+    
+    self.add_row = function (data){
+        self.rows.push(new RowVM(data, self));
+    }
 }
 
 function ApplicationVM(data) {
@@ -32,17 +44,20 @@ function ApplicationVM(data) {
     self.fy_id = ko.observable(data.fy_id);
 
     self.categories = ko.observableArray();
-
-    for (var k in data.categories) {
-        var category = data.categories[k];
+    
+    ko.utils.arrayForEach(data.categories, function (category) {
         self.categories.push(new CategoryVM(category));
-    }
-
+    });
+    
     self.get_category_by_id = function (id) {
         return ko.utils.arrayFirst(self.categories(), function (obj) {
             return obj.instance.id == id;
         })
     };
+
+    ko.utils.arrayForEach(data.rows, function (row) {
+        self.get_category_by_id(row.category).add_row(row);
+    });
 
 
     self.sort = function () {

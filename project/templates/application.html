@@ -39,28 +39,30 @@
                         <th>{% trans 'Cumulative upto Previous Year' %}</th>
                         <th>{% trans 'Current Year' %}</th>
                         <th>{% trans 'Cumulative upto Current Year' %}</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     <!-- ko foreach: categories -->
                     <tr class="category">
                         <td data-bind="text: String.fromCharCode($index()+65)"></td>
-                        <td colspan="6"><a data-bind="text: full_name()" target="_blank"></a></td>
+                        <td colspan="7"><a data-bind="text: full_name()" target="_blank"></a></td>
                     </tr>
+                    <!-- ko foreach: rows -->
                     <tr>
                         <td></td>
+                        <td data-bind="text: 1"></td>
                         <td></td>
                         <td></td>
                         <td></td>
+                        <td data-bind="editableText: amount, localize: 2"></td>
                         <td></td>
-                        <td></td>
-
-
                         <td class="hidden-print">
                             <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
                         </td>
 
                     </tr>
+                    <!-- /ko -->
                     <!-- /ko -->
                     <tr class="total">
                         <td></td>
