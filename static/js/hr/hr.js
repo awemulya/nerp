@@ -197,7 +197,22 @@ function PayrollEntry(pr_data) {
 
     };
     self.transact = function(){
-        
+        $.ajax({
+                url: '/payroll/transact_entry/' + String(self.entry_id()),
+                method: 'GET',
+                dataType: 'json',
+                // data: post_data,
+                // async: true,
+                success: function (response) {
+                    console.log(response);
+                    // self.entry_approved(response.entry_approved);
+                    
+                },
+                error: function(errorThrown){
+                    console.log(errorThrown);
+                    },
+    //            self.budget_heads = ko.observableArray(data);
+        });
     };
     // self.entry_delete = function(){
     //     $.ajax({
@@ -270,13 +285,12 @@ function PayrollEntry(pr_data) {
 
     
     // Data Changing parameters when changed should reser self.save, approve,transact to default
-    self.set_save_param_to_default = ko.computed(function(){
-       console.log('xxxxx')
+    self.set_save_param_to_default = function(){
         self.entry_id = ko.observable();
         self.entry_saved(false);
         self.entry_approved(false);
         self.entry_transacted(false);
-    });
+    };
 
 
     self.saveAndAdd = function(formElement){

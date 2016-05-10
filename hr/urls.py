@@ -12,6 +12,10 @@ urlpatterns = patterns('',
                        url(r'^get_employee_options/$', views.get_employee_options, name='get_employee_options'),
                        url(r'^approve_entry/(?P<pk>[0-9]+)/$', views.approve_entry, name='approve_entry'),
                        url(r'^transact_entry/(?P<pk>[0-9]+)/$', views.transact_entry, name='transact_entry'),
-                       url(r'^delete_entry/(?P<pk>[0-9]+)/$', views.delete_entry, name='delete_entry')
+                       url(r'^delete_entry/(?P<pk>[0-9]+)/$', views.delete_entry, name='delete_entry'),
+                       # employee crud
+                       url(r'^employee/add/$', views.employee, name='employee_add'),
+                       url(r'^employee/edit/(?P<pk>[0-9]+)/$', views.employee, name='edit_employee'),
+
                        # url(r'^by_branch/$', views.group_payroll_branch, name='group_payroll_branch'),
                        )

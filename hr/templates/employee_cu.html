@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% load filters %}
+{% load i18n %}
+
+{% block head_end %}
+
+{% endblock %}
+
+{% block alert %}
+
+    <!-- <div id="alert_placeholder">
+        <ul data-bind="foreach: errors.items" class="alert-error">
+            <li>
+                Budget for "<span data-bind="text: budget.name()"></span>" from source "<span data-bind="text: source"></span>" exceeds
+            </li>
+        </ul>
+    </div> -->
+{% endblock %}
+
+{% block  content %}
+{% if obj_id %}
+    <form method="POST" action="{% url 'edit_employee' obj_id %}">
+{% else %}
+    <form method="POST" action="{% url 'employee_add' %}">
+{% endif %}
+    {% csrf_token %}
+    <div class="row">
+        {{ employee_form.as_table }}
+    </div>
+    {{ employee_account_formset.management_form }}
+    {% for form in employee_account_formset %}
+        <div class="row">
+            {{ form.as_table }}
+        </div>
+    {% endfor %}
+    <input type="button" value="Add Employee Account">
+    <input type="submit" value="Save"></input>
+    
+</form>
+    
+    
+{% endblock %}

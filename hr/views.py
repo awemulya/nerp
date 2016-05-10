@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
@@ -1168,8 +1168,39 @@ def transact_entry(request, pk=None):
         return redirect(reverse('entry_list'))
 
 
+def employee(request, pk=None):
+    ko_data = {}
+
+    if pk:
+        obj_id = pk
+        employee = Employee.objects.get(id=pk)
+    else:
+        obj_id = None
+        employee = Employee()
+
+    if request.method == "POST":
+        employee_form = EmployeeForm(request.POST, instance=employee)
+        employee_account_formset = EmployeeAccountFormSet(request.POST, instance=employee)
+        if employee_form.is_valid() and employee_account_formset.is_valid():
+            employee_form.save()
+            employee_account_formset.save()
+            return redirect(reverse('payroll_entry'))
+    else:
+        employee_form = EmployeeForm(instance=employee)
+        employee_account_formset = EmployeeAccountFormSet(instance=employee)
 
 
-        # Then deduction transact garne
-        # Then allowance transact garne
+    # if request.POST:
+    #     pass
+    # elif id:
+    #     employees = Employee.objects.get(id=id)
 
+    return render(
+        request,
+        'employee_cu.html',
+        {
+            'employee_form': employee_form,
+            'employee_account_formset': employee_account_formset,
+            'ko_data': ko_data,
+            'obj_id': obj_id
+        })
