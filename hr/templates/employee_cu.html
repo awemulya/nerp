@@ -5,7 +5,14 @@
 {% load i18n %}
 
 {% block head_end %}
-
+    <script src="{% static 'js/vendors/jquery-formset.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.employee-account-form').formset({
+                prefix: '{{ employee_account_formset.prefix }}'
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block alert %}
@@ -29,15 +36,17 @@
     <div class="row">
         {{ employee_form.as_table }}
     </div>
+    <div class="employee-accouts-form">
+        {% for employee_account_form in employee_account_formset %}
+            <div class="row employee-account-form">
+                {{ employee_account_form.as_table }}
+                {% if employee_account_form.instance.pk %}{{ goal_form.DELETE }}{% endif %}
+            </div>
+        {% endfor %}
+    </div>
     {{ employee_account_formset.management_form }}
-    {% for form in employee_account_formset %}
-        <div class="row">
-            {{ form.as_table }}
-        </div>
-    {% endfor %}
-    <input type="button" value="Add Employee Account">
     <input type="submit" value="Save"></input>
-    
+
 </form>
     
     

@@ -396,36 +396,36 @@ class EmployeeForm(forms.ModelForm):
         exclude = ('accounts',)
 
 
-# class EmployeeAccountForm(forms.ModelForm):
+class EmployeeAccountForm(forms.ModelForm):
 
-#     class Meta:
-#         model = EmployeeAccount
-#         exclude = ('employee',)
-#         # fields = '__all__'
+    class Meta:
+        model = EmployeeAccount
+        exclude = ('employee',)
+        # fields = '__all__'
 
-#     def clean(self):
-#         cleaned_data = super(EmployeeAccountForm, self).clean()
-#         other_account_type = cleaned_data['other_account_type']
-#         is_salary_account = cleaned_data['is_salary_account']
-#         account_meta_type = cleaned_data['account_meta_type']
+    # def clean(self):
+    #     cleaned_data = super(EmployeeAccountForm, self).clean()
+    #     other_account_type = cleaned_data['other_account_type']
+    #     is_salary_account = cleaned_data['is_salary_account']
+    #     account_meta_type = cleaned_data['account_meta_type']
 
-#         if account_meta_type == 'BANK_ACCOUNT':
-#             if other_account_type:
-#                 self.add_error(
-#                     'other_account_type',
-#                     _('Employee Bank account cant have account type %s. Should be None type' % other_account_type)
-#                 )
-#         else:
-#             if not other_account_type:
-#                 self.add_error(
-#                     'other_account_type',
-#                     _('Employee Other account on account meta type need other account type')
-#                 )
-#             if is_salary_account:
-#                 self.add_error(
-#                     'is_salary_account',
-#                     _('Only Employee bank account be a salary account')
-#                 )
+    #     if account_meta_type == 'BANK_ACCOUNT':
+    #         if other_account_type:
+    #             self.add_error(
+    #                 'other_account_type',
+    #                 _('Employee Bank account cant have account type %s. Should be None type' % other_account_type)
+    #             )
+    #     else:
+    #         if not other_account_type:
+    #             self.add_error(
+    #                 'other_account_type',
+    #                 _('Employee Other account on account meta type need other account type')
+    #             )
+    #         if is_salary_account:
+    #             self.add_error(
+    #                 'is_salary_account',
+    #                 _('Only Employee bank account be a salary account')
+    #             )
 
 
 PaymentRowFormSet = forms.formset_factory(PaymentRowForm)

@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, EmployeeAccountForm
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
@@ -1071,12 +1071,6 @@ def transact_entry(request, pk=None):
                 ('cr', salary_giving_account, salary),
             ]
         )
-        # SET TRANSACTION HERE FOR SALARY: CR IN EMP ACC
-        # set_transactions(
-        #     entry,
-        #     p_e.entry_datetime,
-        #     *['cr', salary_giving_account, salary]
-        # )
 
         for allowance_details_item in entry.allowance_details.all():
             a_account = allowance_details_item.allowance.allowances.all().filter(employee_grade=employee.designation.grade)[0].account.account
@@ -1091,16 +1085,6 @@ def transact_entry(request, pk=None):
                     ('cr', salary_giving_account, a_amount),
                 ]
             )
-            # set_transactions(
-            #     entry,
-            #     p_e.entry_datetime,
-            #     *['dr', a_account, a_amount]
-            # )
-            # set_transactions(
-            #     entry,
-            #     p_e.entry_datetime,
-            #     *['cr', salary_giving_account, a_amount]
-            # )
 
         for incentive_details_item in entry.incentive_details.all():
             i_account = incentive_details_item.incentive.incentives.all().filter(employee_grade=employee.designation.grade)[0].account.account
@@ -1115,16 +1099,6 @@ def transact_entry(request, pk=None):
                     ('cr', employee_salary_account, i_amount),
                 ]
             )
-            # set_transactions(
-            #     entry,
-            #     p_e.entry_datetime,
-            #     *['dr', i_account, i_amount]
-            # )
-            # set_transactions(
-            #     entry,
-            #     p_e.entry_datetime,
-            #     *['cr', salary_giving_account, i_amount]
-            # )
 
         for deduction_details_item in entry.deduction_details.all():
             deduction_obj = deduction_details_item.deduction
@@ -1149,17 +1123,7 @@ def transact_entry(request, pk=None):
                     ('dr', d_account, d_amount),
                 ]
             )
-            # Missing in deduction acccount
-            # set_transactions(
-            #     entry,
-            #     p_e.entry_datetime,
-            #     *['dr', d_dr_account, i_amount]
-            # )
-            # set_transactions(
-            #     entry,
-            #     p_e.entry_datetime,
-            #     *['dr', d_account, i_amount]
-            # )
+
     p_e.transacted = True
     p_e.save()
     if request.is_ajax():
@@ -1189,12 +1153,6 @@ def employee(request, pk=None):
         employee_form = EmployeeForm(instance=employee)
         employee_account_formset = EmployeeAccountFormSet(instance=employee)
 
-
-    # if request.POST:
-    #     pass
-    # elif id:
-    #     employees = Employee.objects.get(id=id)
-
     return render(
         request,
         'employee_cu.html',
@@ -1202,5 +1160,17 @@ def employee(request, pk=None):
             'employee_form': employee_form,
             'employee_account_formset': employee_account_formset,
             'ko_data': ko_data,
-            'obj_id': obj_id
+            'obj_id': obj_id,
         })
+
+
+def incentive(request, pk=None):
+    pass
+
+
+def allowance(request, pk=None):
+    pass
+
+
+def deduction(request, pk=None):
+    pass
