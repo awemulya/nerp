@@ -1,10 +1,10 @@
 $(document).ready(function () {
-    vm = new HandoverVM(ko_data);
+    vm = new EntryReportVM(ko_data);
     ko.applyBindings(vm);
     $('.change-on-ready').trigger('change');
 });
 
-function HandoverVM(data) {
+function EntryReportVM(data) {
 
     var self = this;
 
@@ -33,19 +33,16 @@ function HandoverVM(data) {
         row.account_no(selected_item.account_no);
     }
 
-    self.table_view = new TableViewModel({rows: data.rows}, HandoverRow);
+
+    self.table_view = new TableViewModel({rows: data.rows}, EntryReportRow);
 
     for (var k in data)
         self[k] = ko.observable(data[k]);
 
     self.save = function (item, event) {
-        if (!self.voucher_no()) {
-            alert.error('Voucher No. is required!');
-            return false;
-        }
         $.ajax({
             type: "POST",
-            url: '/inventory/save/handover/',
+            url: '/inventory/save/entry_report/',
             data: ko.toJSON(self),
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {
@@ -56,6 +53,7 @@ function HandoverVM(data) {
                 }
                 else {
                     alert.success('Saved!');
+                    self.table_view.deleted_rows([]);
                     if (msg.id)
                         self.id(msg.id);
                     $("#tbody > tr").each(function (i) {
@@ -74,21 +72,42 @@ function HandoverVM(data) {
     }
 }
 
-function HandoverRow(row) {
+function EntryReportRow(row) {
 
     var self = this;
     self.account_no = ko.observable();
     self.inventory_classification_reference_no = ko.observable();
     self.item_id = ko.observable();
+    self.vattable = ko.observable(true);
     self.specification = ko.observable();
     self.quantity = ko.observable().extend({ required: true });
     self.unit = ko.observable();
-    self.total_amount = ko.observable();
-    self.received_date = ko.observable();
-    self.condition = ko.observable();
+    self.rate = ko.observable();
+    self.remarks = ko.observable();
+    self.other_expenses = ko.observable(0);
+
+
+
+    self.amount = function () {
+        return round2(parseFloat(self.rate()) + parseFloat(self.vat_amount()));
+    }
+
+    self.total = function () {
+        return round2(self.amount() * parseFloat(self.quantity()) + empty_to_zero(self.other_expenses()));
+    }
 
     for (var k in row) {
         if (row[k] != null)
             self[k] = ko.observable(row[k]);
+    }
+
+    self.vat_amount = function () {
+        var vat_rate;
+        if (self.vattable()){
+            vat_rate = 0.13;
+        }else{
+            vat_rate = 0;
+        }
+        return round2(self.rate() * vat_rate);
     }
 }

@@ -21,6 +21,7 @@ function InventoryAccountVM(data) {
                 }
                 else {
                     alert.success('Saved!');
+                    self.table_view.deleted_rows([]);
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {

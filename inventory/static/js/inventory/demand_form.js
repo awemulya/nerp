@@ -137,6 +137,7 @@ function DemandViewModel(data) {
                 }
                 else {
                     alert.success('Saved!');
+                    self.table_view.deleted_rows([]);
                     self.status('Requested');
                     if (msg.id)
                         self.id(msg.id);

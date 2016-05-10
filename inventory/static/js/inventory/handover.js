@@ -1,10 +1,10 @@
 $(document).ready(function () {
-    vm = new PurchaseOrderViewModel(ko_data);
+    vm = new HandoverVM(ko_data);
     ko.applyBindings(vm);
     $('.change-on-ready').trigger('change');
 });
 
-function PurchaseOrderViewModel(data) {
+function HandoverVM(data) {
 
     var self = this;
 
@@ -16,19 +16,6 @@ function PurchaseOrderViewModel(data) {
             self.items = ko.observableArray(data);
         }
     });
-
-    $.ajax({
-        url: '/parties.json',
-        dataType: 'json',
-        async: false,
-        success: function (data) {
-            self.parties = ko.observableArray(data);
-        }
-    });
-
-    self.party_name = ko.observable();
-    self.party_address = ko.observable();
-    self.party_pan_no = ko.observable();
 
     self.msg = ko.observable('');
     self.status = ko.observable('standby');
@@ -42,62 +29,23 @@ function PurchaseOrderViewModel(data) {
             row.specification(selected_item.description);
         if (!row.unit())
             row.unit(selected_item.unit);
+        row.inventory_classification_reference_no(selected_item.property_classification_reference_number);
+        row.account_no(selected_item.account_no);
     }
 
-    self.sub_total = function () {
-        var sum = 0;
-        self.table_view.rows().forEach(function (i) {
-            sum += i.total_amount();
-        });
-        return round2(sum);
-    }
-
-    self.vat_amount = function () {
-        var sum = 0;
-        self.table_view.rows().forEach(function (i) {
-            if (i.vattable())
-                sum += 0.13 * i.total_amount();
-        });
-        return round2(sum);
-    }
-
-    self.grand_total = function () {
-        return self.sub_total() + self.vat_amount();
-    }
-
-    self.party_changed = function (obj) {
-        if (typeof(obj.party()) == 'undefined')
-            return false;
-        var selected_obj = $.grep(self.parties(), function (i) {
-            return i.id == obj.party();
-        })[0];
-        if (!selected_obj) return;
-        obj.party_address(selected_obj.address);
-        obj.party_name(selected_obj.name);
-        obj.party_pan_no(selected_obj.pan_no);
-    }
-
-    self.table_view = new TableViewModel({rows: data.rows}, PurchaseRow);
+    self.table_view = new TableViewModel({rows: data.rows}, HandoverRow);
 
     for (var k in data)
         self[k] = ko.observable(data[k]);
 
-    self.id.subscribe(function (id) {
-        history.pushState(id, id, window.location.href + id + '/');
-    });
-
     self.save = function (item, event) {
-        if (!self.order_no()) {
-            alert.error('Order No. is required!');
-            return false;
-        }
-        if (!self.party()) {
-            alert.error('Party is required!');
+        if (!self.voucher_no()) {
+            alert.error('Voucher No. is required!');
             return false;
         }
         $.ajax({
             type: "POST",
-            url: '/inventory/save/purchase_order/',
+            url: '/inventory/save/handover/',
             data: ko.toJSON(self),
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {
@@ -108,6 +56,7 @@ function PurchaseOrderViewModel(data) {
                 }
                 else {
                     alert.success('Saved!');
+                    self.table_view.deleted_rows([]);
                     if (msg.id)
                         self.id(msg.id);
                     $("#tbody > tr").each(function (i) {
@@ -126,25 +75,21 @@ function PurchaseOrderViewModel(data) {
     }
 }
 
-function PurchaseRow(row) {
+function HandoverRow(row) {
 
     var self = this;
-
-    self.budget_title_no = ko.observable();
+    self.account_no = ko.observable();
+    self.inventory_classification_reference_no = ko.observable();
     self.item_id = ko.observable();
     self.specification = ko.observable();
-    self.quantity = ko.observable().extend({required: true});
+    self.quantity = ko.observable().extend({ required: true });
     self.unit = ko.observable();
-    self.rate = ko.observable();
-    self.remarks = ko.observable();
-    self.vattable = ko.observable(true);
-
-    self.total_amount = function () {
-        return round2(self.rate() * self.quantity());
-    }
+    self.total_amount = ko.observable();
+    self.received_date = ko.observable();
+    self.condition = ko.observable();
 
     for (var k in row) {
-        if (ko.isObservable(self[k]))
-            self[k](row[k]);
+        if (row[k] != null)
+            self[k] = ko.observable(row[k]);
     }
 }
