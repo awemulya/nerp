@@ -8,8 +8,8 @@ from django.views.generic import ListView
 from app.utils.helpers import save_model, invalid
 from core.models import FiscalYear
 from inventory.models import delete_rows
-from models import ImprestTransaction
-from serializers import ImprestTransactionSerializer
+from models import ImprestTransaction, ExpenseRow
+from serializers import ImprestTransactionSerializer, ExpenseRowSerializer
 
 
 def imprest_ledger(request):
@@ -82,3 +82,28 @@ def save_imprest_ledger(request):
             dct['error_message'] = 'Error in form data!'
     delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
+
+
+class Application(ListView):
+    model = ExpenseRow
+    template_name = 'application.html'
+    fy = None
+
+    def get_fy(self):
+        if not self.fy:
+            self.fy = FiscalYear.get()
+        return self.fy
+
+    def get_context_data(self, **kwargs):
+        context_data = super(Application, self).get_context_data(**kwargs)
+        context_data['fy'] = self.get_fy()
+        context_data['data'] = {
+            'fy_id': self.get_fy().id,
+            'rows': ExpenseRowSerializer(context_data['object_list'], many=True).data,
+        }
+        return context_data
+
+    def get_queryset(self):
+        qs = super(Application, self).get_queryset()
+        qs = qs.filter(fy=self.get_fy())
+        return qs

@@ -1,10 +1,10 @@
 {% extends '_project_base.html' %}
 {% load i18n static filters %}
 
-{% block title %}{% trans 'Imprest Ledger' %} -  {{ fy }}{% endblock %}
+{% block title %}{% trans 'Applications' %} -  {{ fy }}{% endblock %}
 
 {% block head_end %}
-    <script src="{% static 'js/project/imprest_ledger.js' %}"></script>
+    <script src="{% static 'js/project/application.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};
     </script>
@@ -13,7 +13,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url "imprest_ledger" %}">{% trans 'Imprest Ledger' %}</a></li>
+    <li><a href="{% url "application" %}">{% trans 'Applications' %}</a></li>
 {% endblock %}
 
 {% block content %}
