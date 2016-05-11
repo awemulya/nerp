@@ -51,8 +51,15 @@
                     <!-- ko foreach: rows -->
                     <tr>
                         <td></td>
-                        <td data-bind="text: 1"></td>
-                        <td></td>
+
+                        
+                        <td data-bind="text: get_code()"></td>
+                        <td>
+                        <select data-bind="selectize: $root.expenses, value: expense_id, object: expense"
+                                {#                                data-url="{% url 'create_inventory_item' %}"#}
+                                ></select>
+                        </td>
+
                         <td></td>
                         <td></td>
                         <td data-bind="editableText: amount, localize: 2"></td>

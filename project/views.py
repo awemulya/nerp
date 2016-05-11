@@ -8,8 +8,8 @@ from django.views.generic import ListView
 from app.utils.helpers import save_model, invalid
 from core.models import FiscalYear
 from inventory.models import delete_rows
-from models import ImprestTransaction, ExpenseRow, ExpenseCategory
-from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer
+from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense
+from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer
 
 
 def imprest_ledger(request):
@@ -98,10 +98,12 @@ class Application(ListView):
         context_data = super(Application, self).get_context_data(**kwargs)
         context_data['fy'] = self.get_fy()
         categories = ExpenseCategory.objects.all()
+        expenses = Expense.objects.all()
         context_data['data'] = {
             'fy_id': self.get_fy().id,
             'rows': ExpenseRowSerializer(context_data['object_list'], many=True).data,
             'categories': ExpenseCategorySerializer(categories, many=True).data,
+            'expenses': ExpenseSerializer(expenses, many=True).data,
         }
         return context_data
 

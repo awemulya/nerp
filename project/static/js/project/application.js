@@ -3,12 +3,28 @@ $(document).ready(function () {
     ko.applyBindings(vm);
 });
 
-function RowVM(data, category_vm){
+function RowVM(data, category_vm) {
     var self = this;
+
     self.category_vm = category_vm;
     self.category_id = data.category;
     self.id = ko.observable(data.id);
     self.amount = ko.observable(data.amount);
+    self.expense_id = ko.observable(data.expense);
+    self.expense = ko.observable();
+
+    self.get_code = function () {
+        if (self.expense()) {
+            return self.expense().code();
+        }
+    };
+}
+
+function ExpenseVM(data) {
+    var self = this;
+    for (var k in data) {
+        self[k] = ko.observable(data[k]);
+    }
 }
 
 function CategoryVM(category_instance) {
@@ -28,8 +44,8 @@ function CategoryVM(category_instance) {
     }
 
     self.rows = ko.observableArray();
-    
-    self.add_row = function (data){
+
+    self.add_row = function (data) {
         self.rows.push(new RowVM(data, self));
     }
 }
@@ -44,11 +60,17 @@ function ApplicationVM(data) {
     self.fy_id = ko.observable(data.fy_id);
 
     self.categories = ko.observableArray();
-    
+
+    self.expenses = ko.observableArray();
+
     ko.utils.arrayForEach(data.categories, function (category) {
         self.categories.push(new CategoryVM(category));
     });
-    
+
+    ko.utils.arrayForEach(data.expenses, function (obj) {
+        self.expenses.push(new ExpenseVM(obj));
+    });
+
     self.get_category_by_id = function (id) {
         return ko.utils.arrayFirst(self.categories(), function (obj) {
             return obj.instance.id == id;
