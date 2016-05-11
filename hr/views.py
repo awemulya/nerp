@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, EmployeeAccountForm
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
@@ -1165,7 +1165,35 @@ def employee(request, pk=None):
 
 
 def incentive(request, pk=None):
-    pass
+    ko_data = {}
+
+    if pk:
+        obj_id = pk
+        incentive_name = IncentiveName.objects.get(id=pk)
+    else:
+        obj_id = None
+        incentive_name = IncentiveName()
+
+    if request.method == "POST":
+        incentive_name_form = IncentiveNameForm(request.POST, instance=incentive_name)
+        incentive_formset = IncentiveNameFormSet(request.POST, instance=incentive_name)
+        if incentive_name_form.is_valid() and incentive_formset.is_valid():
+            incentive_name_form.save()
+            incentive_formset.save()
+            return redirect(reverse('payroll_entry'))
+    else:
+        incentive_name_form = IncentiveNameForm(instance=incentive_name)
+        incentive_formset = IncentiveNameFormSet(instance=incentive_name)
+
+    return render(
+        request,
+        'incentive_cu.html',
+        {
+            'incentive_name_form': incentive_name_form,
+            'incentive_formset': incentive_formset,
+            'ko_data': ko_data,
+            'obj_id': obj_id,
+        })
 
 
 def allowance(request, pk=None):
