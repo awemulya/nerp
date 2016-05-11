@@ -19,9 +19,8 @@ function RowVM(data, category_vm) {
         }
     };
     
-    self.render_option = function(){
-        console.log('hey');
-        return 'abcd';
+    self.render_item = function(){
+        return '<div>'+self.category_vm.get_expense_by_id(self.expense_id()).original_name+'<div>';
     }
 }
 
@@ -34,10 +33,6 @@ function ExpenseVM(data) {
     
     self.name(self.code() + ' - ' + self.name());
     
-    self.render_option = function(){
-        console.log('hey');
-        return self.original_name;
-    }
 }
 
 function CategoryVM(category_instance, expenses) {
@@ -68,6 +63,12 @@ function CategoryVM(category_instance, expenses) {
 
         });
     });
+    
+    self.get_expense_by_id = function (id) {
+        return ko.utils.arrayFirst(self.expenses(), function (obj) {
+            return obj.id() == id;
+        })
+    };
 }
 
 function ApplicationVM(data) {

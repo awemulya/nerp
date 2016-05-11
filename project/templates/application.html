@@ -58,7 +58,7 @@
 
                         <td data-bind="text: get_code()"></td>
                         <td>
-                            <select data-bind="selectize: $parent.expenses, value: expense_id, object: expense, selectize_options:{render: {'option': render_option, 'item':render_option}}"
+                            <select data-bind="selectize: $parent.expenses, value: expense_id, object: expense, selectize_options:{render: {'item':render_item}}"
                                     {#                                data-url="{% url 'create_inventory_item' %}"#}
                                     ></select>
                         </td>
