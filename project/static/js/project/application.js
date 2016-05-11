@@ -80,6 +80,14 @@ function CategoryVM(category_instance, expenses) {
     self.remove_row = function (row) {
         self.rows.remove(row);
     }
+
+    self.sub_total = ko.computed(function () {
+        var subtotal = 0;
+        ko.utils.arrayForEach(self.rows(), function (row) {
+            subtotal += empty_to_zero(parseFloat(row.amount()));
+        });
+        return subtotal;
+    });
 }
 
 function ApplicationVM(data) {
