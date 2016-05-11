@@ -122,6 +122,14 @@ function ApplicationVM(data) {
         self.get_category_by_id(row.category).add_row(row);
     });
 
+    self.grand_total = ko.computed(function () {
+        var total = 0;
+        ko.utils.arrayForEach(self.categories(), function (category) {
+            total += empty_to_zero(parseFloat(category.sub_total()))
+        });
+        return total;
+    });
+
 
     self.sort = function () {
         // Sort ascending by date
