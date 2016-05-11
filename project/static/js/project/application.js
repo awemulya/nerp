@@ -19,22 +19,14 @@ function RowVM(data, category_vm) {
         }
     };
 
-    self.render_item = ko.computed(function () {
-        if (self.expense_id())
-            return '<div>' + self.category_vm.get_expense_by_id(self.expense_id()).original_name + '<div>';
-        else {
-            return '<div></div>'
-        }
-    });
-    
-    self.render_option = function (obj) {
-        //if (self.expense_id())
-        //    return '<div>' + self.category_vm.get_expense_by_id(self.expense_id()).original_name + '<div>';
-        //else {
-        //    return '<div></div>'
-        //}
+    self.render_item = function (obj) {
         var expense = self.category_vm.get_expense_by_id(obj.id);
-        return '<div>'+expense.code() + ' - ' + expense.name()+'</div>';
+        return '<div>' + expense.original_name + '</div>';
+    };
+
+    self.render_option = function (obj) {
+        var expense = self.category_vm.get_expense_by_id(obj.id);
+        return '<div>' + expense.code() + ' - ' + expense.name() + '</div>';
     };
 }
 
@@ -45,7 +37,7 @@ function ExpenseVM(data) {
     }
     self.original_name = self.name() + '';
 
-    //self.name(self.code() + ' - ' + self.name());
+    self.name(self.code() + ' - ' + self.name());
 
 }
 
@@ -91,7 +83,6 @@ function CategoryVM(category_instance, expenses) {
 
 function ApplicationVM(data) {
     var self = this;
-    console.log(data);
 
     self.status = ko.observable('Loading...');
 
