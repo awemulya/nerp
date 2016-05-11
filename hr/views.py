@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet
-from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry
+from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry, Incentive, Allowance
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -1164,6 +1164,26 @@ def employee(request, pk=None):
         })
 
 
+def employee_list(request):
+    objects = Employee.objects.all()
+    return render(
+        request,
+        'incentive_list.html',
+        {
+            'objects': objects,
+        }
+    )
+
+
+def delete_employee(request, pk=None):
+    obj = Employee.objects.get(id=pk)
+    employee_accounts = EmployeeAccount.objects.filter(employee=obj)
+    obj.delete()
+    for emp_acc in employee_accounts:
+        emp_acc.delete()
+    return redirect(reverse('list_employee'))
+
+
 def incentive(request, pk=None):
     ko_data = {}
 
@@ -1196,6 +1216,26 @@ def incentive(request, pk=None):
         })
 
 
+def list_incentive(request):
+    objects = IncentiveName.objects.all()
+    return render(
+        request,
+        'incentive_list.html',
+        {
+            'objects': objects,
+        }
+    )
+
+
+def delete_incentive(request, pk=None):
+    obj = IncentiveName.objects.get(id=pk)
+    inc_details = Incentive.objects.filter(name=obj)
+    obj.delete()
+    for inc in inc_details():
+        inc.delete()
+    return redirect(reverse('list_incentive'))
+
+
 def allowance(request, pk=None):
     ko_data = {}
 
@@ -1226,6 +1266,26 @@ def allowance(request, pk=None):
             'ko_data': ko_data,
             'obj_id': obj_id,
         })
+
+
+def allowance_list(request):
+    objects = AllowanceName.objects.all()
+    return render(
+        request,
+        'incentive_list.html',
+        {
+            'objects': objects,
+        }
+    )
+
+
+def allowance_delete(request, pk=None):
+    obj = AllowanceName.objects.get(id=pk)
+    alw_details = Allowance.objects.filter(name=obj)
+    obj.delete()
+    for alw in alw_details():
+        alw.delete()
+    return redirect(reverse('list_allowance'))
 
 
 def deduction(request):

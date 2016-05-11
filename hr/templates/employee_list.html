@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% load filters %}
+{% load i18n %}
+
+{% block head_end %}
+
+{% endblock %}
+
+{% block alert %}
+
+    <!-- <div id="alert_placeholder">
+        <ul data-bind="foreach: errors.items" class="alert-error">
+            <li>
+                Budget for "<span data-bind="text: budget.name()"></span>" from source "<span data-bind="text: source"></span>" exceeds
+            </li>
+        </ul>
+    </div> -->
+{% endblock %}
+
+{% block  content %}
+    <table class="table" >
+        <tr>
+            <th>Employee</th>
+            <th>Employee Designation</th>
+            <th>Employee Grade</th>
+            <th>Working Branch</th>
+            <th>Employee Sex</th>
+            <th>Marital Status</th>
+            <th>Is Permanent</th>
+            <th>Controls</th>
+        </tr>
+        {% for obj in objects %}
+            <tr>
+                <td><a href={% url 'edit_employee' obj.id %}>{{ obj }}</a></td>
+                <td>obj.designation</td>
+                <td>obj.designation.grade</td>
+                <td>obj.working_branch.name</td>
+                <td>obj.sex</td>
+                <td>obj.marital_status</td>
+                <td>obj.is_permanent</td>
+                <td><a href={% url 'delete_employee' obj.id %}><button type="button">Delete</button></a></td>
+
+            </tr>
+        {% endfor %}
+    </table>
+
+    
+    
+{% endblock %}
