@@ -97,8 +97,8 @@ class Application(ListView):
     def get_context_data(self, **kwargs):
         context_data = super(Application, self).get_context_data(**kwargs)
         context_data['fy'] = self.get_fy()
-        categories = ExpenseCategory.objects.all()
-        expenses = Expense.objects.all()
+        categories = ExpenseCategory.objects.filter(enabled=True)
+        expenses = Expense.objects.filter(enabled=True)
         context_data['data'] = {
             'fy_id': self.get_fy().id,
             'rows': ExpenseRowSerializer(context_data['object_list'], many=True).data,

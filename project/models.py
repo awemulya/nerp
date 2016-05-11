@@ -29,6 +29,7 @@ class ImprestTransaction(models.Model):
 class ExpenseCategory(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, blank=True, null=True)
+    enabled = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
@@ -46,6 +47,7 @@ class Expense(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, blank=True, null=True)
     category = models.ManyToManyField(ExpenseCategory, blank=True)
+    enabled = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
