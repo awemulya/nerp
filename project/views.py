@@ -68,11 +68,6 @@ def save_imprest_ledger(request):
             if not created:
                 submodel = save_model(submodel, values)
             dct['rows'][index] = submodel.id
-
-            # if submodel.handover.type == 'Outgoing':
-            #     set_transactions(submodel, submodel.handover.date,
-            #                      ['cr', submodel.item.account, submodel.quantity]
-            #                      , )
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
@@ -116,34 +111,24 @@ class Application(ListView):
 @login_required
 def save_application(request):
     params = json.loads(request.body)
-    dct = {'rows': {}}
+    dct = {'categories': {}}
     model = ExpenseRow
     fy_id = params.get('fy_id')
-    import ipdb
-    ipdb.set_trace()
     try:
-        for index, row in enumerate(params.get('rows')):
-            # if invalid(row, ['date']):
-            #     continue
-            values = {'date': row.get('date', ''),
-                      'name': row.get('name'),
-                      'type': row.get('type'),
-                      'date_of_payment': row.get('date_of_payment', ''),
-                      'wa_no': row.get('wa_no'),
-                      'amount_nrs': row.get('amount_nrs', None),
-                      'amount_usd': row.get('amount_usd', None),
-                      'exchange_rate': row.get('exchange_rate', None),
-                      'fy_id': fy_id
-                      }
-            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
-            if not created:
-                submodel = save_model(submodel, values)
-            dct['rows'][index] = submodel.id
-
-            # if submodel.handover.type == 'Outgoing':
-            #     set_transactions(submodel, submodel.handover.date,
-            #                      ['cr', submodel.item.account, submodel.quantity]
-            #                      , )
+        for cat_index, category in enumerate(params.get('categories')):
+            dct['categories'][cat_index] = {'rows': {}}
+            for index, row in enumerate(category.get('rows')):
+                if invalid(row, ['category_id', 'expense_id', 'amount']):
+                    continue
+                values = {'category_id': row.get('category_id'),
+                          'expense_id': row.get('expense_id'),
+                          'amount': row.get('amount'),
+                          'fy_id': fy_id
+                          }
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                dct['categories'][cat_index]['rows'][index] = submodel.id
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
@@ -151,5 +136,5 @@ def save_application(request):
             dct['error_message'] = str(e)
         else:
             dct['error_message'] = 'Error in form data!'
-    delete_rows(params.get('table_view').get('deleted_rows'), model)
+    # delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)

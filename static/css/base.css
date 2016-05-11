@@ -69,7 +69,7 @@ td .select2-container {
     padding-bottom: 1em;
 }
 
-.invalid-row td {
+.invalid-row td:first-child {
     background: #FBE3E4 !important;
 }
 

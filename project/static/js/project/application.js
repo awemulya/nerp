@@ -6,12 +6,12 @@ $(document).ready(function () {
 function RowVM(data, category_vm) {
     var self = this;
 
-    self.category_vm = category_vm;
     self.category_id = data.category;
     self.id = ko.observable(data.id);
     self.amount = ko.observable(data.amount);
     self.expense_id = ko.observable(data.expense);
     self.expense = ko.observable();
+    self.klass = ko.observable();
 
     self.get_code = function () {
         if (self.expense()) {
@@ -20,12 +20,12 @@ function RowVM(data, category_vm) {
     };
 
     self.render_item = function (obj) {
-        var expense = self.category_vm.get_expense_by_id(obj.id);
+        var expense = category_vm.get_expense_by_id(obj.id);
         return '<div>' + expense.original_name + '</div>';
     };
 
     self.render_option = function (obj) {
-        var expense = self.category_vm.get_expense_by_id(obj.id);
+        var expense = category_vm.get_expense_by_id(obj.id);
         return '<div>' + expense.code() + ' - ' + expense.name() + '</div>';
     };
 }
@@ -60,6 +60,7 @@ function CategoryVM(category_instance, expenses) {
     self.rows = ko.observableArray();
 
     self.add_row = function (data) {
+        data.category = self.instance.id;
         self.rows.push(new RowVM(data, self));
     }
 
@@ -130,8 +131,10 @@ function ApplicationVM(data) {
 
     //self.sort();
 
+    self.status('Ready');
+
     self.save = function () {
-        self.sort();
+        //self.sort();
         $.ajax({
             type: "POST",
             url: '/project/application/save/',
@@ -142,38 +145,26 @@ function ApplicationVM(data) {
                 }
                 else {
                     alert.success('Saved!');
-                    self.status('Requested');
-                    if (msg.id)
-                        self.id(msg.id);
-                    $("tbody > tr:not(.total)").each(function (i, el) {
-                        $(el).addClass('invalid-row');
+                    self.status('Saved');
+                    ko.utils.arrayForEach(self.categories(), function (category) {
+                        ko.utils.arrayForEach(category.rows(), function (row) {
+                            row.klass('invalid-row');
+                        });
                     });
-                    for (var i in msg.rows) {
-                        self.table_view.rows()[i].id = msg.rows[i];
-                        $($("tbody > tr")[i]).removeClass('invalid-row');
+                    for (var i in msg.categories) {
+                        //debugger;
+                        for (var j in msg.categories[i].rows) {
+                            self.categories()[i].rows()[j].id(msg.categories[i].rows[j]);
+                            self.categories()[i].rows()[j].klass('');
+                        }
                     }
-                    self.table_view.deleted_rows([]);
+                    //self.table_view.deleted_rows([]);
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
             }
         });
-    }
-
-}
-
-function ExpenseRow(row, application_vm) {
-    var self = this;
-
-    self.id = ko.observable();
-
-    self.expense_id = ko.observable();
-    self.expense = ko.observable();
-    self.amount = ko.observable();
-
-    for (var k in row) {
-        self[k] = ko.observable(row[k]);
     }
 
 }
