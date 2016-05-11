@@ -35,13 +35,14 @@ ko.bindingHandlers.selectize = {
         ko.bindingHandlers.options.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
 
         var options = {
+            plugins: ['remove_button'],
             valueField: allBindingsAccessor.get('optionsValue'),
             labelField: allBindingsAccessor.get('optionsText'),
             searchField: allBindingsAccessor.get('optionsText')
         }
 
-        if (allBindingsAccessor.has('options')) {
-            var passed_options = allBindingsAccessor.get('options')
+        if (allBindingsAccessor.has('selectize_options')) {
+            var passed_options = allBindingsAccessor.get('selectize_options')
             for (var attr_name in passed_options) {
                 options[attr_name] = passed_options[attr_name];
             }
@@ -117,6 +118,23 @@ ko.bindingHandlers.selectize = {
         $(document).on('reload-selectize', function () {
                 $select.destroy();
                 apply_selectize();
+        });
+        
+        // Selectize required field form submit focus fix
+        // https://github.com/brianreavis/selectize.js/issues/733#issuecomment-145871854
+
+        $select.$input.on('invalid', function (event) {
+            event.preventDefault();
+            $select.focus(true);
+            $select.$wrapper.addClass('invalid');
+        });
+
+        $select.$input.on('change', function (event) {
+            if (event.target.validity && event.target.validity.valid) {
+                $select.$wrapper.removeClass('invalid');
+            }
+            // Force re-rendering of options by clearing render-cache
+            $select.renderCache = {}
         });
         
 
