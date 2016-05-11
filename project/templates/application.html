@@ -47,7 +47,7 @@
                     <tr class="category">
                         <td data-bind="text: String.fromCharCode($index()+65)"></td>
                         <td colspan="7">
-                            <a data-bind="text: full_name()" target="_blank"></a>
+                            <a data-bind="text: full_name(), attr:{'href': instance.url}" target="_blank"></a>
                             <button class="btn btn-default btn-raised btn-sm" data-bind="click: add_row">{% trans 'Add Expense' %}</button>
                         </td>
                     </tr>

@@ -39,6 +39,10 @@ class ExpenseCategory(models.Model):
             st = st + ' - ' + self.code
         return st
 
+    def get_absolute_url(self):
+        #     TODO after CRUD
+        return '# TODO'
+
     class Meta(object):
         ordering = ('order',)
         verbose_name_plural = 'Expense Categories'

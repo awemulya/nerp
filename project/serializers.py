@@ -16,8 +16,11 @@ class ExpenseRowSerializer(serializers.ModelSerializer):
 
 
 class ExpenseCategorySerializer(serializers.ModelSerializer):
+    url = serializers.ReadOnlyField(source='get_absolute_url')
+
     class Meta:
         model = ExpenseCategory
+
 
 class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:

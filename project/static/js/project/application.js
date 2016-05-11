@@ -50,7 +50,7 @@ function CategoryVM(category_instance, expenses) {
         return st;
 
     }
-
+    
     self.rows = ko.observableArray();
 
     self.add_row = function (data) {
