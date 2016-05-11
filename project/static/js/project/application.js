@@ -69,6 +69,10 @@ function CategoryVM(category_instance, expenses) {
             return obj.id() == id;
         })
     };
+    
+    self.remove_row = function(row){
+        self.rows.remove(row);
+    }
 }
 
 function ApplicationVM(data) {
