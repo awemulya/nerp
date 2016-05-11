@@ -30,6 +30,7 @@ class ExpenseCategory(models.Model):
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=10, blank=True, null=True)
     enabled = models.BooleanField(default=True)
+    gon_funded = models.BooleanField(default=False, verbose_name='GON Funded?')
     order = models.PositiveIntegerField(default=0)
 
     def __str__(self):

@@ -45,7 +45,7 @@ function CategoryVM(category_instance, expenses) {
             st += ' - ' + self.instance.code;
         }
         if (self.instance.gon_funded) {
-            st += '(100% GON)';
+            st += ' (100% GON)';
         }
         return st;
 
@@ -77,6 +77,7 @@ function CategoryVM(category_instance, expenses) {
 
 function ApplicationVM(data) {
     var self = this;
+    console.log(data);
 
     self.status = ko.observable('Loading...');
 
