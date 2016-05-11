@@ -115,15 +115,16 @@ ko.bindingHandlers.selectize = {
         apply_selectize();
 
         $(document).on('reload-selectize', function () {
-            $select.destroy();
-            apply_selectize();
+                $select.destroy();
+                apply_selectize();
         });
+        
 
 
     },
     update: function (element, valueAccessor, allBindingsAccessor) {
         if (allBindingsAccessor.has('object')) {
-            
+
             var optionsValue = allBindingsAccessor.get('optionsValue') || 'id';
             var value_accessor = valueAccessor();
             var selected_obj = $.grep(value_accessor(), function (i) {
@@ -137,7 +138,7 @@ ko.bindingHandlers.selectize = {
             })[0];
 
             if (selected_obj) {
-                
+
                 allBindingsAccessor.get('object')(selected_obj);
             }
         }

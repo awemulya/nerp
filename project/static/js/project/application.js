@@ -18,6 +18,11 @@ function RowVM(data, category_vm) {
             return self.expense().code();
         }
     };
+    
+    self.render_option = function(){
+        console.log('hey');
+        return 'abcd';
+    }
 }
 
 function ExpenseVM(data) {
@@ -25,9 +30,17 @@ function ExpenseVM(data) {
     for (var k in data) {
         self[k] = ko.observable(data[k]);
     }
+    self.original_name = self.name()+'';
+    
+    self.name(self.code() + ' - ' + self.name());
+    
+    self.render_option = function(){
+        console.log('hey');
+        return self.original_name;
+    }
 }
 
-function CategoryVM(category_instance) {
+function CategoryVM(category_instance, expenses) {
     var self = this;
     self.instance = category_instance;
 
@@ -48,6 +61,13 @@ function CategoryVM(category_instance) {
     self.add_row = function (data) {
         self.rows.push(new RowVM(data, self));
     }
+
+    self.expenses = ko.computed(function () {
+        return ko.utils.arrayFilter(expenses, function (expense) {
+            return expense.category().indexOf(self.instance.id) != -1;
+
+        });
+    });
 }
 
 function ApplicationVM(data) {
@@ -63,13 +83,14 @@ function ApplicationVM(data) {
 
     self.expenses = ko.observableArray();
 
-    ko.utils.arrayForEach(data.categories, function (category) {
-        self.categories.push(new CategoryVM(category));
-    });
-
     ko.utils.arrayForEach(data.expenses, function (obj) {
         self.expenses.push(new ExpenseVM(obj));
     });
+
+    ko.utils.arrayForEach(data.categories, function (category) {
+        self.categories.push(new CategoryVM(category, self.expenses()));
+    });
+
 
     self.get_category_by_id = function (id) {
         return ko.utils.arrayFirst(self.categories(), function (obj) {

@@ -46,18 +46,21 @@
                     <!-- ko foreach: categories -->
                     <tr class="category">
                         <td data-bind="text: String.fromCharCode($index()+65)"></td>
-                        <td colspan="7"><a data-bind="text: full_name()" target="_blank"></a></td>
+                        <td colspan="7">
+                            <a data-bind="text: full_name()" target="_blank"></a>
+                            <button class="btn btn-default btn-raised btn-sm" data-bind="click: add_row">{% trans 'Add Expense' %}</button>
+                        </td>
                     </tr>
                     <!-- ko foreach: rows -->
                     <tr>
                         <td></td>
 
-                        
+
                         <td data-bind="text: get_code()"></td>
                         <td>
-                        <select data-bind="selectize: $root.expenses, value: expense_id, object: expense"
-                                {#                                data-url="{% url 'create_inventory_item' %}"#}
-                                ></select>
+                            <select data-bind="selectize: $parent.expenses, value: expense_id, object: expense, selectize_options:{render: {'option': render_option, 'item':render_option}}"
+                                    {#                                data-url="{% url 'create_inventory_item' %}"#}
+                                    ></select>
                         </td>
 
                         <td></td>
