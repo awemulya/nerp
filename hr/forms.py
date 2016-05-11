@@ -242,7 +242,7 @@ class GroupPayrollForm(forms.Form):
 #             raise forms.ValidationError(
 #                 _('Employee Needs at least one bank account'))
 
-class EmployeeAccountInlineFormset(forms.models.BaseInlineFormSet):
+class EmployeeAccountInlineFormset(forms.BaseInlineFormSet):
     def clean(self):
         if any(self.errors):
             return
@@ -288,7 +288,7 @@ class EmployeeAccountInlineFormset(forms.models.BaseInlineFormSet):
                 _('Employee Needs at least one bank account'))
 
 
-class IncentiveInlineFormset(forms.models.BaseInlineFormSet):
+class IncentiveInlineFormset(forms.BaseInlineFormSet):
     def clean(self):
         if any(self.errors):
             return
@@ -320,7 +320,7 @@ class IncentiveInlineFormset(forms.models.BaseInlineFormSet):
                     )
 
 
-class AllowanceInlineFormset(forms.models.BaseInlineFormSet):
+class AllowanceInlineFormset(forms.BaseInlineFormSet):
     def clean(self):
         if any(self.errors):
             return
@@ -349,6 +349,41 @@ class AllowanceInlineFormset(forms.models.BaseInlineFormSet):
                     form.add_error(
                         'year_payment_cycle_month',
                         'This field is needed if it is a yearly allowance'
+                    )
+
+
+class DeductionModelFormSet(forms.BaseModelFormSet):
+    def clean(self):
+        super(DeductionModelFormSet, self).clean()
+        for form in self.forms:
+            if form.cleaned_data:
+                sum_type = form.cleaned_data.get("sum_type")
+                amount = form.cleaned_data.get("amount")
+                amount_rate = form.cleaned_data.get("amount_rate")
+
+                deduction_for = form.cleaned_data.get("deduction_for")
+                explicit_acc = form.cleaned_data.get("explicit_acc")
+                in_acc_type = form.cleaned_data.get("in_acc_type")
+
+                if sum_type == 'AMOUNT' and not amount:
+                    self.add_error(
+                        'amount',
+                        'Need amount field to be filled up when Sum Type is Amount'
+                    )
+                elif sum_type == 'RATE' and not amount_rate:
+                    self.add_error(
+                        'amount_rate',
+                        'Need amount rate field to be filled up when Sum Type is Rate'
+                    )
+                if deduction_for == 'EXPLICIT ACC' and not explicit_acc:
+                    self.add_error(
+                        'explicit_acc',
+                        'This field is required with Deduction for Explicit Account'
+                    )
+                elif deduction_for == 'EMPLOYEE ACC' and not in_acc_type:
+                    self.add_error(
+                        'in_acc_type',
+                        'This field is required with Deduction for Employee Account'
                     )
 
 
@@ -505,10 +540,14 @@ class AllowanceNameForm(forms.ModelForm):
     #             )
 
 
+# These are forms for payroll entry
 PaymentRowFormSet = forms.formset_factory(PaymentRowForm)
 DeductionFormSet = forms.formset_factory(DeductionDataForm)
 IncentiveFormSet = forms.formset_factory(IncentiveDataForm)
 AllowanceFormSet = forms.formset_factory(AllowanceDataForm)
+
+
+# These are crud formset
 EmployeeAccountFormSet = forms.inlineformset_factory(
     Employee,
     EmployeeAccount,
@@ -520,13 +559,20 @@ IncentiveNameFormSet = forms.inlineformset_factory(
     IncentiveName,
     Incentive,
     extra=1,
-    fields='__all__',
+    exclude=('account',),
     formset=IncentiveInlineFormset
 )
 AllowanceNameFormSet = forms.inlineformset_factory(
     AllowanceName,
     Allowance,
     extra=1,
-    fields='__all__',
+    exclude=('account',),
     formset=AllowanceInlineFormset
+)
+
+DeductionDetailFormSet = forms.modelformset_factory(
+    Deduction,
+    extra=1,
+    exclude=('account',),
+    formset=DeductionModelFormSet
 )

@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
@@ -1228,5 +1228,25 @@ def allowance(request, pk=None):
         })
 
 
-def deduction(request, pk=None):
-    pass
+def deduction(request):
+    if request.method == "POST":
+
+        deduction_formset = DeductionDetailFormSet(
+            request.POST,
+            queryset=Deduction.objects.all(),
+        )
+        if deduction_formset.is_valid():
+            deduction_formset.save()
+            return redirect(reverse('payroll_entry'))
+    else:
+        deduction_formset = DeductionDetailFormSet(
+            queryset=Deduction.objects.all(),
+        )
+
+    return render(
+        request,
+        'deduction_cu.html',
+        {
+            'deduction_formset': deduction_formset,
+        })
+
