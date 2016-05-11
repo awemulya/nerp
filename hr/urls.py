@@ -21,5 +21,8 @@ urlpatterns = patterns('',
                        url(r'^incentive/add/$', views.incentive, name='add_incentive'),
                        url(r'^incentive/edit/(?P<pk>[0-9]+)/$', views.incentive, name='edit_incentive'),
 
+                       # allowance crud
+                       url(r'^allowance/add/$', views.allowance, name='add_allowance'),
+                       url(r'^allowance/edit/(?P<pk>[0-9]+)/$', views.allowance, name='edit_allowance'),
                        # url(r'^by_branch/$', views.group_payroll_branch, name='group_payroll_branch'),
                        )

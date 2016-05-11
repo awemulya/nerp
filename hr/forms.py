@@ -301,7 +301,39 @@ class IncentiveInlineFormset(forms.models.BaseInlineFormSet):
                 amount = form.cleaned_data.get("amount")
                 amount_rate = form.cleaned_data.get("amount_rate")
                 payment_cycle = form.cleaned_data.get("payment_cycle")
-                year_payment_cycle_month = formcleaned_data.get("year_payment_cycle_month")
+                year_payment_cycle_month = form.cleaned_data.get("year_payment_cycle_month")
+
+                if sum_type == 'AMOUNT' and not amount:
+                    form.add_error(
+                        'amount',
+                        'Need amount field to be filled up when Sum Type is Amount'
+                    )
+                elif sum_type == 'RATE' and not amount_rate:
+                    form.add_error(
+                        'amount_rate',
+                        'Need amount rate field to be filled up when Sum Type is Rate'
+                    )
+                if payment_cycle == 'Y' and not year_payment_cycle_month:
+                    form.add_error(
+                        'year_payment_cycle_month',
+                        'This field is needed if it is a yearly allowance'
+                    )
+
+
+class AllowanceInlineFormset(forms.models.BaseInlineFormSet):
+    def clean(self):
+        if any(self.errors):
+            return
+        # account_types = []
+        # bank_account_count = 0
+        # cntr = 0
+        for form in self.forms:
+            if form.cleaned_data:
+                sum_type = form.cleaned_data.get("sum_type")
+                amount = form.cleaned_data.get("amount")
+                amount_rate = form.cleaned_data.get("amount_rate")
+                payment_cycle = form.cleaned_data.get("payment_cycle")
+                year_payment_cycle_month = form.cleaned_data.get("year_payment_cycle_month")
 
                 if sum_type == 'AMOUNT' and not amount:
                     form.add_error(
@@ -434,6 +466,13 @@ class IncentiveNameForm(forms.ModelForm):
         model = IncentiveName
         fields = '__all__'
 
+
+class AllowanceNameForm(forms.ModelForm):
+
+    class Meta:
+        model = AllowanceName
+        fields = '__all__'
+
 # class EmployeeAccountForm(forms.ModelForm):
 
 #     class Meta:
@@ -483,4 +522,11 @@ IncentiveNameFormSet = forms.inlineformset_factory(
     extra=1,
     fields='__all__',
     formset=IncentiveInlineFormset
+)
+AllowanceNameFormSet = forms.inlineformset_factory(
+    AllowanceName,
+    Allowance,
+    extra=1,
+    fields='__all__',
+    formset=AllowanceInlineFormset
 )

@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
@@ -1197,7 +1197,35 @@ def incentive(request, pk=None):
 
 
 def allowance(request, pk=None):
-    pass
+    ko_data = {}
+
+    if pk:
+        obj_id = pk
+        allowance_name = AllowanceName.objects.get(id=pk)
+    else:
+        obj_id = None
+        allowance_name = AllowanceName()
+
+    if request.method == "POST":
+        allowance_name_form = AllowanceNameForm(request.POST, instance=allowance_name)
+        allowance_formset = AllowanceNameFormSet(request.POST, instance=allowance_name)
+        if allowance_name_form.is_valid() and allowance_formset.is_valid():
+            allowance_name_form.save()
+            allowance_formset.save()
+            return redirect(reverse('payroll_entry'))
+    else:
+        allowance_name_form = AllowanceNameForm(instance=allowance_name)
+        allowance_formset = AllowanceNameFormSet(instance=allowance_name)
+
+    return render(
+        request,
+        'allowance_cu.html',
+        {
+            'allowance_name_form': allowance_name_form,
+            'allowance_formset': allowance_formset,
+            'ko_data': ko_data,
+            'obj_id': obj_id,
+        })
 
 
 def deduction(request, pk=None):
