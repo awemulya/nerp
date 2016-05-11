@@ -129,6 +129,7 @@ def save_application(request):
                 if not created:
                     submodel = save_model(submodel, values)
                 dct['categories'][cat_index]['rows'][index] = submodel.id
+            delete_rows(category.get('deleted_rows'), model)
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)

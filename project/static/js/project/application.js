@@ -59,6 +59,8 @@ function CategoryVM(category_instance, expenses) {
 
     self.rows = ko.observableArray();
 
+    self.deleted_rows = ko.observableArray([]);
+
     self.add_row = function (data) {
         data.category = self.instance.id;
         self.rows.push(new RowVM(data, self));
@@ -79,6 +81,7 @@ function CategoryVM(category_instance, expenses) {
 
     self.remove_row = function (row) {
         self.rows.remove(row);
+        self.deleted_rows.push(row);
     }
 
     self.sub_total = ko.computed(function () {
@@ -166,6 +169,7 @@ function ApplicationVM(data) {
                         ko.utils.arrayForEach(category.rows(), function (row) {
                             row.klass('invalid-row');
                         });
+                        category.deleted_rows([]);
                     });
                     for (var i in msg.categories) {
                         //debugger;
