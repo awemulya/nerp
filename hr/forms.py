@@ -91,7 +91,7 @@ class DeductionDataForm(forms.Form):
         for name, id in get_deduction_names():
             self.fields['deduction_%d' % id] = forms.FloatField(
                 label=' '.join(name.split('_')).title(),
-                widget=NumberInput(attrs={'data-bind': "value: deduction_%s, disable: disable_input" % (id)}),
+                widget=NumberInput(attrs={'data-bind': "value: deduction_%s, readOnly: disable_input" % (id)}),
             )
 
 
@@ -104,7 +104,7 @@ class IncentiveDataForm(forms.Form):
         for name, id in get_incentive_names():
             self.fields['incentive_%d' % id] = forms.FloatField(
                 label=' '.join(name.split('_')).title(),
-                widget=NumberInput(attrs={'data-bind': "value: incentive_%s, disable: disable_input" % (id)}),
+                widget=NumberInput(attrs={'data-bind': "value: incentive_%s, readOnly: disable_input" % (id)}),
             )
 
 
@@ -117,7 +117,7 @@ class AllowanceDataForm(forms.Form):
         for name, id in get_allowance_names():
             self.fields['allowance_%d' % id] = forms.FloatField(
                 label=' '.join(name.split('_')).title(),
-                widget=NumberInput(attrs={'data-bind': "value: allowance_%s, disable: disable_input" % (id)}),
+                widget=NumberInput(attrs={'data-bind': "value: allowance_%s, readOnly: disable_input" % (id)}),
             )
 
 
@@ -133,18 +133,18 @@ class PaymentRowForm(forms.ModelForm):
 
         # fields = ('name', 'title', 'birth_date')
         widgets = {
-            'paid_employee': Select(attrs={'data-bind': "value: paid_employee, event:{ change: employee_changed}, disable: disable_input, options: $parent.employee_options, optionsText: 'name', optionsValue: 'id', optionsCaption: 'Select Employee',optionsAfterRender: $parent.set_option_disable"}),
+            'paid_employee': Select(attrs={'data-bind': "value: paid_employee, event:{ change: employee_changed}, readOnly: disable_input, options: $parent.employee_options, optionsText: 'name', optionsValue: 'id', optionsCaption: 'Select Employee',optionsAfterRender: $parent.set_option_disable"}),
             # 'paid_from_date': DateInput(attrs={'data-bind': "value:$parent.paid_from_date, disable: disable_input"}),
             # 'paid_to_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date, disable: disable_input"}),
-            'absent_days': NumberInput(attrs={'data-bind': "visible: false, disable: disable_input"}),
-            'allowance': NumberInput(attrs={'data-bind': "value: allowance, disable: disable_input"}),
-            'incentive': NumberInput(attrs={'data-bind': "value: incentive, disable: disable_input"}),
-            'pf_deduction_amount': NumberInput(attrs={'data-bind': "value: pf_deduction_amount, disable: disable_input"}),
-            'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount, disable: disable_input"}),
-            'income_tax': NumberInput(attrs={'data-bind': "value: income_tax, disable: disable_input"}),
-            'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount, disable: disable_input"}),
-            'salary': NumberInput(attrs={'data-bind': "value: salary, disable: disable_input"}),
-            'paid_amount': NumberInput(attrs={'data-bind': "value: paid_amount, disable: disable_input"}),
+            'absent_days': NumberInput(attrs={'data-bind': "visible: false, readOnly: disable_input"}),
+            'allowance': NumberInput(attrs={'data-bind': "value: allowance, readOnly: disable_input"}),
+            'incentive': NumberInput(attrs={'data-bind': "value: incentive, readOnly: disable_input"}),
+            'pf_deduction_amount': NumberInput(attrs={'data-bind': "value: pf_deduction_amount"}),
+            'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount, readOnly: disable_input"}),
+            'income_tax': NumberInput(attrs={'data-bind': "value: income_tax, readOnly: disable_input"}),
+            'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount, readOnly: disable_input"}),
+            'salary': NumberInput(attrs={'data-bind': "value: salary, readOnly: disable_input"}),
+            'paid_amount': NumberInput(attrs={'data-bind': "value: paid_amount, readOnly: disable_input"}),
         }
 
     # def __init__(self, *args, **kwargs):

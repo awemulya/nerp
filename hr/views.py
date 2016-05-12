@@ -658,7 +658,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     else:
         employee_response['paid_from_date'] = paid_from_date.as_string()
         employee_response['paid_to_date'] = paid_to_date.as_string()
-    employee_response['disable_input'] = False
+    employee_response['disable_input'] = True
     return employee_response
 
 
