@@ -110,7 +110,7 @@ def salary_deduction_unit():
     pass
 
 
-def salary_taxation_unit(employee, CURRENT_FISCAL_YEAR):
+def salary_taxation_unit(employee):
     # First calculate all the uncome of employee
     total_month, total_work_day = delta_month_date_impure(
         *CURRENT_FISCAL_YEAR
@@ -197,38 +197,43 @@ def salary_taxation_unit(employee, CURRENT_FISCAL_YEAR):
         # deduction_detail_object = {}
         if obj.deduction_for == 'EMPLOYEE ACC':
             # name = '_'.join(obj.in_acc_type.name.split(' ')).lower
-            employee_response['deduction_%d' % (obj.id)] = 0
+            # employee_response['deduction_%d' % (obj.id)] = 0
 
             if (employee.is_permanent or obj.with_temporary_employee) and employee.has_account(obj.in_acc_type):
 
                 if obj.deduct_type == 'AMOUNT':
-                    employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
+                    # employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
+                    deduction += obj.amount * total_month
                 else:
                     # Rate
                     # deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
-                    employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
+                    # employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
+                    deduction += obj.amount_rate / 100.0 * salary
 
                 if employee.is_permanent:
                     if obj.in_acc_type.permanent_multiply_rate:
                         # deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
-                        employee_response['deduction_%d' % (obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
+                        # employee_response['deduction_%d' % (obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
+                        deduction *= obj.in_acc_type.permanent_multiply_rate                 
                 # deduction += deduction_detail_object['amount']
-                deduction += employee_response['deduction_%d' % (obj.id)]
+                # deduction += employee_response['deduction_%d' % (obj.id)]
 
         else:
             # name = '_'.join(obj.name.split(' ')).lower()
-            employee_response['deduction_%d' % (obj.id)] = 0
+            # employee_response['deduction_%d' % (obj.id)] = 0
 
             # EXPLICIT ACC
             if obj.deduct_type == 'AMOUNT':
                 # deduction_detail_object[
                 #     'amount'] += obj.amount * total_month
-                employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
+                # employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
+                deduction += obj.amount * total_month
             else:
-                employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
-            deduction += employee_response['deduction_%d' % (obj.id)]
+                # employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
+                deduction += obj.amount_rate / 100.0 * salary
+            # deduction += employee_response['deduction_%d' % (obj.id)]
 
-    salary += incentive + allowance
+    
 
     # Add deduction model amounts which is taxable i,e taxable = True
 
