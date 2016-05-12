@@ -139,6 +139,7 @@ class PaymentRowForm(forms.ModelForm):
             'absent_days': NumberInput(attrs={'data-bind': "visible: false, disable: disable_input"}),
             'allowance': NumberInput(attrs={'data-bind': "value: allowance, disable: disable_input"}),
             'incentive': NumberInput(attrs={'data-bind': "value: incentive, disable: disable_input"}),
+            'pf_deduction_amount': NumberInput(attrs={'data-bind': "value: pf_deduction_amount, disable: disable_input"}),
             'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount, disable: disable_input"}),
             'income_tax': NumberInput(attrs={'data-bind': "value: income_tax, disable: disable_input"}),
             'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount, disable: disable_input"}),

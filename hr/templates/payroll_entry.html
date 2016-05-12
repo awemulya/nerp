@@ -78,6 +78,9 @@
                     {% endfor %}
                     
                     <th>Total Deduced Amount</th>
+                    
+                    <th>PF Deduced Amount</th>
+
                     <th>Income Tax</th>
                     <th>Pro Tempore Amount</th>
                     <th>Salary</th>
@@ -115,6 +118,7 @@
                         {% endfor %}
                         <td>{{ r_form.deduced_amount }}</td>
                         
+                        <td>{{ r_form.pf_deduction_amount }}</td>
                         <td>{{ r_form.income_tax }}</td>
                         <td>{{ r_form.pro_tempore_amount }}</td>
                         <td>{{ r_form.salary }}</td>

@@ -625,6 +625,7 @@ class Employee(models.Model):
     pan_number = models.CharField(max_length=100)
     working_branch = models.ForeignKey(BranchOffice)
     accounts = models.ManyToManyField(Account, through="EmployeeAccount")
+    pf_monthly_deduction_amount = models.PositiveIntegerField(default=0)
     # bank_account = models.OneToOneField(Account,
     #                                     related_name='bank_account')
     # insurance_account = models.OneToOneField(Account,
@@ -895,6 +896,7 @@ class PaymentRecord(models.Model):
     absent_days = models.PositiveIntegerField()
     allowance = models.FloatField(null=True, blank=True)
     incentive = models.FloatField(null=True, blank=True)
+    pf_deduction_amount = models.PositiveIntegerField(null=True, blank=True)
     deduced_amount = models.FloatField(null=True, blank=True)
     deduction_details = models.ManyToManyField(DeductionDetail, blank=True)
     incentive_details = models.ManyToManyField(IncentiveDetail, blank=True)

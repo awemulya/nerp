@@ -590,6 +590,9 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                 employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
             deduction += employee_response['deduction_%d' % (obj.id)]
 
+    # PF deduction amount in case of loan from PF
+    employee_response['pf_deduction_amount'] = employee.pf_monthly_deduction_amount
+
     # Income tax logic
     income_tax = 0
     for obj in IncomeTaxRate.objects.all():
@@ -641,7 +644,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     #     employee, 'bank_account')
 
     employee_response['paid_amount'] = salary - deduction - income_tax +\
-        p_t_amount + incentive
+        p_t_amount + incentive - employee_response['pf_deduction_amount']
 
     if row_errors:
         for item in employee_response:
@@ -833,6 +836,7 @@ def save_payroll_entry(request):
 
                 p_r.absent_days = 0
                 p_r.deduced_amount = float(request.POST.get('form-%d-deduced_amount' % (i), None))
+                p_r.pf_deduction_amount = float(request.POST.get('form-%d-pf_deduction_amount' % (i), None))
                 p_r.allowance = float(request.POST.get('form-%d-allowance' % (i), None))
                 p_r.incentive = float(request.POST.get('form-%d-incentive' % (i), None))
                 p_r.income_tax = float(request.POST.get('form-%d-income_tax' % (i), None))
@@ -994,6 +998,7 @@ def entry_detail(request, pk=None):
             entry_row_data['deduction_data'] = deduction_amounts
             entry_row_data['deduced_amount'] = row.deduced_amount
 
+            entry_row_data['pf_deduction_amount'] = (row.pf_deduction_amount)
             entry_row_data['income_tax'] = (row.income_tax)
             entry_row_data['pro_tempore_amount'] = (row.pro_tempore_amount)
             entry_row_data['salary'] = (row.salary)
@@ -1148,7 +1153,7 @@ def employee(request, pk=None):
         if employee_form.is_valid() and employee_account_formset.is_valid():
             employee_form.save()
             employee_account_formset.save()
-            return redirect(reverse('payroll_entry'))
+            return redirect(reverse('list_employee'))
     else:
         employee_form = EmployeeForm(instance=employee)
         employee_account_formset = EmployeeAccountFormSet(instance=employee)
@@ -1164,11 +1169,11 @@ def employee(request, pk=None):
         })
 
 
-def employee_list(request):
+def list_employee(request):
     objects = Employee.objects.all()
     return render(
         request,
-        'incentive_list.html',
+        'employee_list.html',
         {
             'objects': objects,
         }
@@ -1268,7 +1273,7 @@ def allowance(request, pk=None):
         })
 
 
-def allowance_list(request):
+def list_allowance(request):
     objects = AllowanceName.objects.all()
     return render(
         request,
@@ -1279,7 +1284,7 @@ def allowance_list(request):
     )
 
 
-def allowance_delete(request, pk=None):
+def delete_allowance(request, pk=None):
     obj = AllowanceName.objects.get(id=pk)
     alw_details = Allowance.objects.filter(name=obj)
     obj.delete()
