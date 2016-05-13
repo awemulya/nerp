@@ -40,7 +40,7 @@
         {% for incentive_form in incentive_formset %}
             <div class="row incentive-form">
                 {{ incentive_form.as_table }}
-                {% if incentive_form.instance.pk %}{{ goal_form.DELETE }}{% endif %}
+                {% if incentive_form.instance.pk %}{{ incentive_form.DELETE }}{% endif %}
             </div>
         {% endfor %}
     </div>

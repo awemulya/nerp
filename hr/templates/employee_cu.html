@@ -40,7 +40,7 @@
         {% for employee_account_form in employee_account_formset %}
             <div class="row employee-account-form">
                 {{ employee_account_form.as_table }}
-                {% if employee_account_form.instance.pk %}{{ goal_form.DELETE }}{% endif %}
+                {% if employee_account_form.instance.pk %}{{ employee_account_form.DELETE }}{% endif %}
             </div>
         {% endfor %}
     </div>

@@ -4,8 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet
-from .models import Employee, Deduction, EmployeeAccount, IncomeTaxRate, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry, Incentive, Allowance
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, TaxSchemeFormSet
+from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry, Incentive, Allowance
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -17,12 +17,21 @@ import pdb
 
 
 CALENDAR = 'BS'
-F_INCOME_TAX_DISCOUNT_RATE = 10
 if CALENDAR == 'BS':
     CURRENT_FISCAL_YEAR = (
         BSDate(*FiscalYear.start()),
         BSDate(*FiscalYear.end())
     )
+# else:
+#     CURRENT_FISCAL_YEAR = (
+#         BSDate(*FiscalYear.start()),
+#         BSDate(*FiscalYear.end())
+#     )
+
+# Taxation singleton setting dbsettings
+F_TAX_DISCOUNT_LIMIT = 300000
+M_TAX_DISCOUNT_LIMIT = 200000
+SOCIAL_SECURITY_TAX_RATE = 1
 
 
 def verify_request_date(request):
@@ -233,7 +242,26 @@ def salary_taxation_unit(employee):
                 deduction += obj.amount_rate / 100.0 * salary
             # deduction += employee_response['deduction_%d' % (obj.id)]
 
-    
+    taxable_amount = (salary + allowance + incentive - deduction)
+
+    if employee.sex == 'F':
+        taxable_amount -= F_TAX_DISCOUNT_LIMIT
+    else:
+        taxable_amount -= M_TAX_DISCOUNT_LIMIT
+
+    social_security_tax = SOCIAL_SECURITY_TAX_RATE/100 * taxable_amount
+
+    for obj in IncomeTaxRate.objects.all():
+        if obj.is_last:
+            if salary >= obj.start_from:
+                income_tax = obj.tax_rate / 100 * salary
+                if obj.rate_over_tax_amount:
+                    income_tax += obj.rate_over_tax_amount / 100 * income_tax
+        else:
+            if salary >= obj.start_from and salary <= obj.end_to:
+                income_tax = obj.tax_rate / 100 * salary
+                if obj.rate_over_tax_amount:
+                    income_tax += obj.rate_over_tax_amount / 100 * income_tax
 
     # Add deduction model amounts which is taxable i,e taxable = True
 
@@ -599,20 +627,21 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     employee_response['pf_deduction_amount'] = employee.pf_monthly_deduction_amount
 
     # Income tax logic
-    income_tax = 0
-    for obj in IncomeTaxRate.objects.all():
-        if obj.is_last:
-            if salary >= obj.start_from:
-                income_tax = obj.tax_rate / 100 * salary
-                if obj.rate_over_tax_amount:
-                    income_tax += obj.rate_over_tax_amount / 100 * income_tax
-        else:
-            if salary >= obj.start_from and salary <= obj.end_to:
-                income_tax = obj.tax_rate / 100 * salary
-                if obj.rate_over_tax_amount:
-                    income_tax += obj.rate_over_tax_amount / 100 * income_tax
-        if employee.sex == 'F':
-            income_tax -= F_INCOME_TAX_DISCOUNT_RATE / 100 * income_tax
+    income_tax = salary_taxation_unit(employee)
+    # income_tax = 0
+    # for obj in IncomeTaxRate.objects.all():
+    #     if obj.is_last:
+    #         if salary >= obj.start_from:
+    #             income_tax = obj.tax_rate / 100 * salary
+    #             if obj.rate_over_tax_amount:
+    #                 income_tax += obj.rate_over_tax_amount / 100 * income_tax
+    #     else:
+    #         if salary >= obj.start_from and salary <= obj.end_to:
+    #             income_tax = obj.tax_rate / 100 * salary
+    #             if obj.rate_over_tax_amount:
+    #                 income_tax += obj.rate_over_tax_amount / 100 * income_tax
+    #     if employee.sex == 'F':
+    #         income_tax -= F_INCOME_TAX_DISCOUNT_RATE / 100 * income_tax
 
     employee_response['income_tax'] = income_tax
     employee_response['deduced_amount'] = deduction
@@ -1210,7 +1239,7 @@ def incentive(request, pk=None):
         if incentive_name_form.is_valid() and incentive_formset.is_valid():
             incentive_name_form.save()
             incentive_formset.save()
-            return redirect(reverse('payroll_entry'))
+            return redirect(reverse('list_incentive'))
     else:
         incentive_name_form = IncentiveNameForm(instance=incentive_name)
         incentive_formset = IncentiveNameFormSet(instance=incentive_name)
@@ -1262,7 +1291,7 @@ def allowance(request, pk=None):
         if allowance_name_form.is_valid() and allowance_formset.is_valid():
             allowance_name_form.save()
             allowance_formset.save()
-            return redirect(reverse('payroll_entry'))
+            return redirect(reverse('list_allowance'))
     else:
         allowance_name_form = AllowanceNameForm(instance=allowance_name)
         allowance_formset = AllowanceNameFormSet(instance=allowance_name)
@@ -1307,7 +1336,7 @@ def deduction(request):
         )
         if deduction_formset.is_valid():
             deduction_formset.save()
-            return redirect(reverse('payroll_entry'))
+            return redirect(reverse('deduction'))
     else:
         deduction_formset = DeductionDetailFormSet(
             queryset=Deduction.objects.all(),
@@ -1320,3 +1349,25 @@ def deduction(request):
             'deduction_formset': deduction_formset,
         })
 
+
+def tax_scheme(request):
+    if request.method == "POST":
+
+        tax_scheme_formset = TaxSchemeFormSet(
+            request.POST,
+            queryset=TaxScheme.objects.all(),
+        )
+        if tax_scheme_formset.is_valid():
+            tax_scheme_formset.save()
+            return redirect(reverse('tax_scheme'))
+    else:
+        tax_scheme_formset = TaxSchemeFormSet(
+            queryset=TaxScheme.objects.all(),
+        )
+
+    return render(
+        request,
+        'tax_scheme_cu.html',
+        {
+            'tax_scheme_formset': tax_scheme_formset,
+        })

@@ -40,7 +40,7 @@
         {% for allowance_form in allowance_formset %}
             <div class="row allowance-form">
                 {{ allowance_form.as_table }}
-                {% if allowance_form.instance.pk %}{{ goal_form.DELETE }}{% endif %}
+                {% if allowance_form.instance.pk %}{{ allowance_form.DELETE }}{% endif %}
             </div>
         {% endfor %}
     </div>

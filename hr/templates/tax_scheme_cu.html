@@ -8,8 +8,8 @@
     <script src="{% static 'js/vendors/jquery-formset.js' %}"></script>
     <script type="text/javascript">
         $(function () {
-            $('.deduction-form').formset({
-                prefix: '{{ deduction_formset.prefix }}'
+            $('.tax-scheme-form').formset({
+                prefix: '{{ tax_scheme_formset.prefix }}'
             });
         });
     </script>
@@ -28,19 +28,19 @@
 
 {% block  content %}
 
-<form method="POST" action="{% url 'deduction' %}">
+<form method="POST" action="{% url 'tax_scheme' %}">
 
     {% csrf_token %}
 
-    <div class="deduction-formset">
-        {% for deduction_form in deduction_formset %}
-            <div class="row deduction-form">
-                {{ deduction_form.as_table }}
-                {% if deduction_form.instance.pk %}{{ deduction_form.DELETE }}{% endif %}
+    <div class="tax-scheme-formset">
+        {% for tax_scheme_form in tax_scheme_formset %}
+            <div class="row tax-scheme-form">
+                {{ tax_scheme_form.as_table }}
+                {% if tax_scheme_form.instance.pk %}{{ tax_scheme_form.DELETE }}{% endif %}
             </div>
         {% endfor %}
     </div>
-    {{ deduction_formset.management_form }}
+    {{ tax_scheme_formset.management_form }}
     <input type="submit" value="Save"></input>
 
 </form>

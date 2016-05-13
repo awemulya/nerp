@@ -34,6 +34,9 @@ urlpatterns = patterns('',
 
                        # deductions crud
                        url(r'^deduction/$', views.deduction, name='deduction'),
+
+                       # taxation crud
+                       url(r'^tax/scheme/$', views.tax_scheme, name='tax_scheme'),
                        # url(r'^allowance/edit/(?P<pk>[0-9]+)/$', views.allowance, name='edit_allowance'),
                        # url(r'^by_branch/$', views.group_payroll_branch, name='group_payroll_branch'),
                        )

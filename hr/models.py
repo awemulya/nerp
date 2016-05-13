@@ -853,13 +853,11 @@ class ProTempore(models.Model):
     # Sabai ko account huncha 
 
 
-class IncomeTaxRate(models.Model):
+class TaxScheme(models.Model):
     start_from = models.FloatField()
     end_to = models.FloatField(null=True, blank=True)
     tax_rate = models.FloatField()
-    rate_over_tax_amount = models.FloatField(null=True, blank=True)
-    is_last = models.BooleanField(default=False)
-    # Income tax ma female ko lago 10% discount(Suruma tax lagaera??)
+    priority = models.PositiveIntegerField(unique=True)
 
     def __unicode__(self):
         return u"From %f" % (self.start_from)

@@ -4,7 +4,8 @@ from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#, MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
-from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount
+from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, TaxScheme
+import pdb
 
 # class DateSelectorWidget(MultiWidget):
 #     def __init__(self, attrs=None):
@@ -367,26 +368,74 @@ class DeductionModelFormSet(forms.BaseModelFormSet):
                 in_acc_type = form.cleaned_data.get("in_acc_type")
 
                 if sum_type == 'AMOUNT' and not amount:
-                    self.add_error(
+                    form.add_error(
                         'amount',
                         'Need amount field to be filled up when Sum Type is Amount'
                     )
                 elif sum_type == 'RATE' and not amount_rate:
-                    self.add_error(
+                    form.add_error(
                         'amount_rate',
                         'Need amount rate field to be filled up when Sum Type is Rate'
                     )
                 if deduction_for == 'EXPLICIT ACC' and not explicit_acc:
-                    self.add_error(
+                    form.add_error(
                         'explicit_acc',
                         'This field is required with Deduction for Explicit Account'
                     )
                 elif deduction_for == 'EMPLOYEE ACC' and not in_acc_type:
-                    self.add_error(
+                    form.add_error(
                         'in_acc_type',
                         'This field is required with Deduction for Employee Account'
                     )
 
+
+class TaxSchemeModelFormSet(forms.BaseModelFormSet):
+    def clean(self):
+        super(TaxSchemeModelFormSet, self).clean()
+        e_p_tuple_list = []
+        for form in self.forms:
+            if form.cleaned_data:
+                start_from = form.cleaned_data.get("start_from")
+                end_to = form.cleaned_data.get("end_to")
+                priority = form.cleaned_data.get("priority")
+                e_p_tuple_list.append({
+                    'start_from': start_from,
+                    'end_to': end_to,
+                    'priority': priority,
+                    'form': form})
+        sorted_tuple_list = sorted(
+            e_p_tuple_list,
+            key=lambda item: item['priority'],
+            reverse=True
+        )
+        pdb.set_trace()
+        for index, item in enumerate(sorted_tuple_list):
+            if index == 0:
+                if item['end_to'] is not None:
+                    item['form'].add_error(
+                        'end_to',
+                        'Last range end to should be None'
+                    )
+                if item['start_from'] != sorted_tuple_list[index + 1]['end_to'] + 1:
+                    item['form'].add_error(
+                        'start_from',
+                        'start_from must be just after previous end_to',
+                    )
+
+            else:
+                if item['end_to'] is None:
+                    item['form'].add_error(
+                        'end_to',
+                        'This field should not be None'
+                    )
+                try:
+                    if item['start_from'] != sorted_tuple_list[index + 1]['end_to'] + 1:
+                        item['form'].add_error(
+                            'start_from',
+                            'start_from must be just after previous end_to',
+                        )
+                except:
+                    pass
 
 class AllowanceForm(forms.ModelForm):
 
@@ -576,4 +625,11 @@ DeductionDetailFormSet = forms.modelformset_factory(
     extra=1,
     exclude=('account',),
     formset=DeductionModelFormSet
+)
+
+TaxSchemeFormSet = forms.modelformset_factory(
+    TaxScheme,
+    extra=1,
+    fields='__all__',
+    formset=TaxSchemeModelFormSet
 )
