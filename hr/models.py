@@ -564,7 +564,9 @@ class Deduction(models.Model):
     # In which type of account to make deduction transaction when deduction for is employee acc
     in_acc_type = models.ForeignKey(
         AccountType,
-        related_name='in_account_type'
+        related_name='in_account_type',
+        null=True,
+        blank=True
     )
     # transact_in = models.CharField(choice=acc_type)
     amount = models.FloatField(null=True, blank=True)

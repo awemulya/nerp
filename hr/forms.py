@@ -623,12 +623,14 @@ AllowanceNameFormSet = forms.inlineformset_factory(
 DeductionDetailFormSet = forms.modelformset_factory(
     Deduction,
     extra=1,
+    can_delete=True,
     exclude=('account',),
     formset=DeductionModelFormSet
 )
 
 TaxSchemeFormSet = forms.modelformset_factory(
     TaxScheme,
+    can_delete=True,
     extra=1,
     fields='__all__',
     formset=TaxSchemeModelFormSet
