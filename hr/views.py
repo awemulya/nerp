@@ -249,21 +249,19 @@ def salary_taxation_unit(employee):
     else:
         taxable_amount -= M_TAX_DISCOUNT_LIMIT
 
-    social_security_tax = SOCIAL_SECURITY_TAX_RATE/100 * taxable_amount
+    social_security_tax = SOCIAL_SECURITY_TAX_RATE / 100 * taxable_amount
 
-    for obj in IncomeTaxRate.objects.all():
-        if obj.is_last:
-            if salary >= obj.start_from:
-                income_tax = obj.tax_rate / 100 * salary
-                if obj.rate_over_tax_amount:
-                    income_tax += obj.rate_over_tax_amount / 100 * income_tax
-        else:
-            if salary >= obj.start_from and salary <= obj.end_to:
-                income_tax = obj.tax_rate / 100 * salary
-                if obj.rate_over_tax_amount:
-                    income_tax += obj.rate_over_tax_amount / 100 * income_tax
+    taxable_amount -= social_security_tax
+    tax_amount = 0
+    for obj in sorted(TaxScheme.objects.all(), key=lambda obj: obj.priority):
+        if obj.end_to:
+            if taxable_amount > obj.end_to:
+                tax_amount += obj.end_to * obj.tax_rate / 100
+                taxable_amount -= tax_amount
 
-    # Add deduction model amounts which is taxable i,e taxable = True
+    total_tax = social_security_tax + tax_amount
+    return total_tax / 12
+    
 
 # def salary_detail_impure_months(employee, paid_from_date, paid_to_date):
 #     employee_response = {}
