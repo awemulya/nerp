@@ -429,11 +429,14 @@ class TaxSchemeModelFormSet(forms.BaseModelFormSet):
                         'end_to',
                         'Last range end to should be None'
                     )
-                if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
-                    item['form'].add_error(
-                        'start_from',
-                        'start_from must be just after previous end_to',
-                    )
+                try:
+                    if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+                        item['form'].add_error(
+                            'start_from',
+                            'start_from must be just after previous end_to',
+                        )
+                except:
+                    pass
 
             else:
                 if item['end_to'] is None:
@@ -442,13 +445,14 @@ class TaxSchemeModelFormSet(forms.BaseModelFormSet):
                         'This field should not be None'
                     )
                 try:
-                    if item['start_from'] != sorted_tuple_list[index + 1]['end_to'] + 1:
+                    if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
                         item['form'].add_error(
                             'start_from',
                             'start_from must be just after previous end_to',
                         )
                 except:
                     pass
+
 
 class AllowanceForm(forms.ModelForm):
 
