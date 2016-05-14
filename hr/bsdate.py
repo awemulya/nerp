@@ -78,3 +78,6 @@ class BSDate(object):
 
     def __ge__(self, other):
         return self.__gt__(other) or self.__eq__(other)
+
+    def __repr__(self):
+        return str(self.date_tuple())

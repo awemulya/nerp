@@ -1,7 +1,7 @@
 from __future__ import division
 from datetime import date
 from bsdate import BSDate
-from njango.nepdate import bs
+from njango.nepdate import bs, bs2ad, ad2bs
 from calendar import monthrange as mr
 
 
@@ -176,6 +176,7 @@ def bsdate2str(date):
     return '-'.join(li)
 
 
+# This could be of 4 line haha bad one
 def inc_1_day(in_date):
     if isinstance(in_date, date):
         month_days = mr(in_date.year, in_date.month)[1]
@@ -285,6 +286,69 @@ def emp_salary_eligibility(emp, p_from, p_to):
         return False, error_msg
     else:
         return True, None
+
+
+def fiscal_year_by_date(f_date):
+    fiscal_year_range = None
+    is_ad = False
+    if isinstance(f_date, date):
+        f_date = BSDate(*ad2bs(f_date))
+        is_ad = True
+
+    possible_fiscal_years = (
+        (
+            BSDate(f_date.year - 1, 4, 1),
+            BSDate(f_date.year, 3, bs[f_date.year][2]),
+        ),
+        (
+            BSDate(f_date.year, 4, 1),
+            BSDate(f_date.year + 1, 3, bs[f_date.year + 1][2]),
+        ),
+    )
+    for d_range in possible_fiscal_years:
+        if f_date >= d_range[0] and f_date <= d_range[1]:
+            fiscal_year_range = d_range
+
+    if is_ad:
+        return [date(*bs2ad(*d.date_tuple())) for d in fiscal_year_range]
+    else:
+        return fiscal_year_range
+
+
+# In date range fiscal years, total years in that fiscal year and worked days
+def fiscal_year_data(d_from, d_to):
+    result = []
+    # if fiscal_year_by_date(d_from) == fiscal_year_by_date(d_to):
+    # result.append({
+    #     'f_y': fiscal_year_by_date(d_from),
+    # })
+    f_year = fiscal_year_by_date(d_to)
+    to_date_year = d_to.year
+    to_date = d_to
+    while f_year != fiscal_year_by_date(d_from):
+        f_year = fiscal_year_by_date(to_date)
+        result.append(
+            {'f_y': f_year}
+        )
+        to_date_year -= 1
+        if isinstance(to_date, date):
+            to_date = date(to_date_year, d_to.month, d_to.day)
+        else:
+            to_date = BSDate(to_date_year, d_to.month, d_to.day)
+    if len(result) == 0:
+        result.append({
+            'f_y': fiscal_year_by_date(d_from),
+        })
+        result[0]['worked_days'] = (d_to - d_from).days + 1
+    else:
+        for item in result:
+            if item == result[-1]:
+                item['worked_days'] = (item['f_y'][1] - d_from).days + 1
+            elif item == result[0]:
+                item['worked_days'] = (d_to - item['f_y'][0]).days + 1
+            else:
+                item['worked_days'] = (item['f_y'][1] - item['f_y'][0]).days + 1
+    return result
 
 
 def empty_to_none(o):
