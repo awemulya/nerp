@@ -12,7 +12,7 @@ from calendar import monthrange as mr
 from njango.nepdate import bs
 from .models import get_y_m_tuple_list
 from .bsdate import BSDate
-from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, emp_salary_eligibility, month_cnt_inrange
+from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, emp_salary_eligibility, month_cnt_inrange, fiscal_year_data
 import pdb
 
 
@@ -119,20 +119,21 @@ def salary_deduction_unit():
     pass
 
 
-def salary_taxation_unit(employee):
+def salary_taxation_unit(employee, f_y_item):
     # First calculate all the uncome of employee
     total_month, total_work_day = delta_month_date_impure(
-        *CURRENT_FISCAL_YEAR
+        *f_y_item['f_y']
     )
     salary = employee.current_salary_by_day(
-        *CURRENT_FISCAL_YEAR
+        *f_y_item['f_y']
     )
 
-    deductions = sorted(
-        Deduction.objects.all(), key=lambda obj: obj.priority)
+    deductions = Deduction.objects.all()
+    sorted_deductions = sorted(
+        deductions, key=lambda obj: obj.priority)
 
     # Addition of PF and bima to salary if employee is permanent
-    for item in deductions:
+    for item in sorted_deductions:
         if employee.is_permanent:
             if item.add2_init_salary and item.deduction_for == 'EMPLOYEE ACC':
                 if item.deduct_type == 'AMOUNT':
@@ -143,8 +144,13 @@ def salary_taxation_unit(employee):
 
     allowance = 0
 
-    for obj in employee.allowances.all():
-
+    for ob in employee.allowances.all():
+        try:
+            obj = ob.allowances.filter(
+                employee_grade=employee.designation.grade
+            )[0]
+        except IndexError:
+            raise IndexError('%s not defined for grade %s' % (ob.name, employee.designation.grade.grade_name))
         if obj.payment_cycle == 'Y':
             # check obj.year_payment_cycle_month to add to salary
             cnt = month_cnt_inrange(
@@ -174,8 +180,13 @@ def salary_taxation_unit(employee):
     # now calculate incentive if it has but not to add to salary just to
     # transact seperately
     incentive = 0
-    for obj in employee.incentives.all():
-        # pdb.set_trace()
+    for ob in employee.incentives.all():
+        try:
+            obj = ob.incentives.filter(
+                employee_grade=employee.designation.grade
+            )[0]
+        except IndexError:
+            raise IndexError('%s not defined for grade %s' % (ob.name, employee.designation.grade.grade_name))
         if obj.payment_cycle == 'Y':
             # check obj.year_payment_cycle_month to add to salary
             cnt = month_cnt_inrange(
@@ -260,8 +271,8 @@ def salary_taxation_unit(employee):
                 taxable_amount -= tax_amount
 
     total_tax = social_security_tax + tax_amount
-    return total_tax / 12
-    
+    return total_tax * (f_y_item['worked_days'] / f_y_item['year_days'])
+
 
 # def salary_detail_impure_months(employee, paid_from_date, paid_to_date):
 #     employee_response = {}
@@ -481,47 +492,50 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     for _name in AllowanceName.objects.all():
         # name = '_'.join(_name.name.split(' ')).lower()
         if _name in employee.allowances.all():
-            obj = _name.allowances.all().filter(employee_grade=employee.designation.grade)
-            if obj:
-                obj = obj[0]
-                if obj.payment_cycle == 'Y':
-                    # check obj.year_payment_cycle_month to add to salary
-                    cnt = month_cnt_inrange(
-                        obj.year_payment_cycle_month,
-                        paid_from_date,
-                        paid_to_date
-                    )
-                    if cnt:
-                        if obj.sum_type == 'AMOUNT':
-                            employee_response['allowance_%d' % (_name.id)] = obj.amount * cnt
-                            allowance += obj.amount * cnt
-                        else:
-                            employee_response['allowance_%d' % (_name.id)] = 0
-                            # allowance += obj.amount_rate / 100.0 * salary
+            try:
+                obj = _name.allowances.all().filter(employee_grade=employee.designation.grade)[0]
+            except IndexError:
+                raise IndexError('%s not defined for grade %s' % (_name.name, employee.designation.grade.grade_name))
+            # if obj:
+            #     obj = obj[0]
+            if obj.payment_cycle == 'Y':
+                # check obj.year_payment_cycle_month to add to salary
+                cnt = month_cnt_inrange(
+                    obj.year_payment_cycle_month,
+                    paid_from_date,
+                    paid_to_date
+                )
+                if cnt:
+                    if obj.sum_type == 'AMOUNT':
+                        employee_response['allowance_%d' % (_name.id)] = obj.amount * cnt
+                        allowance += obj.amount * cnt
                     else:
                         employee_response['allowance_%d' % (_name.id)] = 0
+                        # allowance += obj.amount_rate / 100.0 * salary
+                else:
+                    employee_response['allowance_%d' % (_name.id)] = 0
 
-                elif obj.payment_cycle == 'M':
-                    if obj.sum_type == 'AMOUNT':
-                        employee_response['allowance_%d' % (_name.id)] = obj.amount * total_month
-                        allowance += obj.amount * total_month
-                    else:
-                        employee_response['allowance_%d' % (_name.id)] = obj.amount_rate / 100.0 * salary
-                        allowance += obj.amount_rate / 100.0 * salary
-                elif obj.payment_cycle == 'D':
-                    if obj.sum_type == 'AMOUNT':
-                        employee_response['allowance_%d' % (_name.id)] = obj.amount * total_work_day
-                        allowance += obj.amount * total_work_day
-                    else:
-                        # Does this mean percentage in daily wages
-                        employee_response['allowance_%d' % (_name.id)] = obj.amount_rate / 100.0 * salary
-                        allowance += obj.amount_rate / 100.0 * salary
-                # else:
-                #     # This is hourly case(Dont think we have it)
-                #     pass
-            else:
-                # Here also same as below
-                employee_response['allowance_%d' % (_name.id)] = 0
+            elif obj.payment_cycle == 'M':
+                if obj.sum_type == 'AMOUNT':
+                    employee_response['allowance_%d' % (_name.id)] = obj.amount * total_month
+                    allowance += obj.amount * total_month
+                else:
+                    employee_response['allowance_%d' % (_name.id)] = obj.amount_rate / 100.0 * salary
+                    allowance += obj.amount_rate / 100.0 * salary
+            elif obj.payment_cycle == 'D':
+                if obj.sum_type == 'AMOUNT':
+                    employee_response['allowance_%d' % (_name.id)] = obj.amount * total_work_day
+                    allowance += obj.amount * total_work_day
+                else:
+                    # Does this mean percentage in daily wages
+                    employee_response['allowance_%d' % (_name.id)] = obj.amount_rate / 100.0 * salary
+                    allowance += obj.amount_rate / 100.0 * salary
+            # else:
+            #     # This is hourly case(Dont think we have it)
+            #     pass
+            # else:
+            #     # Here also same as below
+            #     employee_response['allowance_%d' % (_name.id)] = 0
         else:
             # give the parameters with empty value
             employee_response['allowance_%d' % (_name.id)] = 0
@@ -536,47 +550,50 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     for _name in IncentiveName.objects.all():
         # name = '_'.join(obj.name.split(' ')).lower()
         if _name in employee.incentives.all():
-            obj = _name.incentives.all().filter(employee_grade=employee.designation.grade)
-            if obj:
-                obj = obj[0]
+            try:
+                obj = _name.incentives.all().filter(employee_grade=employee.designation.grade)[0]
+            except IndexError:
+                raise IndexError('%s not defined for grade %s' % (ob.name, employee.designation.grade.grade_name))
+            # if obj:
+            #     obj = obj[0]
                 # pdb.set_trace()
-                if obj.payment_cycle == 'Y':
-                    # check obj.year_payment_cycle_month to add to salary
-                    cnt = month_cnt_inrange(
-                        obj.year_payment_cycle_month,
-                        paid_from_date,
-                        paid_to_date
-                    )
-                    if cnt:
-                        if obj.sum_type == 'AMOUNT':
-                            employee_response['incentive_%d' % (_name.id)] = obj.amount * cnt
-                            incentive += obj.amount * cnt
-                        else:
-                            employee_response['incentive_%d' % (_name.id)] = 0
+            if obj.payment_cycle == 'Y':
+                # check obj.year_payment_cycle_month to add to salary
+                cnt = month_cnt_inrange(
+                    obj.year_payment_cycle_month,
+                    paid_from_date,
+                    paid_to_date
+                )
+                if cnt:
+                    if obj.sum_type == 'AMOUNT':
+                        employee_response['incentive_%d' % (_name.id)] = obj.amount * cnt
+                        incentive += obj.amount * cnt
                     else:
                         employee_response['incentive_%d' % (_name.id)] = 0
-
-                elif obj.payment_cycle == 'M':
-                    if obj.sum_type == 'AMOUNT':
-                        employee_response['incentive_%d' % (_name.id)] = obj.amount * total_month
-                        incentive += obj.amount * total_month
-                    else:
-                        employee_response['incentive_%d' % (_name.id)] = obj.amount_rate / 100.0 * salary
-                        incentive += obj.amount_rate / 100.0 * salary
-                elif obj.payment_cycle == 'D':
-                    if obj.sum_type == 'AMOUNT':
-                        employee_response['incentive_%d' % (_name.id)] = obj.amount * total_work_day
-                        incentive += obj.amount * total_work_day
-                    else:
-                        # Does this mean percentage in daily wages
-                        employee_response['incentive_%d' % (_name.id)] = obj.amount_rate / 100.0 * salary
-                        incentive += obj.amount_rate / 100.0 * salary
                 else:
-                    # This is hourly case(Dont think we have it)
                     employee_response['incentive_%d' % (_name.id)] = 0
-                    pass
+
+            elif obj.payment_cycle == 'M':
+                if obj.sum_type == 'AMOUNT':
+                    employee_response['incentive_%d' % (_name.id)] = obj.amount * total_month
+                    incentive += obj.amount * total_month
+                else:
+                    employee_response['incentive_%d' % (_name.id)] = obj.amount_rate / 100.0 * salary
+                    incentive += obj.amount_rate / 100.0 * salary
+            elif obj.payment_cycle == 'D':
+                if obj.sum_type == 'AMOUNT':
+                    employee_response['incentive_%d' % (_name.id)] = obj.amount * total_work_day
+                    incentive += obj.amount * total_work_day
+                else:
+                    # Does this mean percentage in daily wages
+                    employee_response['incentive_%d' % (_name.id)] = obj.amount_rate / 100.0 * salary
+                    incentive += obj.amount_rate / 100.0 * salary
             else:
+                # This is hourly case(Dont think we have it)
                 employee_response['incentive_%d' % (_name.id)] = 0
+                pass
+            # else:
+            #     employee_response['incentive_%d' % (_name.id)] = 0
         else:
             employee_response['incentive_%d' % (_name.id)] = 0
 
@@ -625,21 +642,13 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     employee_response['pf_deduction_amount'] = employee.pf_monthly_deduction_amount
 
     # Income tax logic
-    income_tax = salary_taxation_unit(employee)
-    # income_tax = 0
-    # for obj in IncomeTaxRate.objects.all():
-    #     if obj.is_last:
-    #         if salary >= obj.start_from:
-    #             income_tax = obj.tax_rate / 100 * salary
-    #             if obj.rate_over_tax_amount:
-    #                 income_tax += obj.rate_over_tax_amount / 100 * income_tax
-    #     else:
-    #         if salary >= obj.start_from and salary <= obj.end_to:
-    #             income_tax = obj.tax_rate / 100 * salary
-    #             if obj.rate_over_tax_amount:
-    #                 income_tax += obj.rate_over_tax_amount / 100 * income_tax
-    #     if employee.sex == 'F':
-    #         income_tax -= F_INCOME_TAX_DISCOUNT_RATE / 100 * income_tax
+    f_y_data = fiscal_year_data(paid_from_date, paid_to_date)
+    income_tax = 0
+    for item in f_y_data:
+        income_tax += salary_taxation_unit(
+            employee,
+            item
+        )
 
     employee_response['income_tax'] = income_tax
     employee_response['deduced_amount'] = deduction

@@ -340,14 +340,18 @@ def fiscal_year_data(d_from, d_to):
             'f_y': fiscal_year_by_date(d_from),
         })
         result[0]['worked_days'] = (d_to - d_from).days + 1
+        result[0]['year_days'] = (result[0]['f_y'][1] - result[0]['f_y'][0]).days + 1
     else:
         for item in result:
             if item == result[-1]:
                 item['worked_days'] = (item['f_y'][1] - d_from).days + 1
+                item['year_days'] = (item['f_y'][1] - item['f_y'][0]).days + 1
             elif item == result[0]:
                 item['worked_days'] = (d_to - item['f_y'][0]).days + 1
+                item['year_days'] = (item['f_y'][1] - item['f_y'][0]).days + 1
             else:
                 item['worked_days'] = (item['f_y'][1] - item['f_y'][0]).days + 1
+                item['year_days'] = (item['f_y'][1] - item['f_y'][0]).days + 1
     return result
 
 
