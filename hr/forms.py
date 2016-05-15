@@ -140,7 +140,7 @@ class PaymentRowForm(forms.ModelForm):
             'absent_days': NumberInput(attrs={'data-bind': "visible: false, readOnly: disable_input"}),
             'allowance': NumberInput(attrs={'data-bind': "value: allowance, readOnly: disable_input"}),
             'incentive': NumberInput(attrs={'data-bind': "value: incentive, readOnly: disable_input"}),
-            'pf_deduction_amount': NumberInput(attrs={'data-bind': "value: pf_deduction_amount"}),
+            'pf_deduction_amount': NumberInput(attrs={'data-bind': "value: pf_deduction_amount", "step": "any"}),
             'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount, readOnly: disable_input"}),
             'income_tax': NumberInput(attrs={'data-bind': "value: income_tax, readOnly: disable_input"}),
             'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount, readOnly: disable_input"}),
@@ -359,7 +359,7 @@ class DeductionModelFormSet(forms.BaseModelFormSet):
         super(DeductionModelFormSet, self).clean()
         for form in self.forms:
             if form.cleaned_data:
-                sum_type = form.cleaned_data.get("sum_type")
+                deduct_type = form.cleaned_data.get("deduct_type")
                 amount = form.cleaned_data.get("amount")
                 amount_rate = form.cleaned_data.get("amount_rate")
 
@@ -367,12 +367,12 @@ class DeductionModelFormSet(forms.BaseModelFormSet):
                 explicit_acc = form.cleaned_data.get("explicit_acc")
                 in_acc_type = form.cleaned_data.get("in_acc_type")
 
-                if sum_type == 'AMOUNT' and not amount:
+                if deduct_type == 'AMOUNT' and not amount:
                     form.add_error(
                         'amount',
                         'Need amount field to be filled up when Sum Type is Amount'
                     )
-                elif sum_type == 'RATE' and not amount_rate:
+                elif deduct_type == 'RATE' and not amount_rate:
                     form.add_error(
                         'amount_rate',
                         'Need amount rate field to be filled up when Sum Type is Rate'
@@ -392,66 +392,66 @@ class DeductionModelFormSet(forms.BaseModelFormSet):
 class TaxSchemeModelFormSet(forms.BaseModelFormSet):
     def clean(self):
         super(TaxSchemeModelFormSet, self).clean()
-        e_p_dict_list = []
-        for form in self.forms:
-            if form.cleaned_data:
-                start_from = form.cleaned_data.get("start_from")
-                end_to = form.cleaned_data.get("end_to")
-                priority = form.cleaned_data.get("priority")
-                DELETE = form.cleaned_data.get("DELETE")
+        # e_p_dict_list = []
+        # for form in self.forms:
+        #     if form.cleaned_data:
+        #         start_from = form.cleaned_data.get("start_from")
+        #         end_to = form.cleaned_data.get("end_to")
+        #         priority = form.cleaned_data.get("priority")
+        #         DELETE = form.cleaned_data.get("DELETE")
 
-                if end_to < start_from:
-                    form.add_error(
-                        'start_from',
-                        'start_from must be less than end_to',
-                    )
+        #         if end_to < start_from:
+        #             form.add_error(
+        #                 'start_from',
+        #                 'start_from must be less than end_to',
+        #             )
 
-                if not DELETE:
-                    e_p_dict_list.append({
-                        'start_from': start_from,
-                        'end_to': end_to,
-                        'priority': priority,
-                        'form': form})
-        sorted_dict_list = sorted(
-            e_p_dict_list,
-            key=lambda item: item['priority'],
-            reverse=True
-        )
-        if sorted_dict_list[-1]['start_from'] != 0:
-            sorted_dict_list[-1]['form'].add_error(
-                'start_from',
-                'First range must start from 0',
-            )
-        for index, item in enumerate(sorted_dict_list):
-            if index == 0:
-                if item['end_to'] is not None:
-                    item['form'].add_error(
-                        'end_to',
-                        'Last range end to should be None'
-                    )
-                try:
-                    if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
-                        item['form'].add_error(
-                            'start_from',
-                            'start_from must be just after previous end_to',
-                        )
-                except:
-                    pass
+        #         if not DELETE:
+        #             e_p_dict_list.append({
+        #                 'start_from': start_from,
+        #                 'end_to': end_to,
+        #                 'priority': priority,
+        #                 'form': form})
+        # sorted_dict_list = sorted(
+        #     e_p_dict_list,
+        #     key=lambda item: item['priority'],
+        #     reverse=True
+        # )
+        # if sorted_dict_list[-1]['start_from'] != 0:
+        #     sorted_dict_list[-1]['form'].add_error(
+        #         'start_from',
+        #         'First range must start from 0',
+        #     )
+        # for index, item in enumerate(sorted_dict_list):
+        #     if index == 0:
+        #         if item['end_to'] is not None:
+        #             item['form'].add_error(
+        #                 'end_to',
+        #                 'Last range end to should be None'
+        #             )
+        #         try:
+        #             if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+        #                 item['form'].add_error(
+        #                     'start_from',
+        #                     'start_from must be just after previous end_to',
+        #                 )
+        #         except:
+        #             pass
 
-            else:
-                if item['end_to'] is None:
-                    item['form'].add_error(
-                        'end_to',
-                        'This field should not be None'
-                    )
-                try:
-                    if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
-                        item['form'].add_error(
-                            'start_from',
-                            'start_from must be just after previous end_to',
-                        )
-                except:
-                    pass
+        #     else:
+        #         if item['end_to'] is None:
+        #             item['form'].add_error(
+        #                 'end_to',
+        #                 'This field should not be None'
+        #             )
+        #         try:
+        #             if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+        #                 item['form'].add_error(
+        #                     'start_from',
+        #                     'start_from must be just after previous end_to',
+        #                 )
+        #         except:
+        #             pass
 
 
 class AllowanceForm(forms.ModelForm):

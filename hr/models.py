@@ -593,19 +593,19 @@ class Deduction(models.Model):
             self.explicit_acc = None
         elif self.deduction_for == 'EXPLICIT ACC':
             self.in_acc_type = None
-        if self.sum_type == 'AMOUNT':
+        if self.deduct_type == 'AMOUNT':
             self.amount_rate = None
-        elif self.sum_type == 'RATE':
+        elif self.deduct_type == 'RATE':
             self.amount = None
         if self.explicit_acc:
             self.with_temporary_employee = True
         if not self.account:
-            account_name = self.name + '-' +str(self.id)
+            account_name = self.name + '-' + str(self.id)
             account_obj = Account.objects.create(name=account_name)
             deduction_account = DeductionAccount.objects.create(
                 account=account_obj,
             )
-        self.account = deduction_account
+            self.account = deduction_account
         super(Deduction, self).save(*args, **kwargs)
 
 
@@ -627,7 +627,7 @@ class Employee(models.Model):
     pan_number = models.CharField(max_length=100)
     working_branch = models.ForeignKey(BranchOffice)
     accounts = models.ManyToManyField(Account, through="EmployeeAccount")
-    pf_monthly_deduction_amount = models.PositiveIntegerField(default=0)
+    pf_monthly_deduction_amount = models.FloatField(default=0)
     # bank_account = models.OneToOneField(Account,
     #                                     related_name='bank_account')
     # insurance_account = models.OneToOneField(Account,
@@ -856,13 +856,22 @@ class ProTempore(models.Model):
 
 
 class TaxScheme(models.Model):
+    marital_statuses = [('M', _('Married')), ('U', _('Unmarried'))]
+    marital_status = models.CharField(
+        default='U',
+        max_length=1,
+        choices=marital_statuses
+    )
     start_from = models.FloatField()
     end_to = models.FloatField(null=True, blank=True)
     tax_rate = models.FloatField()
-    priority = models.PositiveIntegerField(unique=True)
+    priority = models.PositiveIntegerField()
 
     def __unicode__(self):
         return u"From %f" % (self.start_from)
+
+    class Meta:
+        unique_together = (('marital_status', 'start_from', 'end_to'), ('priority', 'marital_status'))
 
 
 class DeductionDetail(models.Model):

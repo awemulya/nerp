@@ -264,11 +264,30 @@ def salary_taxation_unit(employee, f_y_item):
 
     taxable_amount -= social_security_tax
     tax_amount = 0
-    for obj in sorted(TaxScheme.objects.all(), key=lambda obj: obj.priority):
+    tax_schemes = sorted(TaxScheme.objects.filter(marital_status=employee.marital_status), key=lambda obj: obj.priority)
+    main_loop_break_flag = False
+    for index, obj in enumerate(tax_schemes):
         if obj.end_to:
-            if taxable_amount > obj.end_to:
-                tax_amount += obj.end_to * obj.tax_rate / 100
-                taxable_amount -= tax_amount
+
+            if taxable_amount >= obj.start_from and taxable_amount <= obj.end_to:
+                for index2, obj2 in enumerate(tax_schemes):
+                    if index != index2:
+                        tax_amount += obj2.end_to * obj2.tax_rate / 100
+                        taxable_amount -= obj2.end_to
+                    else:
+                        tax_amount += taxable_amount * obj2.tax_rate / 100
+                        main_loop_break_flag = True
+                        break
+            if main_loop_break_flag:
+                break
+        else:
+            for index3, obj3 in enumerate(tax_schemes):
+                if index != index3:
+                    tax_amount += obj3.end_to * obj3.tax_rate / 100
+                    taxable_amount -= obj3.end_to
+                else:
+                    tax_amount += taxable_amount * obj3.tax_rate / 100
+                    break
 
     total_tax = social_security_tax + tax_amount
     return total_tax * (f_y_item['worked_days'] / f_y_item['year_days'])
@@ -639,7 +658,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             deduction += employee_response['deduction_%d' % (obj.id)]
 
     # PF deduction amount in case of loan from PF
-    employee_response['pf_deduction_amount'] = employee.pf_monthly_deduction_amount
+    employee_response['pf_deduction_amount'] = employee.pf_monthly_deduction_amount * total_month
 
     # Income tax logic
     f_y_data = fiscal_year_data(paid_from_date, paid_to_date)
@@ -1318,7 +1337,7 @@ def list_allowance(request):
     objects = AllowanceName.objects.all()
     return render(
         request,
-        'incentive_list.html',
+        'allowance_list.html',
         {
             'objects': objects,
         }
