@@ -13,12 +13,18 @@ AID_TYPES = (('loan', 'Loan'), ('grant', 'Grant'))
 class Project(models.Model):
     name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
+
 
 class Aid(models.Model):
     donor = models.ForeignKey(Donor)
     type = models.CharField(choices=AID_TYPES, max_length=10)
     key = models.CharField(max_length=50)
     project = models.ForeignKey(Project)
+
+    def __str__(self):
+        return str(self.donor) + ' ' + str(self.get_type_display()) + ' ' + self.key
 
 
 class ImprestTransaction(models.Model):
