@@ -27,6 +27,17 @@ class Aid(models.Model):
         return str(self.donor) + ' ' + str(self.get_type_display()) + ' ' + self.key
 
 
+class Signatory(models.Model):
+    name = models.CharField(max_length=100)
+    position = models.CharField(max_length=100)
+    organization = models.CharField(max_length=100)
+    default = models.BooleanField(default=False, verbose_name='Required to sign on all notes?')
+    project = models.ForeignKey(Project)
+
+    def __str__(self):
+        return self.name
+
+
 class ImprestTransaction(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(max_length=255, choices=IMPREST_TRANSACTION_TYPES)
