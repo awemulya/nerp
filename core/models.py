@@ -92,9 +92,8 @@ class FYManager(models.Manager):
 
 class AppSetting(SingletonModel):
     site_name = models.CharField(default='NERP', max_length=100)
-    # fiscal_year = dbsettings.MultipleChoiceValue(choices=[('13+', '13-19'), ('19+', '19-25'), ('25+', '25-40')])
-    fiscal_year = models.CharField(
-        choices=FISCAL_YEARS, max_length=100)
+    fiscal_year = models.PositiveIntegerField(
+        choices=FISCAL_YEARS)
     header_for_forms = models.CharField(default='NERP', max_length=100)
     header_for_forms_nepali = models.CharField(max_length=100)
 
