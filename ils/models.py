@@ -1,7 +1,6 @@
 import datetime
 import os
 
-import dbsettings
 from django.core.urlresolvers import reverse
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
@@ -253,17 +252,6 @@ class Transaction(models.Model):
         return unicode(self.record) + ' | ' + unicode(self.user)
 
 
-class LibrarySettingDb(dbsettings.Group):
-    fine_per_day = dbsettings.FloatValue(default=2)
-    borrow_days = dbsettings.PositiveIntegerValue(default=7)
-    default_type = dbsettings.StringValue(
-        choices=BOOK_TYPES,
-        default='Circulative')
-
-
-library_setting = LibrarySettingDb('Library Settings')
-
-
 class LibrarySetting(SingletonModel):
     fine_per_day = models.FloatField(default=2)
     borrow_days = models.PositiveIntegerField(default=7)
@@ -272,6 +260,8 @@ class LibrarySetting(SingletonModel):
         default='Circulative',
         max_length=50
     )
+
+library_setting = LibrarySetting.get_solo()
 
 
 def not_returned(self):

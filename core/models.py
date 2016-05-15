@@ -90,21 +90,6 @@ class FYManager(models.Manager):
         return result
 
 
-import dbsettings
-
-
-class AppSettingDb(dbsettings.Group):
-    site_name = dbsettings.StringValue(default='NERP')
-    # fiscal_year = dbsettings.MultipleChoiceValue(choices=[('13+', '13-19'), ('19+', '19-25'), ('25+', '25-40')])
-    fiscal_year = dbsettings.StringValue(
-        choices=FISCAL_YEARS)
-    header_for_forms = dbsettings.TextValue(default='NERP')
-    header_for_forms_nepali = dbsettings.TextValue()
-
-
-app_setting = AppSettingDb()
-
-
 class AppSetting(SingletonModel):
     site_name = models.CharField(default='NERP', max_length=100)
     # fiscal_year = dbsettings.MultipleChoiceValue(choices=[('13+', '13-19'), ('19+', '19-25'), ('25+', '25-40')])
@@ -112,6 +97,9 @@ class AppSetting(SingletonModel):
         choices=FISCAL_YEARS, max_length=100)
     header_for_forms = models.CharField(default='NERP', max_length=100)
     header_for_forms_nepali = models.CharField(max_length=100)
+
+
+app_setting = AppSetting.get_solo()
 
 
 class Language(models.Model):
