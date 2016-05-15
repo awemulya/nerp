@@ -7,6 +7,8 @@ from njango.utils import get_calendar
 from django.utils.translation import ugettext_lazy as _
 from users.templatetags.filters import localize
 
+from solo.models import SingletonModel
+
 FISCAL_YEARS = (
     (2069, "2069/70"),
     (2070, "2070/71"),
@@ -91,7 +93,7 @@ class FYManager(models.Manager):
 import dbsettings
 
 
-class AppSetting(dbsettings.Group):
+class AppSettingDb(dbsettings.Group):
     site_name = dbsettings.StringValue(default='NERP')
     # fiscal_year = dbsettings.MultipleChoiceValue(choices=[('13+', '13-19'), ('19+', '19-25'), ('25+', '25-40')])
     fiscal_year = dbsettings.StringValue(
@@ -100,7 +102,16 @@ class AppSetting(dbsettings.Group):
     header_for_forms_nepali = dbsettings.TextValue()
 
 
-app_setting = AppSetting()
+app_setting = AppSettingDb()
+
+
+class AppSetting(SingletonModel):
+    site_name = models.CharField(default='NERP', max_length=100)
+    # fiscal_year = dbsettings.MultipleChoiceValue(choices=[('13+', '13-19'), ('19+', '19-25'), ('25+', '25-40')])
+    fiscal_year = models.CharField(
+        choices=FISCAL_YEARS, max_length=100)
+    header_for_forms = models.CharField(default='NERP', max_length=100)
+    header_for_forms_nepali = models.CharField(max_length=100)
 
 
 class Language(models.Model):
