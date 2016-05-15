@@ -1,11 +1,24 @@
 from django.db import models
 from njango.fields import BSDateField, today
 
-from core.models import Currency, FiscalYear, validate_in_fy
+from core.models import Currency, FiscalYear, validate_in_fy, Donor
 
 IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_transfer', 'GON Fund Transfer'),
                              ('replenishment_received', 'Replenishment Received'),
                              ('payment', 'Payment'), ('liquidation', 'Liquidation'))
+
+AID_TYPES = (('loan', 'Loan'), ('grant', 'Grant'))
+
+
+class Project(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class Aid(models.Model):
+    donor = models.ForeignKey(Donor)
+    type = models.CharField(choices=AID_TYPES, max_length=10)
+    key = models.CharField(max_length=50)
+    project = models.ForeignKey(Project)
 
 
 class ImprestTransaction(models.Model):
@@ -21,6 +34,7 @@ class ImprestTransaction(models.Model):
     # description = models.TextField(null=True, blank=True)
     exchange_rate = models.FloatField(null=True, blank=True)
     fy = models.ForeignKey(FiscalYear)
+    project = models.ForeignKey(Project)
 
     def __str__(self):
         return self.name or self.get_type_display()
@@ -32,6 +46,7 @@ class ExpenseCategory(models.Model):
     enabled = models.BooleanField(default=True)
     gon_funded = models.BooleanField(default=False, verbose_name='GON Funded?')
     order = models.PositiveIntegerField(default=0)
+    project = models.ForeignKey(Project)
 
     def __str__(self):
         st = self.name
@@ -54,6 +69,7 @@ class Expense(models.Model):
     category = models.ManyToManyField(ExpenseCategory, blank=True)
     enabled = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
+    project = models.ForeignKey(Project)
 
     def __str__(self):
         st = self.name
@@ -70,6 +86,7 @@ class ExpenseRow(models.Model):
     expense = models.ForeignKey(Expense)
     amount = models.FloatField()
     fy = models.ForeignKey(FiscalYear)
+    project = models.ForeignKey(Project)
 
     def __str__(self):
         return str(self.fy) + '-' + str(self.category) + ' - ' + str(self.expense) + ' : ' + str(self.amount)
