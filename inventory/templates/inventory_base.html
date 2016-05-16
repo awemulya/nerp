@@ -10,5 +10,5 @@
 {% block breadcrumbs_before_print %}
     {% get_solo 'core.AppSetting' as app_setting %}
     {% trans 'Fiscal Year' %}:
-    {{ app_setting.fiscal_year|setting|fiscal_year|localize }}
+    {{ app_setting.fiscal_year|fiscal_year|localize }}
 {% endblock %}
