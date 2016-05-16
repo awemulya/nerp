@@ -23,13 +23,16 @@ class ProjectView(object):
     def get_context_data(self, **kwargs):
         context_data = super(ProjectView, self).get_context_data(**kwargs)
         context_data['fy'] = self.get_fy()
+        if 'data' in context_data:
+            context_data['data']['fy_id'] = context_data['fy'].id,
         if 'project_id' in self.kwargs:
             try:
                 context_data['project'] = Project.objects.get(pk=self.kwargs.pop('project_id'), active=True)
+                if 'data' in context_data:
+                    context_data['data']['project_id'] = context_data['project'].id,
             except Project.DoesNotExist:
                 pass
-        if 'data' in context_data:
-            context_data['data']['fy_id'] = context_data['fy'].id,
+
         return context_data
 
 
