@@ -36,7 +36,7 @@ urlpatterns = patterns('',
                        url(r'^deduction/$', views.deduction, name='deduction'),
 
                        # taxation crud
-                       url(r'^tax/scheme/$', views.tax_scheme, name='tax_scheme'),
+                       # url(r'^tax/scheme/$', views.tax_scheme, name='tax_scheme'),
 
                        # tax_scheme crud
                        url(r'^taxscheme/add/$', views.tax_scheme_detail, name='add_tax_scheme'),

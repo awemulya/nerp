@@ -389,9 +389,9 @@ class DeductionModelFormSet(forms.BaseModelFormSet):
                     )
 
 
-class TaxSchemeModelFormSet(forms.BaseModelFormSet):
-    def clean(self):
-        super(TaxSchemeModelFormSet, self).clean()
+# class TaxSchemeModelFormSet(forms.BaseModelFormSet):
+#     def clean(self):
+#         super(TaxSchemeModelFormSet, self).clean()
         # e_p_dict_list = []
         # for form in self.forms:
         #     if form.cleaned_data:
@@ -457,6 +457,67 @@ class TaxSchemeModelFormSet(forms.BaseModelFormSet):
 class TaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
     def clean(self):
         super(TaxCalcSchemeInlineFormSet, self).clean()
+        e_p_dict_list = []
+        for form in self.forms:
+            if form.cleaned_data:
+                start_from = form.cleaned_data.get("start_from")
+                end_to = form.cleaned_data.get("end_to")
+                priority = form.cleaned_data.get("priority")
+                DELETE = form.cleaned_data.get("DELETE")
+
+                if end_to < start_from:
+                    form.add_error(
+                        'start_from',
+                        'start_from must be less than end_to',
+                    )
+
+                if not DELETE:
+                    e_p_dict_list.append({
+                        'start_from': start_from,
+                        'end_to': end_to,
+                        'priority': priority,
+                        'form': form})
+        sorted_dict_list = sorted(
+            e_p_dict_list,
+            key=lambda item: item['priority'],
+            reverse=True
+        )
+        if sorted_dict_list[-1]['start_from'] != 0:
+            sorted_dict_list[-1]['form'].add_error(
+                'start_from',
+                'First range must start from 0',
+            )
+        for index, item in enumerate(sorted_dict_list):
+            if index == 0:
+                if item['end_to'] is not None:
+                    item['form'].add_error(
+                        'end_to',
+                        'Last range end to should be None'
+                    )
+                try:
+                    if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+                        item['form'].add_error(
+                            'start_from',
+                            'start_from must be just after previous end_to',
+                        )
+                except:
+                    pass
+
+            else:
+                if item['end_to'] is None:
+                    item['form'].add_error(
+                        'end_to',
+                        'This field should not be None'
+                    )
+                try:
+                    if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+                        item['form'].add_error(
+                            'start_from',
+                            'start_from must be just after previous end_to',
+                        )
+                except:
+                    pass
+
 
 
 class AllowanceForm(forms.ModelForm):
@@ -658,13 +719,14 @@ DeductionDetailFormSet = forms.modelformset_factory(
     formset=DeductionModelFormSet
 )
 
-TaxSchemeFormSet = forms.modelformset_factory(
-    TaxScheme,
-    can_delete=True,
-    extra=1,
-    fields='__all__',
-    formset=TaxSchemeModelFormSet
-)
+# TaxSchemeFormSet = forms.modelformset_factory(
+#     TaxScheme,
+#     can_delete=True,
+#     extra=1,
+#     fields='__all__',
+#     formset=TaxSchemeModelFormSet
+# )
+
 TaxCalcSchemeFormSet = forms.inlineformset_factory(
     TaxScheme,
     TaxCalcScheme,

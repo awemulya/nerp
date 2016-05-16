@@ -1376,27 +1376,27 @@ def deduction(request):
         })
 
 
-def tax_scheme(request):
-    if request.method == "POST":
+# def tax_scheme(request):
+#     if request.method == "POST":
 
-        tax_scheme_formset = TaxSchemeFormSet(
-            request.POST,
-            queryset=TaxScheme.objects.all(),
-        )
-        if tax_scheme_formset.is_valid():
-            tax_scheme_formset.save()
-            return redirect(reverse('tax_scheme'))
-    else:
-        tax_scheme_formset = TaxSchemeFormSet(
-            queryset=TaxScheme.objects.all(),
-        )
+#         tax_scheme_formset = TaxSchemeFormSet(
+#             request.POST,
+#             queryset=TaxScheme.objects.all(),
+#         )
+#         if tax_scheme_formset.is_valid():
+#             tax_scheme_formset.save()
+#             return redirect(reverse('tax_scheme'))
+#     else:
+#         tax_scheme_formset = TaxSchemeFormSet(
+#             queryset=TaxScheme.objects.all(),
+#         )
 
-    return render(
-        request,
-        'tax_scheme_cu.html',
-        {
-            'tax_scheme_formset': tax_scheme_formset,
-        })
+#     return render(
+#         request,
+#         'tax_scheme_cu.html',
+#         {
+#             'tax_scheme_formset': tax_scheme_formset,
+#         })
 
 
 def tax_scheme_detail(request, pk=None):
