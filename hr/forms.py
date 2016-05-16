@@ -660,29 +660,47 @@ class TaxSchemeForm(forms.ModelForm):
         tax_schemes = sorted(
             TaxScheme.objects.filter(marital_status=marital_status),
             key=lambda x: x.priority,
-            reverse=True
         )
-        if not tax_schemes:
-            if start_from:
-                self.add_error(
-                    'start_from',
-                    'First should start with 0'
-                )
-        else:
-            scheme = tax_schemes[0]
-            if start_from != scheme.end_to + 1:
-                self.add_error(
-                    'start_from',
-                    'Start from must be just after end to of previous'
-                )
-            if priority < scheme.priority:
-                self.add_error(
-                    'priority',
-                    'This must be greater than previous priority'
-                )
-            if not scheme.end_to:
+
+        none_cntr = 0
+        for scheme in tax_schemes:
+
+            if scheme.end_to:
+                if scheme.start_from <= start_from <= scheme.end_to:
+                    raise forms.ValidationError(
+                        _('The range is overlapping with another scheme'))
+            else:
+                none_cntr += 1
+
+        if end_to:
+            if start_from > end_to:
                 raise forms.ValidationError(
-                     _('Change previous scheme end_to to not none of %s' % 'MARRIED' if marital_status == 'M' else 'UNMARRIED'))
+                    _('End to must be greater than start from'))
+        else:
+            if none_cntr != 0:
+                raise forms.ValidationError(
+                    _('Scheme with end_to None already exist'))
+        # if not tax_schemes:
+        #     if start_from:
+        #         self.add_error(
+        #             'start_from',
+        #             'First should start with 0'
+        #         )
+        # else:
+        #     scheme = tax_schemes[0]
+        #     if start_from != scheme.end_to + 1:
+        #         self.add_error(
+        #             'start_from',
+        #             'Start from must be just after end to of previous'
+        #         )
+        #     if priority < scheme.priority:
+        #         self.add_error(
+        #             'priority',
+        #             'This must be greater than previous priority'
+        #         )
+        #     if not scheme.end_to:
+        #         raise forms.ValidationError(
+        #              _('Change previous scheme end_to to not none of %s' % 'MARRIED' if marital_status == 'M' else 'UNMARRIED'))
 
 # class EmployeeAccountForm(forms.ModelForm):
 
