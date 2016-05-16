@@ -5,6 +5,8 @@ from njango.models import TranslatableNumberModel
 from njango.nepdate import bs, bs2ad, tuple_from_string, ad2bs, string_from_tuple
 from njango.utils import get_calendar
 from django.utils.translation import ugettext_lazy as _
+from solo.models import SingletonModel
+
 from users.templatetags.filters import localize
 
 FISCAL_YEARS = (
@@ -39,13 +41,13 @@ class FiscalYear(models.Model):
     @staticmethod
     def get(year=None):
         if not year:
-            year = app_setting.fiscal_year
+            year = AppSetting.get_solo().fiscal_year
         return FiscalYear.objects.get(year=year)
 
     @staticmethod
     def start(year=None):
         if not year:
-            year = app_setting.fiscal_year
+            year = AppSetting.get_solo().fiscal_year
         fiscal_year_start = str(year) + '-04-01'
         tuple_value = tuple_from_string(fiscal_year_start)
         calendar = get_calendar()
@@ -56,7 +58,7 @@ class FiscalYear(models.Model):
     @staticmethod
     def end(year=None):
         if not year:
-            year = app_setting.fiscal_year
+            year = AppSetting.get_solo().fiscal_year
         fiscal_year_end = str(int(year) + 1) + '-03-' + str(bs[int(year) + 1][2])
         tuple_value = tuple_from_string(fiscal_year_end)
         calendar = get_calendar()
@@ -75,32 +77,25 @@ class FiscalYear(models.Model):
 class FYManager(models.Manager):
     def fiscal_year(self, year=None):
         if year:
-            original_fiscal_year = app_setting.fiscal_year
-            app_setting.fiscal_year = year  # bypasses validation
+            original_fiscal_year = AppSetting.get_solo().fiscal_year
+            AppSetting.get_solo().fiscal_year = year  # bypasses validation
             lookup_year = year
         else:
-            lookup_year = app_setting.fiscal_year
+            lookup_year = AppSetting.get_solo().fiscal_year
         result = super(FYManager, self).get_queryset().filter(date__gte=FiscalYear.start(lookup_year),
                                                               date__lte=FiscalYear.end(lookup_year))
         # return super(FYManager, self).get_queryset().filter(Q(date__year__range=(FiscalYear.start(year)[0], FiscalYear.end(year)[0])))
         if year:
-            app_setting.fiscal_year = original_fiscal_year
+            AppSetting.get_solo().fiscal_year = original_fiscal_year
         return result
 
 
-import dbsettings
-
-
-class AppSetting(dbsettings.Group):
-    site_name = dbsettings.StringValue(default='NERP')
-    # fiscal_year = dbsettings.MultipleChoiceValue(choices=[('13+', '13-19'), ('19+', '19-25'), ('25+', '25-40')])
-    fiscal_year = dbsettings.StringValue(
-        choices=FISCAL_YEARS)
-    header_for_forms = dbsettings.TextValue(default='NERP')
-    header_for_forms_nepali = dbsettings.TextValue()
-
-
-app_setting = AppSetting()
+class AppSetting(SingletonModel):
+    site_name = models.CharField(default='NERP', max_length=100)
+    fiscal_year = models.PositiveIntegerField(
+        choices=FISCAL_YEARS, default=FISCAL_YEARS[-1][0])
+    header_for_forms = models.TextField(default='NERP')
+    header_for_forms_nepali = models.TextField(default='NERP')
 
 
 class Language(models.Model):
@@ -184,7 +179,7 @@ class BudgetHead(TranslatableNumberModel):
     _translatable_number_fields = ('no',)
 
     def get_current_balance(self):
-        return BudgetBalance.objects.get(fiscal_year=FiscalYear.get(app_setting.fiscal_year), budget_head=self)
+        return BudgetBalance.objects.get(fiscal_year=FiscalYear.get(AppSetting.get_solo().fiscal_year), budget_head=self)
 
     current_balance = property(get_current_balance)
 
@@ -242,7 +237,7 @@ class TaxScheme(models.Model):
 
 
 def validate_in_fy(value):
-    fiscal_year = app_setting.fiscal_year
+    fiscal_year = AppSetting.get_solo().fiscal_year
     if fiscal_year is None:
         return True
     fiscal_year_start = str(fiscal_year) + '-04-01'
@@ -257,3 +252,16 @@ def validate_in_fy(value):
         value_tuple = bs2ad(value)
     if not bs2ad(fiscal_year_start) <= value_tuple <= bs2ad(fiscal_year_end):
         raise ValidationError('%s %s' % (localize(value), _('is not in current fiscal year.')))
+
+
+class Currency(models.Model):
+    code = models.CharField(max_length=3)
+    name = models.CharField(max_length=100)
+    latest_usd_rate = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = u'Currencies'
+        db_table = 'currency'
+
+    def __str__(self):
+        return self.code + ' - ' + self.name

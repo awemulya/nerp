@@ -5,7 +5,8 @@ from core.models import Language
 from ils.forms import RecordForm, BookForm,\
      PublisherForm, OutgoingForm, IncomingForm, PatronForm
 from ils.serializers import TransactionSerializer
-from ils.models import library_setting as setting
+# from ils.models import library_setting as setting
+from ils.models import LibrarySetting
 
 from . import isbn as isbnpy
 import urllib2
@@ -418,7 +419,7 @@ class RecordView(View):
                              lookup_path=['details', 'details'],
                              lookup_fields=['physical_format']
                              ),
-                           'type': setting.default_type,
+                           'type': LibrarySetting.get_solo().default_type,
                            'goodreads_id': self.get_from_api(
                             data=ol_data,
                             lookup_path=['details', 'details', 'identifiers'],

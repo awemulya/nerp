@@ -6,6 +6,7 @@ from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView a
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 from django.template.loader import get_template
 from django.template import RequestContext
 from django.http import HttpResponse, JsonResponse
@@ -99,6 +100,7 @@ class PDFView(TemplateView):
         return http_response
 
 
+
 class UpdateView(BaseUpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
@@ -128,3 +130,27 @@ class DeleteView(BaseDeleteView):
         response = super(DeleteView, self).post(request, *args, **kwargs)
         messages.success(request, ('%s %s' % (self.object.__class__._meta.verbose_name.title(), _('successfully deleted!'))))
         return response
+
+class TableObjectMixin(TemplateView):
+    def get_context_data(self, *args, **kwargs):
+        context = super(TableObjectMixin, self).get_context_data(**kwargs)
+        if self.kwargs:
+            pk = int(self.kwargs.get('pk'))
+            obj = get_object_or_404(self.model, pk=pk, company=self.request.company)
+            scenario = 'Update'
+        else:
+            obj = self.model(company=self.request.company)
+            # if obj.__class__.__name__ == 'PurchaseVoucher':
+            #     tax = self.request.company.settings.purchase_default_tax_application_type
+            #     tax_scheme = self.request.company.settings.purchase_default_tax_scheme
+            #     if tax:
+            #         obj.tax = tax
+            #     if tax_scheme:
+            #         obj.tax_scheme = tax_scheme
+            scenario = 'Create'
+        data = self.serializer_class(obj).data
+        context['data'] = data
+        context['scenario'] = scenario
+        context['obj'] = obj
+        return context
+

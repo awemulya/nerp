@@ -1140,8 +1140,14 @@ function empty_or_undefined(o) {
 }
 
 function empty_to_zero(o) {
-    if (o == '' || typeof o == 'undefined')
+    if (o == '' || typeof o == 'undefined' || isNaN(o))
         return 0;
+    return parseFloat(o);
+}
+
+function empty_to_blank(o) {
+    if (o == '' || typeof o == 'undefined' || isNaN(o))
+        return '';
     return parseFloat(o);
 }
 
@@ -1214,8 +1220,7 @@ String.prototype.toDash = function () {
 
 String.prototype.toTitleCase = function () {
     var smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|vs?\.?|via)$/i;
-
-    return this.replace(/([^\W_]+[^\s-]*) */g, function (match, p1, index, title) {
+    return this.replace('_', ' ').replace(/([^\W_]+[^\s-]*) */g, function (match, p1, index, title) {
         if (index > 0 && index + p1.length !== title.length &&
             p1.search(smallWords) > -1 && title.charAt(index - 2) !== ":" &&
             title.charAt(index - 1).search(/[^\s-]/) < 0) {
