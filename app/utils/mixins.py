@@ -1,12 +1,53 @@
 import os
+from django.contrib import messages
+
+from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, DeleteView as BaseDeleteView
+
+from django.utils.translation import ugettext_lazy as _
+
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 from django.template import RequestContext
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import TemplateView
-from django.contrib.staticfiles.templatetags.staticfiles import static
-
 from weasyprint import HTML, CSS
+
+
+def json_from_object(obj):
+    data = {
+        'id': obj.id
+    }
+
+    if hasattr(obj, 'name'):
+        data['name'] = obj.name
+    elif hasattr(obj, 'title'):
+        data['name'] = obj.title
+    else:
+        data['name'] = str(obj)
+
+    if hasattr(obj, 'percent'):
+        data['percent'] = obj.percent  # Percent attr for tax scheme
+    return JsonResponse(data)
+
+
+class AjaxableResponseMixin(object):
+    def form_invalid(self, form):
+        response = super(AjaxableResponseMixin, self).form_invalid(form)
+        if self.request.is_ajax():
+            return JsonResponse(form.errors, status=400)
+        else:
+            return response
+
+    def form_valid(self, form):
+        response = super(AjaxableResponseMixin, self).form_valid(form)
+        if self.request.is_ajax():
+            if 'ret' in self.request.GET:
+                obj = getattr(self.object, self.request.GET['ret'])
+            else:
+                obj = self.object
+            return json_from_object(obj)
+        else:
+            return response
 
 
 def find_static(path):
@@ -28,6 +69,7 @@ class LoginRequiredMixin(object):
     def as_view(cls, **kwargs):
         view = super(LoginRequiredMixin, cls).as_view(**kwargs)
         return login_required(view)
+
 
 class PDFView(TemplateView):
     def get_file_name(self):
@@ -55,3 +97,34 @@ class PDFView(TemplateView):
         http_response = HttpResponse(pdf_file, content_type='application/pdf')
         http_response['Content-Disposition'] = 'filename="' + self.get_file_name()
         return http_response
+
+
+class UpdateView(BaseUpdateView):
+    def get_context_data(self, **kwargs):
+        context = super(UpdateView, self).get_context_data(**kwargs)
+        context['scenario'] = _('Edit')
+        context['base_template'] = 'base.html'
+        super(UpdateView, self).get_context_data()
+        return context
+
+
+class CreateView(BaseCreateView):
+    def get_context_data(self, **kwargs):
+        context = super(CreateView, self).get_context_data(**kwargs)
+        context['scenario'] = _('Add')
+        if self.request.is_ajax():
+            base_template = 'modal.html'
+        else:
+            base_template = 'base.html'
+        context['base_template'] = base_template
+        return context
+
+
+class DeleteView(BaseDeleteView):
+    def get(self, *args, **kwargs):
+        return self.post(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        response = super(DeleteView, self).post(request, *args, **kwargs)
+        messages.success(request, ('%s %s' % (self.object.__class__._meta.verbose_name.title(), _('successfully deleted!'))))
+        return response

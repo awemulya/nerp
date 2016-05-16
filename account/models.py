@@ -337,7 +337,7 @@ class Account(models.Model):
         return 0
 
     def save(self, *args, **kwargs):
-        queryset = Account.objects.filter(company=self.company)
+        queryset = Account.objects.all()
         original_name = self.name
         nxt = 2
         if not self.pk:

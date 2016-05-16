@@ -340,3 +340,37 @@ def remaining_total_cost_price(row, counter, data):
     return float_zero_for_none(row.get('income_total')) - float_zero_for_none(
         row.get('expense_total')) + remaining_total_cost_price(
         previous_row, counter - 1, data)
+
+
+@register.filter
+def dr_or_cr(val):
+    if val < 0:
+        return str(val * -1) + ' (Cr)'
+    else:
+        return str(val) + ' (Dr)'
+
+@register.filter
+def get_particulars(entry, account):
+    lst = []
+    source = entry.content_type.get_object_for_this_type(id=entry.object_id)
+    for row in source.journal_voucher.rows.all():
+        if row.account is not None and not row.account == account:
+            lst.append('<a href="' + '/ledger/' + str(row.account.id) + '/#' + str(entry.id) + '">' + str(
+                row.account) + '</a>')
+    return ', '.join(lst)
+
+
+@register.filter
+def remove_account(transactions, account):
+    return [transaction for transaction in transactions if
+            transaction.account.id != account.id]
+
+
+@register.filter
+def refine_voucher_type(the_type):
+    if the_type[-4:] == ' row':
+        the_type = the_type[:-3]
+    if the_type[-11:] == ' particular':
+        the_type = the_type[:-10]
+    return the_type.title()
+
