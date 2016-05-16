@@ -20,7 +20,7 @@ urlpatterns = patterns('',
                        (r'^training/', include('training.urls')),
                        (r'^key/', include('key.urls')),
 
-                       (r'^admin/settings/', include('dbsettings.urls')),
+                       # (r'^admin/settings/', include('dbsettings.urls')),
                        url(r'^admin/', include(admin.site.urls)),
                        (r'^i18n/', include('django.conf.urls.i18n')),
 

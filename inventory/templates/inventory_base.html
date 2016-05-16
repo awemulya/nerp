@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n filters %}
+{% load solo_tags %}
 
 {% block breadcrumbs %}
     {{ block.super }}
@@ -7,6 +8,7 @@
 {% endblock %}
 
 {% block breadcrumbs_before_print %}
+    {% get_solo 'core.AppSetting' as app_setting %}
     {% trans 'Fiscal Year' %}:
-    {{ 'core.models.app_setting.fiscal_year'|setting|fiscal_year|localize }}
+    {{ app_setting.fiscal_year|setting|fiscal_year|localize }}
 {% endblock %}
