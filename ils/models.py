@@ -241,7 +241,8 @@ class Transaction(models.Model):
     def new():
         transaction = Transaction()
         transaction.borrow_date = datetime.datetime.today().date()
-        from ils.models import library_setting as setting
+        # from ils.models import library_setting as setting
+        setting = LibrarySetting.get_solo()
 
         transaction.due_date = transaction.borrow_date + \
                                datetime.timedelta(days=setting.borrow_days)
@@ -261,7 +262,7 @@ class LibrarySetting(SingletonModel):
         max_length=50
     )
 
-library_setting = LibrarySetting.get_solo()
+# library_setting = LibrarySetting.get_solo()
 
 
 def not_returned(self):
