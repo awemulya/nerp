@@ -864,14 +864,21 @@ class TaxScheme(models.Model):
     )
     start_from = models.FloatField()
     end_to = models.FloatField(null=True, blank=True)
-    tax_rate = models.FloatField()
-    priority = models.PositiveIntegerField()
+    # tax_rate = models.FloatField()
+    # priority = models.PositiveIntegerField()
 
     def __unicode__(self):
         return u"From %f" % (self.start_from)
 
     class Meta:
-        unique_together = (('marital_status', 'start_from', 'end_to'), ('priority', 'marital_status'))
+        unique_together = (('marital_status', 'start_from', 'end_to'),)
+
+
+class TaxCalcScheme(models.Model):
+    scheme = models.ForeignKey(TaxScheme)
+    start_from = models.FloatField()
+    end_to = models.FloatField(null=True, blank=True)
+    tax_rate = models.FloatField()
 
 
 class DeductionDetail(models.Model):
