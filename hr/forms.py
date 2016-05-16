@@ -482,42 +482,42 @@ class TaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
             key=lambda item: item['priority'],
             reverse=True
         )
-        if sorted_dict_list[-1]['start_from'] != 0:
-            sorted_dict_list[-1]['form'].add_error(
-                'start_from',
-                'First range must start from 0',
-            )
-        for index, item in enumerate(sorted_dict_list):
-            if index == 0:
-                if item['end_to'] is not None:
-                    item['form'].add_error(
-                        'end_to',
-                        'Last range end to should be None'
-                    )
-                try:
-                    if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+        if sorted_dict_list:
+            if sorted_dict_list[-1]['start_from'] != 0:
+                sorted_dict_list[-1]['form'].add_error(
+                    'start_from',
+                    'First range must start from 0',
+                )
+            for index, item in enumerate(sorted_dict_list):
+                if index == 0:
+                    if item['end_to'] is not None:
                         item['form'].add_error(
-                            'start_from',
-                            'start_from must be just after previous end_to',
+                            'end_to',
+                            'Last range end to should be None'
                         )
-                except:
-                    pass
+                    try:
+                        if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+                            item['form'].add_error(
+                                'start_from',
+                                'start_from must be just after previous end_to',
+                            )
+                    except:
+                        pass
 
-            else:
-                if item['end_to'] is None:
-                    item['form'].add_error(
-                        'end_to',
-                        'This field should not be None'
-                    )
-                try:
-                    if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+                else:
+                    if item['end_to'] is None:
                         item['form'].add_error(
-                            'start_from',
-                            'start_from must be just after previous end_to',
+                            'end_to',
+                            'This field should not be None'
                         )
-                except:
-                    pass
-
+                    try:
+                        if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+                            item['form'].add_error(
+                                'start_from',
+                                'start_from must be just after previous end_to',
+                            )
+                    except:
+                        pass
 
 
 class AllowanceForm(forms.ModelForm):
@@ -648,6 +648,41 @@ class TaxSchemeForm(forms.ModelForm):
         model = TaxScheme
         fields = '__all__'
         # exclude = ('accounts',)
+
+    def clean(self):
+        cleaned_data = super(TaxSchemeForm, self).clean()
+
+        marital_status = cleaned_data.get("marital_status")
+        start_from = cleaned_data.get("start_from")
+        end_to = cleaned_data.get("end_to")
+        priority = cleaned_data.get("priority")
+
+        tax_schemes = sorted(
+            TaxScheme.objects.filter(marital_status=marital_status),
+            key=lambda x: x.priority,
+            reverse=True
+        )
+        if not tax_schemes:
+            if start_from:
+                self.add_error(
+                    'start_from',
+                    'First should start with 0'
+                )
+        else:
+            scheme = tax_schemes[0]
+            if start_from != scheme.end_to + 1:
+                self.add_error(
+                    'start_from',
+                    'Start from must be just after end to of previous'
+                )
+            if priority < scheme.priority:
+                self.add_error(
+                    'priority',
+                    'This must be greater than previous priority'
+                )
+            if not scheme.end_to:
+                raise forms.ValidationError(
+                     _('Change previous scheme end_to to not none of %s' % 'MARRIED' if marital_status == 'M' else 'UNMARRIED'))
 
 # class EmployeeAccountForm(forms.ModelForm):
 
