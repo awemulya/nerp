@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, TaxSchemeFormSet
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, TaxSchemeFormSet, TaxSchemeForm, TaxCalcSchemeFormSet
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry, Incentive, Allowance
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
@@ -1242,10 +1242,10 @@ def list_employee(request):
 
 def delete_employee(request, pk=None):
     obj = Employee.objects.get(id=pk)
-    employee_accounts = EmployeeAccount.objects.filter(employee=obj)
+    # employee_accounts = EmployeeAccount.objects.filter(employee=obj)
     obj.delete()
-    for emp_acc in employee_accounts:
-        emp_acc.delete()
+    # for emp_acc in employee_accounts:
+    #     emp_acc.delete()
     return redirect(reverse('list_employee'))
 
 
@@ -1294,10 +1294,10 @@ def list_incentive(request):
 
 def delete_incentive(request, pk=None):
     obj = IncentiveName.objects.get(id=pk)
-    inc_details = Incentive.objects.filter(name=obj)
+    # inc_details = Incentive.objects.filter(name=obj)
     obj.delete()
-    for inc in inc_details():
-        inc.delete()
+    # for inc in inc_details():
+    #     inc.delete()
     return redirect(reverse('list_incentive'))
 
 
@@ -1346,10 +1346,10 @@ def list_allowance(request):
 
 def delete_allowance(request, pk=None):
     obj = AllowanceName.objects.get(id=pk)
-    alw_details = Allowance.objects.filter(name=obj)
+    # alw_details = Allowance.objects.filter(name=obj)
     obj.delete()
-    for alw in alw_details():
-        alw.delete()
+    # for alw in alw_details():
+    #     alw.delete()
     return redirect(reverse('list_allowance'))
 
 
@@ -1397,3 +1397,63 @@ def tax_scheme(request):
         {
             'tax_scheme_formset': tax_scheme_formset,
         })
+
+
+def tax_scheme_detail(request, pk=None):
+    ko_data = {}
+
+    if pk:
+        obj_id = pk
+        tax_scheme = TaxScheme.objects.get(id=pk)
+    else:
+        obj_id = None
+        tax_scheme = TaxScheme()
+
+    if request.method == "POST":
+        tax_scheme_form = TaxSchemeForm(request.POST, instance=tax_scheme)
+        tax_calc_scheme_formset = TaxCalcSchemeFormSet(request.POST, instance=tax_scheme)
+        if tax_scheme_form.is_valid() and tax_calc_scheme_formset.is_valid():
+            tax_scheme_form.save()
+            tax_calc_scheme_formset.save()
+            return redirect(reverse('list_tax_scheme'))
+    else:
+        tax_scheme_form = TaxSchemeForm(instance=tax_scheme)
+        tax_calc_scheme_formset = TaxCalcSchemeFormSet(instance=tax_scheme)
+
+    return render(
+        request,
+        'tax_detail_scheme_cu.html',
+        {
+            'tax_scheme_form': tax_scheme_form,
+            'tax_calc_scheme_formset': tax_calc_scheme_formset,
+            'ko_data': ko_data,
+            'obj_id': obj_id,
+        })
+
+
+def list_tax_scheme(request):
+    m_objects = sorted(
+        TaxScheme.objects.filter(marital_status='M'),
+        key=lambda x: x.priority
+    )
+    u_objects = sorted(
+        TaxScheme.objects.filter(marital_status='U'),
+        key=lambda x: x.priority
+    )
+    return render(
+        request,
+        'tax_scheme_list.html',
+        {
+            'm_objects': m_objects,
+            'u_objects': u_objects,
+        }
+    )
+
+
+def delete_tax_scheme(request, pk=None):
+    obj = TaxScheme.objects.get(id=pk)
+    # alw_details = Allowance.objects.filter(name=obj)
+    obj.delete()
+    # for alw in alw_details():
+    #     alw.delete()
+    return redirect(reverse('list_tax_scheme'))

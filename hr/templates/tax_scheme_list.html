@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% load filters %}
+{% load i18n %}
+
+{% block head_end %}
+
+{% endblock %}
+
+{% block alert %}
+
+    <!-- <div id="alert_placeholder">
+        <ul data-bind="foreach: errors.items" class="alert-error">
+            <li>
+                Budget for "<span data-bind="text: budget.name()"></span>" from source "<span data-bind="text: source"></span>" exceeds
+            </li>
+        </ul>
+    </div> -->
+{% endblock %}
+
+{% block  content %}
+    <table class="table" >
+        <tr>
+            <th>Marital Status</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Controls</th>
+        </tr>
+        {% for obj in m_objects %}
+            <tr>
+                <td><a href={% url 'edit_tax_scheme' obj.id %}>{{ obj.marital_status }}</a></td>
+                <td><a href={% url 'edit_tax_scheme' obj.id %}>{{ obj.start_from }}</a></td>
+                <td><a href={% url 'edit_tax_scheme' obj.id %}>{{ obj.end_to }}</a></td>
+                <td><a href={% url 'delete_tax_scheme' obj.id %}><button type="button">Delete</button></a></td>
+
+            </tr>
+        {% endfor %}
+        {% for obj1 in u_objects %}
+            <tr>
+                <td><a href={% url 'edit_tax_scheme' obj1.id %}>{{ obj1.marital_status }}</a></td>
+                <td><a href={% url 'edit_tax_scheme' obj1.id %}>{{ obj1.start_from }}</a></td>
+                <td><a href={% url 'edit_tax_scheme' obj1.id %}>{{ obj1.end_to }}</a></td>
+                <td><a href={% url 'delete_tax_scheme' obj1.id %}><button type="button">Delete</button></a></td>
+
+            </tr>
+        {% endfor %}
+    </table>
+
+    
+    
+{% endblock %}

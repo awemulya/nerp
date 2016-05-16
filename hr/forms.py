@@ -4,7 +4,7 @@ from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#, MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
-from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, TaxScheme
+from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, TaxScheme, TaxCalcScheme
 import pdb
 
 # class DateSelectorWidget(MultiWidget):
@@ -454,6 +454,11 @@ class TaxSchemeModelFormSet(forms.BaseModelFormSet):
         #             pass
 
 
+class TaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
+    def clean(self):
+        super(TaxCalcSchemeInlineFormSet, self).clean()
+
+
 class AllowanceForm(forms.ModelForm):
 
     class Meta:
@@ -575,6 +580,14 @@ class AllowanceNameForm(forms.ModelForm):
         model = AllowanceName
         fields = '__all__'
 
+
+class TaxSchemeForm(forms.ModelForm):
+
+    class Meta:
+        model = TaxScheme
+        fields = '__all__'
+        # exclude = ('accounts',)
+
 # class EmployeeAccountForm(forms.ModelForm):
 
 #     class Meta:
@@ -651,4 +664,11 @@ TaxSchemeFormSet = forms.modelformset_factory(
     extra=1,
     fields='__all__',
     formset=TaxSchemeModelFormSet
+)
+TaxCalcSchemeFormSet = forms.inlineformset_factory(
+    TaxScheme,
+    TaxCalcScheme,
+    extra=1,
+    fields='__all__',
+    formset=TaxCalcSchemeInlineFormSet
 )

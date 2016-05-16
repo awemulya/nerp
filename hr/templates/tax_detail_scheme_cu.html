@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% load filters %}
+{% load i18n %}
+
+{% block head_end %}
+    <script src="{% static 'js/vendors/jquery-formset.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.tax-calc-scheme-form').formset({
+                prefix: '{{ tax_calc_scheme_formset.prefix }}'
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block alert %}
+
+    <!-- <div id="alert_placeholder">
+        <ul data-bind="foreach: errors.items" class="alert-error">
+            <li>
+                Budget for "<span data-bind="text: budget.name()"></span>" from source "<span data-bind="text: source"></span>" exceeds
+            </li>
+        </ul>
+    </div> -->
+{% endblock %}
+
+{% block  content %}
+{% if obj_id %}
+    <form method="POST" action="{% url 'edit_allowance' obj_id %}">
+{% else %}
+    <form method="POST" action="{% url 'add_allowance' %}">
+{% endif %}
+    {% csrf_token %}
+    <div class="row">
+        {{ tax_scheme_form.as_table }}
+    </div>
+    <div class="allowance-formset">
+        {% for tax_calc_scheme_form in tax_calc_scheme_formset %}
+            <div class="row tax-calc-scheme-form">
+                {{ tax_calc_scheme_form.as_table }}
+                {% if tax_calc_scheme_form.instance.pk %}{{ tax_calc_scheme_form.DELETE }}{% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    {{ tax_calc_scheme_formset.management_form }}
+    <input type="submit" value="Save"></input>
+
+</form>
+    
+    
+{% endblock %}
