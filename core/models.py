@@ -5,10 +5,9 @@ from njango.models import TranslatableNumberModel
 from njango.nepdate import bs, bs2ad, tuple_from_string, ad2bs, string_from_tuple
 from njango.utils import get_calendar
 from django.utils.translation import ugettext_lazy as _
+from solo.models import SingletonModel
 
 from users.templatetags.filters import localize
-
-from solo.models import SingletonModel
 
 FISCAL_YEARS = (
     (2069, "2069/70"),
@@ -94,9 +93,9 @@ class FYManager(models.Manager):
 class AppSetting(SingletonModel):
     site_name = models.CharField(default='NERP', max_length=100)
     fiscal_year = models.PositiveIntegerField(
-        choices=FISCAL_YEARS)
-    header_for_forms = models.CharField(default='NERP', max_length=100)
-    header_for_forms_nepali = models.CharField(max_length=100)
+        choices=FISCAL_YEARS, default=FISCAL_YEARS[-1][0])
+    header_for_forms = models.TextField(default='NERP')
+    header_for_forms_nepali = models.TextField(default='NERP')
 
 
 class Language(models.Model):

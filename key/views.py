@@ -6,6 +6,7 @@ import requests
 
 from django.http import JsonResponse
 # from dbsettings.models import Setting
+from core.models import AppSetting
 from key.models import KeySetting
 
 from .config import *
@@ -13,7 +14,7 @@ from .config import *
 
 def send_key_request(request):
     # setting = Setting.objects.get(attribute_name=ATTR_NAME)
-    setting = getattr(KeySetting.get_solo(), ATTR_NAME)
+    setting = getattr(AppSetting.get_solo(), ATTR_NAME)
     res = requests.post(REQUEST_URL, data={'app': APP_NAME, 'user': setting})
     return JsonResponse(json.loads(res.content))
 
