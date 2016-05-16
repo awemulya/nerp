@@ -1,7 +1,11 @@
 from django.contrib import admin
+from solo.admin import SingletonModelAdmin
 from app.utils.translation import TranslationAdmin
 from core.models import FiscalYear, Donor, Activity, BudgetHead, Employee, Party, Account, TaxScheme, BudgetBalance, \
-    Language, Currency
+    Language, Currency, AppSetting
+
+
+
 
 
 class LanguageAdmin(admin.ModelAdmin):
@@ -32,4 +36,8 @@ admin.site.register(Employee, TranslationAdmin)
 admin.site.register(Account, TranslationAdmin)
 admin.site.register(TaxScheme, TaxSchemeAdmin)
 admin.site.register(Language, LanguageAdmin)
+
+
+
+admin.site.register(AppSetting, SingletonModelAdmin)
 

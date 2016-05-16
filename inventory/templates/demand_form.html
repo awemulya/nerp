@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load filters %}
 {% load staticfiles %}
+{% load solo_tags %}
 
 {% block title %}{% trans scenario %} {% trans 'Demand Form' %}{% endblock %}
 
@@ -56,8 +57,9 @@
                 </span>
 
                 <span class="col-sm-6 visible-print-inline pull-right text-right">
+                        {% get_solo 'core.AppSetting' as app_setting %}
                         {% trans 'Fiscal Year' %}:
-                        {{ 'core.models.app_setting.fiscal_year'|setting|fiscal_year|localize }}
+                        {{ app_setting.fiscal_year|fiscal_year|localize }}
                 </span>
 
         </div>

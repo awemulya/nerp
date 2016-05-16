@@ -1,5 +1,7 @@
 {% load filters %}
+{% load solo_tags %}
+{% get_solo 'core.AppSetting' as app_setting %}
 <footer class="container-fluid">
-    NERP | {{ 'core.models.app_setting.site_name'|setting }}
+    NERP | {{ app_setting.site_name }}
     | Developed by <a href="http://awecode.com" target="_blank">Awecode</a>
 </footer>
