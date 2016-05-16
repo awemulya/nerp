@@ -1,11 +1,16 @@
 {% extends 'base.html' %}
-{% load i18n filters %}
+{% load i18n filters solo_tags %}
 
 {% block breadcrumbs %}
     <li><a href="">{% trans 'Project Account' %}</a></li>
 {% endblock %}
 
 {% block breadcrumbs_before_print %}
+    {% if project %}
+    {{ project.name }} |
+    {% endif %}
+    
+    {% get_solo 'core.AppSetting' as app_setting %}
     {% trans 'Fiscal Year' %}:
-    {{ 'core.models.app_setting.fiscal_year'|setting|fiscal_year|localize }}
+    {{ app_setting.fiscal_year|fiscal_year|localize }}
 {% endblock %}

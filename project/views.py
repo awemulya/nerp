@@ -8,20 +8,11 @@ from django.views.generic import ListView
 from app.utils.helpers import save_model, invalid
 from core.models import FiscalYear
 from inventory.models import delete_rows
-from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense
+from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer
 
 
-def imprest_ledger(request):
-    context = {
-        'fy': FiscalYear.get()
-    }
-    return render(request, 'imprest_ledger.html', context)
-
-
-class ImprestLedger(ListView):
-    model = ImprestTransaction
-    template_name = 'imprest_ledger.html'
+class ProjectView(object):
     fy = None
 
     def get_fy(self):
@@ -30,10 +21,40 @@ class ImprestLedger(ListView):
         return self.fy
 
     def get_context_data(self, **kwargs):
-        context_data = super(ImprestLedger, self).get_context_data(**kwargs)
+        context_data = super(ProjectView, self).get_context_data(**kwargs)
         context_data['fy'] = self.get_fy()
+        if 'project_id' in self.kwargs:
+            try:
+                context_data['project'] = Project.objects.get(pk=self.kwargs.pop('project_id'), active=True)
+            except Project.DoesNotExist:
+                pass
+        if 'data' in context_data:
+            context_data['data']['fy_id'] = context_data['fy'].id,
+        return context_data
+
+
+def index(request):
+    projects = Project.objects.filter(active=True)
+    return render(request, 'project_index.html', {'projects': projects})
+
+
+def imprest_ledger(request, project_id):
+    project = Project.objects.get(pk=project_id)
+    context = {
+        'fy': FiscalYear.get(),
+        'project': project,
+    }
+    return render(request, 'imprest_ledger.html', context)
+
+
+class ImprestLedger(ProjectView, ListView):
+    model = ImprestTransaction
+    template_name = 'imprest_ledger.html'
+    fy = None
+
+    def get_context_data(self, **kwargs):
+        context_data = super(ImprestLedger, self).get_context_data(**kwargs)
         context_data['data'] = {
-            'fy_id': self.get_fy().id,
             'rows': ImprestTransactionSerializer(context_data['object_list'], many=True).data,
         }
         return context_data
