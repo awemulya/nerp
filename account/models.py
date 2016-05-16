@@ -354,7 +354,8 @@ class Account(models.Model):
         return self.name
 
     class Meta:
-        unique_together = ('name', 'company')
+        unique_together = ('name',)
+        # unique_together = ('name', 'company')
 
 
 @receiver(pre_delete, sender=Transaction)
