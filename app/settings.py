@@ -63,7 +63,7 @@ INSTALLED_APPS = (
     'training',
     'key',
 
-    'dbsettings',
+    # 'dbsettings',
     'solo',
 )
 

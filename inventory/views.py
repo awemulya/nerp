@@ -20,7 +20,7 @@ from openpyxl.styles import Style, Font, Alignment
 from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 from openpyxl.cell import get_column_letter
 
-from core.models import app_setting, FiscalYear, Party, FISCAL_YEARS
+from core.models import AppSetting, FiscalYear, Party, FISCAL_YEARS
 from app.utils.helpers import invalid, save_model, empty_to_none
 from app.utils.mixins import PDFView, LoginRequiredMixin
 # from app.utils.mixins import TemplateView as PDFView
@@ -126,7 +126,7 @@ def convert_demand(request, id):
     ws = wb.active
     ws.merge_cells('A2:H2')
     header = ws.cell('A2')
-    header.value = app_setting.header_for_forms
+    header.value = AppSetting.get_solo().header_for_forms
     ws.row_dimensions[header.row].height = 40
     header.style = Style(
         font=Font(
@@ -196,7 +196,7 @@ def convert_purchase_order(request, id):
     ws = wb.active
 
     # Header
-    header = merge_and_add(ws, 2, 1, 2, 9, app_setting.header_for_forms)
+    header = merge_and_add(ws, 2, 1, 2, 9, AppSetting.get_solo().header_for_forms)
     ws.row_dimensions[header.row].height = 40
     header.style = Style(
         font=Font(
@@ -285,7 +285,7 @@ def convert_entry_report(request, id):
     ws = wb.active
     row_index = 9
     # Header
-    header = merge_and_add(ws, 2, 1, 2, 13, app_setting.header_for_forms)
+    header = merge_and_add(ws, 2, 1, 2, 13, AppSetting.get_solo().header_for_forms)
     ws.row_dimensions[header.row].height = 40
     header.style = Style(
         font=Font(
