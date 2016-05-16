@@ -63,7 +63,8 @@ INSTALLED_APPS = (
     'training',
     'key',
 
-    'dbsettings',
+    # 'dbsettings',
+    'solo',
 )
 
 TIME_ZONE = 'Asia/Kathmandu'

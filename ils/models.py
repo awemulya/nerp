@@ -1,7 +1,6 @@
 import datetime
 import os
 
-import dbsettings
 from django.core.urlresolvers import reverse
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
@@ -10,6 +9,8 @@ from core.models import Language
 from app.utils.forms import unique_slugify
 from users.models import User
 from app.utils.flexible_date import FlexibleDateField
+
+from solo.models import SingletonModel
 
 
 BOOK_TYPES = (
@@ -251,15 +252,16 @@ class Transaction(models.Model):
         return unicode(self.record) + ' | ' + unicode(self.user)
 
 
-class LibrarySetting(dbsettings.Group):
-    fine_per_day = dbsettings.FloatValue(default=2)
-    borrow_days = dbsettings.PositiveIntegerValue(default=7)
-    default_type = dbsettings.StringValue(
+class LibrarySetting(SingletonModel):
+    fine_per_day = models.FloatField(default=2)
+    borrow_days = models.PositiveIntegerField(default=7)
+    default_type = models.CharField(
         choices=BOOK_TYPES,
-        default='Circulative')
+        default='Circulative',
+        max_length=50
+    )
 
-
-library_setting = LibrarySetting('Library Settings')
+library_setting = LibrarySetting.get_solo()
 
 
 def not_returned(self):

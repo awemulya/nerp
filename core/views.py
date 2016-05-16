@@ -153,11 +153,15 @@ def change_fiscal_year(request):
         new_fiscal_year_str = request.POST.get('fiscal_year')
 
         # app_setting.fiscal_year = new_fiscal_year_str
-        from dbsettings.models import Setting
+        # from dbsettings.models import Setting
 
-        fiscal_year_setting = Setting.objects.get(module_name='core.models', attribute_name='fiscal_year')
-        fiscal_year_setting.value = new_fiscal_year_str
-        fiscal_year_setting.save()
+        # fiscal_year_setting = Setting.objects.get(module_name='core.models', attribute_name='fiscal_year')
+        # fiscal_year_setting.value = new_fiscal_year_str
+        # fiscal_year_setting.save()
+        from core.models import AppSetting
+        app_setting = AppSetting.get_solo()
+        app_setting.fiscal_year = new_fiscal_year_str
+        app_setting.save()
         new_fiscal_year = FiscalYear.get(new_fiscal_year_str)
         fiscal_year_signal.send(sender=None, new_fiscal_year_str=new_fiscal_year_str, old_fiscal_year=old_fiscal_year,
                                 new_fiscal_year=new_fiscal_year)
