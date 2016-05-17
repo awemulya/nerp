@@ -1,4 +1,5 @@
 import json
+from django.core.urlresolvers import reverse_lazy
 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -8,8 +9,10 @@ from django.views.generic import ListView
 from app.utils.helpers import save_model, invalid
 from core.models import FiscalYear
 from inventory.models import delete_rows
-from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense
+from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Aid
+from project.forms import AidForm
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer
+from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
 
 def imprest_ledger(request):
@@ -139,3 +142,26 @@ def save_application(request):
             dct['error_message'] = 'Error in form data!'
     # delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
+
+
+
+class AidView(object):
+    model = Aid
+    success_url = reverse_lazy('aid_list')
+    form_class = AidForm
+
+
+class AidList(AidView, ListView):
+    pass
+
+
+class AidCreate(AjaxableResponseMixin, AidView, CreateView):
+    pass
+
+
+class AidUpdate(AidView, UpdateView):
+    pass
+
+
+class AidDelete(AidView, DeleteView):
+    pass

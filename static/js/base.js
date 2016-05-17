@@ -1601,3 +1601,13 @@ $(document).ready(function () {
 var unilarize = function (str) {
     return str.substring(0, str.length - 1) + '(s)';
 }
+
+$(function () {
+    if ($('.selectize').length) {
+        var $select = $('.selectize').selectize();
+        $($select).each(function () {
+            init_selectize(this.selectize);
+            selectize_validation_fix(this.selectize);
+        });
+    }
+});

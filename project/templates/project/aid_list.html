@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Budget Head' %}{% endblock %}
+{% block title %}{% trans 'Aid' %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "budget_head_list" %}">{% trans 'Budget Heads' %}</a>
+    <a href="{% url "aid_list" %}">{% trans 'Aids' %}</a>
 {% endblock %}
 
 {% block content %}
@@ -22,10 +22,10 @@
         <th>{% anchor name _('Name') %}</th>
         </thead>
         <tbody>
-        {% for budget_head in paginated_objects %}
+        {% for aid in paginated_objects %}
             <tr>
                 <td class="link">
-                    <a href="{% url 'budget_head_edit' budget_head.id %}">{{ budget_head }}</a>
+                    <a href="{% url 'aid_edit' aid.id %}">{{ aid }}</a>
                 </td>
             </tr>
         {% endfor %}
@@ -35,7 +35,7 @@
 
 
     <a class="btn btn-success btn-raised btn-lg"
-       href="{% url 'budget_head_add' %}">{% trans 'New' %} {% trans 'Budget Head' %}</a>
+       href="{% url 'aid_add' %}">{% trans 'New' %} {% trans 'Aid' %}</a>
 
     {% paginate %}
 

@@ -503,3 +503,7 @@ td + td {
 tr.total, tr.category, tr.subtotal{
     font-weight: bold;
 }
+
+.selectize-control {
+    width: 22em;
+}
