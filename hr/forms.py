@@ -417,42 +417,47 @@ class TaxSchemeInlineFormSet(forms.BaseInlineFormSet):
             key=lambda item: item['priority'],
             reverse=True
         )
-        if sorted_dict_list[-1]['start_from'] != 0:
-            sorted_dict_list[-1]['form'].add_error(
-                'start_from',
-                'First range must start from 0',
-            )
-        for index, item in enumerate(sorted_dict_list):
-            if index == 0:
-                if item['end_to'] is not None:
-                    item['form'].add_error(
-                        'end_to',
-                        'Last range end to should be None'
-                    )
-                try:
-                    if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+        sorted_dict_list = sorted(
+            e_p_dict_list,
+            key=lambda item: item['priority'],
+            reverse=True
+        )
+        if sorted_dict_list:
+            if sorted_dict_list[-1]['start_from'] != 0:
+                sorted_dict_list[-1]['form'].add_error(
+                    'start_from',
+                    'First range must start from 0',
+                )
+            for index, item in enumerate(sorted_dict_list):
+                if index == 0:
+                    if item['end_to'] is not None:
                         item['form'].add_error(
-                            'start_from',
-                            'start_from must be just after previous end_to',
+                            'end_to',
+                            'Last range end to should be None'
                         )
-                except:
-                    pass
+                    try:
+                        if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+                            item['form'].add_error(
+                                'start_from',
+                                'start_from must be just after previous end_to',
+                            )
+                    except:
+                        pass
 
-            else:
-                if item['end_to'] is None:
-                    item['form'].add_error(
-                        'end_to',
-                        'This field should not be None'
-                    )
-                try:
-                    if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+                else:
+                    if item['end_to'] is None:
                         item['form'].add_error(
-                            'start_from',
-                            'start_from must be just after previous end_to',
+                            'end_to',
+                            'This field should not be None'
                         )
-                except:
-                    pass
-
+                    try:
+                        if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
+                            item['form'].add_error(
+                                'start_from',
+                                'start_from must be just after previous end_to',
+                            )
+                    except:
+                        pass
 
 class TaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
     def clean(self):

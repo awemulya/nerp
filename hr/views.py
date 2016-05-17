@@ -1410,11 +1410,11 @@ def tax_scheme_detail(request, pk=None):
 
 def list_tax_scheme(request):
     m_objects = sorted(
-        TaxScheme.objects.filter(marital_status='M'),
+        TaxScheme.objects.filter(marital_status__marital_status='M'),
         key=lambda x: x.priority
     )
     u_objects = sorted(
-        TaxScheme.objects.filter(marital_status='U'),
+        TaxScheme.objects.filter(marital_status__marital_status='U'),
         key=lambda x: x.priority
     )
     return render(
