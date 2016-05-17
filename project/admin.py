@@ -1,7 +1,7 @@
 from django.contrib import admin
 from adminsortable2.admin import SortableAdminMixin
 
-from .models import ImprestTransaction, Expense, ExpenseCategory, ExpenseRow, Project, Aid, ImprestLedger
+from .models import ImprestTransaction, Expense, ExpenseCategory, ExpenseRow, Project, Aid, ImprestLedger, Signatory
 
 
 class ExpenseCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
@@ -19,3 +19,4 @@ admin.site.register(ExpenseRow)
 admin.site.register(Project)
 admin.site.register(Aid)
 admin.site.register(ImprestLedger)
+admin.site.register(Signatory)

@@ -14,6 +14,17 @@ class Project(models.Model):
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
 
+    def get_imprest(self, fy=None):
+        if not fy:
+            fy = FiscalYear.get()
+        elif type(fy) in [int, str]:
+            fy = FiscalYear.get(fy)
+        imprest, created = ImprestLedger.objects.get_or_create(project=self, fy=fy)
+        return imprest
+
+    def get_imprest_ledger(self, fy=None):
+        return self.get_imprest(fy).ledger
+
     def __str__(self):
         return self.name
 
@@ -120,4 +131,3 @@ class ImprestLedger(models.Model):
 
     class Meta:
         unique_together = ('project', 'fy')
- 
