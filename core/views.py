@@ -1,5 +1,5 @@
 from django import http
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.http import is_safe_url
@@ -7,12 +7,14 @@ from django.contrib.auth.decorators import user_passes_test
 
 from account.serializers import AccountSerializer
 from app.utils.forms import form_view
-from core.forms import PartyForm, EmployeeForm
+from core.forms import PartyForm, EmployeeForm, DonorForm
 from core.models import Party, Employee, BudgetHead, Donor, Activity, Account, TaxScheme, Language, FISCAL_YEARS, FiscalYear
 from core.serializers import PartySerializer, EmployeeSerializer, BudgetSerializer, ActivitySerializer, DonorSerializer, \
     TaxSchemeSerializer, LanguageSerializer
+from django.views.generic import ListView
 from users.models import group_required
 from .signals import fiscal_year_signal
+from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
 
 @group_required('Store Keeper', 'Chief', 'Accountant')
@@ -172,3 +174,26 @@ def change_fiscal_year(request):
         'current_fiscal_year': FiscalYear.get()
     }
     return render(request, 'change_fiscal_year.html', context)
+
+
+
+class DonorView(object):
+    model = Donor
+    success_url = reverse_lazy('donor_list')
+    form_class = DonorForm
+
+
+class DonorList(DonorView, ListView):
+    pass
+
+
+class DonorCreate(AjaxableResponseMixin, DonorView, CreateView):
+    pass
+
+
+class DonorUpdate(DonorView, UpdateView):
+    pass
+
+
+class DonorDelete(DonorView, DeleteView):
+    pass

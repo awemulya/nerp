@@ -26,4 +26,9 @@ urlpatterns = patterns('',
 
                        url(r'^admin/change_fiscal_year/$', views.change_fiscal_year, name='change_fiscal_year'),
 
-)
+                       url(r'^donors/$', views.DonorList.as_view(), name='donor_list'),
+                       url(r'^donor/add/$', views.DonorCreate.as_view(), name='donor_add'),
+                       url(r'^donor/edit/(?P<pk>\d+)/$', views.DonorUpdate.as_view(), name='donor_edit'),
+                       url(r'^donor/delete/(?P<pk>\d+)/$', views.DonorDelete.as_view(), name='donor_delete'),
+
+                       )
