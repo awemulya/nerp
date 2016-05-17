@@ -31,4 +31,8 @@ urlpatterns = patterns('',
                        url(r'^donor/edit/(?P<pk>\d+)/$', views.DonorUpdate.as_view(), name='donor_edit'),
                        url(r'^donor/delete/(?P<pk>\d+)/$', views.DonorDelete.as_view(), name='donor_delete'),
 
+                       url(r'^budget_heads/$', views.BudgetHeadList.as_view(), name='budget_head_list'),
+                       url(r'^budget_head/add/$', views.BudgetHeadCreate.as_view(), name='budget_head_add'),
+                       url(r'^budget_head/edit/(?P<pk>\d+)/$', views.BudgetHeadUpdate.as_view(), name='budget_head_edit'),
+                       url(r'^budget_head/delete/(?P<pk>\d+)/$', views.BudgetHeadDelete.as_view(), name='budget_head_delete'),
                        )

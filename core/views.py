@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import user_passes_test
 
 from account.serializers import AccountSerializer
 from app.utils.forms import form_view
-from core.forms import PartyForm, EmployeeForm, DonorForm
+from core.forms import PartyForm, EmployeeForm, DonorForm, BudgetHeadForm
 from core.models import Party, Employee, BudgetHead, Donor, Activity, Account, TaxScheme, Language, FISCAL_YEARS, FiscalYear
 from core.serializers import PartySerializer, EmployeeSerializer, BudgetSerializer, ActivitySerializer, DonorSerializer, \
     TaxSchemeSerializer, LanguageSerializer
@@ -196,4 +196,26 @@ class DonorUpdate(DonorView, UpdateView):
 
 
 class DonorDelete(DonorView, DeleteView):
+    pass
+
+
+class BudgetHeadView(object):
+    model = BudgetHead
+    success_url = reverse_lazy('budget_head_list')
+    form_class = BudgetHeadForm
+
+
+class BudgetHeadList(BudgetHeadView, ListView):
+    pass
+
+
+class BudgetHeadCreate(AjaxableResponseMixin, BudgetHeadView, CreateView):
+    pass
+
+
+class BudgetHeadUpdate(BudgetHeadView, UpdateView):
+    pass
+
+
+class BudgetHeadDelete(BudgetHeadView, DeleteView):
     pass
