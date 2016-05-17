@@ -860,7 +860,8 @@ class MaritalStatus(models.Model):
     marital_status = models.CharField(
         default='U',
         max_length=1,
-        choices=marital_statuses
+        choices=marital_statuses,
+        unique=True
     )
 
 
