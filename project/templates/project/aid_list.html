@@ -25,7 +25,7 @@
         {% for aid in paginated_objects %}
             <tr>
                 <td class="link">
-                    <a href="{% url 'aid_edit' aid.id %}">{{ aid }}</a>
+                    <a href="{% url 'aid_edit' project.id aid.id %}">{{ aid }}</a>
                 </td>
             </tr>
         {% endfor %}

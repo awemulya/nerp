@@ -16,9 +16,9 @@ urlpatterns = [
 
     url(r'^(?P<project_id>[0-9]+)/aids/$', views.AidList.as_view(), name='aid_list'),
     url(r'^(?P<project_id>[0-9]+)/aid/add/$', views.AidCreate.as_view(), name='aid_add'),
-    url(r'^aid/edit/(?P<pk>\d+)/$', views.AidUpdate.as_view(),
+    url(r'^(?P<project_id>[0-9]+)/aid/edit/(?P<pk>\d+)/$', views.AidUpdate.as_view(),
         name='aid_edit'),
-    url(r'^aid/delete/(?P<pk>\d+)/$', views.AidDelete.as_view(),
+    url(r'^(?P<project_id>[0-9]+)/aid/delete/(?P<pk>\d+)/$', views.AidDelete.as_view(),
         name='aid_delete'),
 
     url(r'^projects/$', views.ProjectList.as_view(), name='project_list'),
