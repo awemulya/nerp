@@ -9,8 +9,8 @@ from django.views.generic import ListView
 from app.utils.helpers import save_model, invalid
 from core.models import FiscalYear
 from inventory.models import delete_rows
-from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Aid
-from project.forms import AidForm
+from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Aid, Project
+from project.forms import AidForm, ProjectForm
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
@@ -164,4 +164,26 @@ class AidUpdate(AidView, UpdateView):
 
 
 class AidDelete(AidView, DeleteView):
+    pass
+
+
+class ProjectView(object):
+    model = Project
+    success_url = reverse_lazy('project_list')
+    form_class = ProjectForm
+
+
+class ProjectList(ProjectView, ListView):
+    pass
+
+
+class ProjectCreate(AjaxableResponseMixin, ProjectView, CreateView):
+    pass
+
+
+class ProjectUpdate(ProjectView, UpdateView):
+    pass
+
+
+class ProjectDelete(ProjectView, DeleteView):
     pass

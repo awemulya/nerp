@@ -1,12 +1,12 @@
 {% extends base_template %}
 {% load i18n %}
 
-{% block title %}{{ scenario }} {% trans 'Aid' %}{% endblock %}
+{% block title %}{{ scenario }} {% trans 'Project' %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "aid_list" %}">{% trans 'Aids' %}</a>
-    <li><span>{% trans scenario %} {% trans 'Aid' %}</span></li>
+    <a href="{% url "project_list" %}">{% trans 'Projects' %}</a>
+    <li><span>{% trans scenario %} {% trans 'Project' %}</span></li>
 {% endblock %}
 
 {% block content %}
@@ -22,10 +22,9 @@
                     {% trans 'Submit' %}</button>
                 {% if scenario == 'Update' %}
                     <a class="btn btn-danger btn-raised"
-                       href="{% url 'aid_delete' form.instance.id %}">{% trans 'Delete' %}!</a>
+                       href="{% url 'project_delete' form.instance.id %}">{% trans 'Delete' %}!</a>
                 {% endif %}
             </div>
     </form>
-
 
 {% endblock %}

@@ -1602,10 +1602,28 @@ var unilarize = function (str) {
     return str.substring(0, str.length - 1) + '(s)';
 }
 
+function selectize_validation_fix($select) {
+
+    $select.$input.on('invalid', function (event) {
+        event.preventDefault();
+        $select.focus(true);
+        $select.$wrapper.addClass('invalid');
+    });
+
+    $select.$input.on('change', function (event) {
+        if (event.target.validity && event.target.validity.valid) {
+            $select.$wrapper.removeClass('invalid');
+        }
+    });
+
+}
+
 $(function () {
     if ($('.selectize').length) {
         var $select = $('.selectize').selectize();
+
         $($select).each(function () {
+            console.log(this)
             init_selectize(this.selectize);
             selectize_validation_fix(this.selectize);
         });
