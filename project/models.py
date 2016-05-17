@@ -9,24 +9,79 @@ IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_
 
 AID_TYPES = (('loan', 'Loan'), ('grant', 'Grant'))
 
+DEFAULT_LEDGERS = [
+    'Initial Deposit',
+    'Ka-7-15',
+    'Ka-7-17',
+    'Replenishments',
+]
+
 
 class Project(models.Model):
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
 
-    def get_imprest(self, fy=None):
+    def get_imprest_ledger(self, fy=None):
+        return self.get_for_fy(fy).imprest_ledger
+
+    def get_or_create_for_fy(self, fy=None):
         if not fy:
             fy = FiscalYear.get()
         elif type(fy) in [int, str]:
             fy = FiscalYear.get(fy)
-        imprest, created = ImprestLedger.objects.get_or_create(project=self, fy=fy)
-        return imprest
+        return ProjectFy.objects.get_or_create(project=self, fy=fy)
 
-    def get_imprest_ledger(self, fy=None):
-        return self.get_imprest(fy).ledger
+    def get_for_fy(self, fy=None):
+        project_fy, created = self.get_or_create_for_fy()
+        return project_fy
 
     def __str__(self):
         return self.name
+
+
+class ProjectFy(models.Model):
+    project = models.ForeignKey(Project)
+    fy = models.ForeignKey(FiscalYear)
+    imprest_ledger = models.ForeignKey(Account, related_name='imprest_for')
+    initial_deposit = models.ForeignKey(Account, related_name='deposit_for')
+    replenishments = models.ForeignKey(Account, related_name='replenishments_for')
+
+    def __str__(self):
+        return str(self.project) + ' - ' + str(self.fy)
+
+    def save(self, *args, **kwargs):
+        if not self.imprest_ledger:
+            self.imprest_ledger = Account(name='Imprest Ledger', fy=self.fy)
+        if not self.initial_deposit:
+            self.initial_deposit = Account(name='Initial Deposit', fy=self.fy)
+        if not self.replenishments:
+            self.replenishments = Account(name='Replenishments', fy=self.fy)
+        super(ProjectFy, self).save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ('project', 'fy')
+        verbose_name = 'Project Fiscal Year'
+        verbose_name_plural = 'Project Fiscal Years'
+        
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+
+@receiver(post_save, sender=Project)
+def fy_add(sender, instance, created, **kwargs):
+    if created:
+        fys = FiscalYear.objects.all()
+        for fy in fys:
+            instance.get_or_create_for_fy(fy)
+
+
+@receiver(post_save, sender=FiscalYear)
+def fy_add(sender, instance, created, **kwargs):
+    if created:
+        projects = Project.objects.filter(active=True)
+        for project in projects:
+            project.get_or_create_for_fy(instance)
 
 
 class Aid(models.Model):
@@ -48,6 +103,9 @@ class Signatory(models.Model):
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name_plural = 'Signatories'
 
 
 class ImprestTransaction(models.Model):
@@ -62,8 +120,7 @@ class ImprestTransaction(models.Model):
     # currency = models.ForeignKey(Currency)
     # description = models.TextField(null=True, blank=True)
     exchange_rate = models.FloatField(null=True, blank=True)
-    fy = models.ForeignKey(FiscalYear)
-    project = models.ForeignKey(Project)
+    project_fy = models.ForeignKey(ProjectFy)
 
     def __str__(self):
         return self.name or self.get_type_display()
@@ -114,20 +171,7 @@ class ExpenseRow(models.Model):
     category = models.ForeignKey(ExpenseCategory)
     expense = models.ForeignKey(Expense)
     amount = models.FloatField()
-    fy = models.ForeignKey(FiscalYear)
-    project = models.ForeignKey(Project)
+    project_fy = models.ForeignKey(ProjectFy)
 
     def __str__(self):
         return str(self.fy) + '-' + str(self.category) + ' - ' + str(self.expense) + ' : ' + str(self.amount)
-
-
-class ImprestLedger(models.Model):
-    ledger = models.ForeignKey(Account)
-    project = models.ForeignKey(Project)
-    fy = models.ForeignKey(FiscalYear)
-
-    def __str__(self):
-        return 'Imprest: ' + str(self.project) + ' - ' + str(self.fy)
-
-    class Meta:
-        unique_together = ('project', 'fy')

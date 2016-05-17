@@ -3,13 +3,14 @@ import datetime
 from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
-from app.utils.helpers import zero_for_none, none_for_zero
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from core.models import FiscalYear, Donor, Activity, Account, BudgetHead, TaxScheme
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
+
+from app.utils.helpers import zero_for_none, none_for_zero
+from core.models import FiscalYear, Donor, Activity, Account, BudgetHead, TaxScheme
 
 
 class JournalVoucher(models.Model):
@@ -372,3 +373,13 @@ def _transaction_delete(sender, instance, **kwargs):
           float(zero_for_none(transaction.cr_amount)) * -1)
 
     transaction.account.save()
+
+
+from django.db.models.signals import post_save
+
+
+@receiver(post_save, sender=FiscalYear)
+def fy_add(sender, instance, created, **kwargs):
+    if created:
+        # TODO Create ledgers: ka-7-15, ka-7-17 per fy
+        pass
