@@ -35,7 +35,7 @@ class ExpenseForm(HTML5BootstrapModelForm):
         model = Expense
         fields = '__all__'
         widgets = {
-            'category': forms.Select(attrs={'class': 'selectize multi', 'data-url': reverse_lazy('expense_category_add')}),
+            'category': forms.Select(attrs={'class': 'selectize multi', 'data-url': reverse_lazy('expense_category_add'), 'multiple':'true'}),
 
             'project': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('project_add')}),
         }
