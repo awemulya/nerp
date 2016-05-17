@@ -1,7 +1,7 @@
 from django.db import models
 from njango.fields import BSDateField, today
 
-from core.models import Currency, FiscalYear, validate_in_fy, Donor
+from core.models import Currency, FiscalYear, validate_in_fy, Donor, Account
 
 IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_transfer', 'GON Fund Transfer'),
                              ('replenishment_received', 'Replenishment Received'),
@@ -108,3 +108,16 @@ class ExpenseRow(models.Model):
 
     def __str__(self):
         return str(self.fy) + '-' + str(self.category) + ' - ' + str(self.expense) + ' : ' + str(self.amount)
+
+
+class ImprestLedger(models.Model):
+    ledger = models.ForeignKey(Account)
+    project = models.ForeignKey(Project)
+    fy = models.ForeignKey(FiscalYear)
+
+    def __str__(self):
+        return 'Imprest: ' + str(self.project) + ' - ' + str(self.fy)
+
+    class Meta:
+        unique_together = ('project', 'fy')
+ 
