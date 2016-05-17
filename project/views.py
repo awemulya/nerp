@@ -258,9 +258,10 @@ class ExpenseView(ProjectView, ProjectMixin):
 
     def get_context_data(self, **kwargs):
         context_data = super(ExpenseView, self).get_context_data(**kwargs)
-        project_id = context_data['project'].id
-        form = context_data['form']
-        form.fields['category'].queryset = ExpenseCategory.objects.filter(project_id=project_id)
+        if 'form' in context_data:
+            project_id = context_data['project'].id
+            form = context_data['form']
+            form.fields['category'].queryset = ExpenseCategory.objects.filter(project_id=project_id)
         return context_data
 
 
