@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "expense_list" %}">{% trans 'Expenses' %}</a>
+    <a href="{% url "expense_list" project.id %}">{% trans 'Expenses' %}</a>
     <li><span>{% trans scenario %} {% trans 'Expense' %}</span></li>
 {% endblock %}
 
@@ -22,7 +22,7 @@
                     {% trans 'Submit' %}</button>
                 {% if scenario == 'Update' %}
                     <a class="btn btn-danger btn-raised"
-                       href="{% url 'expense_delete' form.instance.id %}">{% trans 'Delete' %}!</a>
+                       href="{% url 'expense_delete' project.id form.instance.id %}">{% trans 'Delete' %}!</a>
                 {% endif %}
             </div>
     </form>

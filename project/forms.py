@@ -30,10 +30,8 @@ class ExpenseCategoryForm(HTML5BootstrapModelForm):
 class ExpenseForm(KOModelForm):
     class Meta:
         model = Expense
-        # exclude = ('project',)
-        fields = '__all__'
+        exclude = ('project',)
         widgets = {
             'category': forms.Select(
-                attrs={'class': 'selectize', 'data-url': reverse_lazy('expense_category_add'),
-                       'multiple': 'true'}),
+                attrs={'class': 'selectize', 'multiple': 'true'}),
         }

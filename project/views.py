@@ -251,9 +251,9 @@ class ExpenseCategoryDelete(ExpenseCategoryView, DeleteView):
     pass
 
 
-class ExpenseView(object):
+class ExpenseView(ProjectView, ProjectMixin):
     model = Expense
-    success_url = reverse_lazy('expense_list')
+    success_url = 'expense_list'
     form_class = ExpenseForm
 
 

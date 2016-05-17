@@ -36,11 +36,11 @@ urlpatterns = [
     url(r'^(?P<project_id>[0-9]+)/expense_category/delete/(?P<pk>\d+)/$', views.ExpenseCategoryDelete.as_view(),
         name='expense_category_delete'),
 
-    url(r'^expenses/$', views.ExpenseList.as_view(), name='expense_list'),
-    url(r'^expense/add/$', views.ExpenseCreate.as_view(),
+    url(r'^(?P<project_id>[0-9]+)/expenses/$', views.ExpenseList.as_view(), name='expense_list'),
+    url(r'^(?P<project_id>[0-9]+)/expense/add/$', views.ExpenseCreate.as_view(),
         name='expense_add'),
-    url(r'^expense/edit/(?P<pk>\d+)/$', views.ExpenseUpdate.as_view(),
+    url(r'^(?P<project_id>[0-9]+)/expense/edit/(?P<pk>\d+)/$', views.ExpenseUpdate.as_view(),
         name='expense_edit'),
-    url(r'^expense/delete/(?P<pk>\d+)/$', views.ExpenseDelete.as_view(),
+    url(r'^(?P<project_id>[0-9]+)/expense/delete/(?P<pk>\d+)/$', views.ExpenseDelete.as_view(),
         name='expense_delete'),
 ]
