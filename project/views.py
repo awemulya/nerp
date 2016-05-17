@@ -1,15 +1,14 @@
 import json
-from django.core.urlresolvers import reverse_lazy
 
+from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import ListView
-
 from app.utils.helpers import save_model, invalid
 from core.models import FiscalYear
 from inventory.models import delete_rows
-from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Aid, Project
+from models import Aid
 from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer
@@ -38,6 +37,20 @@ class ProjectView(object):
                 pass
 
         return context_data
+
+    def get_queryset(self):
+        queryset = super(ProjectView, self).get_queryset()
+        if 'project_id' in self.kwargs:
+            queryset = self.model.objects.filter(project_id=self.kwargs['project_id'])
+        return queryset
+
+    def form_valid(self, form):
+        form.instance.project = Project.objects.get(pk=self.kwargs['project_id'])
+        super(ProjectView, self).form_valid(form)
+
+        # def get_success_url(self):
+        #     if 'project_id' in self.kwargs:
+        #         return HttpResponseRedirect(reverse_lazy(self.success_url, kwargs={'project_id': self.kwargs['project_id']}))
 
 
 def index(request):
@@ -169,10 +182,9 @@ def save_application(request):
     return JsonResponse(dct)
 
 
-
-class AidView(object):
+class AidView(ProjectView):
     model = Aid
-    success_url = reverse_lazy('aid_list')
+    success_url = '/'
     form_class = AidForm
 
 
@@ -234,7 +246,6 @@ class ExpenseCategoryUpdate(ExpenseCategoryView, UpdateView):
 
 class ExpenseCategoryDelete(ExpenseCategoryView, DeleteView):
     pass
-
 
 
 class ExpenseView(object):

@@ -14,8 +14,8 @@ urlpatterns = [
     url(r'^(?P<project_id>[0-9]+)/application/$', views.Application.as_view(), name='application'),
     url(r'^(?P<project_id>[0-9]+)/application/save/$', views.save_application, name='save_application'),
 
-    url(r'^aids/$', views.AidList.as_view(), name='aid_list'),
-    url(r'^aid/add/$', views.AidCreate.as_view(), name='aid_add'),
+    url(r'^(?P<project_id>[0-9]+)/aids/$', views.AidList.as_view(), name='aid_list'),
+    url(r'^(?P<project_id>[0-9]+)/aid/add/$', views.AidCreate.as_view(), name='aid_add'),
     url(r'^aid/edit/(?P<pk>\d+)/$', views.AidUpdate.as_view(),
         name='aid_edit'),
     url(r'^aid/delete/(?P<pk>\d+)/$', views.AidDelete.as_view(),
