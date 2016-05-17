@@ -10,7 +10,7 @@ from app.utils.helpers import save_model, invalid
 from core.models import FiscalYear
 from inventory.models import delete_rows
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Aid, Project
-from project.forms import AidForm, ProjectForm
+from project.forms import AidForm, ProjectForm, ExpenseCategoryForm
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
@@ -186,4 +186,26 @@ class ProjectUpdate(ProjectView, UpdateView):
 
 
 class ProjectDelete(ProjectView, DeleteView):
+    pass
+
+
+class ExpenseCategoryView(object):
+    model = ExpenseCategory
+    success_url = reverse_lazy('expense_category_list')
+    form_class = ExpenseCategoryForm
+
+
+class ExpenseCategoryList(ExpenseCategoryView, ListView):
+    pass
+
+
+class ExpenseCategoryCreate(AjaxableResponseMixin, ExpenseCategoryView, CreateView):
+    pass
+
+
+class ExpenseCategoryUpdate(ExpenseCategoryView, UpdateView):
+    pass
+
+
+class ExpenseCategoryDelete(ExpenseCategoryView, DeleteView):
     pass

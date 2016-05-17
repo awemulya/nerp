@@ -14,11 +14,20 @@ urlpatterns = patterns('',
                            name='aid_edit'),
                        url(r'^aid/delete/(?P<pk>\d+)/$', views.AidDelete.as_view(),
                            name='aid_delete'),
+
                        url(r'^projects/$', views.ProjectList.as_view(), name='project_list'),
                        url(r'^project/add/$', views.ProjectCreate.as_view(), name='project_add'),
                        url(r'^project/edit/(?P<pk>\d+)/$', views.ProjectUpdate.as_view(),
                            name='project_edit'),
                        url(r'^project/delete/(?P<pk>\d+)/$', views.ProjectDelete.as_view(),
                            name='project_delete'),
+
+                       url(r'^expense_categories/$', views.ExpenseCategoryList.as_view(), name='expense_category_list'),
+                       url(r'^expense_category/add/$', views.ExpenseCategoryCreate.as_view(),
+                           name='expense_category_add'),
+                       url(r'^expense_category/edit/(?P<pk>\d+)/$', views.ExpenseCategoryUpdate.as_view(),
+                           name='expense_category_edit'),
+                       url(r'^expense_category/delete/(?P<pk>\d+)/$', views.ExpenseCategoryDelete.as_view(),
+                           name='expense_category_delete'),
 
                        )
