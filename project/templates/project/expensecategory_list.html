@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Expense Category' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url "expense_category_list" project.id %}">{% trans 'Expense Categorys' %}</a>
+{% endblock %}
+
+{% block content %}
+
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+    {% load filters %}
+
+    {% autosort object_list as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+    <div class="well">
+    <table class="table table-striped">
+        <thead>
+        <th>{% anchor name _('Name') %}</th>
+        </thead>
+        <tbody>
+        {% for expense_category in paginated_objects %}
+            <tr>
+                <td class="link">
+                    <a href="{% url 'expense_category_edit' project.id expense_category.id %}">{{ expense_category }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+
+    <a class="btn btn-success btn-raised btn-lg"
+       href="{% url 'expense_category_add' project.id %}">{% trans 'New' %} {% trans 'Expense Category' %}</a>
+
+    {% paginate %}
+
+{% endblock %}

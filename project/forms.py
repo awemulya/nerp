@@ -1,0 +1,37 @@
+from django.core.urlresolvers import reverse_lazy
+from django import forms
+from app.utils.forms import HTML5BootstrapModelForm, KOModelForm
+from models import Aid, Project, ExpenseCategory, Expense
+
+
+class AidForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = Aid
+        exclude = ('project',)
+        widgets = {
+            'donor': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('donor_add')}),
+            'project': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('project_add')}),
+            'type': forms.Select(attrs={'class': 'selectize'}),
+        }
+
+
+class ProjectForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = Project
+        fields = '__all__'
+
+
+class ExpenseCategoryForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = ExpenseCategory
+        exclude = ('project',)
+
+
+class ExpenseForm(KOModelForm):
+    class Meta:
+        model = Expense
+        exclude = ('project',)
+        widgets = {
+            'category': forms.Select(
+                attrs={'class': 'selectize', 'multiple': 'true'}),
+        }

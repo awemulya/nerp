@@ -1,15 +1,19 @@
 import json
 
+from django.http.response import HttpResponseRedirect
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import ListView
-
 from app.utils.helpers import save_model, invalid
 from core.models import FiscalYear
 from inventory.models import delete_rows
+from models import Aid
+from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer
+from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
 
 class ProjectView(object):
@@ -163,3 +167,107 @@ def save_application(request):
             dct['error_message'] = 'Error in form data!'
     # delete_rows(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
+
+
+class ProjectMixin(object):
+    def get_queryset(self):
+        queryset = super(ProjectMixin, self).get_queryset()
+        if 'project_id' in self.kwargs:
+            queryset = self.model.objects.filter(project_id=self.kwargs['project_id'])
+        return queryset
+
+    def form_valid(self, form):
+        form.instance.project = Project.objects.get(pk=self.kwargs['project_id'])
+        super(ProjectMixin, self).form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        super(ProjectMixin, self).post(request, *args, **kwargs)
+        return HttpResponseRedirect(reverse(self.success_url, kwargs={'project_id': self.kwargs['project_id']}))
+
+
+class AidView(ProjectView, ProjectMixin):
+    model = Aid
+    success_url = 'aid_list'
+    form_class = AidForm
+
+
+class AidList(AidView, ListView):
+    pass
+
+
+class AidCreate(AjaxableResponseMixin, AidView, CreateView):
+    pass
+
+
+class AidUpdate(AidView, UpdateView):
+    pass
+
+
+class AidDelete(AidView, DeleteView):
+    pass
+
+
+class ProjectAppView(object):
+    model = Project
+    success_url = reverse_lazy('project_list')
+    form_class = ProjectForm
+
+
+class ProjectList(ProjectAppView, ListView):
+    pass
+
+
+class ProjectCreate(AjaxableResponseMixin, ProjectAppView, CreateView):
+    pass
+
+
+class ProjectUpdate(ProjectAppView, UpdateView):
+    pass
+
+
+class ProjectDelete(ProjectAppView, DeleteView):
+    pass
+
+
+class ExpenseCategoryView(ProjectView, ProjectMixin):
+    model = ExpenseCategory
+    success_url = 'expense_category_list'
+    form_class = ExpenseCategoryForm
+
+
+class ExpenseCategoryList(ExpenseCategoryView, ListView):
+    pass
+
+
+class ExpenseCategoryCreate(AjaxableResponseMixin, ExpenseCategoryView, CreateView):
+    pass
+
+
+class ExpenseCategoryUpdate(ExpenseCategoryView, UpdateView):
+    pass
+
+
+class ExpenseCategoryDelete(ExpenseCategoryView, DeleteView):
+    pass
+
+
+class ExpenseView(ProjectView, ProjectMixin):
+    model = Expense
+    success_url = 'expense_list'
+    form_class = ExpenseForm
+
+
+class ExpenseList(ExpenseView, ListView):
+    pass
+
+
+class ExpenseCreate(AjaxableResponseMixin, ExpenseView, CreateView):
+    pass
+
+
+class ExpenseUpdate(ExpenseView, UpdateView):
+    pass
+
+
+class ExpenseDelete(ExpenseView, DeleteView):
+    pass
