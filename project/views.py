@@ -1,6 +1,7 @@
 import json
 
-from django.core.urlresolvers import reverse_lazy
+from django.http.response import HttpResponseRedirect
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -37,20 +38,6 @@ class ProjectView(object):
                 pass
 
         return context_data
-
-    def get_queryset(self):
-        queryset = super(ProjectView, self).get_queryset()
-        if 'project_id' in self.kwargs:
-            queryset = self.model.objects.filter(project_id=self.kwargs['project_id'])
-        return queryset
-
-    def form_valid(self, form):
-        form.instance.project = Project.objects.get(pk=self.kwargs['project_id'])
-        super(ProjectView, self).form_valid(form)
-
-        # def get_success_url(self):
-        #     if 'project_id' in self.kwargs:
-        #         return HttpResponseRedirect(reverse_lazy(self.success_url, kwargs={'project_id': self.kwargs['project_id']}))
 
 
 def index(request):
@@ -182,9 +169,25 @@ def save_application(request):
     return JsonResponse(dct)
 
 
-class AidView(ProjectView):
+class ProjectListCreateMixin(object):
+    def get_queryset(self):
+        queryset = super(ProjectListCreateMixin, self).get_queryset()
+        if 'project_id' in self.kwargs:
+            queryset = self.model.objects.filter(project_id=self.kwargs['project_id'])
+        return queryset
+
+    def form_valid(self, form):
+        form.instance.project = Project.objects.get(pk=self.kwargs['project_id'])
+        super(ProjectListCreateMixin, self).form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        super(ProjectListCreateMixin, self).post(request, *args, **kwargs)
+        return HttpResponseRedirect(reverse(self.success_url, kwargs={'project_id': self.kwargs['project_id']}))
+
+
+class AidView(ProjectView, ProjectListCreateMixin):
     model = Aid
-    success_url = '/'
+    success_url = 'aid_list'
     form_class = AidForm
 
 
