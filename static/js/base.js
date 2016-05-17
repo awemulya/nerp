@@ -1623,7 +1623,6 @@ $(function () {
         var $select = $('.selectize').selectize();
 
         $($select).each(function () {
-            console.log(this)
             init_selectize(this.selectize);
             selectize_validation_fix(this.selectize);
         });
