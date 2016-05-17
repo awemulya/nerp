@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "expense_category_list" %}">{% trans 'Expense Categorys' %}</a>
+    <a href="{% url "expense_category_list" project.id %}">{% trans 'Expense Categorys' %}</a>
 {% endblock %}
 
 {% block content %}
@@ -25,7 +25,7 @@
         {% for expense_category in paginated_objects %}
             <tr>
                 <td class="link">
-                    <a href="{% url 'expense_category_edit' expense_category.id %}">{{ expense_category }}</a>
+                    <a href="{% url 'expense_category_edit' project.id expense_category.id %}">{{ expense_category }}</a>
                 </td>
             </tr>
         {% endfor %}
@@ -35,7 +35,7 @@
 
 
     <a class="btn btn-success btn-raised btn-lg"
-       href="{% url 'expense_category_add' %}">{% trans 'New' %} {% trans 'Expense Category' %}</a>
+       href="{% url 'expense_category_add' project.id %}">{% trans 'New' %} {% trans 'Expense Category' %}</a>
 
     {% paginate %}
 

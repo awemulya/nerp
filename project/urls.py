@@ -28,12 +28,12 @@ urlpatterns = [
     url(r'^project/delete/(?P<pk>\d+)/$', views.ProjectDelete.as_view(),
         name='project_delete'),
 
-    url(r'^expense_categories/$', views.ExpenseCategoryList.as_view(), name='expense_category_list'),
-    url(r'^expense_category/add/$', views.ExpenseCategoryCreate.as_view(),
+    url(r'^(?P<project_id>[0-9]+)/expense_categories/$', views.ExpenseCategoryList.as_view(), name='expense_category_list'),
+    url(r'^(?P<project_id>[0-9]+)/expense_category/add/$', views.ExpenseCategoryCreate.as_view(),
         name='expense_category_add'),
-    url(r'^expense_category/edit/(?P<pk>\d+)/$', views.ExpenseCategoryUpdate.as_view(),
+    url(r'^(?P<project_id>[0-9]+)/expense_category/edit/(?P<pk>\d+)/$', views.ExpenseCategoryUpdate.as_view(),
         name='expense_category_edit'),
-    url(r'^expense_category/delete/(?P<pk>\d+)/$', views.ExpenseCategoryDelete.as_view(),
+    url(r'^(?P<project_id>[0-9]+)/expense_category/delete/(?P<pk>\d+)/$', views.ExpenseCategoryDelete.as_view(),
         name='expense_category_delete'),
 
     url(r'^expenses/$', views.ExpenseList.as_view(), name='expense_list'),
