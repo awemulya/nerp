@@ -4,8 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, TaxSchemeForm, TaxCalcSchemeFormSet
-from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry, Incentive, Allowance
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm
+from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry, Incentive, Allowance, MaritalStatus
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -1376,29 +1376,6 @@ def deduction(request):
         })
 
 
-# def tax_scheme(request):
-#     if request.method == "POST":
-
-#         tax_scheme_formset = TaxSchemeFormSet(
-#             request.POST,
-#             queryset=TaxScheme.objects.all(),
-#         )
-#         if tax_scheme_formset.is_valid():
-#             tax_scheme_formset.save()
-#             return redirect(reverse('tax_scheme'))
-#     else:
-#         tax_scheme_formset = TaxSchemeFormSet(
-#             queryset=TaxScheme.objects.all(),
-#         )
-
-#     return render(
-#         request,
-#         'tax_scheme_cu.html',
-#         {
-#             'tax_scheme_formset': tax_scheme_formset,
-#         })
-
-
 def tax_scheme_detail(request, pk=None):
     ko_data = {}
 
@@ -1452,6 +1429,47 @@ def list_tax_scheme(request):
 
 def delete_tax_scheme(request, pk=None):
     obj = TaxScheme.objects.get(id=pk)
+    # alw_details = Allowance.objects.filter(name=obj)
+    obj.delete()
+    # for alw in alw_details():
+    #     alw.delete()
+    return redirect(reverse('list_tax_scheme'))
+
+
+def tax_scheme(request, pk=None):
+    ko_data = {}
+
+    if pk:
+        obj_id = pk
+        marital_status = MaritalStatus.objects.get(id=pk)
+    else:
+        obj_id = None
+        marital_status = MaritalStatus()
+
+    if request.method == "POST":
+        marital_status_form = MaritalStatusForm(request.POST, instance=marital_status)
+        tax_scheme_formset = TaxSchemeFormSet(request.POST, instance=marital_status)
+        if marital_status_form.is_valid() and tax_scheme_formset.is_valid():
+            marital_status_form.save()
+            tax_scheme_formset.save()
+            return redirect(reverse('list_tax_scheme'))
+    else:
+        marital_status_form = MaritalStatusForm(instance=marital_status)
+        tax_scheme_formset = TaxSchemeFormSet(instance=marital_status)
+
+    return render(
+        request,
+        'tax_scheme_cu.html',
+        {
+            'marital_status_form': marital_status_form,
+            'tax_scheme_formset': tax_scheme_formset,
+            'ko_data': ko_data,
+            'obj_id': obj_id,
+        })
+
+
+def delete_taxscheme(request, pk=None):
+    obj = MaritalStatus.objects.get(id=pk)
     # alw_details = Allowance.objects.filter(name=obj)
     obj.delete()
     # for alw in alw_details():

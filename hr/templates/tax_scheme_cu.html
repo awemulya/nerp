@@ -27,16 +27,20 @@
 {% endblock %}
 
 {% block  content %}
-
-<form method="POST" action="{% url 'tax_scheme' %}">
-
+{% if obj_id %}
+    <form method="POST" action="{% url 'edit_taxscheme' obj_id %}">
+{% else %}
+    <form method="POST" action="{% url 'add_taxscheme' %}">
+{% endif %}
     {% csrf_token %}
-
+    <div class="row">
+        {{ marital_status_form.as_table }}
+    </div>
     <div class="tax-scheme-formset">
         {% for tax_scheme_form in tax_scheme_formset %}
             <div class="row tax-scheme-form">
                 {{ tax_scheme_form.as_table }}
-                {% if tax_scheme_form.instance.pk %}{{ tax_scheme_form.DELETE }}{% endif %}
+                {% if tax_Scheme_form.instance.pk %}{{ tax_scheme_form.DELETE }}{% endif %}
             </div>
         {% endfor %}
     </div>

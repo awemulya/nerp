@@ -38,11 +38,17 @@ urlpatterns = patterns('',
                        # taxation crud
                        # url(r'^tax/scheme/$', views.tax_scheme, name='tax_scheme'),
 
-                       # tax_scheme crud
-                       url(r'^taxscheme/add/$', views.tax_scheme_detail, name='add_tax_scheme'),
-                       url(r'^taxscheme/edit/(?P<pk>[0-9]+)/$', views.tax_scheme_detail, name='edit_tax_scheme'),
-                       url(r'^taxscheme/delete/(?P<pk>[0-9]+)/$', views.delete_tax_scheme, name='delete_tax_scheme'),
+                       # tax_detail_scheme crud
+                       url(r'^taxschemedetail/add/$', views.tax_scheme_detail, name='add_tax_scheme'),
+                       url(r'^taxschemedetail/edit/(?P<pk>[0-9]+)/$', views.tax_scheme_detail, name='edit_tax_scheme'),
+                       url(r'^taxschemedetail/delete/(?P<pk>[0-9]+)/$', views.delete_tax_scheme, name='delete_tax_scheme'),
                        url(r'^taxscheme/list/$', views.list_tax_scheme, name='list_tax_scheme'),
+
+                        # tax_scheme crud
+                       url(r'^taxscheme/add/$', views.tax_scheme, name='add_taxscheme'),
+                       url(r'^taxscheme/edit/(?P<pk>[0-9]+)/$', views.tax_scheme, name='edit_taxscheme'),
+                       url(r'^taxscheme/delete/(?P<pk>[0-9]+)/$', views.delete_taxscheme, name='delete_taxscheme'),
+                       # url(r'^taxscheme/list/$', views.list_tax_scheme, name='list_tax_scheme'),
                        # url(r'^allowance/edit/(?P<pk>[0-9]+)/$', views.allowance, name='edit_allowance'),
                        # url(r'^by_branch/$', views.group_payroll_branch, name='group_payroll_branch'),
                        )

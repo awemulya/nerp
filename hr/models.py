@@ -855,12 +855,19 @@ class ProTempore(models.Model):
     # Sabai ko account huncha 
 
 
-class TaxScheme(models.Model):
+class MaritalStatus(models.Model):
     marital_statuses = [('M', _('Married')), ('U', _('Unmarried'))]
     marital_status = models.CharField(
         default='U',
         max_length=1,
         choices=marital_statuses
+    )
+
+
+class TaxScheme(models.Model):
+    # marital_statuses = [('M', _('Married')), ('U', _('Unmarried'))]
+    marital_status = models.ForeignKey(
+        MaritalStatus
     )
     start_from = models.FloatField()
     end_to = models.FloatField(null=True, blank=True)
