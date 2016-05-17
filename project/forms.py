@@ -32,6 +32,6 @@ class ExpenseForm(KOModelForm):
         model = Expense
         exclude = ('project',)
         widgets = {
-            'category': forms.Select(
+            'category': forms.SelectMultiple(
                 attrs={'class': 'selectize'}),
         }
