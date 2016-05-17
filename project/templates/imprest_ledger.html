@@ -13,7 +13,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url "imprest_ledger" %}">{% trans 'Imprest Ledger' %}</a></li>
+    <li><a href="{% url "imprest_ledger" project.id %}">{% trans 'Imprest Ledger' %}</a></li>
 {% endblock %}
 
 {% block content %}
@@ -112,6 +112,7 @@
                     <tr class="total">
                         <td></td>
                         <td>{% trans 'TOTAL' %}</td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>

@@ -12,6 +12,7 @@ from django.db.models import Model
 from django import template
 from django.contrib.auth.models import Group
 from django.utils.translation import get_language
+
 from njango.utils import get_calendar
 
 from app import settings
@@ -19,16 +20,19 @@ from app.utils.helpers import float_zero_for_none
 
 register = Library()
 
+
 @register.simple_tag()
 def multiply(a, b):
     if a and b:
         return a * b
     return ''
 
+
 @register.simple_tag
 def localize_header():
-    from core.models import app_setting
+    from core.models import AppSetting
 
+    app_setting = AppSetting.get_solo()
     value = app_setting.header_for_forms
     if not value:
         return app_setting.site_name
@@ -36,6 +40,7 @@ def localize_header():
     if lang_code == 'ne':
         value = app_setting.header_for_forms_nepali
     return value
+
 
 @register.filter
 def bsdate(value, arg=None):
@@ -349,6 +354,7 @@ def dr_or_cr(val):
     else:
         return str(val) + ' (Dr)'
 
+
 @register.filter
 def get_particulars(entry, account):
     lst = []
@@ -373,4 +379,3 @@ def refine_voucher_type(the_type):
     if the_type[-11:] == ' particular':
         the_type = the_type[:-10]
     return the_type.title()
-
