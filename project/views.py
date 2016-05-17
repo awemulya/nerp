@@ -169,23 +169,23 @@ def save_application(request):
     return JsonResponse(dct)
 
 
-class ProjectListCreateMixin(object):
+class ProjectMixin(object):
     def get_queryset(self):
-        queryset = super(ProjectListCreateMixin, self).get_queryset()
+        queryset = super(ProjectMixin, self).get_queryset()
         if 'project_id' in self.kwargs:
             queryset = self.model.objects.filter(project_id=self.kwargs['project_id'])
         return queryset
 
     def form_valid(self, form):
         form.instance.project = Project.objects.get(pk=self.kwargs['project_id'])
-        super(ProjectListCreateMixin, self).form_valid(form)
+        super(ProjectMixin, self).form_valid(form)
 
     def post(self, request, *args, **kwargs):
-        super(ProjectListCreateMixin, self).post(request, *args, **kwargs)
+        super(ProjectMixin, self).post(request, *args, **kwargs)
         return HttpResponseRedirect(reverse(self.success_url, kwargs={'project_id': self.kwargs['project_id']}))
 
 
-class AidView(ProjectView, ProjectListCreateMixin):
+class AidView(ProjectView, ProjectMixin):
     model = Aid
     success_url = 'aid_list'
     form_class = AidForm
