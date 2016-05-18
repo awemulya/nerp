@@ -1,4 +1,5 @@
 import json
+from core.serializers import BudgetSerializer
 
 from django.http.response import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -7,12 +8,13 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import ListView
 from app.utils.helpers import save_model, invalid
-from core.models import FiscalYear
+from core.models import FiscalYear, BudgetHead
 from inventory.models import delete_rows
-from models import Aid
+from models import Aid, BudgetAllocationItem
 from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
-from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer
+from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer, \
+    BudgetAllocationItemSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
 
@@ -279,3 +281,26 @@ class ExpenseUpdate(ExpenseView, UpdateView):
 
 class ExpenseDelete(ExpenseView, DeleteView):
     pass
+
+
+class BudgetAllocaionCreate(ProjectView, ListView):
+    model = BudgetAllocationItem
+    fy = None
+
+    def get_fy(self):
+        if not self.fy:
+            self.fy = FiscalYear.get()
+        return self.fy
+
+    def get_context_data(self, **kwargs):
+        context_data = super(BudgetAllocaionCreate, self).get_context_data(**kwargs)
+        budget_head = BudgetHead.objects.all()
+        context_data['data'] = {
+            'fy': self.get_fy().id,
+            'rows': BudgetAllocationItemSerializer(context_data['object_list'], many=True).data,
+            'budget_head': BudgetSerializer(budget_head, many=True).data
+        }
+        return context_data
+
+    def get_queryset(self):
+        return self.model.objects.filter(project_id=self.kwargs['project_id'])
