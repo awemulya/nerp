@@ -22,6 +22,7 @@ class Aid(models.Model):
     donor = models.ForeignKey(Donor)
     type = models.CharField(choices=AID_TYPES, max_length=10)
     key = models.CharField(max_length=50)
+    active = models.BooleanField(default=True)
     project = models.ForeignKey(Project)
 
     def __str__(self):
