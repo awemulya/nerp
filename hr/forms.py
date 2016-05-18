@@ -466,17 +466,19 @@ class TaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
         super(TaxCalcSchemeInlineFormSet, self).clean()
         e_p_dict_list = []
         for form in self.forms:
+            instance = self.instance
             if form.cleaned_data:
                 start_from = form.cleaned_data.get("start_from")
                 end_to = form.cleaned_data.get("end_to")
                 priority = form.cleaned_data.get("priority")
                 DELETE = form.cleaned_data.get("DELETE")
 
-                if end_to < start_from:
-                    form.add_error(
-                        'start_from',
-                        'start_from must be less than end_to',
-                    )
+                if end_to:
+                    if end_to < start_from:
+                        form.add_error(
+                            'start_from',
+                            'start_from must be less than end_to',
+                        )
 
                 if not DELETE:
                     e_p_dict_list.append({
@@ -493,15 +495,22 @@ class TaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
             if sorted_dict_list[-1]['start_from'] != 0:
                 sorted_dict_list[-1]['form'].add_error(
                     'start_from',
-                    'First range must start from 0',
+                    'First range must start from 0'
                 )
             for index, item in enumerate(sorted_dict_list):
                 if index == 0:
-                    if item['end_to'] is not None:
-                        item['form'].add_error(
-                            'end_to',
-                            'Last range end to should be None'
-                        )
+                    if not instance.end_to:
+                        if item['end_to'] is not None:
+                            item['form'].add_error(
+                                'end_to',
+                                'Last range end to should be None'
+                            )
+                    else:
+                        if item['end_to'] != instance.end_to:
+                            item['form'].add_error(
+                                'end_to',
+                                'Last range end to should be equal to %d' % instance.end_to,
+                            )
                     try:
                         if item['start_from'] != sorted_dict_list[index + 1]['end_to'] + 1:
                             item['form'].add_error(
