@@ -1,7 +1,7 @@
 from django.db import models
 from njango.fields import BSDateField, today
 
-from core.models import Currency, FiscalYear, validate_in_fy, Donor, Account
+from core.models import Currency, FiscalYear, validate_in_fy, Donor, Account, Party
 
 IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_transfer', 'GON Fund Transfer'),
                              ('replenishment_received', 'Replenishment Received'),
@@ -62,6 +62,19 @@ class ProjectFy(models.Model):
         if not self.replenishments_id:
             self.replenishments = Account.objects.create(name='Replenishments', fy=self.fy)
         super(ProjectFy, self).save(*args, **kwargs)
+
+    def get_ledgers(self):
+        self_ledgers = [self.imprest_ledger, self.initial_deposit, self.replenishments]
+        party_ledgers = [party.account for party in Party.objects.all()]
+        return self_ledgers + party_ledgers
+
+    def dr_ledgers(self):
+        party_ledgers = [party.account for party in Party.objects.all()]
+        return [self.imprest_ledger, Account.objects.filter(name='Ka-7-15', fy=self.fy).first(),
+                Account.objects.filter(name='Ka-7-17', fy=self.fy).first()] + party_ledgers
+
+    def cr_ledgers(self):
+        return [self.imprest_ledger, self.initial_deposit, self.replenishments]
 
     class Meta:
         unique_together = ('project', 'fy')
@@ -184,8 +197,8 @@ class ExpenseRow(models.Model):
 
 class ImprestJournalVoucher(models.Model):
     voucher_no = models.PositiveIntegerField()
-    date = BSDateField(default=today, validators=[validate_in_fy])
-    # date = models.DateField()
+    # date = BSDateField(default=today, validators=[validate_in_fy])
+    date = models.DateField()
     dr = models.ForeignKey(Account, related_name='debiting_vouchers')
     cr = models.ForeignKey(Account, related_name='crediting_vouchers')
     amount_nrs = models.FloatField(blank=True, null=True)

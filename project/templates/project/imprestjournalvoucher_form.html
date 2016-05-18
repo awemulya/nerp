@@ -1,7 +1,14 @@
 {% extends base_template %}
-{% load i18n %}
+{% load i18n filters staticfiles %}
 
 {% block title %}{{ scenario }} {% trans 'Imprest Journal Voucher' %}{% endblock %}
+
+{% block head_end %}
+    <script src="{% static 'js/project/imprest_journal_voucher.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
@@ -10,6 +17,7 @@
 {% endblock %}
 
 {% block content %}
+
     {{ form.non_field_errors }}
     {{ form.errors }}
     <form method="post">
@@ -17,11 +25,15 @@
         <div class="well">
 
             <div class="row">
-                <div class="col-sm-12 col-md-6">
+                <div class="col-sm-12 col-md-4">
                     {{ form.voucher_no.label_tag }}
                     {{ form.voucher_no }}
                 </div>
-                <div class="col-sm-12 col-md-6">
+                <div class="col-sm-12 col-md-4">
+                    {{ form.wa_no.label_tag }}
+                    <input class="form-control" data-bind="value: wa_no, enable: cr_ledger() && cr_ledger().name == 'Initial Deposit'" id="id_wa_no" maxlength="10" name="wa_no" type="text">
+                </div>
+                <div class="col-sm-12 col-md-4">
                     {{ form.date.label_tag }}
                     {{ form.date }}
                 </div>
@@ -31,7 +43,6 @@
                 <thead>
                 <tr>
                     <th rowspan="2">{% trans 'Particulars' %}</th>
-                    <th rowspan="2">{% trans 'WA No.' %}</th>
                     <th colspan="3">{% trans 'Dr' %}</th>
                     <th colspan="3">{% trans 'Cr' %}</th>
                 </tr>
@@ -46,8 +57,11 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td>{{ form.dr }}</td>
-                    <td>{{ form.wa_no }}</td>
+                    <td>
+                        <select data-bind="selectize: $root.dr_ledgers, value: dr, object: dr_ledger"
+{#                                data-url="{% url 'create_inventory_item' %}"#}
+                                ></select>
+                    </td>
                     <td>{{ form.amount_nrs }}</td>
                     <td>{{ form.amount_usd }}</td>
                     <td>{{ form.exchange_rate }}</td>
@@ -56,8 +70,11 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td>{{ form.cr }}</td>
-                    <td>{{ form.wa_no }}</td>
+                    <td>
+                        <select data-bind="selectize: $root.cr_ledgers, value: cr, object: cr_ledger"
+                                data-url="{% url 'create_inventory_item' %}"
+                                ></select>
+                    </td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -68,8 +85,6 @@
                 </tbody>
             </table>
 
-
-            {{ form.as_p }}
         </div>
         <div class="span12">
             <button type="submit" value="Submit" class="btn btn-info btn-raised">

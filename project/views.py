@@ -7,13 +7,16 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 
+from account.serializers import AccountSerializer
+
 from app.utils.helpers import save_model, invalid
 from core.models import FiscalYear
 from inventory.models import delete_rows
 from models import Aid, ProjectFy, ImprestJournalVoucher
 from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm, ImprestJVForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
-from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer
+from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer, \
+    ImprestJVSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
 
@@ -273,6 +276,16 @@ class ExpenseDelete(ExpenseView, DeleteView):
 class ImprestJVView(ProjectFYView):
     model = ImprestJournalVoucher
     form_class = ImprestJVForm
+
+    def get_context_data(self, **kwargs):
+        context_data = super(ImprestJVView, self).get_context_data(**kwargs)
+        instance = context_data['form'].instance
+        context_data['data'] = {
+            'jv': ImprestJVSerializer(instance).data,
+            'dr_ledgers': AccountSerializer(self.project_fy.dr_ledgers(), many=True).data,
+            'cr_ledgers': AccountSerializer(self.project_fy.cr_ledgers(), many=True).data,
+        }
+        return context_data
 
     def get_success_url(self):
         return reverse_lazy('imprest_journal_voucher_list', kwargs={'project_fy_id': self.project_fy.id})

@@ -42,3 +42,4 @@ class ImprestJVForm(KOModelForm):
     class Meta:
         model = ImprestJournalVoucher
         exclude = ('project_fy',)
+        
