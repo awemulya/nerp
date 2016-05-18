@@ -883,7 +883,10 @@ class TaxScheme(models.Model):
         return u"From %s" % str(self.start_from)
 
     class Meta:
-        unique_together = (('marital_status', 'start_from', 'end_to'), ('marital_status', 'priority'))
+        unique_together = (
+            ('marital_status', 'start_from', 'end_to'),
+            ('marital_status', 'priority')
+        )
 
 
 class TaxCalcScheme(models.Model):
@@ -897,7 +900,10 @@ class TaxCalcScheme(models.Model):
     priority = models.PositiveIntegerField()
 
     class Meta:
-        unique_together = (('scheme', 'start_from', 'end_to'), ('scheme', 'priority'))
+        unique_together = (
+            ('scheme', 'start_from', 'end_to'),
+            ('scheme', 'priority')
+        )
 
 
 class DeductionDetail(models.Model):

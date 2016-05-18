@@ -269,32 +269,33 @@ def salary_taxation_unit(employee, f_y_item):
             marital_status=employee.marital_status
         ), key=lambda obj: obj.priority)
     main_loop_break_flag = False
-    for index, obj in enumerate(tax_schemes):
-        if obj.end_to:
+    for obj in tax_schemes:
+        # if obj.end_to:
 
-            if taxable_amount >= obj.start_from and taxable_amount <= obj.end_to:
-                tax_calc_scheme = sorted(
-                    obj.tax_calc_scheme.all(),
-                    key=lambda x: x.priority
-                )
-                for index2, obj2 in enumerate(tax_calc_scheme):
-                    if index != index2:
-                        tax_amount += obj2.end_to * obj2.tax_rate / 100
-                        taxable_amount -= obj2.end_to
-                    else:
-                        tax_amount += taxable_amount * obj2.tax_rate / 100
-                        main_loop_break_flag = True
-                        break
-            if main_loop_break_flag:
-                break
-        else:
-            for index3, obj3 in enumerate(tax_schemes):
-                if index != index3:
-                    tax_amount += obj3.end_to * obj3.tax_rate / 100
-                    taxable_amount -= obj3.end_to
+        if (taxable_amount >= obj.start_from and
+            taxable_amount <= obj.end_to if obj.end_to else True):
+            tax_calc_scheme = sorted(
+                obj.tax_calc_scheme.all(),
+                key=lambda x: x.priority
+            )
+            for obj2 in tax_calc_scheme:
+                if obj.end_to != obj2.endto:
+                    tax_amount += obj2.end_to * obj2.tax_rate / 100
+                    taxable_amount -= obj2.end_to
                 else:
-                    tax_amount += taxable_amount * obj3.tax_rate / 100
+                    tax_amount += taxable_amount * obj2.tax_rate / 100
+                    main_loop_break_flag = True
                     break
+        if main_loop_break_flag:
+            break
+        # else:
+        #     for index3, obj3 in enumerate(tax_schemes):
+        #         if index != index3:
+        #             tax_amount += obj3.end_to * obj3.tax_rate / 100
+        #             taxable_amount -= obj3.end_to
+        #         else:
+        #             tax_amount += taxable_amount * obj3.tax_rate / 100
+        #             break
 
     total_tax = social_security_tax + tax_amount
     return total_tax * (f_y_item['worked_days'] / f_y_item['year_days'])
