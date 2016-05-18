@@ -266,7 +266,7 @@ def salary_taxation_unit(employee, f_y_item):
     tax_amount = 0
     tax_schemes = sorted(
         TaxScheme.objects.filter(
-            marital_status=employee.marital_status
+            marital_status__marital_status=employee.marital_status
         ), key=lambda obj: obj.priority)
     main_loop_break_flag = False
     for obj in tax_schemes:
@@ -279,7 +279,7 @@ def salary_taxation_unit(employee, f_y_item):
                 key=lambda x: x.priority
             )
             for obj2 in tax_calc_scheme:
-                if obj.end_to != obj2.endto:
+                if obj.end_to != obj2.end_to:
                     tax_amount += obj2.end_to * obj2.tax_rate / 100
                     taxable_amount -= obj2.end_to
                 else:
