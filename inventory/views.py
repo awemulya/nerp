@@ -1575,7 +1575,7 @@ class InstanceHistoryView(CreateView):
     def get_success_url(self):
         return reverse_lazy('view_inventory_account', kwargs={'id': self.object.instance.item.account.id})
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=InstanceHistoryForm):
         form = super(InstanceHistoryView, self).get_form(form_class)
         item_instance = ItemInstance.objects.get(pk=self.kwargs.get('instance_pk'))
         form.instance.instance_id = item_instance.id
@@ -1606,7 +1606,7 @@ class ExpenseCreate(CreateView):
         else:
             return reverse_lazy('itemlocation_detail', kwargs={'pk': item_instance.location_id})
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=ExpenseForm):
         form = super(ExpenseCreate, self).get_form(form_class=form_class)
         item_instance = ItemInstance.objects.get(pk=self.kwargs.get('instance_pk'))
         form.fields['voucher_no'].initial = form.instance.voucher_no
