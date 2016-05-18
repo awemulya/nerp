@@ -400,11 +400,12 @@ class TaxSchemeInlineFormSet(forms.BaseInlineFormSet):
                 priority = form.cleaned_data.get("priority")
                 DELETE = form.cleaned_data.get("DELETE")
 
-                if end_to < start_from:
-                    form.add_error(
-                        'start_from',
-                        'start_from must be less than end_to',
-                    )
+                if end_to:
+                    if end_to < start_from:
+                        form.add_error(
+                            'start_from',
+                            'start_from must be less than end_to',
+                        )
 
                 if not DELETE:
                     e_p_dict_list.append({
@@ -458,6 +459,7 @@ class TaxSchemeInlineFormSet(forms.BaseInlineFormSet):
                             )
                     except:
                         pass
+
 
 class TaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
     def clean(self):

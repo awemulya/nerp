@@ -1427,13 +1427,13 @@ def list_tax_scheme(request):
     )
 
 
-def delete_tax_scheme(request, pk=None):
-    obj = TaxScheme.objects.get(id=pk)
-    # alw_details = Allowance.objects.filter(name=obj)
-    obj.delete()
-    # for alw in alw_details():
-    #     alw.delete()
-    return redirect(reverse('list_tax_scheme'))
+# def delete_tax_scheme(request, pk=None):
+#     obj = TaxScheme.objects.get(id=pk)
+#     # alw_details = Allowance.objects.filter(name=obj)
+#     obj.delete()
+#     # for alw in alw_details():
+#     #     alw.delete()
+#     return redirect(reverse('list_tax_scheme'))
 
 
 def tax_scheme(request, pk=None):

@@ -21,14 +21,16 @@
 
 {% block  content %}
     <table class="table" >
+        
+        {% if m_objects %}
+        <tr>
+            <td colspan="50%"><a href={% url 'edit_taxscheme' m_objects.0.marital_status.id %}>MARRIED</a></td>
+            <td colspan="50%"><a href={% url 'delete_taxscheme' m_objects.0.marital_status.id %}><input type="button" value="Delete"></a></td>
+        </tr>
         <tr>
             <th>From</th>
             <th>To</th>
-            <th>Controls</th>
-        </tr>
-        {% if m_objects %}
-        <tr>
-            <td colspan="100"><a href={% url 'edit_taxscheme' m_objects.0.marital_status.id %}>MARRIED</a></td>
+            
         </tr>
         {% endif %}
         {% for obj in m_objects %}
@@ -36,13 +38,19 @@
                 
                 <td><a href={% url 'edit_tax_scheme' obj.id %}>{{ obj.start_from }}</a></td>
                 <td><a href={% url 'edit_tax_scheme' obj.id %}>{{ obj.end_to }}</a></td>
-                <td><a href={% url 'delete_tax_scheme' obj.id %}><button type="button">Delete</button></a></td>
+                
 
             </tr>
         {% endfor %}
         {% if u_objects %}
         <tr>
-            <td colspan="100"><a href={% url 'edit_taxscheme' u_objects.0.marital_status.id %}>UNMARRIED</a></td>
+            <td colspan="50%"><a href={% url 'edit_taxscheme' u_objects.0.marital_status.id %}>UNMARRIED</a></td>
+            <td colspan="50%"><a href={% url 'delete_taxscheme' u_objects.0.marital_status.id %}><input type="button" value="Delete"></a></td>
+        </tr>
+        <tr>
+            <th>From</th>
+            <th>To</th>
+            
         </tr>
         {% endif %}
         {% for obj1 in u_objects %}
@@ -50,7 +58,7 @@
                 
                 <td><a href={% url 'edit_tax_scheme' obj1.id %}>{{ obj1.start_from }}</a></td>
                 <td><a href={% url 'edit_tax_scheme' obj1.id %}>{{ obj1.end_to }}</a></td>
-                <td><a href={% url 'delete_tax_scheme' obj1.id %}><button type="button">Delete</button></a></td>
+                
 
             </tr>
         {% endfor %}
