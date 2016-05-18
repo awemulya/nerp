@@ -116,9 +116,13 @@ class Language(models.Model):
 class Account(models.Model):
     name = models.CharField(max_length=254)
     fy = models.ForeignKey(FiscalYear, null=True, blank=True)
+    order = models.PositiveIntegerField(default=0)
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ('order',)
 
 
 class Party(models.Model):
