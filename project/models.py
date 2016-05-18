@@ -1,7 +1,7 @@
 from django.db import models
 from njango.fields import BSDateField, today
 
-from core.models import Currency, FiscalYear, validate_in_fy, Donor
+from core.models import Currency, FiscalYear, validate_in_fy, Donor, BudgetHead
 
 IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_transfer', 'GON Fund Transfer'),
                              ('replenishment_received', 'Replenishment Received'),
@@ -108,3 +108,18 @@ class ExpenseRow(models.Model):
 
     def __str__(self):
         return str(self.fy) + '-' + str(self.category) + ' - ' + str(self.expense) + ' : ' + str(self.amount)
+
+
+class BudgetAllocationItem(models.Model):
+    budget_head = models.ForeignKey(BudgetHead)
+    aid = models.ForeignKey(Aid, blank=True, null=True)
+    amount = models.PositiveIntegerField()
+    project = models.ForeignKey(Project)
+    fy = models.ForeignKey(FiscalYear)
+
+    def __str__(self):
+        aid ='GON'
+        if self.aid:
+            aid = str(self.aid)
+        return str(self.budget_head) + ' ' + aid + ' ' + str(self.amount)
+
