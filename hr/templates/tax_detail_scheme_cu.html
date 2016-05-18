@@ -7,10 +7,15 @@
 {% block head_end %}
     <script src="{% static 'js/vendors/jquery-formset.js' %}"></script>
     <script type="text/javascript">
-        $(function () {
-            $('.tax-calc-scheme-form').formset({
-                prefix: '{{ tax_calc_scheme_formset.prefix }}'
+        $(document).ready(function () {
+            $('option:not(:selected)').attr('disabled', true);
+            
+            $(function () {
+                $('.tax-calc-scheme-form').formset({
+                    prefix: '{{ tax_calc_scheme_formset.prefix }}'
+                });
             });
+           
         });
     </script>
 {% endblock %}

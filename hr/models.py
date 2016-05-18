@@ -864,6 +864,9 @@ class MaritalStatus(models.Model):
         unique=True
     )
 
+    def __unicode__(self):
+        return str('MARRIED' if self.marital_status == 'M' else 'UNMARRIED')
+
 
 class TaxScheme(models.Model):
     # marital_statuses = [('M', _('Married')), ('U', _('Unmarried'))]

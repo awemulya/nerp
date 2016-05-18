@@ -662,6 +662,13 @@ class TaxSchemeForm(forms.ModelForm):
     class Meta:
         model = TaxScheme
         fields = '__all__'
+
+        widgets = {
+            'marital_status': Select(attrs={'readonly': "true"}),
+            'start_from': NumberInput(attrs={'readonly': "true"}),
+            'end_to': NumberInput(attrs={'readonly': "true"}),
+            'priority': NumberInput(attrs={'readonly': "true"}),
+        }
         # exclude = ('accounts',)
 
     # def clean(self):
