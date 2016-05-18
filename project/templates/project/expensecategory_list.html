@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Expense Category' %}{% endblock %}
+{% block title %}{% trans 'Expense Categories' %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "expense_category_list" project.id %}">{% trans 'Expense Categorys' %}</a>
+    <a href="{% url "expense_category_list" project.id %}">{% trans 'Expense Categories' %}</a>
 {% endblock %}
 
 {% block content %}

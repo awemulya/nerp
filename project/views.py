@@ -172,8 +172,13 @@ class ProjectMixin(object):
         super(ProjectMixin, self).post(request, *args, **kwargs)
         return HttpResponseRedirect(reverse(self.success_url, kwargs={'project_id': self.kwargs['project_id']}))
 
+    def get_context_data(self, **kwargs):
+        context_data = super(ProjectMixin, self).get_context_data(**kwargs)
+        context_data['project'] = Project.objects.get(pk=self.kwargs.get('project_id'))
+        return context_data
 
-class AidView(ProjectFYView, ProjectMixin):
+
+class AidView(ProjectMixin):
     model = Aid
     success_url = 'aid_list'
     form_class = AidForm
@@ -217,7 +222,7 @@ class ProjectDelete(ProjectAppView, DeleteView):
     pass
 
 
-class ExpenseCategoryView(ProjectFYView, ProjectMixin):
+class ExpenseCategoryView(ProjectMixin):
     model = ExpenseCategory
     success_url = 'expense_category_list'
     form_class = ExpenseCategoryForm
@@ -239,7 +244,7 @@ class ExpenseCategoryDelete(ExpenseCategoryView, DeleteView):
     pass
 
 
-class ExpenseView(ProjectFYView, ProjectMixin):
+class ExpenseView(ProjectMixin):
     model = Expense
     success_url = 'expense_list'
     form_class = ExpenseForm
