@@ -264,13 +264,20 @@ def salary_taxation_unit(employee, f_y_item):
 
     taxable_amount -= social_security_tax
     tax_amount = 0
-    tax_schemes = sorted(TaxScheme.objects.filter(marital_status=employee.marital_status), key=lambda obj: obj.priority)
+    tax_schemes = sorted(
+        TaxScheme.objects.filter(
+            marital_status=employee.marital_status
+        ), key=lambda obj: obj.priority)
     main_loop_break_flag = False
     for index, obj in enumerate(tax_schemes):
         if obj.end_to:
 
             if taxable_amount >= obj.start_from and taxable_amount <= obj.end_to:
-                for index2, obj2 in enumerate(tax_schemes):
+                tax_calc_scheme = sorted(
+                    obj.tax_calc_scheme.all(),
+                    key=lambda x: x.priority
+                )
+                for index2, obj2 in enumerate(tax_calc_scheme):
                     if index != index2:
                         tax_amount += obj2.end_to * obj2.tax_rate / 100
                         taxable_amount -= obj2.end_to

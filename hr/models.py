@@ -871,7 +871,8 @@ class MaritalStatus(models.Model):
 class TaxScheme(models.Model):
     # marital_statuses = [('M', _('Married')), ('U', _('Unmarried'))]
     marital_status = models.ForeignKey(
-        MaritalStatus
+        MaritalStatus,
+        related_name="tax_scheme"
     )
     start_from = models.FloatField()
     end_to = models.FloatField(null=True, blank=True)
@@ -886,7 +887,10 @@ class TaxScheme(models.Model):
 
 
 class TaxCalcScheme(models.Model):
-    scheme = models.ForeignKey(TaxScheme)
+    scheme = models.ForeignKey(
+        TaxScheme,
+        related_name="tax_calc_scheme"
+    )
     start_from = models.FloatField()
     end_to = models.FloatField(null=True, blank=True)
     tax_rate = models.FloatField()
