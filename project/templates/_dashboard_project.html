@@ -24,6 +24,8 @@
             <div>
                 <a href="{% url 'expense_list' project.id %}">{% trans 'Expenses' %}</a>
             </div>
+            
+            
 
             <div>
                 {#    <a href="{% url 'imprest_ledger' project.project_fy.id %}">{% trans 'Imprest Ledger' %}</a>#}
@@ -32,6 +34,11 @@
             <div>
                 <a href="{% url 'application' project.project_fy.id %}">{% trans 'Applications (Notes to Account 1)' %}</a>
             </div>
+            
+            <div>
+                <a href="{% url 'imprest_journal_voucher_list' project.project_fy.id %}">{% trans 'Journal Vouchers' %}</a>
+            </div>
+            
         </div>
     </div>
 {% endfor %}

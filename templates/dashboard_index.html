@@ -187,6 +187,23 @@
                     <br>
                 </div>
             {% endifappexists %}
+        
+        {% ifappexists project %}
+        <div class="panel panel-default">
+                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#project" aria-expanded="false">
+                    <h4 class="panel-title">
+                        <a>{% trans 'Project Accounts' %}</a>
+                    </h4>
+                </div>
+                <div id="project" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        {% include '_dashboard_project.html' %}
+                    </div>
+                </div>
+            
+        </div>
+        {% endifappexists %}
+        
         </div>
 
     </div>
