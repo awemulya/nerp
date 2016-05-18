@@ -80,7 +80,7 @@ def save_imprest_ledger(request):
     model = ImprestTransaction
     fy_id = params.get('fy_id')
     try:
-        for index, row in enumerate(params.get('table_view').get('rows')):
+        for ind, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['date']):
                 continue
             values = {'date': row.get('date', ''),
@@ -96,7 +96,7 @@ def save_imprest_ledger(request):
             submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
             if not created:
                 submodel = save_model(submodel, values)
-            dct['rows'][index] = submodel.id
+            dct['rows'][ind] = submodel.id
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
@@ -114,8 +114,8 @@ class Application(ProjectFYView, ListView):
 
     def get_context_data(self, **kwargs):
         context_data = super(Application, self).get_context_data(**kwargs)
-        categories = ExpenseCategory.objects.filter(enabled=True)
-        expenses = Expense.objects.filter(enabled=True)
+        categories = ExpenseCategory.objects.filter(enabled=True, project=self.project)
+        expenses = Expense.objects.filter(enabled=True, project=self.project)
         context_data['data'] = {
             'rows': ExpenseRowSerializer(context_data['object_list'], many=True).data,
             'categories': ExpenseCategorySerializer(categories, many=True).data,
@@ -133,7 +133,7 @@ def save_application(request):
     try:
         for cat_index, category in enumerate(params.get('categories')):
             dct['categories'][cat_index] = {'rows': {}}
-            for index, row in enumerate(category.get('rows')):
+            for ind, row in enumerate(category.get('rows')):
                 if invalid(row, ['category_id', 'expense_id', 'amount']):
                     continue
                 values = {'category_id': row.get('category_id'),
@@ -144,7 +144,7 @@ def save_application(request):
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
-                dct['categories'][cat_index]['rows'][index] = submodel.id
+                dct['categories'][cat_index]['rows'][ind] = submodel.id
             delete_rows(category.get('deleted_rows'), model)
     except Exception as e:
         if hasattr(e, 'messages'):
