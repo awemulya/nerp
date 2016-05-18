@@ -1,5 +1,9 @@
 {% load filters i18n %}
 
 <div>
-    <a href="{% url 'imprest_ledger' project.id %}">{% trans 'Imprest Ledger' %}</a>
+    <a href="{% url 'imprest_ledger' project.project_fy.id %}">{% trans 'Imprest Ledger' %}</a>
+</div>
+
+<div>
+    <a href="{% url 'application' project.project_fy.id %}">{% trans 'Applications (Notes to Account 1)' %}</a>
 </div>

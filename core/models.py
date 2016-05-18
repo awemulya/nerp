@@ -115,6 +115,7 @@ class Language(models.Model):
 
 class Account(models.Model):
     name = models.CharField(max_length=254)
+    fy = models.ForeignKey(FiscalYear, null=True, blank=True)
 
     def __unicode__(self):
         return self.name

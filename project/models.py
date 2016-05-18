@@ -29,7 +29,12 @@ class Project(models.Model):
             fy = FiscalYear.get()
         elif type(fy) in [int, str]:
             fy = FiscalYear.get(fy)
+
         return ProjectFy.objects.get_or_create(project=self, fy=fy)
+
+    @property
+    def project_fy(self):
+        return self.get_for_fy()
 
     def get_for_fy(self, fy=None):
         project_fy, created = self.get_or_create_for_fy()
@@ -50,19 +55,19 @@ class ProjectFy(models.Model):
         return str(self.project) + ' - ' + str(self.fy)
 
     def save(self, *args, **kwargs):
-        if not self.imprest_ledger:
-            self.imprest_ledger = Account(name='Imprest Ledger', fy=self.fy)
-        if not self.initial_deposit:
-            self.initial_deposit = Account(name='Initial Deposit', fy=self.fy)
-        if not self.replenishments:
-            self.replenishments = Account(name='Replenishments', fy=self.fy)
+        if not self.imprest_ledger_id:
+            self.imprest_ledger = Account.objects.create(name='Imprest Ledger', fy=self.fy)
+        if not self.initial_deposit_id:
+            self.initial_deposit = Account.objects.create(name='Initial Deposit', fy=self.fy)
+        if not self.replenishments_id:
+            self.replenishments = Account.objects.create(name='Replenishments', fy=self.fy)
         super(ProjectFy, self).save(*args, **kwargs)
 
     class Meta:
         unique_together = ('project', 'fy')
         verbose_name = 'Project Fiscal Year'
         verbose_name_plural = 'Project Fiscal Years'
-        
+
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -103,7 +108,7 @@ class Signatory(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
         verbose_name_plural = 'Signatories'
 
