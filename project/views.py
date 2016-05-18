@@ -10,8 +10,8 @@ from django.views.generic import ListView
 from app.utils.helpers import save_model, invalid
 from core.models import FiscalYear
 from inventory.models import delete_rows
-from models import Aid, ProjectFy
-from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
+from models import Aid, ProjectFy, ImprestJournalVoucher
+from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm, ImprestJVForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
@@ -23,6 +23,10 @@ class ProjectFYView(object):
         self.project = self.project_fy.project
         self.fy = self.project_fy.fy
         return super(ProjectFYView, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.project_fy = self.project_fy
+        return super(ProjectFYView, self).form_valid(form)
 
     def get_queryset(self):
         qs = super(ProjectFYView, self).get_queryset()
@@ -263,4 +267,28 @@ class ExpenseUpdate(ExpenseView, UpdateView):
 
 
 class ExpenseDelete(ExpenseView, DeleteView):
+    pass
+
+
+class ImprestJVView(ProjectFYView):
+    model = ImprestJournalVoucher
+    form_class = ImprestJVForm
+
+    def get_success_url(self):
+        return reverse_lazy('imprest_journal_voucher_list', kwargs={'project_fy_id': self.project_fy.id})
+
+
+class ImprestJVCreate(ImprestJVView, CreateView):
+    pass
+
+
+class ImprestJVUpdate(ImprestJVView, UpdateView):
+    pass
+
+
+class ImprestJVList(ImprestJVView, ListView):
+    pass
+
+
+class ImprestJVDelete(ImprestJVView, DeleteView):
     pass

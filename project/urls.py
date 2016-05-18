@@ -14,6 +14,13 @@ urlpatterns = [
     url(r'^(?P<project_fy_id>[0-9]+)/application/$', views.Application.as_view(), name='application'),
     url(r'^(?P<project_fy_id>[0-9]+)/application/save/$', views.save_application, name='save_application'),
 
+    url(r'^(?P<project_fy_id>[0-9]+)/journal_vouchers/$', views.ImprestJVList.as_view(), name='imprest_journal_voucher_list'),
+    url(r'^(?P<project_fy_id>[0-9]+)/journal_voucher/$', views.ImprestJVCreate.as_view(), name='imprest_journal_voucher_add'),
+    url(r'^(?P<project_fy_id>[0-9]+)/journal_voucher/(?P<pk>\d+)/$', views.ImprestJVUpdate.as_view(),
+        name='imprest_journal_voucher_edit'),
+    url(r'^(?P<project_fy_id>[0-9]+)/journal_voucher/(?P<pk>\d+)/delete/$', views.ImprestJVDelete.as_view(),
+        name='imprest_journal_voucher_delete'),
+
     url(r'^(?P<project_id>[0-9]+)/aids/$', views.AidList.as_view(), name='aid_list'),
     url(r'^(?P<project_id>[0-9]+)/aid/add/$', views.AidCreate.as_view(), name='aid_add'),
     url(r'^(?P<project_id>[0-9]+)/aid/edit/(?P<pk>\d+)/$', views.AidUpdate.as_view(),

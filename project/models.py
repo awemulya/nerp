@@ -180,3 +180,18 @@ class ExpenseRow(models.Model):
 
     def __str__(self):
         return str(self.fy) + '-' + str(self.category) + ' - ' + str(self.expense) + ' : ' + str(self.amount)
+
+
+class ImprestJournalVoucher(models.Model):
+    voucher_no = models.PositiveIntegerField()
+    date = BSDateField(default=today, validators=[validate_in_fy])
+    dr = models.ForeignKey(Account, related_name='debiting_vouchers')
+    cr = models.ForeignKey(Account, related_name='crediting_vouchers')
+    amount_nrs = models.FloatField(blank=True, null=True)
+    amount_usd = models.FloatField(blank=True, null=True)
+    exchange_rate = models.FloatField(blank=True, null=True)
+    wa_no = models.CharField(max_length=10, blank=True, null=True)
+    project_fy = models.ForeignKey(ProjectFy)
+
+    def __str__(self):
+        return self.voucher_no
