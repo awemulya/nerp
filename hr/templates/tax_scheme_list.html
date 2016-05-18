@@ -37,9 +37,11 @@
             <tr>
                 
                 <td><a href={% url 'edit_tax_scheme' obj.id %}>{{ obj.start_from }}</a></td>
-                <td><a href={% url 'edit_tax_scheme' obj.id %}>{{ obj.end_to }}</a></td>
-                
-
+                {% if obj.end_to %}
+                    <td><a href={% url 'edit_tax_scheme' obj.id %}>{{ obj.end_to }}</a></td>
+                {% else %}
+                    <td><a href={% url 'edit_tax_scheme' obj.id %}>Infinity</a></td>
+                {% endif %}
             </tr>
         {% endfor %}
         {% if u_objects %}
@@ -57,8 +59,11 @@
             <tr>
                 
                 <td><a href={% url 'edit_tax_scheme' obj1.id %}>{{ obj1.start_from }}</a></td>
-                <td><a href={% url 'edit_tax_scheme' obj1.id %}>{{ obj1.end_to }}</a></td>
-                
+                {% if obj1.end_to %}
+                    <td><a href={% url 'edit_tax_scheme' obj1.id %}>{{ obj1.end_to }}</a></td>
+                {% else %}
+                    <td><a href={% url 'edit_tax_scheme' obj1.id %}>Infinity</a></td>
+                {% endif %}
 
             </tr>
         {% endfor %}
