@@ -1,21 +1,37 @@
 {% load filters i18n %}
 
 <div>
-    <a href="{% url 'aid_list' project.id %}">{% trans 'Aids' %}</a>
+    <a href="{% url 'list_parties' %}">{% trans 'Parties' %}</a>
 </div>
 
 <div>
-    <a href="{% url 'expense_category_list' project.id %}">{% trans 'Expense Categories' %}</a>
+    <a href="{% url 'donor_list' %}">{% trans 'Donors' %}</a>
 </div>
 
-<div>
-    <a href="{% url 'expense_list' project.id %}">{% trans 'Expenses' %}</a>
-</div>
 
-<div>
-{#    <a href="{% url 'imprest_ledger' project.project_fy.id %}">{% trans 'Imprest Ledger' %}</a>#}
-</div>
+{% for project in projects %}
+    <h2>{{ project.name }}</h2>
+    <div class="row">
+        <div class="col-sm-12">
+            <div>
+                <a href="{% url 'aid_list' project.id %}">{% trans 'Aids' %}</a>
+            </div>
 
-<div>
-    <a href="{% url 'application' project.project_fy.id %}">{% trans 'Applications (Notes to Account 1)' %}</a>
-</div>
+            <div>
+                <a href="{% url 'expense_category_list' project.id %}">{% trans 'Expense Categories' %}</a>
+            </div>
+
+            <div>
+                <a href="{% url 'expense_list' project.id %}">{% trans 'Expenses' %}</a>
+            </div>
+
+            <div>
+                {#    <a href="{% url 'imprest_ledger' project.project_fy.id %}">{% trans 'Imprest Ledger' %}</a>#}
+            </div>
+
+            <div>
+                <a href="{% url 'application' project.project_fy.id %}">{% trans 'Applications (Notes to Account 1)' %}</a>
+            </div>
+        </div>
+    </div>
+{% endfor %}
