@@ -57,8 +57,11 @@ function BudgetAllocationItem(data) {
                 }
                 else {
                     alert.success('Saved!');
-                    self.status('Saved');
-                    debugger;
+                    for (var i in msg.rows) {
+                        for ( var aid in msg.rows[i] ) {
+                            self.table_view.rows()[i][aid](msg.rows[i][aid])
+                        }
+                    }
                     //ko.utils.arrayForEach(self.categories(), function (category) {
                     //    ko.utils.arrayForEach(category.rows(), function (row) {
                     //        row.klass('invalid-row');
@@ -87,9 +90,11 @@ function RowVM(row, vm) {
     self.id = ko.observable();
     self.budget_head_id = ko.observable();
     self.goa_amount = ko.observable();
+    self.goa_id = ko.observable();
 
     for (i in vm.count) {
         self[vm.count[i]] = ko.observable();
+        self[vm.count[i] + "-id"] = ko.observable();
     }
 
     if (row) {
@@ -97,12 +102,15 @@ function RowVM(row, vm) {
             if (row.aid_amount[i].aid_name == null) {
                 if (self.goa_amount() == undefined) {
                     self.goa_amount(row.aid_amount[i].amount);
+                    self.goa_id(row.aid_amount[i].id);
                 } else {
                     self.goa_amount(self.goa_amount() + row.aid_amount[i].amount)
                 }
             }
             if (self[row.aid_amount[i].aid_name] != undefined) {
                 self[row.aid_amount[i].aid_name](row.aid_amount[i].amount);
+                self[row.aid_amount[i].aid_name + "-id"](row.aid_amount[i].id);
+
             }
         }
     }

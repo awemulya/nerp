@@ -324,21 +324,21 @@ def save_budget_allocation(request):
                 continue
             values = {'budget_head_id': row.get('budget_head_id'),
                       'fy_id': fy, 'project_id': project_id}
-
+            dct['rows'][index] = {}
             if row.get('goa_amount'):
                 values['amount'] = row.get('goa_amount')
-                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                submodel, created = model.objects.get_or_create(id=row.get('goa_id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
-                dct['rows'][index] = submodel.id
+                dct['rows'][index]['goa_id'] = submodel.id
             for aid in params.get('count'):
                 if row.get(aid):
                     values['aid_id'] = aid.split('-')[0]
                     values['amount'] = int(row.get(aid))
-                    submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                    submodel, created = model.objects.get_or_create(id=row.get(aid + '-id'), defaults=values)
                     if not created:
                         submodel = save_model(submodel, values)
-                    dct['rows'][index] = submodel.id
+                    dct['rows'][index][aid + '-id'] = submodel.id
         # delete_rows(row.get('deleted_rows'), model)
     except Exception as e:
         if hasattr(e, 'messages'):
