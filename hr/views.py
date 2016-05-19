@@ -1144,11 +1144,11 @@ def transact_entry(request, pk=None):
                 ('cr', salary_giving_account, salary),
             ]
         )
-
         for allowance_details_item in entry.allowance_details.all():
             a_account = allowance_details_item.allowance.allowances.all().filter(employee_grade=employee.designation.grade)[0].account.account
             a_amount = allowance_details_item.amount
 
+            # Should be changed
             set_transactions(
                 entry,
                 p_e.entry_datetime,
@@ -1158,6 +1158,7 @@ def transact_entry(request, pk=None):
                     ('cr', salary_giving_account, a_amount),
                 ]
             )
+        # pdb.set_trace()
 
         for incentive_details_item in entry.incentive_details.all():
             i_account = incentive_details_item.incentive.incentives.all().filter(employee_grade=employee.designation.grade)[0].account.account
@@ -1172,6 +1173,7 @@ def transact_entry(request, pk=None):
                     ('cr', employee_salary_account, i_amount),
                 ]
             )
+        # pdb.set_trace()
 
         for deduction_details_item in entry.deduction_details.all():
             deduction_obj = deduction_details_item.deduction

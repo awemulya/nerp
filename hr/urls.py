@@ -15,7 +15,7 @@ urlpatterns = patterns('',
                        url(r'^delete_entry/(?P<pk>[0-9]+)/$', views.delete_entry, name='delete_entry'),
 
                        # employee crud
-                       url(r'^employee/add/$', views.employee, name='employee_add'),
+                       url(r'^employee/add/$', views.employee, name='add_employee'),
                        url(r'^employee/edit/(?P<pk>[0-9]+)/$', views.employee, name='edit_employee'),
                        url(r'^employee/delete/(?P<pk>[0-9]+)/$', views.delete_employee, name='delete_employee'),
                        url(r'^employee/list/$', views.list_employee, name='list_employee'),
