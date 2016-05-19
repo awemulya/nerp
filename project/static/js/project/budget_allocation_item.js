@@ -32,20 +32,19 @@ function BudgetAllocationItem(data) {
         if (self.value_count.indexOf(val) == -1) {
             self.value_count.push(val);
             self.values.push({
-                'id': data.rows[i].id,
                 'budget_head_id': val,
-                'aid_amount': [{'aid_name': data.rows[i].aid_name, 'amount': data.rows[i].amount}],
+                'aid_amount': [{'id': data.rows[i].id, 'aid_name': data.rows[i].aid_name, 'amount': data.rows[i].amount}],
             });
 
         } else {
             var obj = $.grep(self.values, function (e) {
                 return e.budget_head_id == data.rows[i].budget_head_id;
             });
-            obj[0].aid_amount.push({'aid_name': data.rows[i].aid_name, 'amount': data.rows[i].amount})
+            obj[0].aid_amount.push({'id': data.rows[i].id, 'aid_name': data.rows[i].aid_name, 'amount': data.rows[i].amount})
         }
     }
 
-    self.table_view = new TableViewModel({rows: self.values, argument: self, auto_add_first: false}, RowVM);
+    self.table_view = new TableViewModel({rows: self.values, argument: self}, RowVM);
 
     self.save = function () {
         $.ajax({
@@ -59,19 +58,20 @@ function BudgetAllocationItem(data) {
                 else {
                     alert.success('Saved!');
                     self.status('Saved');
-                    ko.utils.arrayForEach(self.categories(), function (category) {
-                        ko.utils.arrayForEach(category.rows(), function (row) {
-                            row.klass('invalid-row');
-                        });
-                        category.deleted_rows([]);
-                    });
-                    for (var i in msg.categories) {
-                        //debugger;
-                        for (var j in msg.categories[i].rows) {
-                            self.categories()[i].rows()[j].id(msg.categories[i].rows[j]);
-                            self.categories()[i].rows()[j].klass('');
-                        }
-                    }
+                    debugger;
+                    //ko.utils.arrayForEach(self.categories(), function (category) {
+                    //    ko.utils.arrayForEach(category.rows(), function (row) {
+                    //        row.klass('invalid-row');
+                    //    });
+                    //    category.deleted_rows([]);
+                    //});
+                    //for (var i in msg.categories) {
+                    //    //debugger;
+                    //    for (var j in msg.categories[i].rows) {
+                    //        self.categories()[i].rows()[j].id(msg.categories[i].rows[j]);
+                    //        self.categories()[i].rows()[j].klass('');
+                    //    }
+                    //}
                     //self.table_view.deleted_rows([]);
                 }
             },

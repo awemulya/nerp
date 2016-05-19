@@ -326,7 +326,6 @@ def save_budget_allocation(request):
                       'fy_id': fy, 'project_id': project_id}
 
             if row.get('goa_amount'):
-                values['aid'] = None
                 values['amount'] = row.get('goa_amount')
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
@@ -335,7 +334,7 @@ def save_budget_allocation(request):
             for aid in params.get('count'):
                 if row.get(aid):
                     values['aid_id'] = aid.split('-')[0]
-                    values['amount'] = row.get(aid)
+                    values['amount'] = int(row.get(aid))
                     submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                     if not created:
                         submodel = save_model(submodel, values)
