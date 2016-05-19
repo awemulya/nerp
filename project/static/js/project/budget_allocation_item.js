@@ -65,6 +65,7 @@ function BudgetAllocationItem(data) {
                 }
                 else {
                     alert.success('Saved!');
+
                     for (var i in msg.rows) {
                         for (var aid in msg.rows[i]) {
                             self.table_view.rows()[i][aid](msg.rows[i][aid]);

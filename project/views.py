@@ -345,6 +345,8 @@ def save_budget_allocation(request):
                 submodel, created = model.objects.get_or_create(id=row.get('goa_id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
+                if not row.get('goa_amount') and row.get('goa_id'):
+                    model.object.get(id =row.get('goa_id')).delete()
                 dct['rows'][index]['goa_id'] = submodel.id
             for aid in params.get('count'):
                 if row.get(aid) or row.get(aid + '-id'):
@@ -353,6 +355,8 @@ def save_budget_allocation(request):
                     submodel, created = model.objects.get_or_create(id=row.get(aid + '-id'), defaults=values)
                     if not created:
                         submodel = save_model(submodel, values)
+                    if not row.get(aid) and row.get(aid + '-id'):
+                        model.objects.get(id=row.get(aid + '-id')).delete()
                     dct['rows'][index][aid + '-id'] = submodel.id
     except Exception as e:
         if hasattr(e, 'messages'):
