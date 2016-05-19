@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import user_passes_test
 from account.serializers import AccountSerializer
 from app.utils.forms import form_view
 from core.forms import PartyForm, EmployeeForm, DonorForm, BudgetHeadForm
-from core.models import Party, Employee, BudgetHead, Donor, Activity, Account, TaxScheme, Language, FISCAL_YEARS, FiscalYear
+from core.models import Party, Employee, BudgetHead, Donor, Activity, TaxScheme, Language, FISCAL_YEARS, FiscalYear
 from core.serializers import PartySerializer, EmployeeSerializer, BudgetSerializer, ActivitySerializer, DonorSerializer, \
     TaxSchemeSerializer, LanguageSerializer
 from django.views.generic import ListView
@@ -114,13 +114,6 @@ def activities_as_json(request):
     objects = Activity.objects.all()
     objects_data = ActivitySerializer(objects, many=True).data
     return JsonResponse(objects_data, safe=False)
-
-
-def accounts_as_json(request):
-    objects = Account.objects.all()
-    objects_data = AccountSerializer(objects, many=True).data
-    return JsonResponse(objects_data, safe=False)
-
 
 def tax_schemes_as_json(request):
     objects = TaxScheme.objects.all()

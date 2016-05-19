@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from account.models import Receipt, ReceiptRow
-from core.models import Account
+from account.models import Receipt, ReceiptRow, Account
 
 
 class AccountSerializer(serializers.ModelSerializer):

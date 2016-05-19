@@ -2,7 +2,8 @@ import datetime
 
 from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_delete
-from django.dispatch.dispatcher import receiver
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -10,7 +11,148 @@ from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
 from app.utils.helpers import zero_for_none, none_for_zero
-from core.models import FiscalYear, Donor, Activity, Account, BudgetHead, TaxScheme
+from core.models import FiscalYear, Donor, Activity, BudgetHead, TaxScheme
+
+class Category(MPTTModel):
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=254, null=True, blank=True)
+    parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
+    # company = models.ForeignKey(Company)
+
+    def __unicode__(self):
+        return self.name
+
+    def get_data(self):
+        node = Node(self)
+        return node.get_data()
+
+    def get_descendant_ledgers(self):
+        ledgers = self.accounts.all()
+        for descendant in self.get_descendants():
+            ledgers = ledgers | descendant.accounts.all()
+        return ledgers
+
+    class Meta:
+        verbose_name_plural = u'Categories'
+
+
+
+
+class Account(models.Model):
+    code = models.CharField(max_length=10, blank=True, null=True)
+    name = models.CharField(max_length=100)
+    # company = models.ForeignKey(Company)
+    current_dr = models.FloatField(null=True, blank=True)
+    current_cr = models.FloatField(null=True, blank=True)
+    parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
+    category = models.ForeignKey(Category, related_name='accounts', blank=True, null=True)
+    tax_rate = models.FloatField(blank=True, null=True)
+    opening_dr = models.FloatField(default=0)
+    opening_cr = models.FloatField(default=0)
+    fy = models.ForeignKey(FiscalYear, null=True, blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    def get_absolute_url(self):
+        # return '/ledger/' + str(self.id)
+        return reverse('view_ledger', kwargs={'pk': self.pk})
+
+    # def get_last_day_last_transaction(self):
+    #     transactions = Transaction.objects.filter(account=self, date__lt=date.today()).order_by('-id', '-date')[:1]
+    #     if len(transactions) > 0:
+    #         return transactions[0]
+    #
+    # def get_last_transaction_before(self, before_date):
+    #     transactions = Transaction.objects.filter(account=self, date__lt=before_date).order_by('-id', '-date')[:1]
+    #     if len(transactions) > 0:
+    #         return transactions[0]
+    #
+    @property
+    def balance(self):
+        return self.get_balance()
+
+    def get_balance(self):
+        return zero_for_none(self.current_dr) - zero_for_none(self.current_cr)
+
+    def get_day_opening_dr(self, before_date=None):
+        if not before_date:
+            before_date = datetime.date.today()
+        transactions = Transaction.objects.filter(account=self, journal_entry__date__lt=before_date).order_by(
+            '-journal_entry__id', '-journal_entry__date')[:1]
+        if len(transactions) > 0:
+            return transactions[0].current_dr
+        return self.current_dr
+
+    def get_day_opening_cr(self, before_date=None):
+        if not before_date:
+            before_date = datetime.date.today()
+        transactions = Transaction.objects.filter(account=self, journal_entry__date__lt=before_date).order_by(
+            '-journal_entry__id', '-journal_entry__date')[:1]
+        if len(transactions) > 0:
+            return transactions[0].current_cr
+        return self.current_cr
+
+    def get_day_opening(self, before_date=None):
+        if not before_date:
+            before_date = datetime.date.today()
+        transactions = Transaction.objects.filter(account=self, journal_entry__date__lt=before_date).order_by(
+            '-journal_entry__id', '-journal_entry__date')[:1]
+        if len(transactions) > 0:
+            return zero_for_none(transactions[0].current_dr) - zero_for_none(transactions[0].current_cr)
+        return self.opening_dr - self.opening_cr
+
+    # day_opening_dr = property(get_day_opening_dr)
+    # day_opening_cr = property(get_day_opening_cr)
+    #
+    # day_opening = property(get_day_opening)
+
+    def add_category(self, category):
+        # all_categories = self.get_all_categories()
+        category_instance, created = Category.objects.get_or_create(name=category, company=self.company)
+        # self.categories.add(category_instance)
+        self.category = category_instance
+
+    def get_all_categories(self):
+        return self.category.get_ancestors(include_self=True)
+
+    categories = property(get_all_categories)
+
+    def get_cr_amount(self, day):
+        # journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
+        transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
+            '-journal_entry__id', '-journal_entry__date')[:1]
+        if len(transactions) > 0:
+            return transactions[0].current_cr
+        return 0
+
+    def get_dr_amount(self, day):
+        # journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
+        transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
+            '-journal_entry__id', '-journal_entry__date')[:1]
+        if len(transactions) > 0:
+            return transactions[0].current_dr
+        return 0
+
+    def save(self, *args, **kwargs):
+        queryset = Account.objects.all()
+        original_name = self.name
+        nxt = 2
+        if not self.pk:
+            while queryset.filter(**{'name': self.name, 'fy': self.fy}):
+                self.name = original_name
+                end = '%s%s' % ('-', nxt)
+                if len(self.name) + len(end) > 100:
+                    self.name = self.name[:100 - len(end)]
+                self.name = '%s%s' % (self.name, end)
+                nxt += 1
+        return super(Account, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        unique_together = ('name', 'fy')
+        ordering = ('order',)
+
 
 
 class JournalVoucher(models.Model):
@@ -222,141 +364,11 @@ class Node(object):
         return self.name
 
 
-class Category(MPTTModel):
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=254, null=True, blank=True)
-    parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
-    # company = models.ForeignKey(Company)
-
-    def __unicode__(self):
-        return self.name
-
-    def get_data(self):
-        node = Node(self)
-        return node.get_data()
-
-    def get_descendant_ledgers(self):
-        ledgers = self.accounts.all()
-        for descendant in self.get_descendants():
-            ledgers = ledgers | descendant.accounts.all()
-        return ledgers
-
-    class Meta:
-        verbose_name_plural = u'Categories'
-
-
-class Account(models.Model):
-    code = models.CharField(max_length=10, blank=True, null=True)
-    name = models.CharField(max_length=100)
-    # company = models.ForeignKey(Company)
-    current_dr = models.FloatField(null=True, blank=True)
-    current_cr = models.FloatField(null=True, blank=True)
-    parent = models.ForeignKey('self', blank=True, null=True, related_name='children')
-    category = models.ForeignKey(Category, related_name='accounts', blank=True, null=True)
-    tax_rate = models.FloatField(blank=True, null=True)
-    opening_dr = models.FloatField(default=0)
-    opening_cr = models.FloatField(default=0)
-
-    def get_absolute_url(self):
-        # return '/ledger/' + str(self.id)
-        return reverse('view_ledger', kwargs={'pk': self.pk})
-
-    # def get_last_day_last_transaction(self):
-    #     transactions = Transaction.objects.filter(account=self, date__lt=date.today()).order_by('-id', '-date')[:1]
-    #     if len(transactions) > 0:
-    #         return transactions[0]
-    #
-    # def get_last_transaction_before(self, before_date):
-    #     transactions = Transaction.objects.filter(account=self, date__lt=before_date).order_by('-id', '-date')[:1]
-    #     if len(transactions) > 0:
-    #         return transactions[0]
-    #
-    @property
-    def balance(self):
-        return self.get_balance()
-
-    def get_balance(self):
-        return zero_for_none(self.current_dr) - zero_for_none(self.current_cr)
-
-    def get_day_opening_dr(self, before_date=None):
-        if not before_date:
-            before_date = datetime.date.today()
-        transactions = Transaction.objects.filter(account=self, journal_entry__date__lt=before_date).order_by(
-            '-journal_entry__id', '-journal_entry__date')[:1]
-        if len(transactions) > 0:
-            return transactions[0].current_dr
-        return self.current_dr
-
-    def get_day_opening_cr(self, before_date=None):
-        if not before_date:
-            before_date = datetime.date.today()
-        transactions = Transaction.objects.filter(account=self, journal_entry__date__lt=before_date).order_by(
-            '-journal_entry__id', '-journal_entry__date')[:1]
-        if len(transactions) > 0:
-            return transactions[0].current_cr
-        return self.current_cr
-
-    def get_day_opening(self, before_date=None):
-        if not before_date:
-            before_date = datetime.date.today()
-        transactions = Transaction.objects.filter(account=self, journal_entry__date__lt=before_date).order_by(
-            '-journal_entry__id', '-journal_entry__date')[:1]
-        if len(transactions) > 0:
-            return zero_for_none(transactions[0].current_dr) - zero_for_none(transactions[0].current_cr)
-        return self.opening_dr - self.opening_cr
-
-    # day_opening_dr = property(get_day_opening_dr)
-    # day_opening_cr = property(get_day_opening_cr)
-    #
-    # day_opening = property(get_day_opening)
-
-    def add_category(self, category):
-        # all_categories = self.get_all_categories()
-        category_instance, created = Category.objects.get_or_create(name=category, company=self.company)
-        # self.categories.add(category_instance)
-        self.category = category_instance
-
-    def get_all_categories(self):
-        return self.category.get_ancestors(include_self=True)
-
-    categories = property(get_all_categories)
-
-    def get_cr_amount(self, day):
-        # journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
-        transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
-            '-journal_entry__id', '-journal_entry__date')[:1]
-        if len(transactions) > 0:
-            return transactions[0].current_cr
-        return 0
-
-    def get_dr_amount(self, day):
-        # journal_entry= JournalEntry.objects.filter(date__lt=day,transactions__account=self).order_by('-id','-date')[:1]
-        transactions = Transaction.objects.filter(journal_entry__date__lt=day, account=self).order_by(
-            '-journal_entry__id', '-journal_entry__date')[:1]
-        if len(transactions) > 0:
-            return transactions[0].current_dr
-        return 0
-
-    def save(self, *args, **kwargs):
-        queryset = Account.objects.all()
-        original_name = self.name
-        nxt = 2
-        if not self.pk:
-            while queryset.filter(**{'name': self.name}):
-                self.name = original_name
-                end = '%s%s' % ('-', nxt)
-                if len(self.name) + len(end) > 100:
-                    self.name = self.name[:100 - len(end)]
-                self.name = '%s%s' % (self.name, end)
-                nxt += 1
-        return super(Account, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        unique_together = ('name',)
-        # unique_together = ('name', 'company')
+@receiver(post_save, sender=FiscalYear)
+def fy_add(sender, instance, created, **kwargs):
+    if created:
+        Account.objects.create(name='Ka-7-15', fy=instance)
+        Account.objects.create(name='Ka-7-17', fy=instance)
 
 
 @receiver(pre_delete, sender=Transaction)

@@ -1,7 +1,10 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from njango.fields import BSDateField, today
 
-from core.models import Currency, FiscalYear, validate_in_fy, Donor, Account, Party
+from core.models import Currency, FiscalYear, validate_in_fy, Donor, Party
+from account.models import Account
 
 IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_transfer', 'GON Fund Transfer'),
                              ('replenishment_received', 'Replenishment Received'),
@@ -80,10 +83,6 @@ class ProjectFy(models.Model):
         unique_together = ('project', 'fy')
         verbose_name = 'Project Fiscal Year'
         verbose_name_plural = 'Project Fiscal Years'
-
-
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 @receiver(post_save, sender=Project)
@@ -208,4 +207,4 @@ class ImprestJournalVoucher(models.Model):
     project_fy = models.ForeignKey(ProjectFy)
 
     def __str__(self):
-        return self.voucher_no
+        return str(self.voucher_no)
