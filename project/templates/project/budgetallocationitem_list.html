@@ -42,9 +42,9 @@
                         <td>
                             <select data-bind="selectize: $root.budget_head, value: budget_head_id"></select>
                         </td>
-                        <td data-bind="editableText: goa_amount"></td>
+                        <td data-bind="editableText: goa_amount, numeric: true"></td>
                         <!-- ko foreach: $root.count -->
-                        <td data-bind="editableText: $parent[$data]"></td>
+                        <td data-bind="editableText: $parent[$data], numeric: true"></td>
                         <!-- /ko-->
                         <td data-bind="text: total()"></td>
                         <td class="hidden-print">

@@ -33,14 +33,22 @@ function BudgetAllocationItem(data) {
             self.value_count.push(val);
             self.values.push({
                 'budget_head_id': val,
-                'aid_amount': [{'id': data.rows[i].id, 'aid_name': data.rows[i].aid_name, 'amount': data.rows[i].amount}],
+                'aid_amount': [{
+                    'id': data.rows[i].id,
+                    'aid_name': data.rows[i].aid_name,
+                    'amount': data.rows[i].amount
+                }],
             });
 
         } else {
             var obj = $.grep(self.values, function (e) {
                 return e.budget_head_id == data.rows[i].budget_head_id;
             });
-            obj[0].aid_amount.push({'id': data.rows[i].id, 'aid_name': data.rows[i].aid_name, 'amount': data.rows[i].amount})
+            obj[0].aid_amount.push({
+                'id': data.rows[i].id,
+                'aid_name': data.rows[i].aid_name,
+                'amount': data.rows[i].amount
+            });
         }
     }
 
@@ -58,8 +66,8 @@ function BudgetAllocationItem(data) {
                 else {
                     alert.success('Saved!');
                     for (var i in msg.rows) {
-                        for ( var aid in msg.rows[i] ) {
-                            self.table_view.rows()[i][aid](msg.rows[i][aid])
+                        for (var aid in msg.rows[i]) {
+                            self.table_view.rows()[i][aid](msg.rows[i][aid]);
                         }
                     }
                     //ko.utils.arrayForEach(self.categories(), function (category) {
@@ -104,7 +112,7 @@ function RowVM(row, vm) {
                     self.goa_amount(row.aid_amount[i].amount);
                     self.goa_id(row.aid_amount[i].id);
                 } else {
-                    self.goa_amount(self.goa_amount() + row.aid_amount[i].amount)
+                    self.goa_amount(self.goa_amount() + row.aid_amount[i].amount);
                 }
             }
             if (self[row.aid_amount[i].aid_name] != undefined) {
@@ -120,7 +128,7 @@ function RowVM(row, vm) {
     }
 
     self.total = function () {
-        total = 0
+        var total = 0;
         if (self.goa_amount()) {
             total = parseInt(self.goa_amount());
         }
@@ -129,6 +137,6 @@ function RowVM(row, vm) {
                 total = total + parseInt(self[vm.count[i]]());
             }
         }
-        return total
+        return parseInt(total);
     }
 }
