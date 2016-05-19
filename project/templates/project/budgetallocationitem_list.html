@@ -46,17 +46,17 @@
                         <!-- ko foreach: $root.count -->
                         <td data-bind="editableText: $parent[$data]"></td>
                         <!-- /ko-->
-                        <td></td>
+                        <td data-bind="text: total()"></td>
                         <td class="hidden-print">
-{#                            <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>#}
+                            <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
                         </td>
                     </tr>
                     <!-- /ko -->
                     </tbody>
                 </table>
-{#                <a class="btn btn-default btn-raised" data-bind="click: addRow">#}
-{#                    {% trans 'Add New Row' %}#}
-{#                </a>#}
+                <a class="btn btn-default btn-raised" data-bind="click: addRow">
+                    {% trans 'Add New Row' %}
+                </a>
             </div>
 
             <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">

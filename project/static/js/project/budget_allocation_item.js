@@ -33,8 +33,8 @@ function BudgetAllocationItem(data) {
                 'aid_amount': [{'aid_name': data.rows[i].aid_name, 'amount': data.rows[i].amount}],
             });
 
-        } else  {
-            var obj = $.grep(self.values, function(e){
+        } else {
+            var obj = $.grep(self.values, function (e) {
                 return e.budget_head_id == data.rows[i].budget_head_id;
             });
             obj[0].aid_amount.push({'aid_name': data.rows[i].aid_name, 'amount': data.rows[i].amount})
@@ -52,29 +52,21 @@ function RowVM(row, vm) {
     self.budget_head_id = ko.observable();
     self.goa_amount = ko.observable();
 
-    if (row) {
-        //if (row.aid_name == null) {
-        //    self.goa_amount(row.amount)
-        //}
-        //;
+    for (i in vm.count) {
+        self[vm.count[i]] = ko.observable();
+    }
 
-        for (i in vm.count) {
-            self[vm.count[i]] = ko.observable();
-            if (row.aid_name == vm.count[i]) {
-                self[vm.count[i]](row.amount)
-            }
-        }
+    if (row) {
         for (i in row.aid_amount) {
-            if (row.aid_amount[i].aid_name == null){
+            if (row.aid_amount[i].aid_name == null) {
                 if (self.goa_amount() == undefined) {
                     self.goa_amount(row.aid_amount[i].amount);
                 } else {
-                    debugger
                     self.goa_amount(self.goa_amount() + row.aid_amount[i].amount)
                 }
             }
-            if (row.aid_amount[i].aid_name == vm.count[i]) {
-                self[vm.count[i]](row.aid_amount[i].amount)
+            if (self[row.aid_amount[i].aid_name] != undefined) {
+                self[row.aid_amount[i].aid_name](row.aid_amount[i].amount);
             }
         }
     }
@@ -83,5 +75,16 @@ function RowVM(row, vm) {
         self[k] = ko.observable(row[k]);
     }
 
-
+    self.total = function () {
+        total = 0
+        if (self.goa_amount()) {
+            total = self.goa_amount();
+        }
+        for (i in vm.count) {
+            if (typeof(self[vm.count[i]]()) != 'undefined') {
+                total = total + parseInt(self[vm.count[i]]());
+            }
+        }
+        return total
+    }
 }
