@@ -114,7 +114,7 @@ class ExpenseRow(models.Model):
 class BudgetAllocationItem(models.Model):
     budget_head = models.ForeignKey(BudgetHead)
     aid = models.ForeignKey(Aid, blank=True, null=True)
-    amount = models.PositiveIntegerField()
+    amount = models.PositiveIntegerField(blank=True, null=True)
     project = models.ForeignKey(Project)
     fy = models.ForeignKey(FiscalYear)
 

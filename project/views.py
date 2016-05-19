@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic import ListView
-from app.utils.helpers import save_model, invalid
+from app.utils.helpers import save_model, invalid, empty_to_none
 from core.models import FiscalYear, BudgetHead
 from inventory.models import delete_rows
 from models import Aid, BudgetAllocationItem
@@ -310,12 +310,27 @@ class BudgetAllocaionCreate(ProjectView, ListView):
         return self.model.objects.filter(project_id=self.kwargs['project_id'])
 
 
+def delete_budget_allocation(rows, model):
+    for row in rows:
+        for o in row.get('aid_amount'):
+            if o.get('id'):
+                try:
+                    instance = model.objects.get(id=o.get('id'))
+                    instance.delete()
+                except:
+                    pass
+        if row.get('goa_id'):
+            try:
+                instance = model.objects.get(id=row.get('goa_id'))
+                instance.delete()
+            except:
+                pass
+
 @login_required
 def save_budget_allocation(request):
     params = json.loads(request.body)
     fy = params.get('fy')
     project_id = params.get('project_id')
-    import ipdb
     dct = {'rows': {}}
     model = BudgetAllocationItem
     try:
@@ -325,21 +340,20 @@ def save_budget_allocation(request):
             values = {'budget_head_id': row.get('budget_head_id'),
                       'fy_id': fy, 'project_id': project_id}
             dct['rows'][index] = {}
-            if row.get('goa_amount'):
-                values['amount'] = row.get('goa_amount')
+            if row.get('goa_id') or row.get('goa_amount'):
+                values['amount'] = empty_to_none(row.get('goa_amount'))
                 submodel, created = model.objects.get_or_create(id=row.get('goa_id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
                 dct['rows'][index]['goa_id'] = submodel.id
             for aid in params.get('count'):
-                if row.get(aid):
+                if row.get(aid) or row.get(aid + '-id'):
                     values['aid_id'] = aid.split('-')[0]
-                    values['amount'] = int(row.get(aid))
+                    values['amount'] = empty_to_none(row.get(aid))
                     submodel, created = model.objects.get_or_create(id=row.get(aid + '-id'), defaults=values)
                     if not created:
                         submodel = save_model(submodel, values)
                     dct['rows'][index][aid + '-id'] = submodel.id
-        # delete_rows(row.get('deleted_rows'), model)
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
@@ -347,6 +361,5 @@ def save_budget_allocation(request):
             dct['error_message'] = str(e)
         else:
             dct['error_message'] = 'Error in form data!'
-
-    # delete_rows(params.get('table_view').get('deleted_rows'), model)
+    delete_budget_allocation(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)

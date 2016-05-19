@@ -70,20 +70,7 @@ function BudgetAllocationItem(data) {
                             self.table_view.rows()[i][aid](msg.rows[i][aid]);
                         }
                     }
-                    //ko.utils.arrayForEach(self.categories(), function (category) {
-                    //    ko.utils.arrayForEach(category.rows(), function (row) {
-                    //        row.klass('invalid-row');
-                    //    });
-                    //    category.deleted_rows([]);
-                    //});
-                    //for (var i in msg.categories) {
-                    //    //debugger;
-                    //    for (var j in msg.categories[i].rows) {
-                    //        self.categories()[i].rows()[j].id(msg.categories[i].rows[j]);
-                    //        self.categories()[i].rows()[j].klass('');
-                    //    }
-                    //}
-                    //self.table_view.deleted_rows([]);
+                    self.table_view.deleted_rows([]);
                 }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -134,7 +121,9 @@ function RowVM(row, vm) {
         }
         for (i in vm.count) {
             if (typeof(self[vm.count[i]]()) != 'undefined') {
-                total = total + parseInt(self[vm.count[i]]());
+                if (self[vm.count[i]]() != null) {
+                    total = total + empty_to_zero(self[vm.count[i]]());
+                }
             }
         }
         return parseInt(total);
