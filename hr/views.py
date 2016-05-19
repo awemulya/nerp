@@ -142,6 +142,7 @@ def salary_taxation_unit(employee, f_y_item):
                     # Rate
                     salary += item.amount_rate / 100.0 * salary
 
+    scale_salary = employee.designation.grade.salary_scale
     allowance = 0
 
     for ob in employee.allowances.all():
@@ -161,19 +162,19 @@ def salary_taxation_unit(employee, f_y_item):
                 if obj.sum_type == 'AMOUNT':
                     allowance += obj.amount * cnt
                 else:
-                    allowance += obj.amount_rate / 100.0 * salary
+                    allowance += obj.amount_rate / 100.0 * scale_salary
 
         elif obj.payment_cycle == 'M':
             if obj.sum_type == 'AMOUNT':
                 allowance += obj.amount * total_month
             else:
-                allowance += obj.amount_rate / 100.0 * salary
+                allowance += obj.amount_rate / 100.0 * scale_salary
         elif obj.payment_cycle == 'D':
             if obj.sum_type == 'AMOUNT':
                 allowance += obj.amount * total_work_day
             else:
                 # Does this mean percentage in daily wages
-                allowance += obj.amount_rate / 100.0 * salary
+                allowance += obj.amount_rate / 100.0 * scale_salary
 
 
 
@@ -197,19 +198,19 @@ def salary_taxation_unit(employee, f_y_item):
                 if obj.sum_type == 'AMOUNT':
                     incentive += obj.amount * cnt
                 else:
-                    incentive += obj.amount_rate / 100.0 * salary
+                    incentive += obj.amount_rate / 100.0 * scale_salary
 
         elif obj.payment_cycle == 'M':
             if obj.sum_type == 'AMOUNT':
                 incentive += obj.amount * total_month
             else:
-                incentive += obj.amount_rate / 100.0 * salary
+                incentive += obj.amount_rate / 100.0 * scale_salary
         elif obj.payment_cycle == 'D':
             if obj.sum_type == 'AMOUNT':
                 incentive += obj.amount * total_work_day
             else:
                 # Does this mean percentage in daily wages
-                incentive += obj.amount_rate / 100.0 * salary
+                incentive += obj.amount_rate / 100.0 * scale_salary
 
     deduction = 0
     # deduction_detail = []
@@ -288,15 +289,6 @@ def salary_taxation_unit(employee, f_y_item):
                     break
         if main_loop_break_flag:
             break
-        # else:
-        #     for index3, obj3 in enumerate(tax_schemes):
-        #         if index != index3:
-        #             tax_amount += obj3.end_to * obj3.tax_rate / 100
-        #             taxable_amount -= obj3.end_to
-        #         else:
-        #             tax_amount += taxable_amount * obj3.tax_rate / 100
-        #             break
-
     total_tax = social_security_tax + tax_amount
     return total_tax * (f_y_item['worked_days'] / f_y_item['year_days'])
 
@@ -503,17 +495,19 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         Deduction.objects.all(), key=lambda obj: obj.priority)
 
     # Addition of PF and bima to salary if employee is permanent
+    addition_pf = 0
     for item in deductions:
         if employee.is_permanent:
             if item.add2_init_salary and item.deduction_for == 'EMPLOYEE ACC':
                 if item.deduct_type == 'AMOUNT':
-                    salary += item.amount * total_month
+                    addition_pf += item.amount * total_month
                 else:
                     # Rate
-                    salary += item.amount_rate / 100.0 * salary
+                    addition_pf += item.amount_rate / 100.0 * salary
 
     # Now add allowance to the salary(salary = salary + allowance)
     # Question here is do we need to deduct from incentove(I gues not)
+    scale_salary = employee.designation.grade.salary_scale
     allowance = 0
     # for obj in employee.allowances.all():
     for _name in AllowanceName.objects.all():
@@ -537,8 +531,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                         employee_response['allowance_%d' % (_name.id)] = obj.amount * cnt
                         allowance += obj.amount * cnt
                     else:
-                        employee_response['allowance_%d' % (_name.id)] = 0
-                        # allowance += obj.amount_rate / 100.0 * salary
+                        employee_response['allowance_%d' % (_name.id)] = obj.amount_rate / 100.0 * scale_salary
+                        allowance += obj.amount_rate / 100.0 * scale_salary
                 else:
                     employee_response['allowance_%d' % (_name.id)] = 0
 
@@ -547,16 +541,16 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                     employee_response['allowance_%d' % (_name.id)] = obj.amount * total_month
                     allowance += obj.amount * total_month
                 else:
-                    employee_response['allowance_%d' % (_name.id)] = obj.amount_rate / 100.0 * salary
-                    allowance += obj.amount_rate / 100.0 * salary
+                    employee_response['allowance_%d' % (_name.id)] = obj.amount_rate / 100.0 * scale_salary
+                    allowance += obj.amount_rate / 100.0 * scale_salary
             elif obj.payment_cycle == 'D':
                 if obj.sum_type == 'AMOUNT':
                     employee_response['allowance_%d' % (_name.id)] = obj.amount * total_work_day
                     allowance += obj.amount * total_work_day
                 else:
                     # Does this mean percentage in daily wages
-                    employee_response['allowance_%d' % (_name.id)] = obj.amount_rate / 100.0 * salary
-                    allowance += obj.amount_rate / 100.0 * salary
+                    employee_response['allowance_%d' % (_name.id)] = obj.amount_rate / 100.0 * scale_salary
+                    allowance += obj.amount_rate / 100.0 * scale_salary
             # else:
             #     # This is hourly case(Dont think we have it)
             #     pass
@@ -568,7 +562,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             employee_response['allowance_%d' % (_name.id)] = 0
 
     employee_response['allowance'] = allowance
-    salary += allowance
+    # salary += allowance
 
     # now calculate incentive if it has but not to add to salary just to
     # transact seperately
@@ -596,7 +590,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                         employee_response['incentive_%d' % (_name.id)] = obj.amount * cnt
                         incentive += obj.amount * cnt
                     else:
-                        employee_response['incentive_%d' % (_name.id)] = 0
+                        employee_response['incentive_%d' % (_name.id)] = obj.amount_rate / 100.0 * scale_salary
+                        incentive += obj.amount_rate / 100.0 * scale_salary
                 else:
                     employee_response['incentive_%d' % (_name.id)] = 0
 
@@ -605,16 +600,16 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                     employee_response['incentive_%d' % (_name.id)] = obj.amount * total_month
                     incentive += obj.amount * total_month
                 else:
-                    employee_response['incentive_%d' % (_name.id)] = obj.amount_rate / 100.0 * salary
-                    incentive += obj.amount_rate / 100.0 * salary
+                    employee_response['incentive_%d' % (_name.id)] = obj.amount_rate / 100.0 * scale_salary
+                    incentive += obj.amount_rate / 100.0 * scale_salary
             elif obj.payment_cycle == 'D':
                 if obj.sum_type == 'AMOUNT':
                     employee_response['incentive_%d' % (_name.id)] = obj.amount * total_work_day
                     incentive += obj.amount * total_work_day
                 else:
                     # Does this mean percentage in daily wages
-                    employee_response['incentive_%d' % (_name.id)] = obj.amount_rate / 100.0 * salary
-                    incentive += obj.amount_rate / 100.0 * salary
+                    employee_response['incentive_%d' % (_name.id)] = obj.amount_rate / 100.0 * scale_salary
+                    incentive += obj.amount_rate / 100.0 * scale_salary
             else:
                 # This is hourly case(Dont think we have it)
                 employee_response['incentive_%d' % (_name.id)] = 0
@@ -707,12 +702,12 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     employee_response['pro_tempore_ids'] = to_be_paid_pt_ids
     # First allowence added to salary for deduction and income tax.
     # For pure salary here added allowance should be duduced
-    employee_response['salary'] = salary - allowance
+    employee_response['salary'] = salary
     # employee_response['employee_bank_account_id'] = get_account_id(
     #     employee, 'bank_account')
 
     employee_response['paid_amount'] = salary - deduction - income_tax +\
-        p_t_amount + incentive - employee_response['pf_deduction_amount']
+        p_t_amount + incentive + allowance - employee_response['pf_deduction_amount']
 
     if row_errors:
         for item in employee_response:
