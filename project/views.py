@@ -14,7 +14,7 @@ from models import Aid, BudgetAllocationItem
 from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer, \
-    BudgetAllocationItemSerializer
+    BudgetAllocationItemSerializer, AidSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
 
@@ -295,10 +295,12 @@ class BudgetAllocaionCreate(ProjectView, ListView):
     def get_context_data(self, **kwargs):
         context_data = super(BudgetAllocaionCreate, self).get_context_data(**kwargs)
         budget_head = BudgetHead.objects.all()
+        aid = Aid.objects.filter(active=True, project = context_data['project'].id)
         context_data['data'] = {
             'fy': self.get_fy().id,
             'rows': BudgetAllocationItemSerializer(context_data['object_list'], many=True).data,
-            'budget_head': BudgetSerializer(budget_head, many=True).data
+            'budget_head': BudgetSerializer(budget_head, many=True).data,
+            'aid': AidSerializer(aid, many=True).data,
         }
         return context_data
 

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, BudgetAllocationItem
+from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, BudgetAllocationItem, Aid
 
 
 class ImprestTransactionSerializer(serializers.ModelSerializer):
@@ -25,6 +25,16 @@ class ExpenseCategorySerializer(serializers.ModelSerializer):
 class ExpenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expense
+
+
+class AidSerializer(serializers.ModelSerializer):
+    aid_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Aid
+
+    def get_aid_name(self, obj):
+        return str(obj.id) + '-' + obj.donor.name
 
 
 class BudgetAllocationItemSerializer(serializers.ModelSerializer):
