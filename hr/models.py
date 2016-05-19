@@ -1023,6 +1023,15 @@ class CompanyAccount(models.Model):
     is_salary_giving = models.BooleanField(default=False)
 
 
+# This stores the pure salary with scale and rate
+# One Salary account for each fiscal year should be created
+class SalaryAccount(models.Model):
+    account = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='salary_account'
+    )
+
 # class HrConfig(dbsettings.Group):
 #     sk_deduction_rate = models.PositiveIntegerField()
 #     maintenance_mode = models.BooleanField(default=False)

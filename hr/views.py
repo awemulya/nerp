@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm
-from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry, Incentive, Allowance, MaritalStatus
+from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry, Incentive, Allowance, MaritalStatus, SalaryAccount
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -1134,14 +1134,26 @@ def transact_entry(request, pk=None):
         salary_giving_account = Account.objects.filter(
             company_account__is_salary_giving=True
         )[0]
+
+        # NeedUpdate
+        # Later This will be one by its fiscal year
+        salary_account = SalaryAccount.objects.get(id=1).account
         # First ma slary and allowance transact grade_name
         # SET TRANSACTION HERE FOR SALARY: DR IN EMP ACC
         set_transactions(
             entry,
             p_e.entry_datetime,
             *[
-                ('dr', employee_salary_account, salary),
                 ('cr', salary_giving_account, salary),
+                ('dr', salary_account, salary),
+            ]
+        )
+        set_transactions(
+            entry,
+            p_e.entry_datetime,
+            *[
+                ('cr', salary_account, salary),
+                ('dr', employee_salary_account, salary),
             ]
         )
         for allowance_details_item in entry.allowance_details.all():
@@ -1153,9 +1165,17 @@ def transact_entry(request, pk=None):
                 entry,
                 p_e.entry_datetime,
                 *[
-                    ('dr', employee_salary_account, a_amount),
-                    ('dr', a_account, a_amount),
                     ('cr', salary_giving_account, a_amount),
+                    ('dr', a_account, a_amount),
+                ]
+            )
+            set_transactions(
+                entry,
+                p_e.entry_datetime,
+                *[
+                    # ('dr', employee_salary_account, a_amount),
+                    ('cr', a_account, a_amount),
+                    ('dr', employee_salary_account, a_amount),
                 ]
             )
         # pdb.set_trace()
@@ -1168,9 +1188,16 @@ def transact_entry(request, pk=None):
                 entry,
                 p_e.entry_datetime,
                 *[
-                    ('dr', employee_salary_account, i_amount),
+                    ('cr', salary_giving_account, i_amount),
                     ('dr', i_account, i_amount),
-                    ('cr', employee_salary_account, i_amount),
+                ]
+            )
+            set_transactions(
+                entry,
+                p_e.entry_datetime,
+                *[
+                    ('cr', i_account, i_amount),
+                    ('dr', employee_salary_account, i_amount),
                 ]
             )
         # pdb.set_trace()
@@ -1193,11 +1220,28 @@ def transact_entry(request, pk=None):
                 entry,
                 p_e.entry_datetime,
                 *[
-                    ('cr', employee_salary_account, d_amount),
-                    ('dr', d_dr_account, d_amount),
+                    ('cr', salary_giving_account, d_amount),
                     ('dr', d_account, d_amount),
                 ]
             )
+            set_transactions(
+                entry,
+                p_e.entry_datetime,
+                *[
+                    ('cr', d_account, d_amount),
+                    ('dr', d_dr_account, d_amount),
+                ]
+            )
+
+            # set_transactions(
+            #     entry,
+            #     p_e.entry_datetime,
+            #     *[
+            #         ('cr', employee_salary_account, d_amount),
+            #         ('dr', d_dr_account, d_amount),
+            #         ('dr', d_account, d_amount),
+            #     ]
+            # )
 
     p_e.transacted = True
     p_e.save()
