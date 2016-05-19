@@ -508,6 +508,8 @@ tr.total, tr.category, tr.subtotal{
     width: 22em;
 }
 
-#budget-allocation .selectize-input {
-    width: inherit;
+#budget-allocation tr td:first-child {
+    width: 22em;
 }
+
+
