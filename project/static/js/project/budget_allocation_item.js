@@ -11,6 +11,9 @@ function BudgetAllocationItem(data) {
 
     self.count = []
 
+    self.fy = ko.observable(data.fy);
+    self.project_id = ko.observable(data.project_id);
+
     for (var k in data.aid) {
         if (data.aid[k].aid_name != null) {
             if (self.count.indexOf(data.aid[k].aid_name) == -1) {
@@ -29,6 +32,7 @@ function BudgetAllocationItem(data) {
         if (self.value_count.indexOf(val) == -1) {
             self.value_count.push(val);
             self.values.push({
+                'id': data.rows[i].id,
                 'budget_head_id': val,
                 'aid_amount': [{'aid_name': data.rows[i].aid_name, 'amount': data.rows[i].amount}],
             });
@@ -42,13 +46,45 @@ function BudgetAllocationItem(data) {
     }
 
     self.table_view = new TableViewModel({rows: self.values, argument: self, auto_add_first: false}, RowVM);
-    self.save = function () {
 
-    };
-};
+    self.save = function () {
+        $.ajax({
+            type: "POST",
+            url: '/project/budget_allocation/save/',
+            data: ko.toJSON(self),
+            success: function (msg) {
+                if (typeof (msg.error_message) != 'undefined') {
+                    alert.error(msg.error_message);
+                }
+                else {
+                    alert.success('Saved!');
+                    self.status('Saved');
+                    ko.utils.arrayForEach(self.categories(), function (category) {
+                        ko.utils.arrayForEach(category.rows(), function (row) {
+                            row.klass('invalid-row');
+                        });
+                        category.deleted_rows([]);
+                    });
+                    for (var i in msg.categories) {
+                        //debugger;
+                        for (var j in msg.categories[i].rows) {
+                            self.categories()[i].rows()[j].id(msg.categories[i].rows[j]);
+                            self.categories()[i].rows()[j].klass('');
+                        }
+                    }
+                    //self.table_view.deleted_rows([]);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
+            }
+        });
+    }
+}
 
 function RowVM(row, vm) {
     var self = this;
+    self.id = ko.observable();
     self.budget_head_id = ko.observable();
     self.goa_amount = ko.observable();
 
@@ -78,7 +114,7 @@ function RowVM(row, vm) {
     self.total = function () {
         total = 0
         if (self.goa_amount()) {
-            total = self.goa_amount();
+            total = parseInt(self.goa_amount());
         }
         for (i in vm.count) {
             if (typeof(self[vm.count[i]]()) != 'undefined') {

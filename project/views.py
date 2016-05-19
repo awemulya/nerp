@@ -1,6 +1,6 @@
 import json
-from core.serializers import BudgetSerializer
 
+from core.serializers import BudgetSerializer
 from django.http.response import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
@@ -13,7 +13,8 @@ from inventory.models import delete_rows
 from models import Aid, BudgetAllocationItem
 from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
-from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer, \
+from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, \
+    ExpenseSerializer, \
     BudgetAllocationItemSerializer, AidSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
@@ -295,9 +296,10 @@ class BudgetAllocaionCreate(ProjectView, ListView):
     def get_context_data(self, **kwargs):
         context_data = super(BudgetAllocaionCreate, self).get_context_data(**kwargs)
         budget_head = BudgetHead.objects.all()
-        aid = Aid.objects.filter(active=True, project = context_data['project'].id)
+        aid = Aid.objects.filter(active=True, project=context_data['project'].id)
         context_data['data'] = {
             'fy': self.get_fy().id,
+            'project_id': context_data['project'].id,
             'rows': BudgetAllocationItemSerializer(context_data['object_list'], many=True).data,
             'budget_head': BudgetSerializer(budget_head, many=True).data,
             'aid': AidSerializer(aid, many=True).data,
@@ -306,3 +308,46 @@ class BudgetAllocaionCreate(ProjectView, ListView):
 
     def get_queryset(self):
         return self.model.objects.filter(project_id=self.kwargs['project_id'])
+
+
+@login_required
+def save_budget_allocation(request):
+    params = json.loads(request.body)
+    fy = params.get('fy')
+    project_id = params.get('project_id')
+    import ipdb
+    dct = {'rows': {}}
+    model = BudgetAllocationItem
+    try:
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['budget_head_id']):
+                continue
+            values = {'budget_head_id': row.get('budget_head_id'),
+                      'fy_id': fy, 'project_id': project_id}
+
+            if row.get('goa_amount'):
+                values['aid'] = None
+                values['amount'] = row.get('goa_amount')
+                submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                if not created:
+                    submodel = save_model(submodel, values)
+                dct['rows'][index] = submodel.id
+            for aid in params.get('count'):
+                if row.get(aid):
+                    values['aid_id'] = aid.split('-')[0]
+                    values['amount'] = row.get(aid)
+                    submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+                    if not created:
+                        submodel = save_model(submodel, values)
+                    dct['rows'][index] = submodel.id
+        # delete_rows(row.get('deleted_rows'), model)
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+
+    # delete_rows(params.get('table_view').get('deleted_rows'), model)
+    return JsonResponse(dct)
