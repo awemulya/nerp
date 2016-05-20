@@ -282,26 +282,16 @@ class ExpenseDelete(ExpenseView, DeleteView):
 
 
 class BaseStatement(object):
-    def get_fy(self):
-        if not self.fy:
-            self.fy = FiscalYear.get()
-        return self.fy
-
     def get_context_data(self, **kwargs):
         context_data = super(BaseStatement, self).get_context_data(**kwargs)
         budget_head = BudgetHead.objects.all()
         aid = Aid.objects.filter(active=True, project=context_data['project'].id)
         context_data['data'] = {
-            'fy': self.get_fy().id,
-            'project_id': context_data['project'].id,
             'rows': BudgetAllocationItemSerializer(context_data['object_list'], many=True).data,
             'budget_head': BudgetSerializer(budget_head, many=True).data,
             'aid': AidSerializer(aid, many=True).data,
         }
         return context_data
-
-    def get_queryset(self):
-        return self.model.objects.filter(project_id=self.kwargs['project_id'])
 
 
 def base_save(request, model):
