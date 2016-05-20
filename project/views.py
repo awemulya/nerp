@@ -384,12 +384,15 @@ class BudgetReleaseCreate(BaseStatement, ProjectView, ListView):
 
 @login_required
 def save_budget_release(request):
+    import ipdb
+    ipdb.set_trace()
     return base_save(request, BudgetReleaseItem)
 
 
 class ExpenditureCreate(BaseStatement, ProjectView, ListView):
     model = Expenditure
     fy = None
+    template_name = 'project/expenditure_list.html'
 
     def get_queryset(self):
         if not self.model.objects.filter(project_id=self.kwargs['project_id']):
@@ -399,4 +402,6 @@ class ExpenditureCreate(BaseStatement, ProjectView, ListView):
 
 @login_required
 def save_expenditure(request):
+    import ipdb
+    # ipdb.set_trace()
     return base_save(request, Expenditure)
