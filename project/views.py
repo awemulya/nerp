@@ -10,7 +10,7 @@ from django.views.generic import ListView
 from app.utils.helpers import save_model, invalid, empty_to_none
 from core.models import FiscalYear, BudgetHead
 from inventory.models import delete_rows
-from models import Aid, BudgetAllocationItem
+from models import Aid, BudgetAllocationItem, BudgetReleaseItem
 from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, \
@@ -284,17 +284,14 @@ class ExpenseDelete(ExpenseView, DeleteView):
     pass
 
 
-class BudgetAllocaionCreate(ProjectView, ListView):
-    model = BudgetAllocationItem
-    fy = None
-
+class BaseStatement(object):
     def get_fy(self):
         if not self.fy:
             self.fy = FiscalYear.get()
         return self.fy
 
     def get_context_data(self, **kwargs):
-        context_data = super(BudgetAllocaionCreate, self).get_context_data(**kwargs)
+        context_data = super(BaseStatement, self).get_context_data(**kwargs)
         budget_head = BudgetHead.objects.all()
         aid = Aid.objects.filter(active=True, project=context_data['project'].id)
         context_data['data'] = {
@@ -310,31 +307,12 @@ class BudgetAllocaionCreate(ProjectView, ListView):
         return self.model.objects.filter(project_id=self.kwargs['project_id'])
 
 
-def delete_budget_allocation(rows, model):
-    for row in rows:
-        import ipdb
-        # ipdb.set_trace()
-        for o in row.get('aid_amount'):
-            if o.get('id'):
-                try:
-                    instance = model.objects.get(id=o.get('id'))
-                    instance.delete()
-                except:
-                    pass
-        if row.get('goa_id'):
-            try:
-                instance = model.objects.get(id=row.get('goa_id'))
-                instance.delete()
-            except:
-                pass
-
-@login_required
-def save_budget_allocation(request):
+def base_save(request, model):
     params = json.loads(request.body)
     fy = params.get('fy')
     project_id = params.get('project_id')
     dct = {'rows': {}}
-    model = BudgetAllocationItem
+    model = model
     try:
         for index, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['budget_head_id']):
@@ -348,7 +326,7 @@ def save_budget_allocation(request):
                 if not created:
                     submodel = save_model(submodel, values)
                 if not row.get('goa_amount') and row.get('goa_id'):
-                    model.objects.get(id =row.get('goa_id')).delete()
+                    model.objects.get(id=row.get('goa_id')).delete()
                 dct['rows'][index]['goa_id'] = submodel.id
             for aid in params.get('count'):
                 if row.get(aid) or row.get(aid + '-id'):
@@ -369,3 +347,40 @@ def save_budget_allocation(request):
             dct['error_message'] = 'Error in form data!'
     delete_budget_allocation(params.get('table_view').get('deleted_rows'), model)
     return JsonResponse(dct)
+
+
+def delete_budget_allocation(rows, model):
+    for row in rows:
+        # ipdb.set_trace()
+        for o in row.get('aid_amount'):
+            if o.get('id'):
+                try:
+                    instance = model.objects.get(id=o.get('id'))
+                    instance.delete()
+                except:
+                    pass
+        if row.get('goa_id'):
+            try:
+                instance = model.objects.get(id=row.get('goa_id'))
+                instance.delete()
+            except:
+                pass
+
+
+class BudgetAllocaionCreate(BaseStatement, ProjectView, ListView):
+    model = BudgetAllocationItem
+    fy = None
+
+
+@login_required
+def save_budget_allocation(request):
+    return base_save(request, BudgetAllocationItem)
+
+
+class BudgetReleaseCreate(BaseStatement,ProjectView, ListView):
+    model = BudgetReleaseItem
+    fy = None
+
+@login_required
+def save_budget_release(request):
+    return base_save(request, BudgetReleaseItem)
