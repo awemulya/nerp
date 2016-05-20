@@ -40,7 +40,7 @@
                     <!-- ko foreach: rows -->
                     <tr>
                         <td>
-                            <select data-bind="selectize: $root.budget_head, value: budget_head_id"></select>
+                            <select data-bind="selectize: $root.available_budget_heads, value: budget_head_id, object: budget_head"></select>
                         </td>
                         <td data-bind="editableText: goa_amount, numeric: true"></td>
                         <!-- ko foreach: $root.count -->

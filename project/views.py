@@ -288,8 +288,8 @@ class BaseStatement(object):
         aid = Aid.objects.filter(active=True, project=context_data['project'].id)
         context_data['data'] = {
             'rows': BudgetAllocationItemSerializer(context_data['object_list'], many=True).data,
-            'budget_head': BudgetSerializer(budget_head, many=True).data,
-            'aid': AidSerializer(aid, many=True).data,
+            'budget_heads': BudgetSerializer(budget_head, many=True).data,
+            'aids': AidSerializer(aid, many=True).data,
         }
         return context_data
 

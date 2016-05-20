@@ -5,7 +5,7 @@ $(document).ready(function () {
 
 function BudgetAllocationItem(data) {
     var self = this;
-    self.budget_head = ko.observableArray(data.budget_head);
+    self.budget_heads = ko.observableArray(data.budget_heads);
 
     self.aids = ko.observableArray();
 
@@ -14,8 +14,8 @@ function BudgetAllocationItem(data) {
     self.fy = ko.observable(data.fy);
     self.project_id = ko.observable(data.project_id);
 
-    for (var k in data.aid) {
-        if (data.aid[k].aid_name != null) {
+    for (var k in data.aids) {
+        if (data.aids[k].aid_name != null) {
             if (self.count.indexOf(data.aid[k].aid_name) == -1) {
                 self.count.push(data.aid[k].aid_name);
                 self.aids.push(data.aid[k].aid_name.split('-')[1]);
@@ -52,7 +52,20 @@ function BudgetAllocationItem(data) {
         }
     }
 
+    self.available_budget_heads = ko.observableArray(data.budget_heads.diff([]));
+
     self.table_view = new TableViewModel({rows: self.values, argument: self}, RowVM);
+
+    self.selected_budget_heads = ko.computed(function () {
+        var heads = [];
+        ko.utils.arrayForEach(self.table_view.rows(), function (row) {
+            if (row.budget_head()) {
+                heads.push(row.budget_head());
+            }
+        });
+        return heads;
+    });
+
 
     self.save = function () {
         $.ajax({
@@ -72,16 +85,16 @@ function BudgetAllocationItem(data) {
                             if (self.table_view.rows()[i].aid_amount().length == 0) {
                                 self.table_view.rows()[i].aid_amount.push({'id': msg.rows[i][aid]});
                             }
-                                }
                         }
-                        self.table_view.deleted_rows([]);
                     }
+                    self.table_view.deleted_rows([]);
                 }
-                ,
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
-                }
-            });
+            }
+            ,
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
+            }
+        });
     }
 }
 
@@ -92,6 +105,7 @@ function RowVM(row, vm) {
     self.goa_amount = ko.observable();
     self.goa_id = ko.observable();
     self.aid_amount = ko.observableArray();
+    self.budget_head = ko.observable();
 
     for (i in vm.count) {
         self[vm.count[i]] = ko.observable();
@@ -115,6 +129,15 @@ function RowVM(row, vm) {
             }
         }
     }
+
+    self.budget_head.subscribeChanged(function (new_val, old_val) {
+        if (old_val) {
+            vm.available_budget_heads.push(old_val);
+        }
+        if (new_val) {
+            vm.available_budget_heads.remove(new_val);
+        }
+    });
 
     for (var k in row) {
         self[k] = ko.observable(row[k]);
