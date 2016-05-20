@@ -279,12 +279,13 @@ class ImprestJVView(ProjectFYView):
 
     def get_context_data(self, **kwargs):
         context_data = super(ImprestJVView, self).get_context_data(**kwargs)
-        instance = context_data['form'].instance
-        context_data['data'] = {
-            'jv': ImprestJVSerializer(instance).data,
-            'dr_ledgers': AccountSerializer(self.project_fy.dr_ledgers(), many=True).data,
-            'cr_ledgers': AccountSerializer(self.project_fy.cr_ledgers(), many=True).data,
-        }
+        if 'form' in context_data:
+            instance = context_data['form'].instance
+            context_data['data'] = {
+                'jv': ImprestJVSerializer(instance).data,
+                'dr_ledgers': AccountSerializer(self.project_fy.dr_ledgers(), many=True).data,
+                'cr_ledgers': AccountSerializer(self.project_fy.cr_ledgers(), many=True).data,
+            }
         return context_data
 
     def get_success_url(self):
