@@ -139,3 +139,18 @@ class BudgetReleaseItem(models.Model):
             aid = str(self.aid)
         return str(self.budget_head) + ' ' + aid + ' ' + str(self.amount)
 
+
+
+
+class Expenditure(models.Model):
+    budget_head = models.ForeignKey(BudgetHead)
+    aid = models.ForeignKey(Aid, blank=True, null=True)
+    amount = models.PositiveIntegerField(blank=True, null=True)
+    project = models.ForeignKey(Project)
+    fy = models.ForeignKey(FiscalYear)
+
+    def __str__(self):
+        aid ='GON'
+        if self.aid:
+            aid = str(self.aid)
+        return str(self.budget_head) + ' ' + aid + ' ' + str(self.amount)
