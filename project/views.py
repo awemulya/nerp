@@ -1,45 +1,50 @@
 import json
 
-from core.serializers import BudgetSerializer
 from django.http.response import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
+
+from core.serializers import BudgetSerializer
+from account.serializers import AccountSerializer
 from app.utils.helpers import save_model, invalid, empty_to_none
 from core.models import FiscalYear, BudgetHead
 from inventory.models import delete_rows
-from models import Aid, BudgetAllocationItem, BudgetReleaseItem, Expenditure
-from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
+from models import Aid, ProjectFy, ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure
+from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm, ImprestJVForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
-from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, \
-    ExpenseSerializer, \
-    BudgetAllocationItemSerializer, AidSerializer
+from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer, \
+    ImprestJVSerializer, BudgetAllocationItemSerializer, AidSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
 
-class ProjectView(object):
-    fy = None
+class ProjectFYView(object):
+    def dispatch(self, request, *args, **kwargs):
+        self.project_fy = get_object_or_404(ProjectFy, pk=self.kwargs.get('project_fy_id'))
+        self.project = self.project_fy.project
+        self.fy = self.project_fy.fy
+        return super(ProjectFYView, self).dispatch(request, *args, **kwargs)
 
-    def get_fy(self):
-        if not self.fy:
-            self.fy = FiscalYear.get()
-        return self.fy
+    def form_valid(self, form):
+        form.instance.project_fy = self.project_fy
+        return super(ProjectFYView, self).form_valid(form)
+
+    def get_queryset(self):
+        qs = super(ProjectFYView, self).get_queryset()
+        qs = qs.filter(project_fy_id=self.project_fy.id)
+        return qs
 
     def get_context_data(self, **kwargs):
-        context_data = super(ProjectView, self).get_context_data(**kwargs)
-        context_data['fy'] = self.get_fy()
+        context_data = super(ProjectFYView, self).get_context_data(**kwargs)
+        context_data['project_fy'] = self.project_fy
+        context_data['project'] = self.project
+        context_data['fy'] = self.fy
         if 'data' in context_data:
-            context_data['data']['fy_id'] = context_data['fy'].id,
-        if 'project_id' in self.kwargs:
-            try:
-                context_data['project'] = Project.objects.get(pk=self.kwargs.pop('project_id'), active=True)
-                if 'data' in context_data:
-                    context_data['data']['project_id'] = context_data['project'].id,
-            except Project.DoesNotExist:
-                pass
-
+            context_data['data']['project_fy_id'] = self.project_fy.id
+            context_data['data']['fy_id'] = self.fy.id
+            context_data['data']['project_id'] = self.project.id
         return context_data
 
 
@@ -57,7 +62,7 @@ def imprest_ledger(request, project_id):
     return render(request, 'imprest_ledger.html', context)
 
 
-class ImprestLedger(ProjectView, ListView):
+class ImprestLedger(ProjectFYView, ListView):
     model = ImprestTransaction
     template_name = 'imprest_ledger.html'
     fy = None
@@ -82,7 +87,7 @@ def save_imprest_ledger(request):
     model = ImprestTransaction
     fy_id = params.get('fy_id')
     try:
-        for index, row in enumerate(params.get('table_view').get('rows')):
+        for ind, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['date']):
                 continue
             values = {'date': row.get('date', ''),
@@ -98,7 +103,7 @@ def save_imprest_ledger(request):
             submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
             if not created:
                 submodel = save_model(submodel, values)
-            dct['rows'][index] = submodel.id
+            dct['rows'][ind] = submodel.id
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
@@ -110,33 +115,20 @@ def save_imprest_ledger(request):
     return JsonResponse(dct)
 
 
-class Application(ListView):
+class Application(ProjectFYView, ListView):
     model = ExpenseRow
     template_name = 'application.html'
-    fy = None
-
-    def get_fy(self):
-        if not self.fy:
-            self.fy = FiscalYear.get()
-        return self.fy
 
     def get_context_data(self, **kwargs):
         context_data = super(Application, self).get_context_data(**kwargs)
-        context_data['fy'] = self.get_fy()
-        categories = ExpenseCategory.objects.filter(enabled=True)
-        expenses = Expense.objects.filter(enabled=True)
+        categories = ExpenseCategory.objects.filter(enabled=True, project=self.project)
+        expenses = Expense.objects.filter(enabled=True, project=self.project)
         context_data['data'] = {
-            'fy_id': self.get_fy().id,
             'rows': ExpenseRowSerializer(context_data['object_list'], many=True).data,
             'categories': ExpenseCategorySerializer(categories, many=True).data,
             'expenses': ExpenseSerializer(expenses, many=True).data,
         }
         return context_data
-
-    def get_queryset(self):
-        qs = super(Application, self).get_queryset()
-        qs = qs.filter(fy=self.get_fy())
-        return qs
 
 
 @login_required
@@ -148,7 +140,7 @@ def save_application(request):
     try:
         for cat_index, category in enumerate(params.get('categories')):
             dct['categories'][cat_index] = {'rows': {}}
-            for index, row in enumerate(category.get('rows')):
+            for ind, row in enumerate(category.get('rows')):
                 if invalid(row, ['category_id', 'expense_id', 'amount']):
                     continue
                 values = {'category_id': row.get('category_id'),
@@ -159,7 +151,7 @@ def save_application(request):
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:
                     submodel = save_model(submodel, values)
-                dct['categories'][cat_index]['rows'][index] = submodel.id
+                dct['categories'][cat_index]['rows'][ind] = submodel.id
             delete_rows(category.get('deleted_rows'), model)
     except Exception as e:
         if hasattr(e, 'messages'):
@@ -187,8 +179,13 @@ class ProjectMixin(object):
         super(ProjectMixin, self).post(request, *args, **kwargs)
         return HttpResponseRedirect(reverse(self.success_url, kwargs={'project_id': self.kwargs['project_id']}))
 
+    def get_context_data(self, **kwargs):
+        context_data = super(ProjectMixin, self).get_context_data(**kwargs)
+        context_data['project'] = Project.objects.get(pk=self.kwargs.get('project_id'))
+        return context_data
 
-class AidView(ProjectView, ProjectMixin):
+
+class AidView(ProjectMixin):
     model = Aid
     success_url = 'aid_list'
     form_class = AidForm
@@ -232,7 +229,7 @@ class ProjectDelete(ProjectAppView, DeleteView):
     pass
 
 
-class ExpenseCategoryView(ProjectView, ProjectMixin):
+class ExpenseCategoryView(ProjectMixin):
     model = ExpenseCategory
     success_url = 'expense_category_list'
     form_class = ExpenseCategoryForm
@@ -254,7 +251,7 @@ class ExpenseCategoryDelete(ExpenseCategoryView, DeleteView):
     pass
 
 
-class ExpenseView(ProjectView, ProjectMixin):
+class ExpenseView(ProjectMixin):
     model = Expense
     success_url = 'expense_list'
     form_class = ExpenseForm
@@ -367,7 +364,7 @@ def delete_budget_allocation(rows, model):
                 pass
 
 
-class BudgetAllocaionCreate(BaseStatement, ProjectView, ListView):
+class BudgetAllocationCreate(BaseStatement, ProjectFYView, ListView):
     model = BudgetAllocationItem
     fy = None
 
@@ -377,19 +374,17 @@ def save_budget_allocation(request):
     return base_save(request, BudgetAllocationItem)
 
 
-class BudgetReleaseCreate(BaseStatement, ProjectView, ListView):
+class BudgetReleaseCreate(BaseStatement, ProjectFYView, ListView):
     model = BudgetReleaseItem
     fy = None
 
 
 @login_required
 def save_budget_release(request):
-    import ipdb
-    ipdb.set_trace()
     return base_save(request, BudgetReleaseItem)
 
 
-class ExpenditureCreate(BaseStatement, ProjectView, ListView):
+class ExpenditureCreate(BaseStatement, ProjectFYView, ListView):
     model = Expenditure
     fy = None
     template_name = 'project/expenditure_list.html'
@@ -402,6 +397,39 @@ class ExpenditureCreate(BaseStatement, ProjectView, ListView):
 
 @login_required
 def save_expenditure(request):
-    import ipdb
-    # ipdb.set_trace()
     return base_save(request, Expenditure)
+
+
+class ImprestJVView(ProjectFYView):
+    model = ImprestJournalVoucher
+    form_class = ImprestJVForm
+
+    def get_context_data(self, **kwargs):
+        context_data = super(ImprestJVView, self).get_context_data(**kwargs)
+        if 'form' in context_data:
+            instance = context_data['form'].instance
+            context_data['data'] = {
+                'jv': ImprestJVSerializer(instance).data,
+                'dr_ledgers': AccountSerializer(self.project_fy.dr_ledgers(), many=True).data,
+                'cr_ledgers': AccountSerializer(self.project_fy.cr_ledgers(), many=True).data,
+            }
+        return context_data
+
+    def get_success_url(self):
+        return reverse_lazy('imprest_journal_voucher_list', kwargs={'project_fy_id': self.project_fy.id})
+
+
+class ImprestJVCreate(ImprestJVView, CreateView):
+    pass
+
+
+class ImprestJVUpdate(ImprestJVView, UpdateView):
+    pass
+
+
+class ImprestJVList(ImprestJVView, ListView):
+    pass
+
+
+class ImprestJVDelete(ImprestJVView, DeleteView):
+    pass

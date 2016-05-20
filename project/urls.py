@@ -11,8 +11,15 @@ urlpatterns = [
     url(r'^$', views.index, name='project_index'),
     url(r'^(?P<project_id>[0-9]+)/imprest_ledger/$', views.ImprestLedger.as_view(), name='imprest_ledger'),
     url(r'^(?P<project_id>[0-9]+)/imprest_ledger/save/$', views.save_imprest_ledger, name='save_imprest_ledger'),
-    url(r'^(?P<project_id>[0-9]+)/application/$', views.Application.as_view(), name='application'),
-    url(r'^(?P<project_id>[0-9]+)/application/save/$', views.save_application, name='save_application'),
+    url(r'^(?P<project_fy_id>[0-9]+)/application/$', views.Application.as_view(), name='application'),
+    url(r'^(?P<project_fy_id>[0-9]+)/application/save/$', views.save_application, name='save_application'),
+
+    url(r'^(?P<project_fy_id>[0-9]+)/journal_vouchers/$', views.ImprestJVList.as_view(), name='imprest_journal_voucher_list'),
+    url(r'^(?P<project_fy_id>[0-9]+)/journal_voucher/$', views.ImprestJVCreate.as_view(), name='imprest_journal_voucher_add'),
+    url(r'^(?P<project_fy_id>[0-9]+)/journal_voucher/(?P<pk>\d+)/$', views.ImprestJVUpdate.as_view(),
+        name='imprest_journal_voucher_edit'),
+    url(r'^(?P<project_fy_id>[0-9]+)/journal_voucher/(?P<pk>\d+)/delete/$', views.ImprestJVDelete.as_view(),
+        name='imprest_journal_voucher_delete'),
 
     url(r'^(?P<project_id>[0-9]+)/aids/$', views.AidList.as_view(), name='aid_list'),
     url(r'^(?P<project_id>[0-9]+)/aid/add/$', views.AidCreate.as_view(), name='aid_add'),
@@ -44,7 +51,7 @@ urlpatterns = [
     url(r'^(?P<project_id>[0-9]+)/expense/delete/(?P<pk>\d+)/$', views.ExpenseDelete.as_view(),
         name='expense_delete'),
 
-    url(r'^(?P<project_id>[0-9]+)/budget_allocation/add/$', views.BudgetAllocaionCreate.as_view(),
+    url(r'^(?P<project_id>[0-9]+)/budget_allocation/add/$', views.BudgetAllocationCreate.as_view(),
         name='budget_allocation_add'),
     url(r'^budget_allocation/save/$', views.save_budget_allocation,
         name='save_budget_allocation'),

@@ -113,26 +113,19 @@ class Language(models.Model):
         #     super(Language, self).save(*args, **kwargs)
 
 
-class Account(models.Model):
-    name = models.CharField(max_length=254)
-
-    def __unicode__(self):
-        return self.name
-
-
 class Party(models.Model):
     name = models.CharField(max_length=254, verbose_name=_('Name'))
     address = models.CharField(max_length=254, blank=True, null=True)
     phone_no = models.CharField(max_length=100, blank=True, null=True)
     pan_no = models.CharField(max_length=50, blank=True, null=True)
-    account = models.OneToOneField(Account, related_name='party')
+    # account = models.OneToOneField(Account, related_name='party')
 
-    def save(self, *args, **kwargs):
-        if self.pk is None:
-            account = Account(name_en=self.name_en, name_ne=self.name_ne)
-            account.save()
-            self.account = account
-        super(Party, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.pk is None:
+    #         # account = Account(name_en=self.name_en, name_ne=self.name_ne)
+    #         account.save()
+    #         self.account = account
+    #     super(Party, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.name

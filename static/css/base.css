@@ -498,6 +498,7 @@ td + td {
 
 .center-headings th{
     text-align: center;
+    vertical-align: middle !important;
 }
 
 tr.total, tr.category, tr.subtotal{

@@ -1,11 +1,11 @@
 {% extends base_template %}
 {% load i18n %}
 
-{% block title %}{{ scenario }} {% trans 'Expense Category' %}{% endblock %}
+{% block title %}{{ scenario }} {% trans 'Expense Categories' %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "expense_category_list" project.id %}">{% trans 'Expense Categorys' %}</a>
+    <a href="{% url "expense_category_list" project.id %}">{% trans 'Expense Categories' %}</a>
     <li><span>{% trans scenario %} {% trans 'Expense Category' %}</span></li>
 {% endblock %}
 

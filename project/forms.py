@@ -1,7 +1,8 @@
 from django.core.urlresolvers import reverse_lazy
 from django import forms
+
 from app.utils.forms import HTML5BootstrapModelForm, KOModelForm
-from models import Aid, Project, ExpenseCategory, Expense
+from models import Aid, Project, ExpenseCategory, Expense, ImprestJournalVoucher
 
 
 class AidForm(HTML5BootstrapModelForm):
@@ -35,3 +36,10 @@ class ExpenseForm(KOModelForm):
             'category': forms.SelectMultiple(
                 attrs={'class': 'selectize'}),
         }
+
+
+class ImprestJVForm(KOModelForm):
+    class Meta:
+        model = ImprestJournalVoucher
+        exclude = ('project_fy',)
+        

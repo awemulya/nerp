@@ -1,4 +1,5 @@
 from django.conf.urls import url
+
 import views
 
 urlpatterns = [
@@ -16,7 +17,7 @@ urlpatterns = [
     url(r'^employees.json$', views.employees_as_json, name='employees_as_json'),
 
     url(r'^budget_heads.json$', views.budget_heads_as_json, name='budget_heads_as_json'),
-    url(r'^accounts.json$', views.accounts_as_json, name='accounts_as_json'),
+    # url(r'^accounts.json$', views.accounts_as_json, name='accounts_as_json'),
     url(r'^activities.json$', views.activities_as_json, name='activities_as_json'),
     url(r'^donors.json$', views.donors_as_json, name='donors_as_json'),
     url(r'^tax_schemes.json$', views.tax_schemes_as_json, name='tax_schemes_as_json'),
