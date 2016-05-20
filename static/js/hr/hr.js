@@ -83,6 +83,8 @@ function PaymentEntryRow(per_data) {
     self.request_flag = ko.observable(true);
     self.row_errors = ko.observableArray();
     self.disable_input = ko.observable(false);
+
+    self.emp_options = ko.observableArray();
     
     // self.employee_counter = ko.observable(0);
     // self.deduction_detail = ko.observableArray();
@@ -90,7 +92,7 @@ function PaymentEntryRow(per_data) {
     
 
     self.employee_changed = function () {
-        console.log('We entered here successfully');
+        // console.log('We entered here successfully');
         console.log(self.paid_employee())
         self.request_flag(true); 
         // self.setOtrParam();   
@@ -161,9 +163,9 @@ function PaymentEntryRow(per_data) {
                 },
 //            self.budget_heads = ko.observableArray(data);
         });
-            console.log('Here get other computed data from the server')
+            // console.log('Here get other computed data from the server')
         }else{
-            console.log('Those three attributes are not set')
+            // console.log('Those three attributes are not set')
         };
     });
 
@@ -514,9 +516,13 @@ function PayrollEntry(pr_data) {
             },
             // async: true,
             success: function (response) {
-                for(emp of response.opt_data){
-                    emp.disable = ko.observable(false);
-                };
+                // for(row of self.rows()){
+                //     row.emp_options(response.opt_data);
+                // };
+                // debugger;
+            //     for(emp of response.opt_data){
+            //         emp.disable = ko.observable(false);
+            //     };
                 self.employee_options(response.opt_data);
             },
             error: function(errorThrown){
@@ -525,11 +531,18 @@ function PayrollEntry(pr_data) {
 //            self.budget_heads = ko.observableArray(data);
         });    
     });
-    self.set_option_disable = function(option, item){
-        if(typeof(item) != 'undefined'){
-            ko.applyBindingsToNode(option, {disable: item.disable}, item);
-        };
-    };
+    // self.update_row_function = ko.computed(function(){
+    //     if(self.rows()){
+    //         for(row of self.rows()){
+    //             row.emp_options(self.employee_options());
+    //         };
+    //     }
+    // });
+    // self.set_option_disable = function(option, item){
+    //     if(typeof(item) != 'undefined'){
+    //         ko.applyBindingsToNode(option, {disable: item.disable}, item);
+    //     };
+    // };
     // self.selected_employees = ko.observableArray();
     self.selected_employees = ko.computed(function(){
         var sel_e = [];
@@ -543,11 +556,20 @@ function PayrollEntry(pr_data) {
     });
     self.update_employee_options = ko.computed(function(){
         if(self.payroll_type() == 'INDIVIDUAL'){
-            for(opt of self.employee_options()){
-                if($.inArray(opt.id, self.selected_employees()) != -1){
-                    opt.disable(true);
-                }else{
-                    opt.disable(false);
+            console.log('Let me know i am here');
+            for(row of self.rows()){
+                row.emp_options(self.employee_options());
+                for(opt of row.emp_options()){
+                    // if($.inArray(opt.id, self.selected_employees()) != -1){
+                    //     opt.disable(true);
+                    // }else{
+                    //     opt.disable(false);
+                    // };
+                    if($.inArray(opt.id, self.selected_employees()) != -1 && opt.id != row.paid_employee()){
+                        // opt.disable(true);
+                        row.emp_options.remove(opt);
+                    };
+                    
                 };
             };
         };
