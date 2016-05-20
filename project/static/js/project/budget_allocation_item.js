@@ -54,13 +54,17 @@ function BudgetAllocationItem(data) {
 
     self.available_budget_heads = ko.observableArray(data.budget_heads.diff([]));
 
+    self.selected_budget_heads = ko.observableArray([]);
+
     self.table_view = new TableViewModel({rows: self.values, argument: self}, RowVM);
+
 
     self.selected_budget_heads = ko.computed(function () {
         var heads = [];
         ko.utils.arrayForEach(self.table_view.rows(), function (row) {
             if (row.budget_head()) {
                 heads.push(row.budget_head());
+                row.dummy.notifySubscribers();
             }
         });
         return heads;
@@ -106,6 +110,8 @@ function RowVM(row, vm) {
     self.goa_id = ko.observable();
     self.aid_amount = ko.observableArray();
     self.budget_head = ko.observable();
+    self.vm = ko.observable(vm);
+    self.dummy = ko.observable();
 
     for (i in vm.count) {
         self[vm.count[i]] = ko.observable();
@@ -130,14 +136,31 @@ function RowVM(row, vm) {
         }
     }
 
-    self.budget_head.subscribeChanged(function (new_val, old_val) {
-        if (old_val) {
-            vm.available_budget_heads.push(old_val);
+
+    //self.available_budget_heads = ko.computed(function(){
+    //    console.log('hey');
+    //    var heads = self.vm().budget_heads().diff(self.vm().selected_budget_heads());
+    //    
+    //    return heads;
+    //    
+    //})
+
+    //self.available_budget_heads = ko.observableArray(vm.budget_heads().diff([]));
+
+    self.available_budget_heads = ko.computed(function () {
+        self.dummy();
+        var heads = vm.budget_heads().diff(vm.selected_budget_heads())
+        if (self.budget_head()) {
+            heads.push(self.budget_head());
         }
-        if (new_val) {
-            vm.available_budget_heads.remove(new_val);
-        }
+        return heads;
     });
+
+    self.available_budget_heads.subscribe(function () {
+        debugger;
+        //$(document).trigger('reload-selectize');
+    });
+
 
     for (var k in row) {
         self[k] = ko.observable(row[k]);

@@ -32,7 +32,7 @@ ko.bindingHandlers.selectize = {
         if (typeof allBindingsAccessor.get('optionsCaption') == 'undefined')
             allBindingsAccessor = inject_binding(allBindingsAccessor, 'optionsCaption', 'Choose...');
 
-        ko.bindingHandlers.options.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+        //ko.bindingHandlers.options.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
 
         var options = {
             plugins: ['remove_button'],
@@ -51,6 +51,8 @@ ko.bindingHandlers.selectize = {
         var $select;
 
         var apply_selectize = function () {
+
+            ko.bindingHandlers.options.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
             $select = $(element).selectize(options)[0].selectize;
 
             if (typeof allBindingsAccessor.get('value') == 'function') {
@@ -86,7 +88,6 @@ ko.bindingHandlers.selectize = {
                 }
             }
 
-
             if (typeof init_selectize == 'function') {
                 init_selectize($select);
             }
@@ -116,10 +117,11 @@ ko.bindingHandlers.selectize = {
         apply_selectize();
 
         $(document).on('reload-selectize', function () {
-                $select.destroy();
-                apply_selectize();
+            console.log('hey');
+            $select.destroy();
+            apply_selectize();
         });
-        
+
         // Selectize required field form submit focus fix
         // https://github.com/brianreavis/selectize.js/issues/733#issuecomment-145871854
 
@@ -136,11 +138,11 @@ ko.bindingHandlers.selectize = {
             // Force re-rendering of options by clearing render-cache
             $select.renderCache = {}
         });
-        
 
 
     },
-    update: function (element, valueAccessor, allBindingsAccessor) {
+    update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        //debugger;
         if (allBindingsAccessor.has('object')) {
 
             var optionsValue = allBindingsAccessor.get('optionsValue') || 'id';
@@ -160,6 +162,7 @@ ko.bindingHandlers.selectize = {
                 allBindingsAccessor.get('object')(selected_obj);
             }
         }
+
     }
 }
 
