@@ -119,11 +119,10 @@ class BudgetAllocationItem(models.Model):
     fy = models.ForeignKey(FiscalYear)
 
     def __str__(self):
-        aid ='GON'
+        aid = 'GON'
         if self.aid:
             aid = str(self.aid)
         return str(self.budget_head) + ' ' + aid + ' ' + str(self.amount)
-
 
 
 class BudgetReleaseItem(models.Model):
@@ -134,12 +133,10 @@ class BudgetReleaseItem(models.Model):
     fy = models.ForeignKey(FiscalYear)
 
     def __str__(self):
-        aid ='GON'
+        aid = 'GON'
         if self.aid:
             aid = str(self.aid)
         return str(self.budget_head) + ' ' + aid + ' ' + str(self.amount)
-
-
 
 
 class Expenditure(models.Model):
@@ -150,7 +147,7 @@ class Expenditure(models.Model):
     fy = models.ForeignKey(FiscalYear)
 
     def __str__(self):
-        aid ='GON'
+        aid = 'GON'
         if self.aid:
             aid = str(self.aid)
         return str(self.budget_head) + ' ' + aid + ' ' + str(self.amount)

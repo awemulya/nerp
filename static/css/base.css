@@ -508,7 +508,7 @@ tr.total, tr.category, tr.subtotal{
     width: 22em;
 }
 
-#budget-allocation tr td:first-child {
+.selectize_width tr td:first-child {
     width: 22em;
 }
 

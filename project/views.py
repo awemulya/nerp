@@ -10,7 +10,7 @@ from django.views.generic import ListView
 from app.utils.helpers import save_model, invalid, empty_to_none
 from core.models import FiscalYear, BudgetHead
 from inventory.models import delete_rows
-from models import Aid, BudgetAllocationItem, BudgetReleaseItem
+from models import Aid, BudgetAllocationItem, BudgetReleaseItem, Expenditure
 from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, \
@@ -377,10 +377,26 @@ def save_budget_allocation(request):
     return base_save(request, BudgetAllocationItem)
 
 
-class BudgetReleaseCreate(BaseStatement,ProjectView, ListView):
+class BudgetReleaseCreate(BaseStatement, ProjectView, ListView):
     model = BudgetReleaseItem
     fy = None
+
 
 @login_required
 def save_budget_release(request):
     return base_save(request, BudgetReleaseItem)
+
+
+class ExpenditureCreate(BaseStatement, ProjectView, ListView):
+    model = Expenditure
+    fy = None
+
+    def get_queryset(self):
+        if not self.model.objects.filter(project_id=self.kwargs['project_id']):
+            return BudgetReleaseItem.objects.filter(project_id=self.kwargs['project_id'])
+        return self.model.objects.filter(project_id=self.kwargs['project_id'])
+
+
+@login_required
+def save_expenditure(request):
+    return base_save(request, Expenditure)

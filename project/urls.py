@@ -52,4 +52,8 @@ urlpatterns = [
             name='budget_release_add'),
     url(r'^budget_release/save/$', views.save_budget_release,
         name='save_budget_release'),
+    url(r'^(?P<project_id>[0-9]+)/expenditure/add/$', views.ExpenditureCreate.as_view(),
+        name='expenditure_add'),
+    url(r'^expenditure/save/$', views.save_expenditure,
+        name='save_expenditure'),
 ]
