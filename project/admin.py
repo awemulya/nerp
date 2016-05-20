@@ -1,7 +1,8 @@
 from django.contrib import admin
 from adminsortable2.admin import SortableAdminMixin
 
-from .models import ImprestTransaction, Expense, ExpenseCategory, ExpenseRow, Project, Aid, BudgetAllocationItem
+from .models import ImprestTransaction, Expense, ExpenseCategory, ExpenseRow, Project, Aid, BudgetAllocationItem, \
+    BudgetReleaseItem
 
 
 class ExpenseCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
@@ -19,3 +20,4 @@ admin.site.register(ExpenseRow)
 admin.site.register(Project)
 admin.site.register(Aid)
 admin.site.register(BudgetAllocationItem)
+admin.site.register(BudgetReleaseItem)
