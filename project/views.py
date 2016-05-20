@@ -312,6 +312,8 @@ class BudgetAllocaionCreate(ProjectView, ListView):
 
 def delete_budget_allocation(rows, model):
     for row in rows:
+        import ipdb
+        # ipdb.set_trace()
         for o in row.get('aid_amount'):
             if o.get('id'):
                 try:

@@ -69,15 +69,19 @@ function BudgetAllocationItem(data) {
                     for (var i in msg.rows) {
                         for (var aid in msg.rows[i]) {
                             self.table_view.rows()[i][aid](msg.rows[i][aid]);
+                            if (self.table_view.rows()[i].aid_amount().length == 0) {
+                                self.table_view.rows()[i].aid_amount.push({'id': msg.rows[i][aid]});
+                            }
+                                }
                         }
+                        self.table_view.deleted_rows([]);
                     }
-                    self.table_view.deleted_rows([]);
                 }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
-            }
-        });
+                ,
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
+                }
+            });
     }
 }
 
@@ -87,6 +91,7 @@ function RowVM(row, vm) {
     self.budget_head_id = ko.observable();
     self.goa_amount = ko.observable();
     self.goa_id = ko.observable();
+    self.aid_amount = ko.observableArray();
 
     for (i in vm.count) {
         self[vm.count[i]] = ko.observable();
