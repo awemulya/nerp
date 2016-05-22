@@ -1,12 +1,13 @@
 import json
 
+from django.views.generic.edit import BaseCreateView
+
 from django.http.response import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
-
 from core.serializers import BudgetSerializer
 from account.serializers import AccountSerializer
 from app.utils.helpers import save_model, invalid, empty_to_none
@@ -15,11 +16,21 @@ from inventory.models import delete_rows
 from models import Aid, ProjectFy, ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure
 from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm, ImprestJVForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
-
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, \
-    ExpenseSerializer, AidSerializer, BaseStatementSerializer
-from app.utils.mixins import AjaxableResponseMixin, UpdateView, ProjectCreateView as CreateView, DeleteView
+    ExpenseSerializer, AidSerializer, BaseStatementSerializer, ImprestJVSerializer
+from app.utils.mixins import AjaxableResponseMixin, UpdateView, DeleteView
 
+
+class ProjectCreateView(BaseCreateView):
+    def get_context_data(self, **kwargs):
+        context = super(ProjectCreateView, self).get_context_data(**kwargs)
+        context['scenario'] = _('Add')
+        if self.request.is_ajax():
+            base_template = 'modal.html'
+        else:
+            base_template = '_project_base.html'
+        context['base_template'] = base_template
+        return context
 
 
 class ProjectFYView(object):
@@ -197,7 +208,7 @@ class AidList(AidView, ListView):
     pass
 
 
-class AidCreate(AjaxableResponseMixin, AidView, CreateView):
+class AidCreate(AjaxableResponseMixin, AidView, ProjectCreateView):
     pass
 
 
@@ -219,7 +230,7 @@ class ProjectList(ProjectAppView, ListView):
     pass
 
 
-class ProjectCreate(AjaxableResponseMixin, ProjectAppView, CreateView):
+class ProjectCreate(AjaxableResponseMixin, ProjectAppView, ProjectCreateView):
     pass
 
 
@@ -241,7 +252,7 @@ class ExpenseCategoryList(ExpenseCategoryView, ListView):
     pass
 
 
-class ExpenseCategoryCreate(AjaxableResponseMixin, ExpenseCategoryView, CreateView):
+class ExpenseCategoryCreate(AjaxableResponseMixin, ExpenseCategoryView, ProjectCreateView):
     pass
 
 
@@ -271,7 +282,7 @@ class ExpenseList(ExpenseView, ListView):
     pass
 
 
-class ExpenseCreate(AjaxableResponseMixin, ExpenseView, CreateView):
+class ExpenseCreate(AjaxableResponseMixin, ExpenseView, ProjectCreateView):
     pass
 
 
@@ -411,7 +422,7 @@ class ImprestJVView(ProjectFYView):
         return reverse_lazy('imprest_journal_voucher_list', kwargs={'project_fy_id': self.project_fy.id})
 
 
-class ImprestJVCreate(ImprestJVView, CreateView):
+class ImprestJVCreate(ImprestJVView, ProjectCreateView):
     pass
 
 

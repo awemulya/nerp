@@ -1,10 +1,9 @@
 import os
+
 from django.contrib import messages
-
-from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, DeleteView as BaseDeleteView
-
+from django.views.generic.edit import UpdateView as BaseUpdateView, CreateView as BaseCreateView, \
+    DeleteView as BaseDeleteView
 from django.utils.translation import ugettext_lazy as _
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.template.loader import get_template
@@ -100,7 +99,6 @@ class PDFView(TemplateView):
         return http_response
 
 
-
 class UpdateView(BaseUpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
@@ -121,17 +119,6 @@ class CreateView(BaseCreateView):
         context['base_template'] = base_template
         return context
 
-class ProjectCreateView(BaseCreateView):
-    def get_context_data(self, **kwargs):
-        context = super(ProjectCreateView, self).get_context_data(**kwargs)
-        context['scenario'] = _('Add')
-        if self.request.is_ajax():
-            base_template = 'modal.html'
-        else:
-            base_template = '_project_base.html'
-        context['base_template'] = base_template
-        return context
-
 
 class DeleteView(BaseDeleteView):
     def get(self, *args, **kwargs):
@@ -139,8 +126,10 @@ class DeleteView(BaseDeleteView):
 
     def post(self, request, *args, **kwargs):
         response = super(DeleteView, self).post(request, *args, **kwargs)
-        messages.success(request, ('%s %s' % (self.object.__class__._meta.verbose_name.title(), _('successfully deleted!'))))
+        messages.success(request,
+                         ('%s %s' % (self.object.__class__._meta.verbose_name.title(), _('successfully deleted!'))))
         return response
+
 
 class TableObjectMixin(TemplateView):
     def get_context_data(self, *args, **kwargs):
@@ -164,4 +153,3 @@ class TableObjectMixin(TemplateView):
         context['scenario'] = scenario
         context['obj'] = obj
         return context
-
