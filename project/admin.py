@@ -5,6 +5,16 @@ from .models import ImprestTransaction, Expense, ExpenseCategory, ExpenseRow, Pr
     ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure
 
 
+class AidInline(admin.TabularInline):
+    model = Aid
+
+
+class ProjectAdmin(admin.ModelAdmin):
+    inlines = [
+        AidInline,
+    ]
+
+
 class ExpenseCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
     pass
 
@@ -17,7 +27,7 @@ admin.site.register(ImprestTransaction)
 admin.site.register(ExpenseCategory, ExpenseCategoryAdmin)
 admin.site.register(Expense, ExpenseAdmin)
 admin.site.register(ExpenseRow)
-admin.site.register(Project)
+admin.site.register(Project, ProjectAdmin)
 admin.site.register(Aid)
 
 admin.site.register(Expenditure)

@@ -15,9 +15,11 @@ from inventory.models import delete_rows
 from models import Aid, ProjectFy, ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure
 from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm, ImprestJVForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
-from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, ExpenseSerializer, \
-    ImprestJVSerializer, BudgetAllocationItemSerializer, AidSerializer
-from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
+
+from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, \
+    ExpenseSerializer, AidSerializer, BaseStatementSerializer
+from app.utils.mixins import AjaxableResponseMixin, UpdateView, ProjectCreateView as CreateView, DeleteView
+
 
 
 class ProjectFYView(object):
@@ -287,7 +289,7 @@ class BaseStatement(object):
         budget_head = BudgetHead.objects.all()
         aid = Aid.objects.filter(active=True, project=context_data['project'].id)
         context_data['data'] = {
-            'rows': BudgetAllocationItemSerializer(context_data['object_list'], many=True).data,
+            'rows': BaseStatementSerializer(context_data['object_list'], many=True).data,
             'budget_heads': BudgetSerializer(budget_head, many=True).data,
             'aids': AidSerializer(aid, many=True).data,
         }

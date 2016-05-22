@@ -38,7 +38,7 @@ class AidSerializer(serializers.ModelSerializer):
         return str(obj.id) + '-' + obj.donor.name
 
 
-class BudgetAllocationItemSerializer(serializers.ModelSerializer):
+class BaseStatementSerializer(serializers.ModelSerializer):
     budget_head_id = serializers.ReadOnlyField(source='budget_head.id')
     aid_name = serializers.SerializerMethodField()
 
