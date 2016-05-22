@@ -157,8 +157,8 @@ function RowVM(row, vm) {
     });
 
     self.available_budget_heads.subscribe(function () {
-        debugger;
-        //$(document).trigger('reload-selectize');
+        //debugger;
+        $(document).trigger('reload-selectize');
     });
 
 
