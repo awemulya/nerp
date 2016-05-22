@@ -121,6 +121,17 @@ class CreateView(BaseCreateView):
         context['base_template'] = base_template
         return context
 
+class ProjectCreateView(BaseCreateView):
+    def get_context_data(self, **kwargs):
+        context = super(ProjectCreateView, self).get_context_data(**kwargs)
+        context['scenario'] = _('Add')
+        if self.request.is_ajax():
+            base_template = 'modal.html'
+        else:
+            base_template = '_project_base.html'
+        context['base_template'] = base_template
+        return context
+
 
 class DeleteView(BaseDeleteView):
     def get(self, *args, **kwargs):

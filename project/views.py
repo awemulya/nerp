@@ -16,7 +16,7 @@ from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Pro
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, \
     ExpenseSerializer, \
     AidSerializer, BaseStatementSerializer
-from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
+from app.utils.mixins import AjaxableResponseMixin, UpdateView, ProjectCreateView as CreateView, DeleteView
 
 
 class ProjectView(object):
