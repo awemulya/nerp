@@ -556,19 +556,27 @@ function PayrollEntry(pr_data) {
     });
     self.update_employee_options = ko.computed(function(){
         if(self.payroll_type() == 'INDIVIDUAL'){
-            console.log('Let me know i am here');
-            for(row of self.rows()){
-                row.emp_options(self.employee_options());
-                for(opt of row.emp_options()){
+            for(ro of self.rows()){
+                ro.emp_options(self.employee_options());
+                
+                for(opt of ro.emp_options()){
+                    console.log('Let me know i am here');
+                    if(ro.paid_employee() != String(opt.id)){
+                        if($.inArray(String(opt.id), self.selected_employees()) != -1){
+                            ro.emp_options.remove(opt);
+                        };    
+                    };
+                    
                     // if($.inArray(opt.id, self.selected_employees()) != -1){
                     //     opt.disable(true);
                     // }else{
                     //     opt.disable(false);
                     // };
-                    if($.inArray(opt.id, self.selected_employees()) != -1 && opt.id != row.paid_employee()){
-                        // opt.disable(true);
-                        row.emp_options.remove(opt);
-                    };
+                    // if($.inArray(String(opt.id), self.selected_employees()) != -1 && String(opt.id) != ro.paid_employee()){
+                        
+                    //     debugger;
+                    //     ro.emp_options.remove(opt);
+                    // };
                     
                 };
             };
