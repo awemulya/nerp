@@ -15,7 +15,7 @@ from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, \
     ExpenseSerializer, \
-    BudgetAllocationItemSerializer, AidSerializer
+    AidSerializer, BaseStatementSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
 
@@ -297,7 +297,7 @@ class BaseStatement(object):
         context_data['data'] = {
             'fy': self.get_fy().id,
             'project_id': context_data['project'].id,
-            'rows': BudgetAllocationItemSerializer(context_data['object_list'], many=True).data,
+            'rows': BaseStatementSerializer(context_data['object_list'], many=True).data,
             'budget_head': BudgetSerializer(budget_head, many=True).data,
             'aid': AidSerializer(aid, many=True).data,
         }
