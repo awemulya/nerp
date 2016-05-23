@@ -84,8 +84,8 @@ function BudgetAllocationItem(data) {
                     for (var i in msg.rows) {
                         for (var aid in msg.rows[i]) {
                             self.table_view.rows()[i][aid](msg.rows[i][aid]);
-                            if (self.table_view.rows()[i].aid_amount().length == 0) {
-                                self.table_view.rows()[i].aid_amount.push({'id': msg.rows[i][aid]});
+                            if (self.table_view.rows()[i].aid_amount().length != 0) {
+                                self.table_view.rows()[i].aid_amount().push({'id': msg.rows[i][aid]});
                             }
                         }
                     }

@@ -352,7 +352,6 @@ def base_save(request, model):
 
 def delete_budget_allocation(rows, model):
     for row in rows:
-        # ipdb.set_trace()
         for o in row.get('aid_amount'):
             if o.get('id'):
                 try:
