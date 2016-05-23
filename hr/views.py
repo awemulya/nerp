@@ -722,6 +722,11 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         employee_response['paid_from_date'] = paid_from_date.as_string()
         employee_response['paid_to_date'] = paid_to_date.as_string()
     employee_response['disable_input'] = True
+    employee_response['emp_options'] = []
+    # employee_response['emp_options'] = [{
+    #     'id': employee.id,
+    #     'name': employee.employee.full_name,
+    # }]
     return employee_response
 
 

@@ -143,7 +143,7 @@ function PaymentEntryRow(per_data) {
                     vm.paid_to_date_error(null);
                     vm.invalid_date_range(null);
                     var mapping = {
-                        'ignore': ["paid_employee"]
+                        'ignore': ["paid_employee", "emp_options"]
                     }
                     self.request_flag(false);
                     
@@ -470,6 +470,10 @@ function PayrollEntry(pr_data) {
                         // 'employee_changed': function(){},
                         // };
                         var row = ko.mapping.fromJS(data);
+                        // for(opt of row.emp_options()){
+                        //     opt.id = opt.id();
+                        //     opt.name = opt.name();
+                        // };
                         // We wont need this if server throws the date
                         // row.paid_from_date = ko.observable();
                         // row.paid_to_date = ko.observable();
@@ -504,32 +508,35 @@ function PayrollEntry(pr_data) {
         });
     });
     self.get_employee_options = ko.computed(function(){
-        $.ajax({
-            url: 'get_employee_options/',
-            method: 'POST',
-            dataType: 'json',
-            data: {
-                branch: self.branch()? self.branch() : 'ALL'
-                // paid_from_date: self.paid_from_date(),
-                // paid_to_date: self.paid_to_date(),
-                // monthly_payroll: self.monthly_payroll()
-            },
-            // async: true,
-            success: function (response) {
-                // for(row of self.rows()){
-                //     row.emp_options(response.opt_data);
-                // };
-                // debugger;
-            //     for(emp of response.opt_data){
-            //         emp.disable = ko.observable(false);
-            //     };
-                self.employee_options(response.opt_data);
-            },
-            error: function(errorThrown){
-                console.log(errorThrown);
+        if(self.payroll_type() == 'INDIVIDUAL'){
+
+            $.ajax({
+                url: 'get_employee_options/',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    branch: self.branch()? self.branch() : 'ALL'
+                    // paid_from_date: self.paid_from_date(),
+                    // paid_to_date: self.paid_to_date(),
+                    // monthly_payroll: self.monthly_payroll()
                 },
-//            self.budget_heads = ko.observableArray(data);
-        });    
+                // async: true,
+                success: function (response) {
+                    // for(row of self.rows()){
+                    //     row.emp_options(response.opt_data);
+                    // };
+                    // debugger;
+                //     for(emp of response.opt_data){
+                //         emp.disable = ko.observable(false);
+                //     };
+                    self.employee_options(response.opt_data);
+                },
+                error: function(errorThrown){
+                    console.log(errorThrown);
+                    },
+    //            self.budget_heads = ko.observableArray(data);
+            });    
+        };
     });
     // self.update_row_function = ko.computed(function(){
     //     if(self.rows()){
@@ -556,17 +563,16 @@ function PayrollEntry(pr_data) {
     });
     self.update_employee_options = ko.computed(function(){
         if(self.payroll_type() == 'INDIVIDUAL'){
-            var loop_count = 0;
             for(ro of self.rows()){
                 ro.emp_options(self.employee_options().slice());
                 var to_remove = []
                 for(opt of ro.emp_options()){
 
                     if($.inArray(String(opt.id), self.selected_employees()) != -1 && String(opt.id) != ro.paid_employee()){                        
-                        console.log('To remove opt ' + String(opt.id) + 'in loop' + String(loop_count) )
+                        // console.log('To remove opt' + String(opt.id) + 'in loop' + String(loop_count) )
                         
                         to_remove.push(opt);
-                        console.log('removed opt ' + String(opt.id) + 'in loop' + String(loop_count) )        
+                        // console.log('removed opt' + String(opt.id) + 'in loop' + String(loop_count) )        
                     };
                 };
                 var diff = $(ro.emp_options()).not(to_remove).get();
