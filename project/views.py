@@ -1,6 +1,6 @@
 import json
 
-from django.views.generic.edit import BaseCreateView
+from django.views.generic.edit import CreateView as BaseCreateView
 
 from django.http.response import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -19,6 +19,7 @@ from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Pro
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, \
     ExpenseSerializer, AidSerializer, BaseStatementSerializer, ImprestJVSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, DeleteView
+from django.utils.translation import ugettext_lazy as _
 
 
 class ProjectCreateView(BaseCreateView):
@@ -303,14 +304,14 @@ class BaseStatement(object):
             'rows': BaseStatementSerializer(context_data['object_list'], many=True).data,
             'budget_heads': BudgetSerializer(budget_head, many=True).data,
             'aids': AidSerializer(aid, many=True).data,
+            'project_fy_id':context_data['project_fy'].id
         }
         return context_data
 
 
 def base_save(request, model):
     params = json.loads(request.body)
-    fy = params.get('fy')
-    project_id = params.get('project_id')
+    project_id = params.get('project_fy_id')
     dct = {'rows': {}}
     model = model
     try:
@@ -318,7 +319,7 @@ def base_save(request, model):
             if invalid(row, ['budget_head_id']):
                 continue
             values = {'budget_head_id': row.get('budget_head_id'),
-                      'fy_id': fy, 'project_id': project_id}
+                      'project_fy_id': project_id}
             dct['rows'][index] = {}
             if row.get('goa_id') or row.get('goa_amount'):
                 values['amount'] = empty_to_none(row.get('goa_amount'))
@@ -393,9 +394,9 @@ class ExpenditureCreate(BaseStatement, ProjectFYView, ListView):
     template_name = 'project/expenditure_list.html'
 
     def get_queryset(self):
-        if not self.model.objects.filter(project_id=self.kwargs['project_id']):
-            return BudgetReleaseItem.objects.filter(project_id=self.kwargs['project_id'])
-        return self.model.objects.filter(project_id=self.kwargs['project_id'])
+        if not self.model.objects.filter(project_fy_id=self.kwargs['project_fy_id']):
+            return BudgetReleaseItem.objects.filter(project_fy_id=self.kwargs['project_fy_id'])
+        return self.model.objects.filter(project_fy_id=self.kwargs['project_fy_id'])
 
 
 @login_required

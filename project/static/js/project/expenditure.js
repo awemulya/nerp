@@ -5,20 +5,21 @@ $(document).ready(function () {
 
 function Expenditure(data) {
     var self = this;
-    self.budget_head = ko.observableArray(data.budget_head);
+    self.budget_heads = ko.observableArray(data.budget_heads);
 
     self.aids = ko.observableArray();
 
     self.count = []
 
-    self.fy = ko.observable(data.fy);
-    self.project_id = ko.observable(data.project_id);
+    //self.fy = ko.observable(data.fy);
+    //self.project_id = ko.observable(data.project_id);
+    self.project_fy_id = ko.observable(data.project_fy_id);
 
-    for (var k in data.aid) {
-        if (data.aid[k].aid_name != null) {
-            if (self.count.indexOf(data.aid[k].aid_name) == -1) {
-                self.count.push(data.aid[k].aid_name);
-                self.aids.push(data.aid[k].aid_name.split('-')[1]);
+    for (var k in data.aids) {
+        if (data.aids[k].aid_name != null) {
+            if (self.count.indexOf(data.aids[k].aid_name) == -1) {
+                self.count.push(data.aids[k].aid_name);
+                self.aids.push(data.aids[k].aid_name.split('-')[1]);
             }
         }
     }
@@ -104,9 +105,10 @@ function RowVM(row, vm) {
                 if (self.goa_amount() == undefined) {
                     self.goa_amount(row.aid_amount[i].amount);
                     self.goa_id(row.aid_amount[i].id);
-                } else {
-                    self.goa_amount(self.goa_amount() + row.aid_amount[i].amount);
                 }
+                //else {
+                //    self.goa_amount(self.goa_amount() + row.aid_amount[i].amount);
+                //}
             }
             if (self[row.aid_amount[i].aid_name] != undefined) {
                 self[row.aid_amount[i].aid_name](row.aid_amount[i].amount);
