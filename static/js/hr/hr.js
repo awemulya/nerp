@@ -556,29 +556,21 @@ function PayrollEntry(pr_data) {
     });
     self.update_employee_options = ko.computed(function(){
         if(self.payroll_type() == 'INDIVIDUAL'){
+            var loop_count = 0;
             for(ro of self.rows()){
-                ro.emp_options(self.employee_options());
-                
+                ro.emp_options(self.employee_options().slice());
+                var to_remove = []
                 for(opt of ro.emp_options()){
-                    console.log('Let me know i am here');
-                    if(ro.paid_employee() != String(opt.id)){
-                        if($.inArray(String(opt.id), self.selected_employees()) != -1){
-                            ro.emp_options.remove(opt);
-                        };    
-                    };
-                    
-                    // if($.inArray(opt.id, self.selected_employees()) != -1){
-                    //     opt.disable(true);
-                    // }else{
-                    //     opt.disable(false);
-                    // };
-                    // if($.inArray(String(opt.id), self.selected_employees()) != -1 && String(opt.id) != ro.paid_employee()){
+
+                    if($.inArray(String(opt.id), self.selected_employees()) != -1 && String(opt.id) != ro.paid_employee()){                        
+                        console.log('To remove opt ' + String(opt.id) + 'in loop' + String(loop_count) )
                         
-                    //     debugger;
-                    //     ro.emp_options.remove(opt);
-                    // };
-                    
+                        to_remove.push(opt);
+                        console.log('removed opt ' + String(opt.id) + 'in loop' + String(loop_count) )        
+                    };
                 };
+                var diff = $(ro.emp_options()).not(to_remove).get();
+                ro.emp_options(diff);
             };
         };
     });
