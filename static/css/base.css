@@ -513,4 +513,8 @@ tr.total, tr.category, tr.subtotal{
     width: 22em;
 }
 
+#reimbursement input[type="number"] {
+    width: 100%;
+}
+
 

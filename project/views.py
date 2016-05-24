@@ -442,14 +442,6 @@ class ReimbursementView(ProjectFYView):
     model = Reimbursement
     form_class = ReimbursementForm
 
-    def get_context_data(self, **kwargs):
-        context_data = super(ReimbursementView, self).get_context_data(**kwargs)
-        if 'pk' in self.request.GET:
-            pk = self.request.GET.get('pk')
-            obj = self.model.objects.get(pk=pk)
-            context_data['form'] = self.form_class(instance=obj)
-        return context_data
-
     def get_success_url(self):
         return reverse_lazy('reimbursement_list', kwargs={'project_fy_id': self.project_fy.id})
 
@@ -459,7 +451,15 @@ class ReimbursementCreate(ReimbursementView, ProjectCreateView):
 
 
 class ReimbursementUpdate(ReimbursementView, UpdateView):
-    pass
+    template_name = 'project/reimbursement_list.html'
+
+    def get_context_data(self, **kwargs):
+        context_data = super(ReimbursementUpdate, self).get_context_data(**kwargs)
+        context_data['object_list'] = self.model.objects.filter(project_fy_id=context_data['project_fy'].id)
+        return context_data
+
+    def get_success_url(self):
+        return reverse_lazy('reimbursement_list', kwargs={'project_fy_id': self.project_fy.id})
 
 
 class ReimbursementList(ReimbursementView, ListView):
