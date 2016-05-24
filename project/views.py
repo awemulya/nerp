@@ -458,9 +458,6 @@ class ReimbursementUpdate(ReimbursementView, UpdateView):
         context_data['object_list'] = self.model.objects.filter(project_fy_id=context_data['project_fy'].id)
         return context_data
 
-    def get_success_url(self):
-        return reverse_lazy('reimbursement_list', kwargs={'project_fy_id': self.project_fy.id})
-
 
 class ReimbursementList(ReimbursementView, ListView):
     pass
