@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "reimbursement_list" project.id %}">{% trans 'Reimbursements' %}</a>
+    <li><a href="{% url "reimbursement_list" project.id %}">{% trans 'Reimbursements' %}</a></li>
 {% endblock %}
 
 {% block content %}
@@ -27,31 +27,55 @@
             </thead>
             <tbody>
             {% for reimbursement in paginated_objects %}
-                <tr>
-                    <td>
-                        {{ reimbursement.date }}
-                    </td>
-                    <td>
-                        {{ reimbursement.bank_voucher_no }}
-                    </td>
-                    <td>
-                        {{ reimbursement.wa_no }}
-                    </td>
-                    <td>
-                        {{ reimbursement.amount }}
-                    </td>
-                    <td>
-                        <a href="">Edit</a>
-                    </td>
-                </tr>
+                {% if form.instance.id != reimbursement.id %}
+                    <tr>
+                        <td>
+                            {{ reimbursement.date }}
+                        </td>
+                        <td>
+                            {{ reimbursement.bank_voucher_no }}
+                        </td>
+                        <td>
+                            {{ reimbursement.wa_no }}
+                        </td>
+                        <td>
+                            {{ reimbursement.amount }}
+                        </td>
+                        <td>
+                            <a href="{% url 'reimbursement_list' project.id %}?pk={{ reimbursement.id }}">Edit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <tr>
+                            <td>
+                                {{ form.date }}
+                            </td>
+                            <td>
+                                {{ form.bank_voucher_no }}
+                            </td>
+                            <td>
+                                {{ form.wa_no }}
+                            </td>
+                            <td>
+                                {{ form.amount }}
+                            </td>
+                            <td>
+                                <a class="btn btn-danger btn-raised"#}
+                       href="{% url 'reimbursement_edit' project.id form.instance.id %}">{% trans 'Save' %}!</a>
+{#                               <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">#}
+                            </td>
+                        </tr>
+                    </form>
+                {% endif %}
+
             {% endfor %}
             </tbody>
         </table>
     </div>
-
-
     <a class="btn btn-success btn-raised btn-lg"
-       href="{% url 'reimbursement_list' project.id %}">{% trans 'New' %} {% trans 'Reimbursement' %}</a>
+       href="{% url 'reimbursement_add' project.id %}">{% trans 'New' %} {% trans 'Expense' %}</a>
 
     {% paginate %}
 

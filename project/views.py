@@ -1,7 +1,6 @@
 import json
 
 from django.views.generic.edit import CreateView as BaseCreateView
-
 from django.http.response import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
@@ -305,7 +304,7 @@ class BaseStatement(object):
             'rows': BaseStatementSerializer(context_data['object_list'], many=True).data,
             'budget_heads': BudgetSerializer(budget_head, many=True).data,
             'aids': AidSerializer(aid, many=True).data,
-            'project_fy_id':context_data['project_fy'].id
+            'project_fy_id': context_data['project_fy'].id
         }
         return context_data
 
@@ -439,26 +438,50 @@ class ImprestJVDelete(ImprestJVView, DeleteView):
     pass
 
 
-
 class ReimbursementView(ProjectFYView):
     model = Reimbursement
     form_class = ReimbursementForm
 
-    # def get_success_url(self):
-    #     return reverse_lazy('imprest_journal_voucher_list', kwargs={'project_fy_id': self.project_fy.id})
+    def get_context_data(self, **kwargs):
+        context_data = super(ReimbursementView, self).get_context_data(**kwargs)
+        if 'pk' in self.request.GET:
+            pk = self.request.GET.get('pk')
+            obj = self.model.objects.get(pk=pk)
+            context_data['form'] = self.form_class(instance=obj)
+        return context_data
 
-#
-# class ReimbursementCreate(ReimbursementView, ProjectCreateView):
-#     pass
-#
-#
-# class ReimbursementUpdate(ReimbursementView, UpdateView):
-#     pass
+    def get_success_url(self):
+        return reverse_lazy('reimbursement_list', kwargs={'project_fy_id': self.project_fy.id})
+
+        # def post(self, request, *args, **kwargs):
+
+        # ipdb.set_trace()
+        # return super(ReimbursementView, self).post(request, *args, **kwargs)
+
+
+class ReimbursementCreate(ReimbursementView, ProjectCreateView):
+    pass
+
+
+def update_reimburement(request, project_fy_id, pk):
+    import ipdb
+
+    ipdb.set_trace()
+    pass
+
+
+class ReimbursementUpdate(ReimbursementView, UpdateView):
+    def post(self, request, *args, **kwargs):
+        import ipdb
+
+        ipdb.set_trace()
+        super(ReimbursementUpdate, self).post(request, *args, **kwargs)
+
+    pass
 
 
 class ReimbursementList(ReimbursementView, ListView):
     pass
 
-#
-# class ReimbursementDelete(ReimbursementView, DeleteView):
-#     pass
+class ReimbursementDelete(ReimbursementView, DeleteView):
+    pass

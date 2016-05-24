@@ -44,7 +44,7 @@ class ImprestJVForm(KOModelForm):
         exclude = ('project_fy',)
 
 
-class ReimbursementForm(KOModelForm):
+class ReimbursementForm(HTML5BootstrapModelForm):
     class Meta:
         model = Reimbursement
         exclude = ('project_fy',)
