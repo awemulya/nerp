@@ -44,7 +44,7 @@ class ImprestJVForm(KOModelForm):
         exclude = ('project_fy',)
 
 
-class ReimbursemetForm(KOModelForm):
+class ReimbursementForm(KOModelForm):
     class Meta:
         model = Reimbursement
         exclude = ('project_fy',)

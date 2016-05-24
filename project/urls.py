@@ -65,4 +65,6 @@ urlpatterns = [
         name='expenditure_add'),
     url(r'^expenditure/save/$', views.save_expenditure,
         name='save_expenditure'),
+    url(r'^(?P<project_fy_id>[0-9]+)/reimbursement/$', views.ReimbursementList.as_view(),
+        name='reimbursement_list'),
 ]

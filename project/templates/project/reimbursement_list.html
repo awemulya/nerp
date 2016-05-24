@@ -1,0 +1,58 @@
+{% extends "_project_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Reimbursement' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url "reimbursement_list" project.id %}">{% trans 'Reimbursements' %}</a>
+{% endblock %}
+
+{% block content %}
+
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+    {% load filters %}
+
+    {% autosort object_list as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+    <div class="well">
+        <table class="table table-striped">
+            <thead>
+            <th>{% anchor date _('Date') %}</th>
+            <th>{% anchor bank_voucher_no _('Bank Voucher no.') %}</th>
+            <th>{% anchor wa_no _('WA No.') %}</th>
+            <th>{% anchor amount _('Amount') %}</th>
+            <th>{% trans "Edit" %}</th>
+            </thead>
+            <tbody>
+            {% for reimbursement in paginated_objects %}
+                <tr>
+                    <td>
+                        {{ reimbursement.date }}
+                    </td>
+                    <td>
+                        {{ reimbursement.bank_voucher_no }}
+                    </td>
+                    <td>
+                        {{ reimbursement.wa_no }}
+                    </td>
+                    <td>
+                        {{ reimbursement.amount }}
+                    </td>
+                    <td>
+                        <a href="">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <a class="btn btn-success btn-raised btn-lg"
+       href="{% url 'reimbursement_list' project.id %}">{% trans 'New' %} {% trans 'Reimbursement' %}</a>
+
+    {% paginate %}
+
+{% endblock %}
