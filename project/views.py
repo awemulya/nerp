@@ -453,35 +453,18 @@ class ReimbursementView(ProjectFYView):
     def get_success_url(self):
         return reverse_lazy('reimbursement_list', kwargs={'project_fy_id': self.project_fy.id})
 
-        # def post(self, request, *args, **kwargs):
-
-        # ipdb.set_trace()
-        # return super(ReimbursementView, self).post(request, *args, **kwargs)
-
 
 class ReimbursementCreate(ReimbursementView, ProjectCreateView):
     pass
 
 
-def update_reimburement(request, project_fy_id, pk):
-    import ipdb
-
-    ipdb.set_trace()
-    pass
-
-
 class ReimbursementUpdate(ReimbursementView, UpdateView):
-    def post(self, request, *args, **kwargs):
-        import ipdb
-
-        ipdb.set_trace()
-        super(ReimbursementUpdate, self).post(request, *args, **kwargs)
-
     pass
 
 
 class ReimbursementList(ReimbursementView, ListView):
     pass
+
 
 class ReimbursementDelete(ReimbursementView, DeleteView):
     pass
