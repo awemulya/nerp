@@ -248,3 +248,14 @@ class ImprestJournalVoucher(models.Model):
 
     def __str__(self):
         return str(self.voucher_no)
+
+
+class Reimbursement(models.Model):
+    date = BSDateField(null=True, blank=True, default=today, validators=[validate_in_fy])
+    bank_voucher_no = models.PositiveIntegerField(blank=True, null=True)
+    wa_no = models.PositiveIntegerField(blank=True, null=True)
+    amount = models.PositiveIntegerField(blank=True, null=True)
+    project_fy = models.ForeignKey(ProjectFy)
+
+    def __str__(self):
+        return str(self.bank_voucher_no) + ':' + str(self.wa_no)
