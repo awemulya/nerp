@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse_lazy
 from django import forms
 
 from app.utils.forms import HTML5BootstrapModelForm, KOModelForm
-from models import Aid, Project, ExpenseCategory, Expense, ImprestJournalVoucher
+from models import Aid, Project, ExpenseCategory, Expense, ImprestJournalVoucher, Reimbursement
 
 
 class AidForm(HTML5BootstrapModelForm):
@@ -42,4 +42,9 @@ class ImprestJVForm(KOModelForm):
     class Meta:
         model = ImprestJournalVoucher
         exclude = ('project_fy',)
-        
+
+
+class ReimbursementForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = Reimbursement
+        exclude = ('project_fy',)

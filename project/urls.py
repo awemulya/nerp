@@ -65,4 +65,13 @@ urlpatterns = [
         name='expenditure_add'),
     url(r'^expenditure/save/$', views.save_expenditure,
         name='save_expenditure'),
+    url(r'^(?P<project_fy_id>[0-9]+)/reimbursement/$', views.ReimbursementList.as_view(),
+        name='reimbursement_list'),
+    url(r'^(?P<project_fy_id>[0-9]+)/reimbursement/add/$', views.ReimbursementCreate.as_view(),
+        name='reimbursement_add'),
+    url(r'^(?P<project_fy_id>[0-9]+)/reimbursement/(?P<pk>[0-9]+)/$', views.ReimbursementUpdate.as_view(),
+        name='reimbursement_edit'),
+    url(r'^(?P<project_fy_id>[0-9]+)/reimbursement/delete/(?P<pk>[0-9]+)/$', views.ReimbursementDelete.as_view(),
+        name='reimbursement_delete'),
+
 ]
