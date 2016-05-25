@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import datetime
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -18,7 +17,6 @@ from njango.fields import BSDateField, today
 from app.utils.helpers import zero_for_none, none_for_zero
 from users.models import User
 from core.models import FiscalYear, Party, validate_in_fy, FYManager
-from core.signals import fiscal_year_signal
 
 
 def alter(account, date, diff):
@@ -368,10 +366,14 @@ class Transaction(models.Model):
 def delete_rows(rows, model):
     for row in rows:
         if row.get('id'):
-            instance = model.objects.get(id=row.get('id'))
-            # JournalEntry.objects.get(content_type=ContentType.objects.get_for_model(model),
-            #                         model_id=instance.id).delete()
-            instance.delete()
+            if True:
+                # try:
+                instance = model.objects.get(id=row.get('id'))
+                # JournalEntry.objects.get(content_type=ContentType.objects.get_for_model(model),
+                #                         model_id=instance.id).delete()
+                instance.delete()
+                # except model.DoesNotExist:
+                #     pass
 
 
 def get_next_voucher_no(cls, attr):
@@ -557,7 +559,7 @@ class EntryReportRow(models.Model):
 
     @property
     def total(self):
-        return ( self.rate + self.vattable_amount ) * ( self.quantity + self.other_expenses )
+        return (self.rate + self.vattable_amount) * (self.quantity + self.other_expenses)
 
     def get_voucher_no(self):
         if self.entry_report:
@@ -675,6 +677,7 @@ class PurchaseOrder(models.Model):
         super(PurchaseOrder, self).__init__(*args, **kwargs)
         if not self.pk and not self.order_no:
             self.order_no = get_next_voucher_no_for_fy(self.__class__, 'order_no')
+
     @property
     def sub_total(self):
         grand_total = 0
@@ -999,4 +1002,38 @@ def fiscal_year_changed(sender, **kwargs):
     # year_end = FiscalYear.end(old_fiscal_year.year)
     pass
 
+
 # fiscal_year_signal.connect(fiscal_year_changed)
+
+class StockEntry(models.Model):
+    voucher_no = models.PositiveIntegerField(verbose_name=_('Voucher No.'))
+    date = BSDateField(default=today, validators=[validate_in_fy])
+
+    objects = FYManager()
+
+    def save(self, *args, **kwargs):
+        if self.__class__.objects.fiscal_year().filter(voucher_no=self.voucher_no).exclude(pk=self.pk):
+            raise ValidationError(_('Voucher no. exists!'))
+        super(StockEntry, self).save(*args, **kwargs)
+
+    def __init__(self, *args, **kwargs):
+        super(StockEntry, self).__init__(*args, **kwargs)
+
+        if not self.pk and not self.voucher_no:
+            self.voucher_no = get_next_voucher_no(StockEntry, 'voucher_no')
+
+    def __str__(self):
+        return str(self.voucher_no)
+
+
+class StockEntryRow(models.Model):
+    sn = models.PositiveIntegerField()
+    name = models.CharField(max_length=254)
+    description = models.TextField(blank=True, null=True)
+    unit = models.CharField(max_length=50, default=_('pieces'))
+    account_no = models.PositiveIntegerField()
+    opening_stock = models.FloatField(default=0, blank=True, null=True)
+    opening_rate = models.FloatField(default=0, blank=True, null=True)
+    opening_rate_vattable = models.BooleanField(default=True)
+    stock_entry = UnsavedForeignKey(StockEntry, related_name='rows')
+    item = models.OneToOneField(Item, on_delete=models.CASCADE, blank=True, null=True)

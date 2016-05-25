@@ -1,4 +1,6 @@
-from dbsettings.models import Setting
+# from dbsettings.models import Setting
+from core.models import AppSetting
+from key.models import KeySetting
 
 # from django.http import HttpResponse
 # from django.shortcuts import redirect
@@ -30,20 +32,22 @@ def validate_key(key, user, app_name):
 
 class KeyMiddleware(object):
     def process_request(self, request):
-        try:
-            setting = Setting.objects.get(attribute_name=ATTR_NAME)
-            if not setting.value in DEFAULT_VALUES and not request.path.replace('/', '')[
-                                                           0:5] == 'admin' and not request.path.replace(
-                '/', '')[0:3] == 'key':
-                validity = {'error': 'No Activation Key!'}
-                try:
-                    key = Setting.objects.get(attribute_name='key')
-                    validity = validate_key(key.value, setting.value, APP_NAME)
-                except Setting.DoesNotExist:
-                    pass
-                if 'error' in validity:
-                    # return HttpResponse('<h2 style="text-align: center; margin-top: 20%">' + validity['error'] + '</h2>')
-                    # return redirect(reverse_lazy('invalid_key'))
-                    return render(request, 'key/invalid.html', validity)
-        except Setting.DoesNotExist:
-            pass
+        # try:
+            # setting = Setting.objects.get(attribute_name=ATTR_NAME)
+        setting = getattr(AppSetting.get_solo(), ATTR_NAME)
+        if not setting in DEFAULT_VALUES and not request.path.replace('/', '')[
+                                                       0:5] == 'admin' and not request.path.replace(
+            '/', '')[0:3] == 'key':
+            validity = {'error': 'No Activation Key!'}
+            # try:
+                # key = Setting.objects.get(attribute_name='key')
+            key = getattr(KeySetting.get_solo(), 'key')
+            validity = validate_key(key, setting, APP_NAME)
+            # except Setting.DoesNotExist:
+                # pass
+            if 'error' in validity:
+                # return HttpResponse('<h2 style="text-align: center; margin-top: 20%">' + validity['error'] + '</h2>')
+                # return redirect(reverse_lazy('invalid_key'))
+                return render(request, 'key/invalid.html', validity)
+        # except Setting.DoesNotExist:
+        #     pass

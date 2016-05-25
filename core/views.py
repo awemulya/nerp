@@ -1,5 +1,5 @@
 from django import http
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.http import is_safe_url
@@ -7,12 +7,14 @@ from django.contrib.auth.decorators import user_passes_test
 
 from account.serializers import AccountSerializer
 from app.utils.forms import form_view
-from core.forms import PartyForm, EmployeeForm
-from core.models import Party, Employee, BudgetHead, Donor, Activity, Account, TaxScheme, Language, FISCAL_YEARS, FiscalYear
+from core.forms import PartyForm, EmployeeForm, DonorForm, BudgetHeadForm
+from core.models import Party, Employee, BudgetHead, Donor, Activity, TaxScheme, Language, FISCAL_YEARS, FiscalYear
 from core.serializers import PartySerializer, EmployeeSerializer, BudgetSerializer, ActivitySerializer, DonorSerializer, \
     TaxSchemeSerializer, LanguageSerializer
+from django.views.generic import ListView
 from users.models import group_required
 from .signals import fiscal_year_signal
+from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
 
 @group_required('Store Keeper', 'Chief', 'Accountant')
@@ -113,13 +115,6 @@ def activities_as_json(request):
     objects_data = ActivitySerializer(objects, many=True).data
     return JsonResponse(objects_data, safe=False)
 
-
-def accounts_as_json(request):
-    objects = Account.objects.all()
-    objects_data = AccountSerializer(objects, many=True).data
-    return JsonResponse(objects_data, safe=False)
-
-
 def tax_schemes_as_json(request):
     objects = TaxScheme.objects.all()
     objects_data = TaxSchemeSerializer(objects, many=True).data
@@ -153,11 +148,15 @@ def change_fiscal_year(request):
         new_fiscal_year_str = request.POST.get('fiscal_year')
 
         # app_setting.fiscal_year = new_fiscal_year_str
-        from dbsettings.models import Setting
+        # from dbsettings.models import Setting
 
-        fiscal_year_setting = Setting.objects.get(module_name='core.models', attribute_name='fiscal_year')
-        fiscal_year_setting.value = new_fiscal_year_str
-        fiscal_year_setting.save()
+        # fiscal_year_setting = Setting.objects.get(module_name='core.models', attribute_name='fiscal_year')
+        # fiscal_year_setting.value = new_fiscal_year_str
+        # fiscal_year_setting.save()
+        from core.models import AppSetting
+        app_setting = AppSetting.get_solo()
+        app_setting.fiscal_year = new_fiscal_year_str
+        app_setting.save()
         new_fiscal_year = FiscalYear.get(new_fiscal_year_str)
         fiscal_year_signal.send(sender=None, new_fiscal_year_str=new_fiscal_year_str, old_fiscal_year=old_fiscal_year,
                                 new_fiscal_year=new_fiscal_year)
@@ -168,3 +167,48 @@ def change_fiscal_year(request):
         'current_fiscal_year': FiscalYear.get()
     }
     return render(request, 'change_fiscal_year.html', context)
+
+
+
+class DonorView(object):
+    model = Donor
+    success_url = reverse_lazy('donor_list')
+    form_class = DonorForm
+
+
+class DonorList(DonorView, ListView):
+    pass
+
+
+class DonorCreate(AjaxableResponseMixin, DonorView, CreateView):
+    pass
+
+
+class DonorUpdate(DonorView, UpdateView):
+    pass
+
+
+class DonorDelete(DonorView, DeleteView):
+    pass
+
+
+class BudgetHeadView(object):
+    model = BudgetHead
+    success_url = reverse_lazy('budget_head_list')
+    form_class = BudgetHeadForm
+
+
+class BudgetHeadList(BudgetHeadView, ListView):
+    pass
+
+
+class BudgetHeadCreate(AjaxableResponseMixin, BudgetHeadView, CreateView):
+    pass
+
+
+class BudgetHeadUpdate(BudgetHeadView, UpdateView):
+    pass
+
+
+class BudgetHeadDelete(BudgetHeadView, DeleteView):
+    pass

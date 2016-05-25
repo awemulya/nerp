@@ -20,27 +20,31 @@ from openpyxl.styles import Style, Font, Alignment
 from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 from openpyxl.cell import get_column_letter
 
-from core.models import app_setting, FiscalYear, Party, FISCAL_YEARS
+from core.models import AppSetting, FiscalYear, Party, FISCAL_YEARS
 from app.utils.helpers import invalid, save_model, empty_to_none
-from app.utils.mixins import PDFView
+from app.utils.mixins import PDFView, LoginRequiredMixin
 # from app.utils.mixins import TemplateView as PDFView
 from users.models import group_required, User
 
 from inventory.filters import InventoryItemFilter
 
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, \
-    ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm, InstanceHistoryForm, ExpenseForm
+    ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm, InstanceHistoryForm, ExpenseForm, \
+    StockEntryForm
 
 from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Depreciation, Demand, ItemInstance, \
     DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InstanceHistory, \
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
-    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release, Expense
+    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release, Expense, \
+    StockEntry, StockEntryRow
 
 from inventory.serializers import QuotationComparisonSerializer, DepreciationSerializer, DemandSerializer, ItemSerializer, \
     PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
-    TransactionSerializer, ItemLocationSerializer, YearlyReportSerializer
+    TransactionSerializer, ItemLocationSerializer, YearlyReportSerializer, StockEntrySerializer
 from django.db import IntegrityError
+# from django.contrib import messages
+
 
 
 def list_transactions(request):
@@ -122,7 +126,7 @@ def convert_demand(request, id):
     ws = wb.active
     ws.merge_cells('A2:H2')
     header = ws.cell('A2')
-    header.value = app_setting.header_for_forms
+    header.value = AppSetting.get_solo().header_for_forms
     ws.row_dimensions[header.row].height = 40
     header.style = Style(
         font=Font(
@@ -192,7 +196,7 @@ def convert_purchase_order(request, id):
     ws = wb.active
 
     # Header
-    header = merge_and_add(ws, 2, 1, 2, 9, app_setting.header_for_forms)
+    header = merge_and_add(ws, 2, 1, 2, 9, AppSetting.get_solo().header_for_forms)
     ws.row_dimensions[header.row].height = 40
     header.style = Style(
         font=Font(
@@ -281,7 +285,7 @@ def convert_entry_report(request, id):
     ws = wb.active
     row_index = 9
     # Header
-    header = merge_and_add(ws, 2, 1, 2, 13, app_setting.header_for_forms)
+    header = merge_and_add(ws, 2, 1, 2, 13, AppSetting.get_solo().header_for_forms)
     ws.row_dimensions[header.row].height = 40
     header.style = Style(
         font=Font(
@@ -1571,7 +1575,7 @@ class InstanceHistoryView(CreateView):
     def get_success_url(self):
         return reverse_lazy('view_inventory_account', kwargs={'id': self.object.instance.item.account.id})
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=InstanceHistoryForm):
         form = super(InstanceHistoryView, self).get_form(form_class)
         item_instance = ItemInstance.objects.get(pk=self.kwargs.get('instance_pk'))
         form.instance.instance_id = item_instance.id
@@ -1602,7 +1606,7 @@ class ExpenseCreate(CreateView):
         else:
             return reverse_lazy('itemlocation_detail', kwargs={'pk': item_instance.location_id})
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=ExpenseForm):
         form = super(ExpenseCreate, self).get_form(form_class=form_class)
         item_instance = ItemInstance.objects.get(pk=self.kwargs.get('instance_pk'))
         form.fields['voucher_no'].initial = form.instance.voucher_no
@@ -1647,8 +1651,7 @@ def view_inventory_account(request, id, year=None):
     return render(request, 'view_inventory_account.html', context)
 
 
-
-class LedgersPDF(PDFView):
+class LedgersPDF(LoginRequiredMixin, PDFView):
     template_name = "pdf/ledgers.html"
 
     def get_context_data(self, **kwargs):
@@ -1701,3 +1704,80 @@ class QuotationComparisonPDF(VoucherPDF):
     model = QuotationComparison
     template_name = "pdf/quotation_comparison_pdf.html"
 
+
+class StockEntryList(ListView):
+    model = StockEntry
+
+
+@group_required('Store Keeper', 'Chief')
+def stock_entry(request, pk=None):
+    if pk:
+        obj = get_object_or_404(StockEntry, pk=pk)
+        scenario = 'Update'
+    else:
+        obj = StockEntry()
+        scenario = 'Create'
+    form = StockEntryForm(instance=obj)
+    object_data = StockEntrySerializer(obj).data
+    return render(request, 'stock_entry.html',
+                  {'form': form, 'data': object_data, 'scenario': scenario})
+
+@group_required('Store Keeper', 'Chief')
+def delete_stock_entry(request, id):
+    obj = get_object_or_404(StockEntry, id=id)
+    obj.delete()
+    return redirect(reverse('list_stock_entry'))
+
+
+@login_required
+def save_stock_entry(request):
+    params = json.loads(request.body)
+    dct = {'rows': {}}
+    if params.get('voucher_no') == '':
+        params['voucher_no'] = None
+    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date') }
+    if params.get('id'):
+        obj = StockEntry.objects.get(id=params.get('id'))
+    else:
+        obj = StockEntry()
+    model = StockEntryRow
+    try:
+        obj = save_model(obj, object_values)
+        dct['id'] = obj.id
+        for index, row in enumerate(params.get('table_view').get('rows')):
+            if invalid(row, ['name', 'unit', 'account_no', 'opening_rate', 'opening_stock']):
+                continue
+            values = {'sn': index + 1, 'name': row.get('name'),
+                      'description': row.get('description'),
+                      'unit': row.get('unit'), 'account_no': row.get('account_no'), 'opening_stock': row.get('opening_stock'),
+                      'opening_rate': row.get('opening_rate'), 'opening_rate_vattable': row.get('opening_rate_vattable'),
+                      'stock_entry': obj}
+            
+            submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
+            # messages.add_message(request, messages.ERROR, 'Sending request to same company')
+            if not created:
+                submodel = save_model(submodel, values)
+                item = submodel.item
+                item.name = row.get('name')
+                item.description = row.get('description')
+                item.unit = row.get('unit') 
+            else:
+                item = Item(
+                    name=row.get('name'), 
+                    description=row.get('description'),
+                    unit=row.get('unit')
+                    )
+            item.save(account_no=row.get('account_no'), opening_balance=row.get('opening_stock'),
+                          opening_rate=row.get('opening_rate'), opening_rate_vattable=row.get('opening_rate_vattable'))
+            submodel.item = item
+            submodel.save()
+            dct['rows'][index] = submodel.id
+    except Exception as e:
+        if hasattr(e, 'messages'):
+            dct['error_message'] = '; '.join(e.messages)
+        elif str(e) != '':
+            dct['error_message'] = str(e)
+        else:
+            dct['error_message'] = 'Error in form data!'
+    delete_rows(params.get('table_view').get('deleted_rows'), model)
+    return JsonResponse(dct)

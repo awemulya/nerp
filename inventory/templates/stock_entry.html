@@ -1,0 +1,104 @@
+{% extends "inventory_base.html" %}
+{% load i18n staticfiles filters %}
+
+{% block title %}{% trans scenario %} {% trans 'Stock Entry' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url 'list_stock_entry' %}">{% trans 'Stock Entry' %}</a></li>
+    <li><span> {% trans scenario %} {% trans 'Stock Entry' %}</span></li>
+{% endblock %}
+
+{% block head_end %}
+    <script src="{% static 'js/inventory/stock_entry.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}
+
+
+{% block content %}
+	<form method="post" data-bind="submit: save">
+        {% csrf_token %}
+        <div class="well">
+	        <div class="pull-right">
+	            {% trans 'Date' %}: 
+	        <div class="form-inline inline">
+
+	            <input type="text" class="pull-right text-right form-control" required="required"
+	                                       name="date" id="id_date"
+	                                       data-bind="value: date, localize: true, autosize:3">
+	            {{ form.date.errors }}
+	            </div>
+	        </div>
+
+
+	        {% trans 'Voucher' %} {% trans 'No.' %}:
+	        <div class="form-inline inline">
+
+	        <input type="text" name="voucher_no" min="0" class="form-control form-inline input-inline" id="id_voucher_no"
+	               required data-bind="value: voucher_no, localize: true">
+	        </div>
+        </div>
+
+        <div class="well">
+        <div data-bind="with:table_view">
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th class="span1">{% trans 'SN' %}</th>
+                    <th class="span2">{% trans 'Name.' %}</th>
+                    <th class="span2">{% trans 'Description' %}</th>
+                    <th class="span2">{% trans 'Unit' %}</th>
+                    {% if scenario == 'Create' %}
+                    	<th class="span3">{% trans 'Opening stock' %}</th>
+                    {% endif %}
+                    <th class="span3">{% trans 'Account no.' %}</th>
+                    <th class="span2">{% trans 'Vattable' %}</th>
+                    <th class="span3 hidden-print">{% trans 'Opening rate' %}</th>
+                    <th class="hidden-print"></th>
+                </tr>
+                </thead>
+
+                <tbody id="tbody">
+                <!-- ko foreach: rows -->
+                <tr>
+                    <td>
+                        <span data-bind="text:  $index()+1, localize: true"> </span>
+                    </td>
+                    <td data-bind="editableText: name"></td>
+                	<td data-bind="editableText: description"></td>
+                	<td data-bind="editableText: unit"></td>
+                    {% if scenario == 'Create' %}
+	                	<td data-bind="editableText: opening_stock, numeric: true"></td>
+					{% endif %}
+                	<td data-bind="editableText: account_no, numeric: true"></td>
+                    <td>
+                        <input class="hidden-print" type="checkbox" data-bind="checked: opening_rate_vattable">
+                    </td>
+                	<td data-bind="editableText: opening_rate, numeric: true"></td>
+                    <td>
+                        <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
+                    </td>
+                </tr>
+                <!-- /ko -->
+                </tbody>
+            </table>
+            <a class="btn btn-default btn-raised" data-bind="click: addRow">
+                {% trans 'Add New Row' %}
+            </a>
+        </div>
+        </div>
+
+        <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
+
+        {% if scenario == 'Update' %}
+            <a class="btn btn-danger btn-raised btn-lg"
+               href="{% url 'delete_stock_entry' form.instance.id %}">{% trans 'Delete!' %}</a>
+        {% endif %}
+
+
+
+    </form>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends base_template %}
+{% load i18n filters staticfiles %}
+
+{% block title %}{{ scenario }} {% trans 'Imprest Journal Voucher' %}{% endblock %}
+
+{% block head_end %}
+    <script src="{% static 'js/project/imprest_journal_voucher.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url "imprest_journal_voucher_list" project.id %}">{% trans 'Imprest Journal Vouchers' %}</a>
+    <li>{% trans 'Add' %}</li>
+{% endblock %}
+
+{% block content %}
+
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+    <form method="post">
+        {% csrf_token %}
+        <div class="well">
+
+            <div class="row">
+                <div class="col-sm-12 col-md-4">
+                    {{ form.voucher_no.label_tag }}
+                    {{ form.voucher_no }}
+                </div>
+                <div class="col-sm-12 col-md-4">
+                    {{ form.wa_no.label_tag }}
+                    <input class="form-control" data-bind="value: wa_no, enable: cr_ledger() && cr_ledger().name == 'Initial Deposit'" id="id_wa_no" maxlength="10" name="wa_no" type="text">
+                </div>
+                <div class="col-sm-12 col-md-4">
+                    {{ form.date.label_tag }}
+                    {{ form.date }}
+                </div>
+            </div>
+            <br/>
+            <table class="table-responsive table-striped table center-headings table-bordered">
+                <thead>
+                <tr>
+                    <th rowspan="2">{% trans 'Particulars' %}</th>
+                    <th colspan="3">{% trans 'Dr' %}</th>
+                    <th colspan="3">{% trans 'Cr' %}</th>
+                </tr>
+                <tr>
+                    <th>{% trans 'NRS' %}</th>
+                    <th>{% trans 'USD' %}</th>
+                    <th>{% trans 'Ex. Rate' %}</th>
+                    <th>{% trans 'NRS' %}</th>
+                    <th>{% trans 'USD' %}</th>
+                    <th>{% trans 'Ex. Rate' %}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <select data-bind="selectize: $root.dr_ledgers, value: dr, object: dr_ledger"
+{#                                data-url="{% url 'create_inventory_item' %}"#}
+                                ></select>
+                    </td>
+                    <td>{{ form.amount_nrs }}</td>
+                    <td>{{ form.amount_usd }}</td>
+                    <td>{{ form.exchange_rate }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <select data-bind="selectize: $root.cr_ledgers, value: cr, object: cr_ledger"
+                                data-url="{% url 'create_inventory_item' %}"
+                                ></select>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ form.amount_nrs }}</td>
+                    <td>{{ form.amount_usd }}</td>
+                    <td>{{ form.exchange_rate }}</td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+        <div class="span12">
+            <button type="submit" value="Submit" class="btn btn-info btn-raised">
+                {% trans 'Submit' %}</button>
+            {% if scenario == 'Update' %}
+                <a class="btn btn-danger btn-raised"
+                   href="{% url 'expense_delete' project.id form.instance.id %}">{% trans 'Delete' %}!</a>
+            {% endif %}
+        </div>
+    </form>
+
+
+{% endblock %}

@@ -1,5 +1,6 @@
 {% extends 'admin/base_site.html' %}
 {% load i18n filters %}
+{% load solo_tags %}
 
 {% block title %} {% trans 'Change Fiscal Year' %}{{ block.super }}{% endblock %}
 
@@ -20,8 +21,9 @@
     {% csrf_token %}
         {% trans 'New' %} {% trans 'Fiscal Year' %} :<br/>
         <select name="fiscal_year">
+            {% get_solo 'core.AppSetting' as app_setting %}
             {% for fiscal_year in fiscal_years %}
-                {% if not 'core.models.app_setting.fiscal_year'|setting|add:"0" == fiscal_year.0 %}
+                {% if not app_setting.fiscal_year|add:"0" == fiscal_year.0 %}
                     <option value="{{ fiscal_year.0 }}">{{ fiscal_year.1|localize }}</option>
                 {% endif %}
             {% endfor %}

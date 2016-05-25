@@ -13,8 +13,8 @@
 
 			{% endblock %}
       		</div>
-		</div>	
-	</div>    
+		</div>
+	</div>
 </div>
 {#</div>#}
 {#<div class="modal-footer">#}
@@ -32,12 +32,12 @@ $(document).ready(function() {
 		});
 
 	}
-	
+
 	if ($('modal-body').has('div.well')) {
 		if ($('.modal-body').has('.tab-content').length == 0 ) {
 			if ( $('.modal-body div.well').hasClass('well')) {
 				$('.modal-body div.well').removeClass('well');
-			}			
+			}
 		} else {
 			$('.modal-body .tab-content div.well').each(function() {
 				if ($(this).hasClass('well')) {

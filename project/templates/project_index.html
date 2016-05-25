@@ -1,0 +1,10 @@
+{% extends "_project_base.html" %}
+{% load i18n %}
+{% block title %} {% trans 'Project Account' %}{% endblock %}
+
+{% block content %}
+    <div class="well">
+        {% include '_dashboard_project.html' %}
+    </div>
+
+{% endblock %}

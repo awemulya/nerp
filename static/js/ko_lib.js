@@ -32,16 +32,17 @@ ko.bindingHandlers.selectize = {
         if (typeof allBindingsAccessor.get('optionsCaption') == 'undefined')
             allBindingsAccessor = inject_binding(allBindingsAccessor, 'optionsCaption', 'Choose...');
 
-        ko.bindingHandlers.options.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
+        //ko.bindingHandlers.options.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
 
         var options = {
+            plugins: ['remove_button'],
             valueField: allBindingsAccessor.get('optionsValue'),
             labelField: allBindingsAccessor.get('optionsText'),
             searchField: allBindingsAccessor.get('optionsText')
         }
 
-        if (allBindingsAccessor.has('options')) {
-            var passed_options = allBindingsAccessor.get('options')
+        if (allBindingsAccessor.has('selectize_options')) {
+            var passed_options = allBindingsAccessor.get('selectize_options')
             for (var attr_name in passed_options) {
                 options[attr_name] = passed_options[attr_name];
             }
@@ -50,6 +51,8 @@ ko.bindingHandlers.selectize = {
         var $select;
 
         var apply_selectize = function () {
+
+            ko.bindingHandlers.options.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
             $select = $(element).selectize(options)[0].selectize;
 
             if (typeof allBindingsAccessor.get('value') == 'function') {
@@ -85,11 +88,9 @@ ko.bindingHandlers.selectize = {
                 }
             }
 
-
             if (typeof init_selectize == 'function') {
-                init_selectize($select);
+                //init_selectize($select);
             }
-
             if (typeof valueAccessor().subscribe == 'function') {
                 valueAccessor().subscribe(function (changes) {
                     // To avoid having duplicate keys, all delete operations will go first
@@ -119,10 +120,29 @@ ko.bindingHandlers.selectize = {
             apply_selectize();
         });
 
+        // Selectize required field form submit focus fix
+        // https://github.com/brianreavis/selectize.js/issues/733#issuecomment-145871854
+
+        $select.$input.on('invalid', function (event) {
+            event.preventDefault();
+            $select.focus(true);
+            $select.$wrapper.addClass('invalid');
+        });
+
+        $select.$input.on('change', function (event) {
+            if (event.target.validity && event.target.validity.valid) {
+                $select.$wrapper.removeClass('invalid');
+            }
+            // Force re-rendering of options by clearing render-cache
+            $select.renderCache = {}
+        });
+
 
     },
-    update: function (element, valueAccessor, allBindingsAccessor) {
+    update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+        //debugger;
         if (allBindingsAccessor.has('object')) {
+
             var optionsValue = allBindingsAccessor.get('optionsValue') || 'id';
             var value_accessor = valueAccessor();
             var selected_obj = $.grep(value_accessor(), function (i) {
@@ -130,13 +150,17 @@ ko.bindingHandlers.selectize = {
                     var id = i[optionsValue]
                 else
                     var id = i[optionsValue]
+                if (typeof id == 'function')
+                    id = id();
                 return id == allBindingsAccessor.get('value')();
             })[0];
 
             if (selected_obj) {
+
                 allBindingsAccessor.get('object')(selected_obj);
             }
         }
+
     }
 }
 
@@ -166,13 +190,19 @@ ko.bindingHandlers.localize = {
     update: function (element, valueAccessor, allBindingsAccessor) {
 
         var lang_code = window.lang;
+        var original_text;
 
-        if (allBindingsAccessor().editableText)
+        if (allBindingsAccessor().editableText) {
             var accessor = allBindingsAccessor().editableText;
-        else if (allBindingsAccessor().value)
+        }
+        else if (allBindingsAccessor().value) {
             var accessor = allBindingsAccessor().value;
+        }
         else if (allBindingsAccessor().text) {
-            var original_text = allBindingsAccessor().text;
+            original_text = allBindingsAccessor().text;
+            if (typeof original_text == 'function') {
+                original_text = original_text();
+            }
         }
 
         if (typeof accessor == 'function') {
@@ -190,13 +220,17 @@ ko.bindingHandlers.localize = {
                 accessor(value);
             }
         }
+
         if (typeof valueAccessor() == 'number') {
             if (isAN(value)) {
                 original_text = parseFloat(value).toFixed(valueAccessor());
             }
         }
 
-        var txt = localize(original_text, lang_code);
+        if (allBindingsAccessor().disable_editable)
+            original_text = '';
+
+        var txt = localize(empty_to_blank(original_text), lang_code);
 
         $(element).html(txt);
         $(element).val(txt);
@@ -247,9 +281,18 @@ ko.bindingHandlers.editableText = {
             }
         });
     },
-    update: function (element, valueAccessor) {
+    update: function (element, valueAccessor, allBindingsAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor());
         $(element).text(value);
+        if (allBindingsAccessor().disable_editable) {
+            var accessor = allBindingsAccessor().disable_editable;
+            if (accessor) {
+                $(element).text('');
+                $(element).removeAttr('contenteditable');
+            } else {
+                $(element).attr('contenteditable', true);
+            }
+        }
     }
 };
 
@@ -319,6 +362,20 @@ ko.bindingHandlers.disable_content_editable = {
     }
 }
 
+ko.bindingHandlers.no_content_editable = {
+    init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+    },
+    update: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+        if (valueAccessor()) {
+            $(element).text('');
+            $(element).removeAttr('contenteditable');
+        }
+        else {
+            $(element).attr('contenteditable', true);
+        }
+    }
+}
+
 ko.bindingHandlers.readOnly = {
     update: function (element, valueAccessor) {
         var value = ko.utils.unwrapObservable(valueAccessor());
@@ -342,5 +399,16 @@ ko.bindingHandlers.toggle = {
     },
     update: function (element, valueAccessor) {
     }
+};
+
+ko.subscribable.fn.subscribeChanged = function (callback) {
+    var oldValue;
+    this.subscribe(function (_oldValue) {
+        oldValue = _oldValue;
+    }, this, 'beforeChange');
+
+    this.subscribe(function (newValue) {
+        callback(newValue, oldValue);
+    });
 };
 

@@ -1,0 +1,80 @@
+{% extends "_project_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Reimbursement' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "reimbursement_list" project.id %}">{% trans 'Reimbursements' %}</a></li>
+{% endblock %}
+
+{% block content %}
+
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+    {% load filters %}
+
+    {% autosort object_list as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+    <div class="well">
+        <form method="POST">
+            {% csrf_token %}
+            <table id="reimbursement" class="table table-striped">
+                <thead>
+                <th>{% anchor date _('Date') %}</th>
+                <th>{% anchor bank_voucher_no _('Bank Voucher no.') %}</th>
+                <th>{% anchor wa_no _('WA No.') %}</th>
+                <th>{% anchor amount _('Amount') %}</th>
+                <th>{% trans "Edit" %}</th>
+                </thead>
+                <tbody>
+                {% for reimbursement in paginated_objects %}
+                    {% if form.instance.id != reimbursement.id %}
+                        <tr>
+                            <td>
+                                {{ reimbursement.date }}
+                            </td>
+                            <td>
+                                {{ reimbursement.bank_voucher_no }}
+                            </td>
+                            <td>
+                                {{ reimbursement.wa_no }}
+                            </td>
+                            <td>
+                                {{ reimbursement.amount }}
+                            </td>
+                            <td>
+                                <a href="{% url 'reimbursement_edit' project.id reimbursement.id %}">Edit</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <td>
+                            {{ form.date }}
+                        </td>
+                        <td>
+                            {{ form.bank_voucher_no }}
+                        </td>
+                        <td>
+                            {{ form.wa_no }}
+                        </td>
+                        <td>
+                            {{ form.amount }}
+                        </td>
+                        <td>
+                            <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
+                        </td>
+                        </tr>
+
+                    {% endif %}
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <a class="btn btn-success btn-raised btn-lg"
+       href="{% url 'reimbursement_add' project.id %}">{% trans 'New' %} {% trans 'Expense' %}</a>
+
+    {% paginate %}
+
+{% endblock %}

@@ -1,6 +1,6 @@
 from django import forms
-from app.utils.forms import KOModelForm
-from core.models import Party, Employee
+from app.utils.forms import KOModelForm, HTML5BootstrapModelForm
+from core.models import Party, Employee, Donor, BudgetHead
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -18,3 +18,15 @@ class EmployeeForm(KOModelForm):
     class Meta:
         model = Employee
         exclude = ['account']
+
+
+class DonorForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = Donor
+        fields = ('name',)
+
+
+class BudgetHeadForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = BudgetHead
+        fields = '__all__'

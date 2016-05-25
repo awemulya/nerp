@@ -18,7 +18,7 @@
 
     <script src="{% static 'js/training/form.js' %}"></script>
 
-    <link href="{% static 'css/font-awesome.min.css' %}" type="text/css" media="all" rel="stylesheet"/>
+    <link href="{% static 'fontawesome/css/font-awesome.min.css' %}" type="text/css" media="all" rel="stylesheet"/>
 
     {{ form.media }}
 
@@ -53,7 +53,7 @@
                 {% endif %}
             </div>
         </div>
-    
+
         <ul class="nav nav-pills" role="tablist" id="training-tab">
             <li role="presentation" class="active"><a href="#basic" data-toggle="tab">{% trans "Basic" %}</a></li>
             <li role="presentation"><a href="#detail" data-toggle="tab">{% trans "Detail" %}</a></li>
@@ -62,150 +62,153 @@
         </ul>
 
         <div class="tab-content">
-        <br>
+            <br>
+
             <div class="content tab-pane active" id="basic">
-            <div class="well">
-                <label for="id_title">{% trans "Title" %}:</label>
-                {{ form.title }}
+                <div class="well">
+                    <label for="id_title">{% trans "Title" %}:</label>
+                    {{ form.title }}
 
-                <label for="id_description">{% trans "Description" %}:</label>
-                {{ form.description }}
+                    <label for="id_description">{% trans "Description" %}:</label>
+                    {{ form.description }}
 
-                <label for="id_starts">{% trans "Starts" %}:</label>
-                {#                <input type="text" name="starts" id="id_starts" data-date-format="yyyy-mm-dd">#}
-                {{ form.starts }}
+                    <label for="id_starts">{% trans "Starts" %}:</label>
+                    {#                <input type="text" name="starts" id="id_starts" data-date-format="yyyy-mm-dd">#}
+                    {{ form.starts }}
 
-                <span id="duration"></span>
+                    <span id="duration"></span>
 
-                <label for="id_ends">{% trans "Ends" %}:</label>
-                {#                <input type="text" name="ends" id="id_ends" data-date-format="yyyy-mm-dd">#}
-                {{ form.ends }}
-                <br>
-
-                <div class="inline-add">
-
-                    <label for="id_categories">{% trans "Categories" %}:</label><br>
-                    {{ form.categories }}
-                    <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-category">+</a>
+                    <label for="id_ends">{% trans "Ends" %}:</label>
+                    {#                <input type="text" name="ends" id="id_ends" data-date-format="yyyy-mm-dd">#}
+                    {{ form.ends }}
                     <br>
-                    <label for="id_target_groups">{% trans "Target groups" %}:</label><br>
-                    {{ form.target_groups }}
-                    <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-target-group">+</a>
-                    <br>
-                    <label for="id_resource_persons">{% trans "Resource persons" %}:</label><br>
-                    {{ form.resource_persons }}
-                    <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-resource-person">+</a>
 
-                </div>
+                    <div class="inline-add">
+
+                        <label for="id_categories">{% trans "Categories" %}:</label><br>
+                        {{ form.categories }}
+                        <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-category">+</a>
+                        <br>
+                        <label for="id_target_groups">{% trans "Target groups" %}:</label><br>
+                        {{ form.target_groups }}
+                        <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-target-group">+</a>
+                        <br>
+                        <label for="id_resource_persons">{% trans "Resource persons" %}:</label><br>
+                        {{ form.resource_persons }}
+                        <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-resource-person">+</a>
+
+                    </div>
                 </div>
             </div>
-            
+
             <div class="content tab-pane" id="detail">
                 <div class="well">
-                <label for="id_criteria_for_selection">{% trans "Criteria for selection" %}:</label>
-                {{ form.criteria_for_selection }}
+                    <label for="id_criteria_for_selection">{% trans "Criteria for selection" %}:</label>
+                    {{ form.criteria_for_selection }}
 
 
-                <label for="id_objective">{% trans "Objective" %}:</label>
-                {{ form.objective }}
+                    <label for="id_objective">{% trans "Objective" %}:</label>
+                    {{ form.objective }}
 
-                <label for="id_output">{% trans "Output" %}:</label>
-                {{ form.output }}
+                    <label for="id_output">{% trans "Output" %}:</label>
+                    {{ form.output }}
 
-                <label for="id_conclusion">{% trans "Conclusion" %}:</label>
-                {{ form.conclusion }}
+                    <label for="id_conclusion">{% trans "Conclusion" %}:</label>
+                    {{ form.conclusion }}
 
-                <label for="id_feedback">{% trans "Feedback" %}:</label>
-                {{ form.feedback }}
+                    <label for="id_feedback">{% trans "Feedback" %}:</label>
+                    {{ form.feedback }}
 
-                <label for="id_curriculum">{% trans "Curriculum" %}:</label>
-                {{ form.curriculum }}
+                    <label for="id_curriculum">{% trans "Curriculum" %}:</label>
+                    {{ form.curriculum }}
                 </div>
 
             </div>
 
             <div class="content tab-pane" id="participants">
                 <div class="well">
-                <select id="available"
-                        data-bind="options: $root.participants_available, value: selected_participant, optionsText: 'name', optionsValue: 'id'"></select>
-                <button class="btn btn-default" data-bind="click: add_participant">↓ {% trans "Add" %}</button>
-                <a href="#" class="btn btn-default" data-toggle="modal" data-target="#add-participant">+ {% trans "Create New" %}</a>
-                <br><br>
-                <table class="table ">
-                    <thead>
-                    <th>{% trans "Name" %}</th>
-                    <th>{% trans "Address" %}</th>
-                    <th>{% trans "Phone" %}</th>
-                    <th>{% trans "Email" %}</th>
-                    <th>{% trans "Organization" %}</th>
-                    <th></th>
-                    </thead>
-                    <tbody>
-                    <!-- ko foreach: selected_participants -->
-                    <tr>
-                        <td><a target="_blank" data-bind="attr: {'href': '/training/participant/'+id +'/'}"><span
-                                data-bind="text: name"></span></a></td>
-                        <td data-bind="text: address"></td>
-                        <td data-bind="text: phone_no"></td>
-                        <td data-bind="text: email"></td>
-                        <td><!-- ko if: organization -->
-                            <a target="_blank"
-                               data-bind="attr: {'href': '/training/organization/'+organization.id +'/'}">
+                    <select id="available"
+                            data-bind="options: $root.participants_available, value: selected_participant, optionsText: 'name', optionsValue: 'id'"></select>
+                    <button class="btn btn-default" data-bind="click: add_participant">↓ {% trans "Add" %}</button>
+                    <a href="#" class="btn btn-default" data-toggle="modal"
+                       data-target="#add-participant">+ {% trans "Create New" %}</a>
+                    <br><br>
+                    <table class="table ">
+                        <thead>
+                        <th>{% trans "Name" %}</th>
+                        <th>{% trans "Address" %}</th>
+                        <th>{% trans "Phone" %}</th>
+                        <th>{% trans "Email" %}</th>
+                        <th>{% trans "Organization" %}</th>
+                        <th></th>
+                        </thead>
+                        <tbody>
+                        <!-- ko foreach: selected_participants -->
+                        <tr>
+                            <td><a target="_blank" data-bind="attr: {'href': '/training/participant/'+id +'/'}"><span
+                                    data-bind="text: name"></span></a></td>
+                            <td data-bind="text: address"></td>
+                            <td data-bind="text: phone_no"></td>
+                            <td data-bind="text: email"></td>
+                            <td><!-- ko if: organization -->
+                                <a target="_blank"
+                                   data-bind="attr: {'href': '/training/organization/'+organization.id +'/'}">
                                 <span data-bind="text: organization.name">
                             </span>
-                            </a>
+                                </a>
 
-                            <!-- /ko -->
-                        </td>
-                        <td class="hidden-print">
-                            <a href="#" class="close tiny secondary" data-bind="click: $parent.remove_row">x</a>
-                        </td>
-                    </tr>
-                    <!-- /ko -->
-                    </tbody>
-                </table>
+                                <!-- /ko -->
+                            </td>
+                            <td class="hidden-print">
+                                <a href="#" class="close tiny secondary" data-bind="click: $parent.remove_row">x</a>
+                            </td>
+                        </tr>
+                        <!-- /ko -->
+                        </tbody>
+                    </table>
 
-                <input type="hidden" name="selected_participants" data-bind="value: participants">
+                    <input type="hidden" name="selected_participants" data-bind="value: participants">
                 </div>
             </div>
 
             <div class="content tab-pane" id="files">
                 <div class="well">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>{% trans "File" %}</th>
-                        <th>{% trans "Description" %}</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <!-- ko foreach: files -->
-                    <tr>
-                        <td>
-                            <input type="hidden" name="indices" data-bind="value: $index()">
-                            <input type="hidden" name="file_ids" data-bind="value: id">
-                            <!-- ko if: file() -->
-                            {% trans "Currently" %}: <a target="_blank"
-                                          data-bind="attr: {'href': '{{ MEDIA_URL }}'+file()}, text: file()"></a>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>{% trans "File" %}</th>
+                            <th>{% trans "Description" %}</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- ko foreach: files -->
+                        <tr>
+                            <td>
+                                <input type="hidden" name="indices" data-bind="value: $index()">
+                                <input type="hidden" name="file_ids" data-bind="value: id">
+                                <!-- ko if: file() -->
+                                {% trans "Currently" %}: <a target="_blank"
+                                                            data-bind="attr: {'href': '{{ MEDIA_URL }}'+file()}, text: file()"></a>
 
-                            <input type="checkbox" data-bind="attr:{name: 'clears['+$index()+']'}"> {% trans "Clear" %}<br>
-                            {% trans "Change" %}:<!-- /ko --><input type="file" data-bind="attr:{name: 'files['+$index()+']'}">
+                                <input type="checkbox" data-bind="attr:{name: 'clears['+$index()+']'}"> {% trans "Clear" %}<br>
+                                {% trans "Change" %}:<!-- /ko --><input type="file"
+                                                                        data-bind="attr:{name: 'files['+$index()+']'}">
 
-                        </td>
-                        <td>
-                            <input type="text" name="descriptions" data-bind="value: description">
-                        </td>
-                        <td class="hidden-print">
-                            <a href="#" class="close tiny secondary" data-bind="click: $parent.remove_row">x</a>
-                        </td>
-                    </tr>
-                    <!-- /ko -->
-                    </tbody>
-                </table>
-                <button class="btn btn-default" data-bind="click: add_row">+ {% trans "Add File" %}</button>
-                <input type="hidden" name="deleted_files" data-bind="value: deleted_rows()">
-            </div>
+                            </td>
+                            <td>
+                                <input type="text" name="descriptions" data-bind="value: description">
+                            </td>
+                            <td class="hidden-print">
+                                <a href="#" class="close tiny secondary" data-bind="click: $parent.remove_row">x</a>
+                            </td>
+                        </tr>
+                        <!-- /ko -->
+                        </tbody>
+                    </table>
+                    <button class="btn btn-default" data-bind="click: add_row">+ {% trans "Add File" %}</button>
+                    <input type="hidden" name="deleted_files" data-bind="value: deleted_rows()">
+                </div>
             </div>
         </div>
     </form>
