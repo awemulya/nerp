@@ -67,7 +67,8 @@ INSTALLED_APPS = (
     'project',
 
     'solo',
-)   'hr',
+    'hr',
+)
 
 TIME_ZONE = 'Asia/Kathmandu'
 DEFAULT_CALENDAR = 'bs'
