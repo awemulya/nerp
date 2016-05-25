@@ -13,6 +13,7 @@ from mptt.models import MPTTModel
 from app.utils.helpers import zero_for_none, none_for_zero
 from core.models import FiscalYear, Donor, Activity, BudgetHead, TaxScheme
 
+
 class Category(MPTTModel):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=254, null=True, blank=True)
@@ -34,8 +35,6 @@ class Category(MPTTModel):
 
     class Meta:
         verbose_name_plural = u'Categories'
-
-
 
 
 class Account(models.Model):
