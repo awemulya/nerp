@@ -371,10 +371,6 @@ class DeductionModelFormSet(forms.BaseModelFormSet):
                 amount = form.cleaned_data.get("amount")
                 amount_rate = form.cleaned_data.get("amount_rate")
 
-                deduction_for = form.cleaned_data.get("deduction_for")
-                explicit_acc = form.cleaned_data.get("explicit_acc")
-                in_acc_type = form.cleaned_data.get("in_acc_type")
-
                 if deduct_type == 'AMOUNT' and not amount:
                     form.add_error(
                         'amount',
@@ -385,15 +381,15 @@ class DeductionModelFormSet(forms.BaseModelFormSet):
                         'amount_rate',
                         'Need amount rate field to be filled up when Sum Type is Rate'
                     )
-                if deduction_for == 'EXPLICIT ACC' and not explicit_acc:
+                if deduct_type == 'AMOUNT' and amount_rate:
                     form.add_error(
-                        'explicit_acc',
-                        'This field is required with Deduction for Explicit Account'
+                        'amount_rate',
+                        'Amount Rate should be None as DeductType is Amount'
                     )
-                elif deduction_for == 'EMPLOYEE ACC' and not in_acc_type:
+                elif deduct_type == 'RATE' and amount:
                     form.add_error(
-                        'in_acc_type',
-                        'This field is required with Deduction for Employee Account'
+                        'amount',
+                        'Amount should be None as DeductType is Rate'
                     )
 
 
@@ -646,10 +642,15 @@ class DeductionForm(forms.ModelForm):
 
 class EmployeeForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        # extra = kwargs.pop('extra')
+        super(EmployeeForm, self).__init__(*args, **kwargs)
+        self.fields['optional_deduction'].queryset = Deduction.objects.filter(is_optional=True)
+
     class Meta:
         model = Employee
-        # fields = '__all__'
-        exclude = ('accounts',)
+        fields = '__all__'
+        # exclude = ('accounts',)
 
 
 class IncentiveNameForm(forms.ModelForm):
@@ -807,7 +808,8 @@ DeductionDetailFormSet = forms.modelformset_factory(
     Deduction,
     extra=1,
     can_delete=True,
-    exclude=('account',),
+    exclude=('deduct_in_category',),
+    # fields='__all__',
     formset=DeductionModelFormSet
 )
 

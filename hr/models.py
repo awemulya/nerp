@@ -24,7 +24,9 @@ from django.dispatch.dispatcher import receiver
 import pdb
 
 from account.models import Account, Category
-
+from django.db.models.signals import pre_delete
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 # from core.models import FiscalYear
 # from solo.models import SingletonModel
 # from django.core.exceptions import ValidationError
@@ -74,51 +76,6 @@ class AccountType(models.Model):
 
     def __unicode__(self):
         return self.name
-
-
-# class Account(models.Model):
-#     # account_holder_type = models.CharField(choices=holder_type, max_length=50)
-#     # account_type = models.ForeignKey(AccountType)
-#     org_name = models.CharField(max_length=200)
-#     branch = models.CharField(max_length=150)
-#     acc_number = models.CharField(max_length=100)
-#     description = models.CharField(max_length=256)
-
-#     def __unicode__(self):
-#         return '[%s][%s]' % (
-#                                    # self.account_type,
-#                                    self.org_name,
-#                                    self.acc_number,
-#                                    # self.account_holder_type
-#                                    )
-
-
-# class Transaction(models.Model):
-#     account = models.ForeignKey(Account)
-#     credit = models.FloatField()
-#     debit = models.FloatField()
-#     date_time = models.DateTimeField(default=timezone.now)
-#     description = models.CharField(max_length=120)
-
-#     def __unicode__(self):
-#         return str(self.account.id)
-
-# class InsuranceAccount(models.model):
-#     org_name = models.CharField(max_length=200)
-#     branch = models.CharField(max_length=150)
-#     acc_number = models.CharField(max_length=100)
-
-#     def __unicode__(self):
-#         return self.org_name
-
-
-# class NalaAccount(models.model):
-#     # org_name = models.CharField(max_length=200)
-#     branch = models.CharField(max_length=150)
-#     acc_number = models.CharField(max_length=100)
-
-#     def __unicode__(self):
-#         return str(self.acc_number)
 
 
 class EmployeeGrade(models.Model):
@@ -343,7 +300,7 @@ class Deduction(models.Model):
     #     blank=True
     # )
     # transact_in = models.CharField(choice=acc_type)
-    deduct_in_category = models.ForeignKey(Category, blank=True)
+    deduct_in_category = models.ForeignKey(Category, null=True, blank=True)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
     description = models.CharField(max_length=150)
@@ -357,20 +314,23 @@ class Deduction(models.Model):
     # If true we can deduct while calculating taxable amount
     is_tax_free = models.BooleanField(default=False)
 
+    is_optional = models.BooleanField(default=False)
+
     def __unicode__(self):
         if self.deduct_type == 'AMOUNT':
             return '%s, %f' % (self.name, self.amount)
         else:
             return '%s, %f' % (self.name, self.amount_rate)
 
-    def save(self, *args, **kwargs):
-        if not self.deduct_in_category:
-            self.deduct_in_category = Category.objects.create(
-                name='%s-%d' % (self.name, self.id),
-                parent_id=ACC_CAT_DEDUCTION_ID
-            )
 
-        super(Deduction, self).save(*args, **kwargs)
+@receiver(post_save, sender=Deduction)
+def deduct_in_actegory_add(sender, instance, created, **kwargs):
+    if created:
+        instance.deduct_in_category = Category.objects.create(
+            name='%s-%d' % (instance.name, instance.id),
+            parent_id=ACC_CAT_DEDUCTION_ID
+        )
+        instance.save()
 
 
 class Employee(models.Model):
@@ -392,17 +352,6 @@ class Employee(models.Model):
     working_branch = models.ForeignKey(BranchOffice)
     accounts = models.ManyToManyField(Account, through="EmployeeAccount")
     pf_monthly_deduction_amount = models.FloatField(default=0)
-    # bank_account = models.OneToOneField(Account,
-    #                                     related_name='bank_account')
-    # insurance_account = models.OneToOneField(Account,
-    #                                          related_name='insurance_acc')
-    # nalakosh_account = models.OneToOneField(Account,
-    #                                         related_name='nalakosh_acc')
-    # # Change the name below to sanchaya_account
-    # sanchayakosh_account = models.OneToOneField(Account,
-    #                                        related_name='sanchai_acc')
-    # pro_tempore = models.OneToOneField('self', null=True, blank=True, related_name='pro_temp')
-    # Talab rokka(Should not transact when payment_halt=True)
     payment_halt = models.BooleanField(default=False)
     appoint_date = BSDateField(default=today)
     dismiss_date = BSDateField(null=True, blank=True)
@@ -410,34 +359,15 @@ class Employee(models.Model):
     allowances = models.ManyToManyField(AllowanceName, blank=True)
     # incentive will have diff trancation
     incentives = models.ManyToManyField(IncentiveName, blank=True)
+
+    optional_deduction = models.ManyToManyField(
+        Deduction,
+        blank=True
+    )
     # Permanent has extra functionality while deduction from salary
     is_permanent = models.BooleanField(default=False)
     # deductions need to be removed from this table
     # deductions = models.ManyToManyField(Deduction)
-
-    # def current_salary(self, add_month):
-    #     grade_salary = self.designation.grade.salary_scale
-    #     grade_number = self.designation.grade.grade_number
-    #     grade_rate = self.designation.grade.grade_rate
-    #     # Instead of appoint_date we need to use lagu miti for now its oppoint date and lagu miti should be in appSETTING
-    #     appointed_since = today() - self.appoint_date
-    #     total_days = appointed_since.days
-    #     salary = 0
-    #     years_worked = total_days/365
-    #     if years_worked <= grade_number:
-    #         salary += grade_salary + int(years_worked) * grade_rate
-    #     elif years_worked > grade_number:
-    #         salary += grade_salary + grade_number * grade_rate
-    #     if add_month:
-    #         for i in range(1, add_month+1):
-    #             month_days = bs[today.year][today.month+i-1]
-    #             total_days += month_days
-    #             years_worked = total_days/365
-    #             if years_worked <= grade_number:
-    #                 salary += grade_salary + int(years_worked) * grade_rate
-    #             elif years_worked > grade_number:
-    #                 salary += grade_salary + grade_number * grade_rate
-    #     return salary
 
     def current_salary_by_month(self, from_date, to_date):
         grade_salary = self.designation.grade.salary_scale
@@ -587,6 +517,51 @@ class Employee(models.Model):
 
     def __unicode__(self):
         return str(self.employee.full_name)
+
+
+@receiver(post_save, sender=Employee)
+def add_employee_accounts(sender, instance, created, **kwargs):
+    if created:
+        accounts = []
+        # Add salary Account
+        salary_account = Account.objects.create(
+            name="Salary Account-EID#%d" % instance.id,
+            category_id=ACC_CAT_BASIC_SALARY_ID
+        )
+        salary_emp_account = EmployeeAccount.objects.create(
+            account=salary_account,
+            employee=instance,
+        )
+        accounts.append(salary_emp_account)
+        # Add deduction accounts (compulsory)
+        for deduction in Deduction.objects.filter(is_optional=False):
+            deduction_account = Account.objects.create(
+                name="Deduction#%d-EID#%d" % (
+                    deduction.id,
+                    instance.id
+                ),
+                category=deduction.deduct_in_category
+            )
+            deduction_emp_account = EmployeeAccount.objects.create(
+                account=deduction_account,
+                employee=instance,
+            )
+            accounts.append(deduction_emp_account)
+        # Add deduction accounts (compulsory)
+        for deduct in instance.optional_deduction.all():
+            opt_deduction_account = Account.objects.create(
+                name="Deduction#%d-EID#%d" % (
+                    deduct.id,
+                    instance.id
+                ),
+                category=deduct.deduct_in_category
+            )
+            opt_deduction_emp_account = EmployeeAccount.objects.create(
+                account=opt_deduction_account,
+                employee=instance,
+            )
+            # accounts.append(opt_deduction_emp_account)
+        # instance.accounts.add(*accounts)
 
 
 class ProTempore(models.Model):

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import AccountType, EmployeeAccount, EmployeeGrade, Employee, Designation, Incentive, Allowance, TaxScheme, BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry, IncentiveName, AllowanceName, DeductionDetail, IncentiveDetail, AllowanceDetail, AllowanceAccount, IncentiveAccount, DeductionAccount, CompanyAccount, MaritalStatus, SalaryAccount
-from .forms import EmployeeAccountInlineFormset, AllowanceForm, IncentiveForm, DeductionForm
+from .forms import EmployeeAccountInlineFormset, AllowanceForm, IncentiveForm, DeductionForm, EmployeeForm
 
 
 class EmployeeAccountInline(admin.TabularInline):
@@ -11,7 +11,7 @@ class EmployeeAccountInline(admin.TabularInline):
 
 class EmployeeAdmin(admin.ModelAdmin):
     inlines = (EmployeeAccountInline,)
-    # form = EmployeeForm
+    form = EmployeeForm
     pass
 
 
