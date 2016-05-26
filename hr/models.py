@@ -12,6 +12,7 @@ from datetime import date
 import datetime
 from hr.bsdate import BSDate
 from .helpers import get_y_m_tuple_list, are_side_months, zero_for_none, none_for_zero
+from django.core.exceptions import ValidationError
 # import pdb
 
 
@@ -22,7 +23,7 @@ from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 import pdb
 
-from account.models import Account
+from account.models import Account, Category
 
 # from core.models import FiscalYear
 # from solo.models import SingletonModel
@@ -43,7 +44,7 @@ acc_type = [('insurance_account', _('Insurance Account')),
             ('nalakosh_account', _('Nagarik Lagani Kosh Account')),
             ('sanchayakosh_account', _('Sanchayakosh Account'))]
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
-deduct_for = [('EMPLOYEE ACC', _('For employee Account')),
+deduct_from = [('EMPLOYEE ACC', _('For employee Account')),
               ('EXPLICIT ACC', _('An Explicit Account'))]
 payment_cycle = [('M', _('Monthly')),
                  ('Y', _('Yearly')),
@@ -51,6 +52,13 @@ payment_cycle = [('M', _('Monthly')),
                  ]
 holder_type = [('EMPLOYEE', _("Employee's Account")),
                ('COMPANY', _('Company Account'))]
+
+# Accout Category settingShoul
+ACC_CAT_DEDUCTION_ID = 5
+ACC_CAT_ALLOWANCE_ID = 4
+ACC_CAT_INCENTIVE_ID = 6
+ACC_CAT_BASIC_SALARY_ID = 3
+ACC_CAT_TAX_ID = 7
 
 # allowance
 # When yearly than when to pay should be in setting
@@ -316,25 +324,26 @@ class BranchOffice(models.Model):
 class Deduction(models.Model):
     # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
     name = models.CharField(max_length=150)
-    account = models.OneToOneField(
-        DeductionAccount,
-        null=True,
-        blank=True,
-        related_name='deduction_account'
-    )
+    # account = models.OneToOneField(
+    #     DeductionAccount,
+    #     null=True,
+    #     blank=True,
+    #     related_name='deduction_account'
+    # )
     # Below only one out of two should be active
     deduct_type = models.CharField(max_length=50, choices=deduct_choice)
-    deduction_for = models.CharField(max_length=50, choices=deduct_for)
+    # deduction_for = models.CharField(max_length=50, choices=deduct_for)
     # Explit acc is only specified when deduction for is explicit_acc
-    explicit_acc = models.ForeignKey(Account, null=True, blank=True)
+    # explicit_acc = models.ForeignKey(Account, null=True, blank=True)
     # In which type of account to make deduction transaction when deduction for is employee acc
-    in_acc_type = models.ForeignKey(
-        AccountType,
-        related_name='in_account_type',
-        null=True,
-        blank=True
-    )
+    # in_acc_type = models.ForeignKey(
+    #     AccountType,
+    #     related_name='in_account_type',
+    #     null=True,
+    #     blank=True
+    # )
     # transact_in = models.CharField(choice=acc_type)
+    deduct_in_category = models.ForeignKey(Category, blank=True)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
     description = models.CharField(max_length=150)
@@ -355,23 +364,12 @@ class Deduction(models.Model):
             return '%s, %f' % (self.name, self.amount_rate)
 
     def save(self, *args, **kwargs):
-        if self.deduction_for == 'EMPLOYEE ACC':
-            self.explicit_acc = None
-        elif self.deduction_for == 'EXPLICIT ACC':
-            self.in_acc_type = None
-        if self.deduct_type == 'AMOUNT':
-            self.amount_rate = None
-        elif self.deduct_type == 'RATE':
-            self.amount = None
-        if self.explicit_acc:
-            self.with_temporary_employee = True
-        if not self.account:
-            account_name = self.name + '-' + str(self.id)
-            account_obj = Account.objects.create(name=account_name)
-            deduction_account = DeductionAccount.objects.create(
-                account=account_obj,
+        if not self.deduct_in_category:
+            self.deduct_in_category = Category.objects.create(
+                name='%s-%d' % (self.name, self.id),
+                parent_id=ACC_CAT_DEDUCTION_ID
             )
-            self.account = deduction_account
+
         super(Deduction, self).save(*args, **kwargs)
 
 
@@ -754,30 +752,33 @@ class PayrollEntry(models.Model):
         )
 
 
+def employee_account_validator(acc_id):
+    category = Account.objects.get(id=acc_id).category
+    if category.id == ACC_CAT_BASIC_SALARY_ID or category.parent.id == ACC_CAT_DEDUCTION_ID:
+        pass
+    else:
+        raise ValidationError(
+            _('Account must be of Category BASIC SALARY or DEDUCTION'),
+        )
+
+
 class EmployeeAccount(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     account = models.OneToOneField(
         Account,
         on_delete=models.CASCADE,
         related_name='employee_account',
+        validators=[employee_account_validator]
     )
-    account_meta_type = models.CharField(
-        max_length=100,
-        choices=(
-            ('BANK_ACCOUNT', _('Employee Bank Account')),
-            ('OTHER_ACCOUNT', _('Other Employee Account')),
-        ),
-    )
-    other_account_type = models.ForeignKey(
-        AccountType,
-        related_name='employee_account_type',
-        null=True,
-        blank=True
-    )
-    is_salary_account = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (("employee", "account"),)
+
+    def get_category_name(self):
+        return self.account.category.name
+
+    def __unicode__(self):
+        return ('%s-acc#%d' % (self.account.category.name, self.account.id))
 
 
 class CompanyAccount(models.Model):

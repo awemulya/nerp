@@ -5,6 +5,7 @@ from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#,
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
 from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, TaxScheme, TaxCalcScheme, MaritalStatus
+from account.models import Account
 # import pdb
 
 # class DateSelectorWidget(MultiWidget):
@@ -248,46 +249,53 @@ class EmployeeAccountInlineFormset(forms.BaseInlineFormSet):
     def clean(self):
         if any(self.errors):
             return
-        account_types = []
-        bank_account_count = 0
-        cntr = 0
         for form in self.forms:
+            account_categories = []
             if form.cleaned_data:
-                other_account_type = form.cleaned_data['other_account_type']
-                is_salary_account = form.cleaned_data['is_salary_account']
-                account_meta_type = form.cleaned_data['account_meta_type']
-
-                if account_meta_type == 'BANK_ACCOUNT':
-                    if other_account_type:
-                        form.add_error(
-                            'other_account_type',
-                            _('Employee Bank account cant have account type %s. Should be None type' % other_account_type)
-                        )
-                    if is_salary_account:
-                        cntr += 1
-                    bank_account_count += 1
-                else:
-                    if not other_account_type:
-                        form.add_error(
-                            'other_account_type',
-                            _('Employee Other account on account meta type need other account type')
-                        )
-                    if is_salary_account:
-                        form.add_error(
-                            'is_salary_account',
-                            _('Only Employee bank account be a salary account')
-                        )
-                    if other_account_type in account_types:
-                        acc_type_name = _(other_account_type.name)
-                        raise forms.ValidationError(
-                            _('Cannot have more than one type of %s' % acc_type_name))
-                    account_types.append(other_account_type)
-                if cntr > 1:
+                employee_acc_id = form.cleaned_data['account']
+                account_category = Account.objects.get(
+                    id=employee_acc_id).category
+                if account_category in account_categories:
                     raise forms.ValidationError(
-                            _('Cannot have more than one salary account'))
-        if bank_account_count == 0:
-            raise forms.ValidationError(
-                _('Employee Needs at least one bank account'))
+                        _('All accont category should be unique to each other'))
+                account_categories.append(
+                    account_category
+                )
+
+        #         is_salary_account = form.cleaned_data['is_salary_account']
+        #         account_meta_type = form.cleaned_data['account_meta_type']
+
+        #         if account_meta_type == 'BANK_ACCOUNT':
+        #             if other_account_type:
+        #                 form.add_error(
+        #                     'other_account_type',
+        #                     _('Employee Bank account cant have account type %s. Should be None type' % other_account_type)
+        #                 )
+        #             if is_salary_account:
+        #                 cntr += 1
+        #             bank_account_count += 1
+        #         else:
+        #             if not other_account_type:
+        #                 form.add_error(
+        #                     'other_account_type',
+        #                     _('Employee Other account on account meta type need other account type')
+        #                 )
+        #             if is_salary_account:
+        #                 form.add_error(
+        #                     'is_salary_account',
+        #                     _('Only Employee bank account be a salary account')
+        #                 )
+        #             if other_account_type in account_types:
+        #                 acc_type_name = _(other_account_type.name)
+        #                 raise forms.ValidationError(
+        #                     _('Cannot have more than one type of %s' % acc_type_name))
+        #             account_types.append(other_account_type)
+        #         if cntr > 1:
+        #             raise forms.ValidationError(
+        #                     _('Cannot have more than one salary account'))
+        # if bank_account_count == 0:
+        #     raise forms.ValidationError(
+        #         _('Employee Needs at least one bank account'))
 
 
 class IncentiveInlineFormset(forms.BaseInlineFormSet):
