@@ -324,7 +324,7 @@ class Deduction(models.Model):
 
 
 @receiver(post_save, sender=Deduction)
-def deduct_in_actegory_add(sender, instance, created, **kwargs):
+def deduct_in_category_add(sender, instance, created, **kwargs):
     if created:
         instance.deduct_in_category = Category.objects.create(
             name='%s-%d' % (instance.name, instance.id),
