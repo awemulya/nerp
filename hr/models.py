@@ -56,6 +56,7 @@ holder_type = [('EMPLOYEE', _("Employee's Account")),
                ('COMPANY', _('Company Account'))]
 
 # Accout Category settingShoul
+ACC_CAT_PAY_HEAD_ID = 2
 ACC_CAT_DEDUCTION_ID = 5
 ACC_CAT_ALLOWANCE_ID = 4
 ACC_CAT_INCENTIVE_ID = 6
@@ -139,9 +140,20 @@ class IncentiveAccount(models.Model):
 class AllowanceName(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=250)
+    account_category = models.ForeignKey(Category, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
+
+
+@receiver(post_save, sender=AllowanceName)
+def allowance_account_category_add(sender, instance, created, **kwargs):
+    if created:
+        instance.account_category = Category.objects.create(
+            name='%s-%d' % (instance.name, instance.id),
+            parent_id=ACC_CAT_ALLOWANCE_ID
+        )
+        instance.save()
 
 
 # This is bhatta
@@ -154,13 +166,14 @@ class Allowance(models.Model):
         related_name="allowances"
     )
     employee_grade = models.ForeignKey(EmployeeGrade)
-    account = models.OneToOneField(
-        AllowanceAccount,
-        null=True,
-        blank=True,
-        related_name='allowance_account'
-    )
+    # account = models.OneToOneField(
+    #     AllowanceAccount,
+    #     null=True,
+    #     blank=True,
+    #     related_name='allowance_account'
+    # )
     # Any one out of two should be filled
+    
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
@@ -182,13 +195,13 @@ class Allowance(models.Model):
             return '%s, %f' % (self.name, self.amount_rate)
 
     def save(self, *args, **kwargs):
-        if not self.account:
-            account_name = self.name.name + '-' + str(self.id)
-            account_obj = Account.objects.create(name=account_name)
-            allowance_account = AllowanceAccount.objects.create(
-                account=account_obj,
-            )
-            self.account = allowance_account
+        # if not self.account:
+        #     account_name = self.name.name + '-' + str(self.id)
+        #     account_obj = Account.objects.create(name=account_name)
+        #     allowance_account = AllowanceAccount.objects.create(
+        #         account=account_obj,
+        #     )
+        #     self.account = allowance_account
         if self.sum_type == 'AMOUNT':
             self.amount_rate = None
         elif self.sum_type == 'RATE':
@@ -556,12 +569,24 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                 ),
                 category=deduct.deduct_in_category
             )
-            opt_deduction_emp_account = EmployeeAccount.objects.create(
+            EmployeeAccount.objects.create(
                 account=opt_deduction_account,
                 employee=instance,
             )
-            # accounts.append(opt_deduction_emp_account)
-        # instance.accounts.add(*accounts)
+
+        # Add employee allowance account
+        for allowancename in instance.allowance.all():
+            all_acc = Account.objects.create(
+                name="Allowance#%d-EID#%d" % (
+                    allowancename.id,
+                    instance.id
+                ),
+                category=allowancename.account_category
+            )
+            EmployeeAccount.objects.create(
+                account=all_acc,
+                employee=instance,
+            )
 
 
 class ProTempore(models.Model):
@@ -729,7 +754,7 @@ class PayrollEntry(models.Model):
 
 def employee_account_validator(acc_id):
     category = Account.objects.get(id=acc_id).category
-    if category.id == ACC_CAT_BASIC_SALARY_ID or category.parent.id == ACC_CAT_DEDUCTION_ID:
+    if category.id == ACC_CAT_BASIC_SALARY_ID or category.parent.parent.id == ACC_CAT_PAY_HEAD_ID:
         pass
     else:
         raise ValidationError(
