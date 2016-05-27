@@ -42,9 +42,9 @@ from django.dispatch import receiver
 # Account type name should be same as fieldname in employee account with small letter and underscope
 # That is field name for 'BANK ACCOUNT' in employee model 
 # will be 'bank_account'
-acc_type = [('insurance_account', _('Insurance Account')),
-            ('nalakosh_account', _('Nagarik Lagani Kosh Account')),
-            ('sanchayakosh_account', _('Sanchayakosh Account'))]
+# acc_type = [('insurance_account', _('Insurance Account')),
+#             ('nalakosh_account', _('Nagarik Lagani Kosh Account')),
+#             ('sanchayakosh_account', _('Sanchayakosh Account'))]
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
 deduct_from = [('EMPLOYEE ACC', _('For employee Account')),
               ('EXPLICIT ACC', _('An Explicit Account'))]
@@ -67,16 +67,16 @@ ACC_CAT_TAX_ID = 7
 # When yearly than when to pay should be in setting
 
 
-class AccountType(models.Model):
-    name = models.CharField(max_length=150, choices=acc_type, unique=True)
-    description = models.CharField(max_length=250)
-    permanent_multiply_rate = models.PositiveIntegerField(
-        null=True,
-        blank=True
-    )
+# class AccountType(models.Model):
+#     name = models.CharField(max_length=150, choices=acc_type, unique=True)
+#     description = models.CharField(max_length=250)
+#     permanent_multiply_rate = models.PositiveIntegerField(
+#         null=True,
+#         blank=True
+#     )
 
-    def __unicode__(self):
-        return self.name
+#     def __unicode__(self):
+#         return self.name
 
 
 class EmployeeGrade(models.Model):
@@ -104,37 +104,37 @@ class Designation(models.Model):
         return self.designation_name
 
 
-class DeductionAccount(models.Model):
-    account = models.OneToOneField(
-        Account,
-        on_delete=models.CASCADE,
-        related_name='deduction_ledger'
-    )
+# class DeductionAccount(models.Model):
+#     account = models.OneToOneField(
+#         Account,
+#         on_delete=models.CASCADE,
+#         related_name='deduction_ledger'
+#     )
 
-    def __unicode__(self):
-        return self.account.name
-
-
-class AllowanceAccount(models.Model):
-    account = models.OneToOneField(
-        Account,
-        on_delete=models.CASCADE,
-        related_name='allowance_ledger'
-    )
-
-    def __unicode__(self):
-        return self.account.name
+#     def __unicode__(self):
+#         return self.account.name
 
 
-class IncentiveAccount(models.Model):
-    account = models.OneToOneField(
-        Account,
-        on_delete=models.CASCADE,
-        related_name='incentive_ledger'
-    )
+# class AllowanceAccount(models.Model):
+#     account = models.OneToOneField(
+#         Account,
+#         on_delete=models.CASCADE,
+#         related_name='allowance_ledger'
+#     )
 
-    def __unicode__(self):
-        return self.account.name
+#     def __unicode__(self):
+#         return self.account.name
+
+
+# class IncentiveAccount(models.Model):
+#     account = models.OneToOneField(
+#         Account,
+#         on_delete=models.CASCADE,
+#         related_name='incentive_ledger'
+#     )
+
+#     def __unicode__(self):
+#         return self.account.name
 
 
 class AllowanceName(models.Model):
@@ -218,67 +218,21 @@ class Allowance(models.Model):
 class IncentiveName(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=250)
+    account_category = models.ForeignKey(Category, null=True, blank=True)
+    with_scale = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
 
 
-# This is incentive(for motivation)
-class Incentive(models.Model):
-    # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
-    name = models.ForeignKey(
-        IncentiveName,
-        null=True,
-        blank=True,
-        related_name='incentives'
-    )
-    employee_grade = models.ForeignKey(EmployeeGrade)
-    account = models.OneToOneField(
-        IncentiveAccount,
-        null=True,
-        blank=True,
-        related_name='incentive_account'
-    )
-    # Any one of the two should be filled
-    sum_type = models.CharField(max_length=50, choices=deduct_choice)
-    amount = models.FloatField(null=True, blank=True)
-    amount_rate = models.FloatField(null=True, blank=True)
-    # When to pay? == May be we should keep it in setting
-    # payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
-    payment_cycle = models.CharField(max_length=50, choices=payment_cycle)
-    year_payment_cycle_month = models.PositiveIntegerField(
-        null=True,
-        blank=True,
-        validators=[
-            MaxValueValidator(12),
-            MinValueValidator(1)
-        ],
-    )
-
-    def __unicode__(self):
-        if self.sum_type == 'AMOUNT':
-            return '%s, %f' % (self.name, self.amount)
-        else:
-            return '%s, %f' % (self.name, self.rate)
-
-    def save(self, *args, **kwargs):
-        if not self.account:
-            account_name = self.name.name + '-' + str(self.id)
-            account_obj = Account.objects.create(name=account_name)
-            incentive_account = IncentiveAccount.objects.create(
-                account=account_obj,
-            )
-            self.account = incentive_account
-        if self.sum_type == 'AMOUNT':
-            self.amount_rate = None
-        elif self.sum_type == 'RATE':
-            self.amount = None
-        if self.payment_cycle is not 'Y':
-            self.year_payment_cycle_month = None
-        super(Incentive, self).save(*args, **kwargs)
-
-    class Meta:
-            unique_together = (("name", "employee_grade"),)
+@receiver(post_save, sender=IncentiveName)
+def incentive_account_category_add(sender, instance, created, **kwargs):
+    if created:
+        instance.account_category = Category.objects.create(
+            name='%s-%d' % (instance.name, instance.id),
+            parent_id=ACC_CAT_INCENTIVE_ID
+        )
+        instance.save()
 
 
 class BranchOffice(models.Model):
@@ -371,7 +325,7 @@ class Employee(models.Model):
     # allowance will be added to salary
     allowances = models.ManyToManyField(AllowanceName, blank=True)
     # incentive will have diff trancation
-    incentives = models.ManyToManyField(IncentiveName, blank=True)
+    incentives = models.ManyToManyField(IncentiveName, blank=True, through="Incentive")
 
     optional_deduction = models.ManyToManyField(
         Deduction,
@@ -587,6 +541,65 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                 account=all_acc,
                 employee=instance,
             )
+
+
+# This is incentive(for motivation)
+class Incentive(models.Model):
+    # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
+    name = models.ForeignKey(
+        IncentiveName,
+        null=True,
+        blank=True,
+        related_name='incentives'
+    )
+    employee = models.ForeignKey(Employee)
+    # employee_grade = models.ForeignKey(EmployeeGrade)
+    # account = models.OneToOneField(
+    #     IncentiveAccount,
+    #     null=True,
+    #     blank=True,
+    #     related_name='incentive_account'
+    # )
+    # Any one of the two should be filled
+    sum_type = models.CharField(max_length=50, choices=deduct_choice)
+    amount = models.FloatField(null=True, blank=True)
+    amount_rate = models.FloatField(null=True, blank=True)
+    # When to pay? == May be we should keep it in setting
+    # payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
+    payment_cycle = models.CharField(max_length=50, choices=payment_cycle)
+    year_payment_cycle_month = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        validators=[
+            MaxValueValidator(12),
+            MinValueValidator(1)
+        ],
+    )
+
+    def __unicode__(self):
+        if self.sum_type == 'AMOUNT':
+            return '%s, %f' % (self.name, self.amount)
+        else:
+            return '%s, %f' % (self.name, self.rate)
+
+    def save(self, *args, **kwargs):
+        # if not self.account:
+        #     account_name = self.name.name + '-' + str(self.id)
+        #     account_obj = Account.objects.create(name=account_name)
+        #     incentive_account = IncentiveAccount.objects.create(
+        #         account=account_obj,
+        #     )
+            # self.account = incentive_account
+        if self.sum_type == 'AMOUNT':
+            self.amount_rate = None
+        elif self.sum_type == 'RATE':
+            self.amount = None
+        if self.payment_cycle is not 'Y':
+            self.year_payment_cycle_month = None
+        super(Incentive, self).save(*args, **kwargs)
+
+    class Meta:
+            unique_together = (("name", "employee"),)
 
 
 class ProTempore(models.Model):
