@@ -477,7 +477,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                     account=opt_deduction_account,
                     employee=instance,
                 )
-        for this_allowance in instance.alllowances.all():
+        for this_allowance in instance.allowances.all():
             this_allowance_emp_accs = EmployeeAccount.objects.filter(
                 account__name="Allowance#%d-EID#%d" % (
                     this_allowance.id,

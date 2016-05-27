@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm
-from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, MaritalStatus, SalaryAccount
+from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, MaritalStatus
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -514,6 +514,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         # name = '_'.join(_name.name.split(' ')).lower()
         if _name in employee.allowances.all():
             try:
+
                 obj = _name.allowances.all().filter(employee_grade=employee.designation.grade)[0]
             except IndexError:
                 raise IndexError('%s not defined for grade %s' % (_name.name, employee.designation.grade.grade_name))
@@ -572,9 +573,9 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         # name = '_'.join(obj.name.split(' ')).lower()
         if _name in employee.incentives.all():
             try:
-                obj = _name.incentives.all().filter(employee_grade=employee.designation.grade)[0]
+                obj = _name.incentives.all().filter(employee=employee)[0]
             except IndexError:
-                raise IndexError('%s not defined for grade %s' % (ob.name, employee.designation.grade.grade_name))
+                raise IndexError('%s not defined for grade %s' % (_name.name, employee.full_name))
             # if obj:
             #     obj = obj[0]
                 # pdb.set_trace()
@@ -619,6 +620,12 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         else:
             employee_response['incentive_%d' % (_name.id)] = 0
 
+        # Here we should check for scale and calculate from scale
+        if _name.with_cale:
+            # Get scale here for this employee of this incentive and get value that is
+            # scale = none
+            # employee_response['incentive_%d' % (_name.id)] = scale / 100 * employee_response['incentive_%d' % (_name.id)]
+            pass
     employee_response['incentive'] = incentive
     # salary += incentive
 

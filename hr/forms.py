@@ -50,10 +50,10 @@ def get_deduction_names():
     deductions = Deduction.objects.all()
     names = []
     for obj in deductions:
-        if obj.deduction_for == 'EMPLOYEE ACC':
-            name = '_'.join(obj.in_acc_type.name.split(' ')).lower()
-        else:
-            name = '_'.join(obj.name.split(' ')).lower()
+        # if obj.deduction_for == 'EMPLOYEE ACC':
+        #     name = '_'.join(obj.in_acc_type.name.split(' ')).lower()
+        # else:
+        name = '_'.join(obj.name.split(' ')).lower()
         names.append((name, obj.id))
     return names
 
@@ -252,9 +252,8 @@ class EmployeeAccountInlineFormset(forms.BaseInlineFormSet):
         for form in self.forms:
             account_categories = []
             if form.cleaned_data:
-                employee_acc_id = form.cleaned_data['account']
-                account_category = Account.objects.get(
-                    id=employee_acc_id).category
+                employee_acc = form.cleaned_data['account']
+                account_category = employee_acc.category
                 if account_category in account_categories:
                     raise forms.ValidationError(
                         _('All accont category should be unique to each other'))
