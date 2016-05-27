@@ -9,51 +9,23 @@ from njango.nepdate import bs2ad, bs
 from django.core.validators import MaxValueValidator, MinValueValidator
 from calendar import monthrange as mr
 from datetime import date
-import datetime
 from hr.bsdate import BSDate
-from .helpers import get_y_m_tuple_list, are_side_months, zero_for_none, none_for_zero
+from .helpers import get_y_m_tuple_list, are_side_months
 from django.core.exceptions import ValidationError
 # import pdb
 
-
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.db.models import F
-from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
-import pdb
 
 from account.models import Account, Category
-from django.db.models.signals import pre_delete
 from django.db.models.signals import post_save
-from django.dispatch import receiver
-# from core.models import FiscalYear
-# from solo.models import SingletonModel
-# from django.core.exceptions import ValidationError
 
 
-# def validate_month(value):
-#     if value < 1 and value > 12:
-#         raise ValidationError(
-#             _('%(value)s is not'),
-#             params={'value': value},
-#         )
-
-# Account type name should be same as fieldname in employee account with small letter and underscope
-# That is field name for 'BANK ACCOUNT' in employee model 
-# will be 'bank_account'
-# acc_type = [('insurance_account', _('Insurance Account')),
-#             ('nalakosh_account', _('Nagarik Lagani Kosh Account')),
-#             ('sanchayakosh_account', _('Sanchayakosh Account'))]
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
-deduct_from = [('EMPLOYEE ACC', _('For employee Account')),
-              ('EXPLICIT ACC', _('An Explicit Account'))]
+
 payment_cycle = [('M', _('Monthly')),
                  ('Y', _('Yearly')),
                  ('D', _('Daily')),
                  ]
-holder_type = [('EMPLOYEE', _("Employee's Account")),
-               ('COMPANY', _('Company Account'))]
 
 # Accout Category settingShoul
 ACC_CAT_PAY_HEAD_ID = 2
@@ -62,21 +34,6 @@ ACC_CAT_ALLOWANCE_ID = 4
 ACC_CAT_INCENTIVE_ID = 6
 ACC_CAT_BASIC_SALARY_ID = 3
 ACC_CAT_TAX_ID = 7
-
-# allowance
-# When yearly than when to pay should be in setting
-
-
-# class AccountType(models.Model):
-#     name = models.CharField(max_length=150, choices=acc_type, unique=True)
-#     description = models.CharField(max_length=250)
-#     permanent_multiply_rate = models.PositiveIntegerField(
-#         null=True,
-#         blank=True
-#     )
-
-#     def __unicode__(self):
-#         return self.name
 
 
 class EmployeeGrade(models.Model):
@@ -104,39 +61,6 @@ class Designation(models.Model):
         return self.designation_name
 
 
-# class DeductionAccount(models.Model):
-#     account = models.OneToOneField(
-#         Account,
-#         on_delete=models.CASCADE,
-#         related_name='deduction_ledger'
-#     )
-
-#     def __unicode__(self):
-#         return self.account.name
-
-
-# class AllowanceAccount(models.Model):
-#     account = models.OneToOneField(
-#         Account,
-#         on_delete=models.CASCADE,
-#         related_name='allowance_ledger'
-#     )
-
-#     def __unicode__(self):
-#         return self.account.name
-
-
-# class IncentiveAccount(models.Model):
-#     account = models.OneToOneField(
-#         Account,
-#         on_delete=models.CASCADE,
-#         related_name='incentive_ledger'
-#     )
-
-#     def __unicode__(self):
-#         return self.account.name
-
-
 class AllowanceName(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=250)
@@ -158,7 +82,6 @@ def allowance_account_category_add(sender, instance, created, **kwargs):
 
 # This is bhatta
 class Allowance(models.Model):
-    # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
     name = models.ForeignKey(
         AllowanceName,
         null=True,
@@ -166,14 +89,6 @@ class Allowance(models.Model):
         related_name="allowances"
     )
     employee_grade = models.ForeignKey(EmployeeGrade)
-    # account = models.OneToOneField(
-    #     AllowanceAccount,
-    #     null=True,
-    #     blank=True,
-    #     related_name='allowance_account'
-    # )
-    # Any one out of two should be filled
-    
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
@@ -195,13 +110,6 @@ class Allowance(models.Model):
             return '%s, %f' % (self.name, self.amount_rate)
 
     def save(self, *args, **kwargs):
-        # if not self.account:
-        #     account_name = self.name.name + '-' + str(self.id)
-        #     account_obj = Account.objects.create(name=account_name)
-        #     allowance_account = AllowanceAccount.objects.create(
-        #         account=account_obj,
-        #     )
-        #     self.account = allowance_account
         if self.sum_type == 'AMOUNT':
             self.amount_rate = None
         elif self.sum_type == 'RATE':
@@ -246,27 +154,8 @@ class BranchOffice(models.Model):
 # These two below should be in setting as many to many
 # Imp: Deductin cant be in BAnk Account type and should be one to one with account type
 class Deduction(models.Model):
-    # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
     name = models.CharField(max_length=150)
-    # account = models.OneToOneField(
-    #     DeductionAccount,
-    #     null=True,
-    #     blank=True,
-    #     related_name='deduction_account'
-    # )
-    # Below only one out of two should be active
     deduct_type = models.CharField(max_length=50, choices=deduct_choice)
-    # deduction_for = models.CharField(max_length=50, choices=deduct_for)
-    # Explit acc is only specified when deduction for is explicit_acc
-    # explicit_acc = models.ForeignKey(Account, null=True, blank=True)
-    # In which type of account to make deduction transaction when deduction for is employee acc
-    # in_acc_type = models.ForeignKey(
-    #     AccountType,
-    #     related_name='in_account_type',
-    #     null=True,
-    #     blank=True
-    # )
-    # transact_in = models.CharField(choice=acc_type)
     deduct_in_category = models.ForeignKey(Category, null=True, blank=True)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
@@ -346,8 +235,6 @@ class Employee(models.Model):
     )
     # Permanent has extra functionality while deduction from salary
     is_permanent = models.BooleanField(default=False)
-    # deductions need to be removed from this table
-    # deductions = models.ManyToManyField(Deduction)
 
     def current_salary_by_month(self, from_date, to_date):
         grade_salary = self.designation.grade.salary_scale
@@ -482,12 +369,6 @@ class Employee(models.Model):
         rhs_salary = rhs_month_salary / float(to_date_month_days) * rhs_days
         salary = salary_pure_months + lhs_salary + rhs_salary
         return salary
-
-        # grade_salary = self.designation.grade.salary_scale
-        # grade_number = self.designation.grade.grade_number
-        # grade_rate = self.designation.grade.grade_rate
-        # salary = 0
-        pass
 
     def has_account(self, account_type):
         for i in self.accounts.all():
@@ -650,13 +531,6 @@ class Incentive(models.Model):
         related_name='incentives'
     )
     employee = models.ForeignKey(Employee)
-    # employee_grade = models.ForeignKey(EmployeeGrade)
-    # account = models.OneToOneField(
-    #     IncentiveAccount,
-    #     null=True,
-    #     blank=True,
-    #     related_name='incentive_account'
-    # )
     # Any one of the two should be filled
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
     amount = models.FloatField(null=True, blank=True)
@@ -680,13 +554,6 @@ class Incentive(models.Model):
             return '%s, %f' % (self.name, self.rate)
 
     def save(self, *args, **kwargs):
-        # if not self.account:
-        #     account_name = self.name.name + '-' + str(self.id)
-        #     account_obj = Account.objects.create(name=account_name)
-        #     incentive_account = IncentiveAccount.objects.create(
-        #         account=account_obj,
-        #     )
-            # self.account = incentive_account
         if self.sum_type == 'AMOUNT':
             self.amount_rate = None
         elif self.sum_type == 'RATE':
@@ -891,39 +758,6 @@ class EmployeeAccount(models.Model):
         return ('%s-acc#%d' % (self.account.category.name, self.account.id))
 
 
-class CompanyAccount(models.Model):
-    account = models.OneToOneField(
-        Account,
-        on_delete=models.CASCADE,
-        related_name='company_account'
-    )
-    is_salary_giving = models.BooleanField(default=False)
-
-
-# This stores the pure salary with scale and rate
-# One Salary account for each fiscal year should be created
-class SalaryAccount(models.Model):
-    account = models.OneToOneField(
-        Account,
-        on_delete=models.CASCADE,
-        related_name='salary_account'
-    )
-
-# class HrConfig(dbsettings.Group):
-#     sk_deduction_rate = models.PositiveIntegerField()
-#     maintenance_mode = models.BooleanField(default=False)
-#     ** Sanchai Kosh ko percentage
-#     ** Tax rate
-#     ** Lagu miti of rate
-#     ** Absent case
-
-#     def __unicode__(self):
-#         return u"hr config"
-
-#     class Meta:
-#         verbose_name = "Setup Income Tax Rate"
-
-
 #  allowance in EmployeeRank
 #  Incentive in Employee
 
@@ -940,18 +774,17 @@ class SalaryAccount(models.Model):
 # In case employee is pro-tempore we need to transact his normal salary and extract pro-tempor employee salay, get the difference of their salary and transact differnece seperately
 #  Talab rokka
 #  When did emloyee start his job
-#  
-#  
+
+
 #  Incentive rate employee anusar farak huncha month anusar pani farak parcha
 #  Salary advance
-#  
-#  
+
+
 #  When Salary increased in middle of the month each day earning shoud be calculated ****
-#  
-#  
-#  
+
+
+
 #  Make branch model with code on which employee work
-  
-  
+
 #  When does increse in scale get active?
 #  The day from which the goverment announces it or the day from which the employeer is apponted
