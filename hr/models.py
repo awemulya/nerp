@@ -311,7 +311,9 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                     employee=emp
                 )
 
+
 class Employee(models.Model):
+    is_active = models.BooleanField(default=True)
     # Budget code (Functionality to change budget code for employee group)
     budget_code = models.CharField(max_length=100)
     # working_branch = models.CharField(max_length=100)
