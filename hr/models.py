@@ -873,7 +873,7 @@ def employee_account_validator(acc_id):
 
 
 class EmployeeAccount(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.PROTECT)
     account = models.OneToOneField(
         Account,
         on_delete=models.CASCADE,
