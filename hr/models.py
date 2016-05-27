@@ -299,6 +299,17 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
         )
         instance.save()
 
+        # Add newly created deduction accout for existing user
+        if not instance.is_optional:
+            for emp in Employee.objects.all():
+                acc = Account.objects.create(
+                    name='Deduction#%d-EID%d' %(instance.id, emp.id),
+                    category=instance.deduct_in_category
+                )
+                EmployeeAccount.objects.create(
+                    account=acc,
+                    employee=emp
+                )
 
 class Employee(models.Model):
     # Budget code (Functionality to change budget code for employee group)
@@ -514,7 +525,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                 employee=instance,
             )
             accounts.append(deduction_emp_account)
-        # Add deduction accounts (compulsory)
+        # Add deduction accounts (optional)
         for deduct in instance.optional_deduction.all():
             opt_deduction_account = Account.objects.create(
                 name="Deduction#%d-EID#%d" % (
@@ -529,7 +540,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
             )
 
         # Add employee allowance account
-        for allowancename in instance.allowance.all():
+        for allowancename in instance.allowances.all():
             all_acc = Account.objects.create(
                 name="Allowance#%d-EID#%d" % (
                     allowancename.id,
@@ -541,6 +552,90 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                 account=all_acc,
                 employee=instance,
             )
+
+        # Add employee incentive account
+        for incentivename in instance.incentives.all():
+            in_acc = Account.objects.create(
+                name="Incentive#%d-EID#%d" % (
+                    incentivename.id,
+                    instance.id
+                ),
+                category=incentivename.account_category
+            )
+            EmployeeAccount.objects.create(
+                account=in_acc,
+                employee=instance,
+            )
+
+    else:
+        # Do things when not created
+        # To See
+        #     Optional Deduction
+        #     Allowances
+        #     Incentives
+        for this_deduction in instance.optional_deduction.all():
+            this_deduction_emp_accs = EmployeeAccount.objects.filter(
+                account__name="Deduction#%d-EID#%d" % (
+                    this_deduction.id,
+                    instance.id
+                ),
+                account__category=this_deduction.deduct_in_category,
+                employee=instance
+            )
+            if not this_deduction_emp_accs:
+                opt_deduction_account = Account.objects.create(
+                    name="Deduction#%d-EID#%d" % (
+                        this_deduction.id,
+                        instance.id
+                    ),
+                    category=this_deduction.deduct_in_category
+                )
+                EmployeeAccount.objects.create(
+                    account=opt_deduction_account,
+                    employee=instance,
+                )
+        for this_allowance in instance.alllowances.all():
+            this_allowance_emp_accs = EmployeeAccount.objects.filter(
+                account__name="Allowance#%d-EID#%d" % (
+                    this_allowance.id,
+                    instance.id
+                ),
+                account__category=this_allowance.account_category,
+                employee=instance
+            )
+            if not this_allowance_emp_accs:
+                all_account = Account.objects.create(
+                    name="Allowance#%d-EID#%d" % (
+                        this_allowance.id,
+                        instance.id
+                    ),
+                    category=this_allowance.account_category
+                )
+                EmployeeAccount.objects.create(
+                    account=all_account,
+                    employee=instance,
+                )
+        for this_incentive in instance.incentives.all():
+            this_incentive_emp_accs = EmployeeAccount.objects.filter(
+                account__name="Incentive#%d-EID#%d" % (
+                    this_incentive.id,
+                    instance.id
+                ),
+                account__category=this_incentive.account_category,
+                employee=instance
+            )
+            if not this_incentive_emp_accs:
+                incent_account = Account.objects.create(
+                    name="Incentive#%d-EID#%d" % (
+                        this_incentive.id,
+                        instance.id
+                    ),
+                    category=this_incentive.account_category
+                )
+                EmployeeAccount.objects.create(
+                    account=incent_account,
+                    employee=instance,
+                )
 
 
 # This is incentive(for motivation)
