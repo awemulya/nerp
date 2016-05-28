@@ -11,8 +11,9 @@ from django.utils.translation import ugettext_lazy as _
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
-from app.utils.helpers import zero_for_none, none_for_zero
+from app.utils.helpers import zero_for_none, none_for_zero, model_exists_in_db
 from core.models import FiscalYear, Donor, Activity, BudgetHead, TaxScheme
+
 
 class Category(MPTTModel):
     name = models.CharField(max_length=50)
@@ -35,8 +36,6 @@ class Category(MPTTModel):
 
     class Meta:
         verbose_name_plural = u'Categories'
-
-
 
 
 class Account(models.Model):
@@ -153,7 +152,6 @@ class Account(models.Model):
     class Meta:
         unique_together = ('name', 'fy')
         ordering = ('order',)
-
 
 
 class JournalVoucher(models.Model):
@@ -393,7 +391,7 @@ from django.db.models.signals import post_save
 
 @receiver(post_save, sender=FiscalYear)
 def fy_add(sender, instance, created, **kwargs):
-    if created:
+    if created and model_exists_in_db(Account):
         Account.objects.create(name='Ka-7-15', fy=instance)
         Account.objects.create(name='Ka-7-17', fy=instance)
 

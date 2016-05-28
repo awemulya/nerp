@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from njango.fields import BSDateField, today
+from app.utils.helpers import model_exists_in_db
 
 from core.models import Currency, FiscalYear, validate_in_fy, Donor, BudgetHead
 from account.models import Account, Party
@@ -95,13 +96,10 @@ def on_project_add(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=FiscalYear)
 def on_fy_add(sender, instance, created, **kwargs):
-    if created:
-        from django.db import connection
-
-        if Project._meta.db_table in connection.introspection.table_names():
-            projects = Project.objects.filter(active=True)
-            for project in projects:
-                project.get_or_create_for_fy(instance)
+    if created and model_exists_in_db(Project):
+        projects = Project.objects.filter(active=True)
+        for project in projects:
+            project.get_or_create_for_fy(instance)
 
 
 class Aid(models.Model):
