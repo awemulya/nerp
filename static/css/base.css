@@ -517,4 +517,6 @@ tr.total, tr.category, tr.subtotal{
     width: 100%;
 }
 
-
+.panel-title a{
+    cursor: pointer;
+}
