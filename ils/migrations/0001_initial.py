@@ -37,6 +37,18 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
+            name='LibrarySetting',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('fine_per_day', models.FloatField(default=2)),
+                ('borrow_days', models.PositiveIntegerField(default=7)),
+                ('default_type', models.CharField(default=b'Circulative', max_length=50, choices=[(b'Reference', b'Reference'), (b'Circulative', b'Circulative')])),
+            ],
+            options={
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
             name='MyCustomDate',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),

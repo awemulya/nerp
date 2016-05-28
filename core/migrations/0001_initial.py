@@ -11,15 +11,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Account',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=254)),
-                ('name_en', models.CharField(max_length=254, null=True)),
-                ('name_ne', models.CharField(max_length=254, null=True)),
-            ],
-        ),
-        migrations.CreateModel(
             name='Activity',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -30,6 +21,19 @@ class Migration(migrations.Migration):
             ],
             options={
                 'verbose_name_plural': 'Activities',
+            },
+        ),
+        migrations.CreateModel(
+            name='AppSetting',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('site_name', models.CharField(default=b'NERP', max_length=100)),
+                ('fiscal_year', models.PositiveIntegerField(default=2072, choices=[(2069, b'2069/70'), (2070, b'2070/71'), (2071, b'2071/72'), (2072, b'2072/73')])),
+                ('header_for_forms', models.TextField(default=b'NERP')),
+                ('header_for_forms_nepali', models.TextField(default=b'NERP')),
+            ],
+            options={
+                'abstract': False,
             },
         ),
         migrations.CreateModel(
@@ -64,6 +68,19 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='Currency',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('code', models.CharField(max_length=3)),
+                ('name', models.CharField(max_length=100)),
+                ('latest_usd_rate', models.FloatField(null=True, blank=True)),
+            ],
+            options={
+                'db_table': 'currency',
+                'verbose_name_plural': 'Currencies',
+            },
+        ),
+        migrations.CreateModel(
             name='Donor',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -85,7 +102,7 @@ class Migration(migrations.Migration):
             name='FiscalYear',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('year', models.IntegerField(unique=True, choices=[(2069, b'2069/70'), (2070, b'2070/71'), (2071, b'2071/72')])),
+                ('year', models.IntegerField(unique=True, choices=[(2069, b'2069/70'), (2070, b'2070/71'), (2071, b'2071/72'), (2072, b'2072/73')])),
             ],
         ),
         migrations.CreateModel(
@@ -100,13 +117,12 @@ class Migration(migrations.Migration):
             name='Party',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=254)),
-                ('name_en', models.CharField(max_length=254, null=True)),
-                ('name_ne', models.CharField(max_length=254, null=True)),
+                ('name', models.CharField(max_length=254, verbose_name='Name')),
+                ('name_en', models.CharField(max_length=254, null=True, verbose_name='Name')),
+                ('name_ne', models.CharField(max_length=254, null=True, verbose_name='Name')),
                 ('address', models.CharField(max_length=254, null=True, blank=True)),
                 ('phone_no', models.CharField(max_length=100, null=True, blank=True)),
                 ('pan_no', models.CharField(max_length=50, null=True, blank=True)),
-                ('account', models.OneToOneField(related_name='party', to='core.Account')),
             ],
             options={
                 'verbose_name_plural': 'Parties',

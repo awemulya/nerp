@@ -12,7 +12,7 @@ def item_location(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('inventory', '0001_initial'),
+        ('inventory', '0002_auto_20160528_1626'),
     ]
 
     operations = [

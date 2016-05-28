@@ -2,11 +2,14 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
+from django.db.models.signals import post_save
+
 
 
 def fiscal_years(apps, schema_editor):
     from core.models import FiscalYear
     # FiscalYear = apps.get_model('core', 'FiscalYear')
+    post_save.disconnect(sender=FiscalYear)
     FiscalYear.objects.create(year=2069)
     FiscalYear.objects.create(year=2070)
     FiscalYear.objects.create(year=2071)

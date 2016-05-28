@@ -86,7 +86,7 @@ class ProjectFy(models.Model):
 
 
 @receiver(post_save, sender=Project)
-def fy_add(sender, instance, created, **kwargs):
+def on_project_add(sender, instance, created, **kwargs):
     if created:
         fys = FiscalYear.objects.all()
         for fy in fys:
@@ -94,11 +94,14 @@ def fy_add(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=FiscalYear)
-def fy_add(sender, instance, created, **kwargs):
+def on_fy_add(sender, instance, created, **kwargs):
     if created:
-        projects = Project.objects.filter(active=True)
-        for project in projects:
-            project.get_or_create_for_fy(instance)
+        from django.db import connection
+
+        if Project._meta.db_table in connection.introspection.table_names():
+            projects = Project.objects.filter(active=True)
+            for project in projects:
+                project.get_or_create_for_fy(instance)
 
 
 class Aid(models.Model):

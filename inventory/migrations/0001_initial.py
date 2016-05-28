@@ -2,19 +2,17 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import mptt.fields
-import njango.fields
 import jsonfield.fields
-from django.conf import settings
+import core.models
+import njango.fields
 import inventory.models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0002_auto_20151007_2145'),
         ('contenttypes', '0002_remove_content_type_name'),
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('core', '0001_initial'),
     ]
 
     operations = [
@@ -28,7 +26,6 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
-                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='inventory.Category', null=True)),
             ],
             options={
                 'verbose_name_plural': 'Inventory Categories',
@@ -39,10 +36,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('release_no', models.IntegerField()),
-                ('date', njango.fields.BSDateField(default=njango.fields.today)),
+                ('date', njango.fields.BSDateField(default=njango.fields.today, validators=[core.models.validate_in_fy])),
                 ('purpose', models.CharField(max_length=254)),
-                ('demandee', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
             ],
         ),
         migrations.CreateModel(
@@ -54,18 +49,17 @@ class Migration(migrations.Migration):
                 ('quantity', models.FloatField()),
                 ('unit', models.CharField(max_length=50)),
                 ('remarks', models.CharField(max_length=254, null=True, blank=True)),
-                ('status', models.CharField(default=b'Requested', max_length=9, choices=[(b'Requested', b'Requested'), (b'Approved', b'Approved'), (b'Fulfilled', b'Fulfilled')])),
+                ('status', models.CharField(default=b'Requested', max_length=9, choices=[(b'Requested', 'Requested'), (b'Approved', 'Approved'), (b'Fulfilled', 'Fulfilled')])),
                 ('purpose', models.CharField(max_length=100, null=True, blank=True)),
-                ('demand', models.ForeignKey(related_name='rows', to='inventory.Demand')),
             ],
         ),
         migrations.CreateModel(
             name='Depreciation',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('depreciate_type', models.CharField(default=b'Fixed percentage', max_length=25, choices=[(b'Fixed percentage', 'Fixed percentage'), (b'Compound percentage', 'Compound percentage'), (b'Fixed price', 'Fixed price')])),
-                ('depreciate_value', models.PositiveIntegerField(default=0)),
-                ('time', models.PositiveIntegerField(default=0)),
+                ('depreciate_type', models.CharField(default=b'Fixed percentage', max_length=25, choices=[(b'Fixed percentage', 'Fixed percentage'), (b'Fixed price', 'Fixed price')])),
+                ('depreciate_value', models.FloatField(default=0)),
+                ('time', models.FloatField(default=0)),
                 ('time_type', models.CharField(default=b'years', max_length=8, choices=[(b'days', 'Day(s)'), (b'months', 'Month(s)'), (b'years', 'Year(s)')])),
             ],
         ),
@@ -74,9 +68,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('entry_report_no', models.PositiveIntegerField(null=True, blank=True)),
+                ('date', njango.fields.BSDateField(default=njango.fields.today, validators=[core.models.validate_in_fy])),
                 ('source_object_id', models.PositiveIntegerField()),
-                ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
-                ('source_content_type', models.ForeignKey(to='contenttypes.ContentType')),
             ],
         ),
         migrations.CreateModel(
@@ -88,9 +81,19 @@ class Migration(migrations.Migration):
                 ('quantity', models.FloatField()),
                 ('unit', models.CharField(max_length=50)),
                 ('rate', models.FloatField()),
+                ('vattable', models.BooleanField(default=True)),
                 ('other_expenses', models.FloatField(default=0)),
                 ('remarks', models.CharField(max_length=254, null=True, blank=True)),
-                ('entry_report', models.ForeignKey(related_name='rows', blank=True, to='inventory.EntryReport', null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Expense',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('voucher_no', models.PositiveIntegerField(verbose_name='Voucher No.')),
+                ('date', njango.fields.BSDateField(default=njango.fields.today, verbose_name='Date', validators=[core.models.validate_in_fy])),
+                ('type', models.CharField(default=b'Waive', max_length=20, verbose_name='Type', choices=[(b'Waive', 'Waive'), (b'Handover', 'Handover'), (b'Auction', 'Auction')])),
+                ('rate', models.FloatField(null=True, verbose_name='Rate', blank=True)),
             ],
         ),
         migrations.CreateModel(
@@ -99,13 +102,12 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('voucher_no', models.PositiveIntegerField(null=True, blank=True)),
                 ('addressee', models.CharField(max_length=254)),
-                ('date', njango.fields.BSDateField(default=njango.fields.today)),
+                ('date', njango.fields.BSDateField(default=njango.fields.today, validators=[core.models.validate_in_fy])),
                 ('office', models.CharField(max_length=254)),
                 ('designation', models.CharField(max_length=254)),
                 ('handed_to', models.CharField(max_length=254)),
                 ('due_days', models.PositiveIntegerField(default=7)),
                 ('type', models.CharField(default=b'Incoming', max_length=9, choices=[(b'Incoming', b'Incoming'), (b'Outgoing', b'Outgoing')])),
-                ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
             ],
         ),
         migrations.CreateModel(
@@ -119,7 +121,6 @@ class Migration(migrations.Migration):
                 ('total_amount', models.FloatField()),
                 ('received_date', models.DateField(null=True, blank=True)),
                 ('condition', models.TextField(null=True, blank=True)),
-                ('handover', models.ForeignKey(related_name='rows', to='inventory.Handover')),
             ],
         ),
         migrations.CreateModel(
@@ -127,7 +128,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('report_no', models.IntegerField()),
-                ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
+                ('date', njango.fields.BSDateField(default=njango.fields.today, validators=[core.models.validate_in_fy])),
             ],
         ),
         migrations.CreateModel(
@@ -150,8 +151,17 @@ class Migration(migrations.Migration):
                 ('good', models.PositiveIntegerField(null=True, blank=True)),
                 ('bad', models.PositiveIntegerField(null=True, blank=True)),
                 ('remarks', models.CharField(max_length=254, null=True, blank=True)),
-                ('inspection', models.ForeignKey(related_name='rows', to='inventory.Inspection')),
             ],
+        ),
+        migrations.CreateModel(
+            name='InstanceHistory',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('date', njango.fields.BSDateField(default=njango.fields.today, verbose_name='Date', validators=[core.models.validate_in_fy])),
+            ],
+            options={
+                'verbose_name_plural': 'Instance History',
+            },
         ),
         migrations.CreateModel(
             name='InventoryAccount',
@@ -162,6 +172,8 @@ class Migration(migrations.Migration):
                 ('account_no', models.PositiveIntegerField()),
                 ('current_balance', models.FloatField(default=0)),
                 ('opening_balance', models.FloatField(default=0)),
+                ('opening_rate', models.FloatField(default=0)),
+                ('opening_rate_vattable', models.BooleanField(default=True)),
             ],
         ),
         migrations.CreateModel(
@@ -184,13 +196,10 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(max_length=10, null=True, blank=True)),
                 ('name', models.CharField(max_length=254)),
                 ('description', models.TextField(null=True, blank=True)),
-                ('type', models.CharField(default=b'consumable', max_length=15, choices=[(b'consumable', 'Consumable'), (b'non-consumable', 'Non-Consumable')])),
+                ('type', models.CharField(default=b'consumable', max_length=15, choices=[(b'consumable', 'Consumable'), (b'non-consumable', 'Non-consumable')])),
                 ('unit', models.CharField(default='pieces', max_length=50)),
                 ('property_classification_reference_number', models.CharField(max_length=20, null=True, blank=True)),
                 ('other_properties', jsonfield.fields.JSONField(null=True, blank=True)),
-                ('account', models.OneToOneField(related_name='item', null=True, to='inventory.InventoryAccount')),
-                ('category', models.ForeignKey(blank=True, to='inventory.Category', null=True)),
-                ('depreciation', models.ForeignKey(related_name='depreciate_item', blank=True, to='inventory.Depreciation', null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -235,9 +244,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('order_no', models.IntegerField(null=True, blank=True)),
-                ('date', njango.fields.BSDateField(default=njango.fields.today)),
+                ('date', njango.fields.BSDateField(default=njango.fields.today, validators=[core.models.validate_in_fy])),
                 ('due_days', models.IntegerField(default=3)),
-                ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
                 ('party', models.ForeignKey(to='core.Party')),
             ],
         ),
@@ -262,7 +270,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('report_no', models.IntegerField()),
-                ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
+                ('date', njango.fields.BSDateField(default=njango.fields.today, null=True, blank=True, validators=[core.models.validate_in_fy])),
             ],
         ),
         migrations.CreateModel(
@@ -283,6 +291,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('demand_row', models.ForeignKey(related_name='releases', to='inventory.DemandRow')),
                 ('item_instance', models.ForeignKey(to='inventory.ItemInstance')),
+                ('location', models.ForeignKey(to='inventory.ItemLocation')),
             ],
         ),
         migrations.CreateModel(
@@ -292,6 +301,30 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=250)),
                 ('head_office', models.BooleanField(default=False)),
                 ('branch_office', models.BooleanField(default=False)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='StockEntry',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('voucher_no', models.PositiveIntegerField(verbose_name='Voucher No.')),
+                ('date', njango.fields.BSDateField(default=njango.fields.today, validators=[core.models.validate_in_fy])),
+            ],
+        ),
+        migrations.CreateModel(
+            name='StockEntryRow',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('sn', models.PositiveIntegerField()),
+                ('name', models.CharField(max_length=254)),
+                ('description', models.TextField(null=True, blank=True)),
+                ('unit', models.CharField(default='pieces', max_length=50)),
+                ('account_no', models.PositiveIntegerField()),
+                ('opening_stock', models.FloatField(default=0, null=True, blank=True)),
+                ('opening_rate', models.FloatField(default=0, null=True, blank=True)),
+                ('opening_rate_vattable', models.BooleanField(default=True)),
+                ('item', models.OneToOneField(null=True, blank=True, to='inventory.Item')),
+                ('stock_entry', inventory.models.UnsavedForeignKey(related_name='rows', to='inventory.StockEntry')),
             ],
         ),
         migrations.CreateModel(
@@ -309,8 +342,7 @@ class Migration(migrations.Migration):
             name='YearlyReport',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('report_no', models.IntegerField()),
-                ('fiscal_year', models.ForeignKey(to='core.FiscalYear')),
+                ('fiscal_year', models.OneToOneField(to='core.FiscalYear')),
             ],
         ),
         migrations.CreateModel(
@@ -336,36 +368,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='iteminstance',
             name='location',
-            field=models.ForeignKey(to='inventory.ItemLocation'),
+            field=models.ForeignKey(to='inventory.ItemLocation', null=True),
         ),
         migrations.AddField(
             model_name='iteminstance',
             name='source',
             field=models.ForeignKey(blank=True, to='inventory.EntryReportRow', null=True),
-        ),
-        migrations.AddField(
-            model_name='inventoryaccountrow',
-            name='journal_entry',
-            field=models.OneToOneField(related_name='account_row', to='inventory.JournalEntry'),
-        ),
-        migrations.AddField(
-            model_name='handoverrow',
-            name='item',
-            field=models.ForeignKey(to='inventory.Item'),
-        ),
-        migrations.AddField(
-            model_name='entryreportrow',
-            name='item',
-            field=models.ForeignKey(to='inventory.Item'),
-        ),
-        migrations.AddField(
-            model_name='demandrow',
-            name='item',
-            field=models.ForeignKey(to='inventory.Item'),
-        ),
-        migrations.AddField(
-            model_name='demandrow',
-            name='location',
-            field=models.ForeignKey(blank=True, to='inventory.ItemLocation', null=True),
         ),
     ]
