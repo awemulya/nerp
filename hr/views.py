@@ -135,11 +135,10 @@ def salary_taxation_unit(employee, f_y_item):
     # Addition of PF and bima to salary if employee is permanent
     for item in sorted_deductions:
         if employee.is_permanent:
-            if item.add2_init_salary and item.deduction_for == 'EMPLOYEE ACC':
+            if item.add2_init_salary:
                 if item.deduct_type == 'AMOUNT':
                     salary += item.amount * total_month
                 else:
-                    # Rate
                     salary += item.amount_rate / 100.0 * salary
 
     scale_salary = employee.designation.grade.salary_scale
@@ -184,7 +183,7 @@ def salary_taxation_unit(employee, f_y_item):
     for ob in employee.incentives.all():
         try:
             obj = ob.incentives.filter(
-                employee_grade=employee.designation.grade
+                employee=employee
             )[0]
         except IndexError:
             raise IndexError('%s not defined for grade %s' % (ob.name, employee.designation.grade.grade_name))
@@ -213,46 +212,16 @@ def salary_taxation_unit(employee, f_y_item):
                 incentive += obj.amount_rate / 100.0 * scale_salary
 
     deduction = 0
-    # deduction_detail = []
     for obj in deductions.filter(is_tax_free=True):
-        # deduction_detail_object = {}
-        if obj.deduction_for == 'EMPLOYEE ACC':
-            # name = '_'.join(obj.in_acc_type.name.split(' ')).lower
-            # employee_response['deduction_%d' % (obj.id)] = 0
+        if obj in deductions.filter(is_optional=False) or obj in employee.deductions.all():
 
-            if (employee.is_permanent or obj.with_temporary_employee) and employee.has_account(obj.in_acc_type):
-
-                if obj.deduct_type == 'AMOUNT':
-                    # employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
-                    deduction += obj.amount * total_month
-                else:
-                    # Rate
-                    # deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
-                    # employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
-                    deduction += obj.amount_rate / 100.0 * salary
-
-                if employee.is_permanent:
-                    if obj.in_acc_type.permanent_multiply_rate:
-                        # deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
-                        # employee_response['deduction_%d' % (obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
-                        deduction *= obj.in_acc_type.permanent_multiply_rate                 
-                # deduction += deduction_detail_object['amount']
-                # deduction += employee_response['deduction_%d' % (obj.id)]
-
-        else:
-            # name = '_'.join(obj.name.split(' ')).lower()
-            # employee_response['deduction_%d' % (obj.id)] = 0
-
-            # EXPLICIT ACC
             if obj.deduct_type == 'AMOUNT':
-                # deduction_detail_object[
-                #     'amount'] += obj.amount * total_month
-                # employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
                 deduction += obj.amount * total_month
             else:
-                # employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
                 deduction += obj.amount_rate / 100.0 * salary
-            # deduction += employee_response['deduction_%d' % (obj.id)]
+
+            if employee.is_permanent:
+                deduction *= obj.permanent_multiply_rate
 
     taxable_amount = (salary + allowance + incentive - deduction)
 
@@ -621,7 +590,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             employee_response['incentive_%d' % (_name.id)] = 0
 
         # Here we should check for scale and calculate from scale
-        if _name.with_cale:
+        if _name.with_scale:
             # Get scale here for this employee of this incentive and get value that is
             # scale = none
             # employee_response['incentive_%d' % (_name.id)] = scale / 100 * employee_response['incentive_%d' % (_name.id)]
@@ -633,39 +602,17 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     deduction = 0
     # deduction_detail = []
     for obj in deductions:
-        # deduction_detail_object = {}
-        if obj.deduction_for == 'EMPLOYEE ACC':
-            # name = '_'.join(obj.in_acc_type.name.split(' ')).lower
+        if obj in deduction.filter(is_optional=False) or obj in employee.optional_deduction.all():
             employee_response['deduction_%d' % (obj.id)] = 0
-
-            if (employee.is_permanent or obj.with_temporary_employee) and employee.has_account(obj.in_acc_type):
-
-                if obj.deduct_type == 'AMOUNT':
-                    employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
-                else:
-                    # Rate
-                    # deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
-                    employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
-
-                if employee.is_permanent:
-                    if obj.in_acc_type.permanent_multiply_rate:
-                        # deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
-                        employee_response['deduction_%d' % (obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
-                # deduction += deduction_detail_object['amount']
-                deduction += employee_response['deduction_%d' % (obj.id)]
-
-        else:
-            # name = '_'.join(obj.name.split(' ')).lower()
-            employee_response['deduction_%d' % (obj.id)] = 0
-
-            # EXPLICIT ACC
             if obj.deduct_type == 'AMOUNT':
-                # deduction_detail_object[
-                #     'amount'] += obj.amount * total_month
                 employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
             else:
                 employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
+            if employee.is_permanent:
+                employee_response['deduction_%d' % (obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
             deduction += employee_response['deduction_%d' % (obj.id)]
+        else:
+            employee_response['deduction_%d' % (obj.id)] = 0
 
     # PF deduction amount in case of loan from PF
     employee_response['pf_deduction_amount'] = employee.pf_monthly_deduction_amount * total_month
