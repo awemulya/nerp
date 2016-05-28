@@ -61,7 +61,7 @@ urlpatterns = [
     url(r'^budget_release/save/$', views.save_budget_release,
         name='save_budget_release'),
 
-    url(r'^(?P<project_fy_id>[0-9]+)/expenditure/$', views.Expenditure.as_view(),
+    url(r'^(?P<project_fy_id>[0-9]+)/expenditure/$', views.BudgetExpenditure.as_view(),
         name='budget_expenditure'),
     url(r'^expenditure/save/$', views.save_expenditure,
         name='save_expenditure'),

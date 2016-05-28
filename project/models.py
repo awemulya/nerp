@@ -2,8 +2,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from njango.fields import BSDateField, today
-from app.utils.helpers import model_exists_in_db
 
+from app.utils.helpers import model_exists_in_db
 from core.models import Currency, FiscalYear, validate_in_fy, Donor, BudgetHead
 from account.models import Account, Party
 
@@ -60,11 +60,11 @@ class ProjectFy(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.imprest_ledger_id:
-            self.imprest_ledger = Account.objects.create(name='Imprest Ledger', fy=self.fy)
+            self.imprest_ledger = Account.objects.create(name='Imprest Ledger (' + str(self.project.name) + ')', fy=self.fy)
         if not self.initial_deposit_id:
-            self.initial_deposit = Account.objects.create(name='Initial Deposit', fy=self.fy)
+            self.initial_deposit = Account.objects.create(name='Initial Deposit (' + str(self.project.name) + ')', fy=self.fy)
         if not self.replenishments_id:
-            self.replenishments = Account.objects.create(name='Replenishments', fy=self.fy)
+            self.replenishments = Account.objects.create(name='Replenishments (' + str(self.project.name) + ')', fy=self.fy)
         super(ProjectFy, self).save(*args, **kwargs)
 
     def get_ledgers(self):

@@ -42,7 +42,11 @@ class FiscalYear(models.Model):
     def get(year=None):
         if not year:
             year = AppSetting.get_solo().fiscal_year
-        return FiscalYear.objects.get(year=year)
+        try:
+            fy = FiscalYear.objects.get(year=year)
+        except FiscalYear.DoesNotExist:
+            fy = FiscalYear.objects.create(year=year)
+        return fy
 
     @staticmethod
     def start(year=None):
@@ -122,6 +126,7 @@ class Employee(models.Model):
     def save(self, *args, **kwargs):
         if self.pk is None:
             from account.models import Account
+
             account = Account(name_en=self.name_en, name_ne=self.name_ne)
             account.save()
             self.account = account

@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.serializers import BudgetSerializer
 from account.serializers import AccountSerializer
-from app.utils.helpers import save_model, invalid, empty_to_none
+from app.utils.helpers import save_model, invalid, empty_to_none, merge_dicts
 from core.models import FiscalYear, BudgetHead
 from inventory.models import delete_rows
 from models import Aid, ProjectFy, ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure, \
@@ -299,28 +299,26 @@ class ExpenseDelete(ExpenseView, DeleteView):
 class BaseStatement(object):
     def get_context_data(self, **kwargs):
         context_data = super(BaseStatement, self).get_context_data(**kwargs)
-        budget_head = BudgetHead.objects.all()
-        aid = Aid.objects.filter(active=True, project=context_data['project'].id)
+        budget_heads = BudgetHead.objects.all()
+        aids = Aid.objects.filter(active=True, project=self.project)
         context_data['data'] = {
             'rows': BaseStatementSerializer(context_data['object_list'], many=True).data,
-            'budget_heads': BudgetSerializer(budget_head, many=True).data,
-            'aids': AidSerializer(aid, many=True).data,
-            'project_fy_id': context_data['project_fy'].id
+            'budget_heads': BudgetSerializer(budget_heads, many=True).data,
+            'aids': AidSerializer(aids, many=True).data,
         }
         return context_data
 
 
 def base_save(request, model):
     params = json.loads(request.body)
-    project_id = params.get('project_fy_id')
+    project_fy_id = params.get('project_fy_id')
     dct = {'rows': {}}
-    model = model
     try:
         for index, row in enumerate(params.get('table_view').get('rows')):
             if invalid(row, ['budget_head_id']):
                 continue
             values = {'budget_head_id': row.get('budget_head_id'),
-                      'project_fy_id': project_id}
+                      'project_fy_id': project_fy_id}
             dct['rows'][index] = {}
             if row.get('goa_id') or row.get('goa_amount'):
                 values['amount'] = empty_to_none(row.get('goa_amount'))
@@ -368,7 +366,7 @@ def delete_budget_allocation(rows, model):
                 pass
 
 
-class BudgetAllocation(BaseStatement, ProjectFYView, ListView):
+class BudgetAllocation(ProjectFYView, BaseStatement, ListView):
     model = BudgetAllocationItem
     fy = None
 
@@ -378,7 +376,7 @@ def save_budget_allocation(request):
     return base_save(request, BudgetAllocationItem)
 
 
-class BudgetRelease(BaseStatement, ProjectFYView, ListView):
+class BudgetRelease(ProjectFYView, BaseStatement, ListView):
     model = BudgetReleaseItem
     fy = None
 
@@ -388,7 +386,7 @@ def save_budget_release(request):
     return base_save(request, BudgetReleaseItem)
 
 
-class Expenditure(BaseStatement, ProjectFYView, ListView):
+class BudgetExpenditure(ProjectFYView, BaseStatement, ListView):
     model = Expenditure
     fy = None
     template_name = 'project/expenditure_list.html'
