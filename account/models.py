@@ -394,8 +394,8 @@ from django.db.models.signals import post_save
 @receiver(post_save, sender=FiscalYear)
 def fy_add(sender, instance, created, **kwargs):
     if created:
-        # TODO Create ledgers: ka-7-15, ka-7-17 per fy
-        pass
+        Account.objects.create(name='Ka-7-15', fy=instance)
+        Account.objects.create(name='Ka-7-17', fy=instance)
 
 
 class Party(models.Model):
@@ -407,7 +407,7 @@ class Party(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk is None:
-            account = Account(name_en=self.name_en, name_ne=self.name_ne)
+            account = Account(name=self.name)
             account.save()
             self.account = account
         super(Party, self).save(*args, **kwargs)
