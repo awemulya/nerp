@@ -114,21 +114,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Party',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=254, verbose_name='Name')),
-                ('name_en', models.CharField(max_length=254, null=True, verbose_name='Name')),
-                ('name_ne', models.CharField(max_length=254, null=True, verbose_name='Name')),
-                ('address', models.CharField(max_length=254, null=True, blank=True)),
-                ('phone_no', models.CharField(max_length=100, null=True, blank=True)),
-                ('pan_no', models.CharField(max_length=50, null=True, blank=True)),
-            ],
-            options={
-                'verbose_name_plural': 'Parties',
-            },
-        ),
-        migrations.CreateModel(
             name='TaxScheme',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),

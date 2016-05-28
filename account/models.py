@@ -7,6 +7,7 @@ from django.dispatch import receiver
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
@@ -395,3 +396,24 @@ def fy_add(sender, instance, created, **kwargs):
     if created:
         # TODO Create ledgers: ka-7-15, ka-7-17 per fy
         pass
+
+
+class Party(models.Model):
+    name = models.CharField(max_length=254, verbose_name=_('Name'))
+    address = models.CharField(max_length=254, blank=True, null=True)
+    phone_no = models.CharField(max_length=100, blank=True, null=True)
+    pan_no = models.CharField(max_length=50, blank=True, null=True)
+    account = models.OneToOneField(Account, related_name='party')
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            account = Account(name_en=self.name_en, name_ne=self.name_ne)
+            account.save()
+            self.account = account
+        super(Party, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = _('Parties')

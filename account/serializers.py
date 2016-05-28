@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from account.models import Receipt, ReceiptRow, Account
+from account.models import Receipt, ReceiptRow, Account, Party
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -23,3 +23,8 @@ class ReceiptSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Receipt
+
+
+class PartySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Party

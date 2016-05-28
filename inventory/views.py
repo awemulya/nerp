@@ -20,7 +20,8 @@ from openpyxl.styles import Style, Font, Alignment
 from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 from openpyxl.cell import get_column_letter
 
-from core.models import AppSetting, FiscalYear, Party, FISCAL_YEARS
+from core.models import AppSetting, FiscalYear, FISCAL_YEARS
+from account.models import Party
 from app.utils.helpers import invalid, save_model, empty_to_none
 from app.utils.mixins import PDFView, LoginRequiredMixin
 # from app.utils.mixins import TemplateView as PDFView

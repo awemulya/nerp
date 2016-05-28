@@ -34,7 +34,7 @@ function QuotationComparisonVM(data){
 	}
 
 	$.ajax({
-		url: '/parties.json',
+		url: '/account/parties.json',
 		dataType: 'json',
 		async: false,
 		success: function (data) {

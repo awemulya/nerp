@@ -11,6 +11,7 @@ import inventory.models
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('account', '0001_initial'),
         ('contenttypes', '0002_remove_content_type_name'),
         ('core', '0001_initial'),
     ]
@@ -236,7 +237,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('per_unit_price', models.FloatField()),
-                ('party', models.ForeignKey(related_name='party_quote', to='core.Party')),
+                ('party', models.ForeignKey(related_name='party_quote', to='account.Party')),
             ],
         ),
         migrations.CreateModel(
@@ -246,7 +247,7 @@ class Migration(migrations.Migration):
                 ('order_no', models.IntegerField(null=True, blank=True)),
                 ('date', njango.fields.BSDateField(default=njango.fields.today, validators=[core.models.validate_in_fy])),
                 ('due_days', models.IntegerField(default=3)),
-                ('party', models.ForeignKey(to='core.Party')),
+                ('party', models.ForeignKey(to='account.Party')),
             ],
         ),
         migrations.CreateModel(

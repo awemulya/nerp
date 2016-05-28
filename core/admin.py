@@ -1,11 +1,8 @@
 from django.contrib import admin
 from solo.admin import SingletonModelAdmin
 from app.utils.translation import TranslationAdmin
-from core.models import FiscalYear, Donor, Activity, BudgetHead, Employee, Party, TaxScheme, BudgetBalance, \
+from core.models import FiscalYear, Donor, Activity, BudgetHead, Employee, TaxScheme, BudgetBalance, \
     Language, Currency, AppSetting
-
-
-
 
 
 class LanguageAdmin(admin.ModelAdmin):
@@ -14,18 +11,11 @@ class LanguageAdmin(admin.ModelAdmin):
     search_fields = ('name', 'code')
 
 
-class PartyAdmin(TranslationAdmin):
-    list_display = ('__unicode__', 'address', 'phone_no', 'pan_no')
-    list_display_links = ('__unicode__', 'pan_no', 'phone_no')
-    search_fields = ('address', 'phone_no', 'pan_no')
-
-
 class TaxSchemeAdmin(TranslationAdmin):
     list_display = ('name', 'percent')
     search_fields = ('name', 'percent')
 
 
-admin.site.register(Party, PartyAdmin)
 admin.site.register(FiscalYear)
 admin.site.register(Currency)
 admin.site.register(Donor, TranslationAdmin)

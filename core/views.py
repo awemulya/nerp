@@ -5,11 +5,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.http import is_safe_url
 from django.contrib.auth.decorators import user_passes_test
 
-from account.serializers import AccountSerializer
 from app.utils.forms import form_view
-from core.forms import PartyForm, EmployeeForm, DonorForm, BudgetHeadForm
-from core.models import Party, Employee, BudgetHead, Donor, Activity, TaxScheme, Language, FISCAL_YEARS, FiscalYear
-from core.serializers import PartySerializer, EmployeeSerializer, BudgetSerializer, ActivitySerializer, DonorSerializer, \
+from core.forms import EmployeeForm, DonorForm, BudgetHeadForm
+
+from core.models import Employee, BudgetHead, Donor, Activity, TaxScheme, Language, FISCAL_YEARS, FiscalYear
+
+from core.serializers import EmployeeSerializer, BudgetSerializer, ActivitySerializer, DonorSerializer, \
     TaxSchemeSerializer, LanguageSerializer
 from django.views.generic import ListView
 from users.models import group_required
@@ -17,53 +18,6 @@ from .signals import fiscal_year_signal
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
 
 
-@group_required('Store Keeper', 'Chief', 'Accountant')
-def list_parties(request):
-    objects = Party.objects.all()
-    return render(request, 'list_parties.html', {'objects': objects})
-
-
-@group_required('Store Keeper', 'Chief', 'Accountant')
-def party_form(request, id=None):
-    if id:
-        obj = get_object_or_404(Party, id=id)
-        scenario = 'Update'
-    else:
-        obj = Party()
-        scenario = 'Create'
-    if request.POST:
-        form = PartyForm(data=request.POST, instance=obj)
-        if form.is_valid():
-            obj = form.save(commit=False)
-            obj.save()
-            if request.is_ajax():
-                return render(request, 'callback.html', {'obj': PartySerializer(obj).data})
-            return redirect(reverse('list_parties'))
-    else:
-        form = PartyForm(instance=obj)
-    if request.is_ajax():
-        base_template = 'modal.html'
-    else:
-        base_template = 'base.html'
-    return render(request, 'party_form.html', {
-        'scenario': scenario,
-        'form': form,
-        'base_template': base_template,
-    })
-
-
-@group_required('Store Keeper', 'Chief', 'Accountant')
-def delete_party(request, id):
-    obj = get_object_or_404(Party, id=id)
-    obj.delete()
-    return redirect(reverse('list_parties'))
-
-
-@group_required('Store Keeper', 'Chief', 'Accountant')
-def parties_as_json(request):
-    objects = Party.objects.all()
-    objects_data = PartySerializer(objects, many=True).data
-    return JsonResponse(objects_data, safe=False)
 
 
 @group_required('Store Keeper', 'Chief', 'Accountant')

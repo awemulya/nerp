@@ -1,20 +1,23 @@
 from datetime import date
 import json
 
-from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
-from account.forms import CategoryForm, AccountForm
-from django.core.urlresolvers import reverse_lazy
-
-
-from core.models import AppSetting, FiscalYear
-
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+
+from django.views.generic import ListView
+
+from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
+from account.forms import CategoryForm, AccountForm
+from core.models import AppSetting, FiscalYear
 from account.models import Receipt, ReceiptRow, JournalEntry, Account, Category
 from account.serializers import ReceiptSerializer
 from app.utils.helpers import save_model, invalid
-from django.views.generic import ListView
 from inventory.models import delete_rows
+from account.forms import PartyForm
+from account.serializers import PartySerializer
+from account.models import Party
+from users.models import group_required
 
 
 def receipt(request, pk=None):
@@ -110,7 +113,6 @@ class CategoryDelete(CategoryView, DeleteView):
     pass
 
 
-
 class AccountView(object):
     model = Account
     success_url = reverse_lazy('account_list')
@@ -131,3 +133,52 @@ class AccountUpdate(AccountView, UpdateView):
 
 class AccountDelete(AccountView, DeleteView):
     pass
+
+
+@group_required('Store Keeper', 'Chief', 'Accountant')
+def list_parties(request):
+    objects = Party.objects.all()
+    return render(request, 'list_parties.html', {'objects': objects})
+
+
+@group_required('Store Keeper', 'Chief', 'Accountant')
+def party_form(request, id=None):
+    if id:
+        obj = get_object_or_404(Party, id=id)
+        scenario = 'Update'
+    else:
+        obj = Party()
+        scenario = 'Create'
+    if request.POST:
+        form = PartyForm(data=request.POST, instance=obj)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.save()
+            if request.is_ajax():
+                return render(request, 'callback.html', {'obj': PartySerializer(obj).data})
+            return redirect(reverse('list_parties'))
+    else:
+        form = PartyForm(instance=obj)
+    if request.is_ajax():
+        base_template = 'modal.html'
+    else:
+        base_template = 'base.html'
+    return render(request, 'party_form.html', {
+        'scenario': scenario,
+        'form': form,
+        'base_template': base_template,
+    })
+
+
+@group_required('Store Keeper', 'Chief', 'Accountant')
+def delete_party(request, id):
+    obj = get_object_or_404(Party, id=id)
+    obj.delete()
+    return redirect(reverse('list_parties'))
+
+
+@group_required('Store Keeper', 'Chief', 'Accountant')
+def parties_as_json(request):
+    objects = Party.objects.all()
+    objects_data = PartySerializer(objects, many=True).data
+    return JsonResponse(objects_data, safe=False)

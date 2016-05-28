@@ -16,7 +16,8 @@ from njango.fields import BSDateField, today
 
 from app.utils.helpers import zero_for_none, none_for_zero
 from users.models import User
-from core.models import FiscalYear, Party, validate_in_fy, FYManager
+from core.models import FiscalYear, validate_in_fy, FYManager
+from account.models import Party
 
 
 def alter(account, date, diff):
