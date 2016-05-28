@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
+from django.utils.translation import ugettext_lazy as _
+
 from core.serializers import BudgetSerializer
 from account.serializers import AccountSerializer
 from app.utils.helpers import save_model, invalid, empty_to_none
@@ -19,7 +21,6 @@ from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Pro
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, \
     ExpenseSerializer, AidSerializer, BaseStatementSerializer, ImprestJVSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, DeleteView
-from django.utils.translation import ugettext_lazy as _
 
 
 class ProjectCreateView(BaseCreateView):
@@ -150,7 +151,7 @@ def save_application(request):
     params = json.loads(request.body)
     dct = {'categories': {}}
     model = ExpenseRow
-    fy_id = params.get('fy_id')
+    project_fy_id = params.get('project_fy_id')
     try:
         for cat_index, category in enumerate(params.get('categories')):
             dct['categories'][cat_index] = {'rows': {}}
@@ -160,7 +161,7 @@ def save_application(request):
                 values = {'category_id': row.get('category_id'),
                           'expense_id': row.get('expense_id'),
                           'amount': row.get('amount'),
-                          'fy_id': fy_id
+                          'project_fy_id': project_fy_id,
                           }
                 submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
                 if not created:

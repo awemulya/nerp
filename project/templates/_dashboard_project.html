@@ -49,6 +49,10 @@
             <div>
                 <a href="{% url 'budget_expenditure' project.project_fy.id %}">{% trans 'Budget Expenditure' %}</a>
             </div>
+            <div>
+                <a href="{% url 'reimbursement_list' project.project_fy.id %}">{% trans 'Reimbursements as per FCGO records' %}</a>
+            </div>
+            
 
         </div>
     </div>
