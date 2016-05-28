@@ -22,7 +22,7 @@
 
     {{ form.non_field_errors }}
     {{ form.errors }}
-    <form method="post">
+    <form method="post" data-bind="submit: save">
         {% csrf_token %}
         <div class="well">
 
@@ -62,7 +62,7 @@
                 <tbody>
                 <tr>
                     <td>
-                        <select data-bind="selectize: $root.dr_ledgers, value: dr, object: dr_ledger"
+                        <select data-bind="selectize: $root.dr_ledgers, value: dr, object: dr_ledger" name="dr" required
                                 {#                                data-url="{% url 'create_inventory_item' %}"#}
                                 ></select>
                     </td>
@@ -75,8 +75,8 @@
                 </tr>
                 <tr>
                     <td>
-                        <select data-bind="selectize: $root.cr_ledgers, value: cr, object: cr_ledger"
-                                data-url="{% url 'create_inventory_item' %}"
+                        <select data-bind="selectize: $root.cr_ledgers, value: cr, object: cr_ledger" name="cr" required
+{#                                data-url="{% url 'create_inventory_item' %}"    #}
                                 ></select>
                     </td>
                     <td></td>

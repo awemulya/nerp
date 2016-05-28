@@ -520,3 +520,7 @@ tr.total, tr.category, tr.subtotal{
 .panel-title a{
     cursor: pointer;
 }
+
+.selectize-control.invalid{
+    border: 1px solid #ff2d4d;
+}

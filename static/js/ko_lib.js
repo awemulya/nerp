@@ -89,7 +89,7 @@ ko.bindingHandlers.selectize = {
             }
 
             if (typeof init_selectize == 'function') {
-                //init_selectize($select);
+                init_selectize($select);
             }
             if (typeof valueAccessor().subscribe == 'function') {
                 valueAccessor().subscribe(function (changes) {

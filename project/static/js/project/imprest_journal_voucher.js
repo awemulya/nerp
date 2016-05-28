@@ -33,4 +33,12 @@ function ImprestJV(data) {
 
     self.status = ko.observable('Loading...');
     
+    self.save = function(){
+        if (!self.date()) {
+            alert.error('Date is required!');
+            return false;
+        }
+        return true;
+    }
+    
 }
