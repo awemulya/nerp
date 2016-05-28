@@ -1,5 +1,10 @@
 {% load filters i18n %}
 
+
+<div>
+    <a href="{% url 'project_list' %}">{% trans 'Projects' %}</a>
+</div>
+
 <div>
     <a href="{% url 'list_parties' %}">{% trans 'Parties' %}</a>
 </div>
@@ -7,6 +12,11 @@
 <div>
     <a href="{% url 'donor_list' %}">{% trans 'Donors' %}</a>
 </div>
+
+<div>
+    <a href="{% url 'budget_head_list' %}">{% trans 'Budget Heads' %}</a>
+</div>
+
 
 
 {% for project in projects %}
