@@ -367,7 +367,7 @@ def delete_budget_allocation(rows, model):
                 pass
 
 
-class BudgetAllocationCreate(BaseStatement, ProjectFYView, ListView):
+class BudgetAllocation(BaseStatement, ProjectFYView, ListView):
     model = BudgetAllocationItem
     fy = None
 
@@ -377,7 +377,7 @@ def save_budget_allocation(request):
     return base_save(request, BudgetAllocationItem)
 
 
-class BudgetReleaseCreate(BaseStatement, ProjectFYView, ListView):
+class BudgetRelease(BaseStatement, ProjectFYView, ListView):
     model = BudgetReleaseItem
     fy = None
 
@@ -387,7 +387,7 @@ def save_budget_release(request):
     return base_save(request, BudgetReleaseItem)
 
 
-class ExpenditureCreate(BaseStatement, ProjectFYView, ListView):
+class Expenditure(BaseStatement, ProjectFYView, ListView):
     model = Expenditure
     fy = None
     template_name = 'project/expenditure_list.html'

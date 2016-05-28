@@ -5,7 +5,9 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "imprest_journal_voucher_list" project_fy.id %}">{% trans 'Journal Vouchers' %}</a>
+    <li>
+        <a href="{% url "imprest_journal_voucher_list" project_fy.id %}">{% trans 'Journal Vouchers' %}</a>
+    </li>
 {% endblock %}
 
 {% block content %}

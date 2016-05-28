@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "project_list" %}">{% trans 'Projects' %}</a>
+    <li><a href="{% url "project_list" %}">{% trans 'Projects' %}</a></li>
     <li><span>{% trans scenario %} {% trans 'Project' %}</span></li>
 {% endblock %}
 

@@ -108,7 +108,7 @@ function RowVM(row, vm) {
     self.goa_id = ko.observable();
     self.aid_amount = ko.observableArray();
     self.budget_head = ko.observable();
-    self.vm = ko.observable(vm);
+    //self.vm = ko.observable(vm);
     self.dummy = ko.observable();
 
     for (i in vm.count) {
