@@ -6,6 +6,7 @@ from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
 from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, TaxScheme, TaxCalcScheme, MaritalStatus
 from account.models import Account
+from app.utils.forms import HTML5BootstrapModelForm
 # import pdb
 
 # class DateSelectorWidget(MultiWidget):
@@ -123,7 +124,7 @@ class AllowanceDataForm(forms.Form):
             )
 
 
-class PaymentRowForm(forms.ModelForm):
+class PaymentRowForm(HTML5BootstrapModelForm):
     # deduced_amount = forms.FloatField(
     #     widget=NumberInput(attrs={'data-bind': "value: deduced_amount, disable: disable_input"})
     # )
@@ -154,7 +155,7 @@ class PaymentRowForm(forms.ModelForm):
     #     self.fields["paid_employee"].choices = [("", _("Select Employee")),] + list(self.fields["paid_employee"].choices)[1:]
 
 
-class PayrollEntryForm(forms.ModelForm):
+class PayrollEntryForm(HTML5BootstrapModelForm):
     class Meta:
         model = PayrollEntry
         fields = '__all__'
@@ -539,7 +540,7 @@ class TaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
                         pass
 
 
-class AllowanceForm(forms.ModelForm):
+class AllowanceForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = Allowance
@@ -639,7 +640,7 @@ class DeductionForm(forms.ModelForm):
             )
 
 
-class EmployeeForm(forms.ModelForm):
+class EmployeeForm(HTML5BootstrapModelForm):
 
     def __init__(self, *args, **kwargs):
         # extra = kwargs.pop('extra')
@@ -652,21 +653,21 @@ class EmployeeForm(forms.ModelForm):
         exclude = ('accounts', 'incentives')
 
 
-class IncentiveNameForm(forms.ModelForm):
+class IncentiveNameForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = IncentiveName
         fields = '__all__'
 
 
-class AllowanceNameForm(forms.ModelForm):
+class AllowanceNameForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = AllowanceName
         fields = '__all__'
 
 
-class MaritalStatusForm(forms.ModelForm):
+class MaritalStatusForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = MaritalStatus
@@ -674,7 +675,7 @@ class MaritalStatusForm(forms.ModelForm):
         # exclude = ('accounts',)
 
 
-class TaxSchemeForm(forms.ModelForm):
+class TaxSchemeForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = TaxScheme
