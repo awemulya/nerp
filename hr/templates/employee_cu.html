@@ -14,6 +14,15 @@
         });
     </script>
 {% endblock %}
+{% block breadcrumbs %}
+    {{ block.super }}
+        <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
+        <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
+        <li><a href="{% url 'list_employee' %}">{% trans 'Employee List' %}</a>
+
+{% endblock %}
+{% block breadcrumbs_before_print %}
+{% endblock %}
 
 {% block alert %}
 
