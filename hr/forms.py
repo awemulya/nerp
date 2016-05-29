@@ -644,12 +644,12 @@ class EmployeeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         # extra = kwargs.pop('extra')
         super(EmployeeForm, self).__init__(*args, **kwargs)
-        self.fields['optional_deduction'].queryset = Deduction.objects.filter(is_optional=True)
+        self.fields['optional_deductions'].queryset = Deduction.objects.filter(is_optional=True)
 
     class Meta:
         model = Employee
-        fields = '__all__'
-        # exclude = ('accounts',)
+        # fields = '__all__'
+        exclude = ('accounts',)
 
 
 class IncentiveNameForm(forms.ModelForm):
