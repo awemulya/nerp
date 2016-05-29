@@ -34,6 +34,8 @@ ACC_CAT_ALLOWANCE_ID = 4
 ACC_CAT_INCENTIVE_ID = 6
 ACC_CAT_BASIC_SALARY_ID = 3
 ACC_CAT_TAX_ID = 7
+ACC_CAT_SALARY_GIVING_ID = 13
+ACC_CAT_PRO_TEMPORE_ID = 14
 
 
 class EmployeeGrade(models.Model):
@@ -392,17 +394,34 @@ class Employee(models.Model):
 @receiver(post_save, sender=Employee)
 def add_employee_accounts(sender, instance, created, **kwargs):
     if created:
-        accounts = []
         # Add salary Account
         salary_account = Account.objects.create(
             name="Salary Account-EID#%d" % instance.id,
             category_id=ACC_CAT_BASIC_SALARY_ID
         )
-        salary_emp_account = EmployeeAccount.objects.create(
+        EmployeeAccount.objects.create(
             account=salary_account,
             employee=instance,
         )
-        accounts.append(salary_emp_account)
+        # Add tax account
+        tax_account = Account.objects.create(
+            name="Tax-EID#%d" % instance.id,
+            category_id=ACC_CAT_TAX_ID
+        )
+        EmployeeAccount.objects.create(
+            account=tax_account,
+            employee=instance,
+        )
+
+        # Add pro tempore account
+        pro_tempore_account = Account.objects.create(
+            name="ProTempore-EID#%d" % instance.id,
+            category_id=ACC_CAT_PRO_TEMPORE_ID
+        )
+        EmployeeAccount.objects.create(
+            account=pro_tempore_account,
+            employee=instance,
+        )
         # Add deduction accounts (compulsory)
         for deduction in Deduction.objects.filter(is_optional=False):
             deduction_account = Account.objects.create(
@@ -412,11 +431,10 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                 ),
                 category=deduction.deduct_in_category
             )
-            deduction_emp_account = EmployeeAccount.objects.create(
+            EmployeeAccount.objects.create(
                 account=deduction_account,
                 employee=instance,
             )
-            accounts.append(deduction_emp_account)
         # Add deduction accounts (optional)
         for deduct in instance.optional_deductions.all():
             opt_deduction_account = Account.objects.create(
