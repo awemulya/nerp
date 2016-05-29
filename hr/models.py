@@ -418,7 +418,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
             )
             accounts.append(deduction_emp_account)
         # Add deduction accounts (optional)
-        for deduct in instance.optional_deduction.all():
+        for deduct in instance.optional_deductions.all():
             opt_deduction_account = Account.objects.create(
                 name="Deduction#%d-EID#%d" % (
                     deduct.id,
@@ -465,7 +465,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
         #     Optional Deduction
         #     Allowances
         #     Incentives
-        for this_deduction in instance.optional_deduction.all():
+        for this_deduction in instance.optional_deductions.all():
             this_deduction_emp_accs = EmployeeAccount.objects.filter(
                 account__name="Deduction#%d-EID#%d" % (
                     this_deduction.id,
@@ -567,7 +567,7 @@ class Incentive(models.Model):
             self.amount_rate = None
         elif self.sum_type == 'RATE':
             self.amount = None
-        if self.payment_cycle is not 'Y':
+        if self.payment_cycle != 'Y':
             self.year_payment_cycle_month = None
         super(Incentive, self).save(*args, **kwargs)
 

@@ -13,6 +13,7 @@ from njango.nepdate import bs
 from .models import get_y_m_tuple_list
 from .bsdate import BSDate
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, emp_salary_eligibility, month_cnt_inrange, fiscal_year_data
+from accounts.model import set_transactions
 import pdb
 
 
@@ -958,10 +959,10 @@ def entry_detail(request, pk=None):
         i_title = _(ob.name.title())
         incentive_titles.append(i_title)
     for ob in all_deductions:
-        if ob.deduction_for == 'EMPLOYEE ACC':
-            d_name = '_'.join(ob.in_acc_type.name.split(' ')).lower()
-        else:
-            d_name = '_'.join(ob.name.split(' ')).lower()
+        # if ob.deduction_for == 'EMPLOYEE ACC':
+        #     d_name = '_'.join(ob.in_acc_type.name.split(' ')).lower()
+        # else:
+        d_name = '_'.join(ob.name.split(' ')).lower()
         d_title = ' '.join(d_name.split('_')).title()
         deduction_titles.append(d_title)
 
@@ -1249,10 +1250,14 @@ def list_employee(request):
     )
 
 
-def delete_employee(request, pk=None):
+def toggle_employee_activeness(request, pk=None):
     obj = Employee.objects.get(id=pk)
     # employee_accounts = EmployeeAccount.objects.filter(employee=obj)
-    obj.delete()
+    if obj.is_active:
+        obj.is_active = False
+    else:
+        obj.is_active = True
+    obj.save()
     # for emp_acc in employee_accounts:
     #     emp_acc.delete()
     return redirect(reverse('list_employee'))

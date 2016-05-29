@@ -37,9 +37,9 @@
 
 {% block  content %}
 {% if obj_id %}
-    <form method="POST" action="{% url 'edit_employee' obj_id %}" class="form-horizontal">
+    <form method="POST" action="{% url 'edit_employee' obj_id %}">
 {% else %}
-    <form method="POST" action="{% url 'employee_add' %}" class="form-horizontal">
+    <form method="POST" action="{% url 'add_employee' %}">
 {% endif %}
     {% csrf_token %}
     <div class="row">
