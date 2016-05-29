@@ -28,6 +28,11 @@
 {% endblock %}
 
 {% block  content %}
+    <form action="" method="get">
+        {{ objects.form }}
+        <input type="submit" value="Filter" />
+    </form>
+
     <table class="table table-striped" >
         <tr>
             <th>{% trans 'Employee' %}</th>

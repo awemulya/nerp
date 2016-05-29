@@ -14,6 +14,7 @@ from .models import get_y_m_tuple_list
 from .bsdate import BSDate
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, emp_salary_eligibility, month_cnt_inrange, fiscal_year_data
 from account.models import set_transactions
+from hr.filters import EmployeeFilter
 import pdb
 
 from hr.models import ACC_CAT_BASIC_SALARY_ID,\
@@ -1269,7 +1270,7 @@ def employee(request, pk=None):
 
 
 def list_employee(request):
-    objects = Employee.objects.all()
+    objects = EmployeeFilter(request.GET, queryset=Employee.objects.all())
     return render(
         request,
         'employee_list.html',
