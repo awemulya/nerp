@@ -217,7 +217,7 @@ def salary_taxation_unit(employee, f_y_item):
 
     deduction = 0
     for obj in deductions.filter(is_tax_free=True):
-        if obj in deductions.filter(is_optional=False) or obj in employee.deductions.all():
+        if obj in deductions.filter(is_optional=False) or obj in employee.optional_deductions.all():
 
             if obj.deduct_type == 'AMOUNT':
                 deduction += obj.amount * total_month
@@ -468,16 +468,13 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         paid_from_date,
         paid_to_date
     )
-    # scale_salary = employee.designation.grade.salary_scale
-
-    deductions = sorted(
-        Deduction.objects.all(), key=lambda obj: obj.priority)
+    deductions = Deduction.objects.all()
 
     # Addition of PF and bima to salary if employee is permanent
     addition_pf = 0
     for item in deductions:
         if employee.is_permanent:
-            if item.add2_init_salary and item.deduction_for == 'EMPLOYEE ACC':
+            if item.add2_init_salary:
                 if item.deduct_type == 'AMOUNT':
                     addition_pf += item.amount * total_month
                 else:
@@ -611,14 +608,14 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     deduction = 0
     # deduction_detail = []
     for obj in deductions:
-        if obj in deduction.filter(is_optional=False) or obj in employee.optional_deduction.all():
+        if obj in deductions.filter(is_optional=False) or obj in employee.optional_deductions.all():
             employee_response['deduction_%d' % (obj.id)] = 0
             if obj.deduct_type == 'AMOUNT':
                 employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
             else:
                 employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
             if employee.is_permanent:
-                employee_response['deduction_%d' % (obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
+                employee_response['deduction_%d' % (obj.id)] *= obj.permanent_multiply_rate                 
             deduction += employee_response['deduction_%d' % (obj.id)]
         else:
             employee_response['deduction_%d' % (obj.id)] = 0

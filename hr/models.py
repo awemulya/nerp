@@ -229,7 +229,7 @@ class Employee(models.Model):
     # incentive will have diff trancation
     incentives = models.ManyToManyField(IncentiveName, blank=True, through="Incentive")
 
-    optional_deduction = models.ManyToManyField(
+    optional_deductions = models.ManyToManyField(
         Deduction,
         blank=True
     )
