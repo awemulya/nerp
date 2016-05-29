@@ -8,8 +8,8 @@
     <script src="{% static 'js/vendors/jquery-formset.js' %}"></script>
     <script type="text/javascript">
         $(function () {
-            $('.employee-incentive-form').formset({
-                prefix: '{{ employee_incentive_formset.prefix }}'
+            $('.incentivename-form').formset({
+                prefix: '{{ incentivename_formset.prefix }}'
             });
         });
     </script>
@@ -27,24 +27,20 @@
 {% endblock %}
 
 {% block  content %}
-{% if obj_id %}
-    <form method="POST" action="{% url 'edit_employee' obj_id %}" class="form-horizontal">
-{% else %}
-    <form method="POST" action="{% url 'employee_add' %}" class="form-horizontal">
-{% endif %}
+
+<form method="POST" action="{% url 'incentivename_curd' %}">
+
     {% csrf_token %}
-    <div class="row">
-        {{ employee_form.as_ul }}
-    </div>
-    <div class="employee-incentives-form">
-        {% for employee_incentive_form in employee_incentive_formset %}
-            <div class="row employee-incentive-form">
-                {{ employee_incentive_form.as_table }}
-                {% if employee_incentive_form.instance.pk %}{{ employee_incentive_form.DELETE }}{% endif %}
+
+    <div class="incentivename-formset">
+        {% for incentivename_form in incentivename_formset %}
+            <div class="row incentivename-form">
+                {{ incentivename_form.as_table }}
+                {% if incentivename_form.instance.pk %}{{ incentivename_form.DELETE }}{% endif %}
             </div>
         {% endfor %}
     </div>
-    {{ employee_incentive_formset.management_form }}
+    {{ incentivename_formset.management_form }}
     <input type="submit" value="Save"></input>
 
 </form>

@@ -649,7 +649,7 @@ class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
         # fields = '__all__'
-        exclude = ('accounts',)
+        exclude = ('accounts', 'incentives')
 
 
 class IncentiveNameForm(forms.ModelForm):
@@ -781,12 +781,12 @@ AllowanceFormSet = forms.formset_factory(AllowanceDataForm)
 
 
 # These are crud formset
-EmployeeAccountFormSet = forms.inlineformset_factory(
+EmployeeIncentiveFormSet = forms.inlineformset_factory(
     Employee,
-    EmployeeAccount,
+    Incentive,
     extra=1,
     fields='__all__',
-    formset=EmployeeAccountInlineFormset
+    formset=IncentiveInlineFormset
 )
 IncentiveNameFormSet = forms.inlineformset_factory(
     IncentiveName,
@@ -810,6 +810,15 @@ DeductionDetailFormSet = forms.modelformset_factory(
     exclude=('deduct_in_category',),
     # fields='__all__',
     formset=DeductionModelFormSet
+)
+
+IncentiveNameDetailFormSet = forms.modelformset_factory(
+    IncentiveName,
+    extra=1,
+    can_delete=True,
+    exclude=('account_category',),
+    # fields='__all__',
+    # formset=DeductionModelFormSet
 )
 
 TaxSchemeFormSet = forms.inlineformset_factory(

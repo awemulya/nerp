@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeIncentiveFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, MaritalStatus
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
@@ -1218,21 +1218,21 @@ def employee(request, pk=None):
 
     if request.method == "POST":
         employee_form = EmployeeForm(request.POST, instance=employee)
-        employee_account_formset = EmployeeAccountFormSet(request.POST, instance=employee)
-        if employee_form.is_valid() and employee_account_formset.is_valid():
+        employee_incentive_formset = EmployeeIncentiveFormSet(request.POST, instance=employee)
+        if employee_form.is_valid() and employee_incentive_formset.is_valid():
             employee_form.save()
-            employee_account_formset.save()
+            employee_incentive_formset.save()
             return redirect(reverse('list_employee'))
     else:
         employee_form = EmployeeForm(instance=employee)
-        employee_account_formset = EmployeeAccountFormSet(instance=employee)
+        employee_incentive_formset = EmployeeIncentiveFormSet(instance=employee)
 
     return render(
         request,
         'employee_cu.html',
         {
             'employee_form': employee_form,
-            'employee_account_formset': employee_account_formset,
+            'employee_incentive_formset': employee_incentive_formset,
             'ko_data': ko_data,
             'obj_id': obj_id,
         })
@@ -1258,56 +1258,56 @@ def delete_employee(request, pk=None):
     return redirect(reverse('list_employee'))
 
 
-def incentive(request, pk=None):
-    ko_data = {}
+# def incentive(request, pk=None):
+#     ko_data = {}
 
-    if pk:
-        obj_id = pk
-        incentive_name = IncentiveName.objects.get(id=pk)
-    else:
-        obj_id = None
-        incentive_name = IncentiveName()
+#     if pk:
+#         obj_id = pk
+#         incentive_name = IncentiveName.objects.get(id=pk)
+#     else:
+#         obj_id = None
+#         incentive_name = IncentiveName()
 
-    if request.method == "POST":
-        incentive_name_form = IncentiveNameForm(request.POST, instance=incentive_name)
-        incentive_formset = IncentiveNameFormSet(request.POST, instance=incentive_name)
-        if incentive_name_form.is_valid() and incentive_formset.is_valid():
-            incentive_name_form.save()
-            incentive_formset.save()
-            return redirect(reverse('list_incentive'))
-    else:
-        incentive_name_form = IncentiveNameForm(instance=incentive_name)
-        incentive_formset = IncentiveNameFormSet(instance=incentive_name)
+#     if request.method == "POST":
+#         incentive_name_form = IncentiveNameForm(request.POST, instance=incentive_name)
+#         incentive_formset = IncentiveNameFormSet(request.POST, instance=incentive_name)
+#         if incentive_name_form.is_valid() and incentive_formset.is_valid():
+#             incentive_name_form.save()
+#             incentive_formset.save()
+#             return redirect(reverse('list_incentive'))
+#     else:
+#         incentive_name_form = IncentiveNameForm(instance=incentive_name)
+#         incentive_formset = IncentiveNameFormSet(instance=incentive_name)
 
-    return render(
-        request,
-        'incentive_cu.html',
-        {
-            'incentive_name_form': incentive_name_form,
-            'incentive_formset': incentive_formset,
-            'ko_data': ko_data,
-            'obj_id': obj_id,
-        })
-
-
-def list_incentive(request):
-    objects = IncentiveName.objects.all()
-    return render(
-        request,
-        'incentive_list.html',
-        {
-            'objects': objects,
-        }
-    )
+#     return render(
+#         request,
+#         'incentive_cu.html',
+#         {
+#             'incentive_name_form': incentive_name_form,
+#             'incentive_formset': incentive_formset,
+#             'ko_data': ko_data,
+#             'obj_id': obj_id,
+#         })
 
 
-def delete_incentive(request, pk=None):
-    obj = IncentiveName.objects.get(id=pk)
-    # inc_details = Incentive.objects.filter(name=obj)
-    obj.delete()
-    # for inc in inc_details():
-    #     inc.delete()
-    return redirect(reverse('list_incentive'))
+# def list_incentive(request):
+#     objects = IncentiveName.objects.all()
+#     return render(
+#         request,
+#         'incentive_list.html',
+#         {
+#             'objects': objects,
+#         }
+#     )
+
+
+# def delete_incentive(request, pk=None):
+#     obj = IncentiveName.objects.get(id=pk)
+#     # inc_details = Incentive.objects.filter(name=obj)
+#     obj.delete()
+#     # for inc in inc_details():
+#     #     inc.delete()
+#     return redirect(reverse('list_incentive'))
 
 
 def allowance(request, pk=None):
@@ -1484,3 +1484,26 @@ def delete_taxscheme(request, pk=None):
     # for alw in alw_details():
     #     alw.delete()
     return redirect(reverse('list_tax_scheme'))
+
+
+def incentivename_curd(request):
+    if request.method == "POST":
+
+        incentivename_formset = IncentiveNameDetailFormSet(
+            request.POST,
+            queryset=IncentiveName.objects.all(),
+        )
+        if incentivename_formset.is_valid():
+            incentivename_formset.save()
+            return redirect(reverse('incentivename_curd'))
+    else:
+        incentivename_formset = IncentiveNameDetailFormSet(
+            queryset=IncentiveName.objects.all(),
+        )
+
+    return render(
+        request,
+        'incentivename_curd.html',
+        {
+            'incentivename_formset': incentivename_formset,
+        })

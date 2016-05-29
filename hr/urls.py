@@ -20,11 +20,11 @@ urlpatterns = patterns('',
                        url(r'^employee/delete/(?P<pk>[0-9]+)/$', views.delete_employee, name='delete_employee'),
                        url(r'^employee/list/$', views.list_employee, name='list_employee'),
 
-                       # incentive crud
-                       url(r'^incentive/add/$', views.incentive, name='add_incentive'),
-                       url(r'^incentive/edit/(?P<pk>[0-9]+)/$', views.incentive, name='edit_incentive'),
-                       url(r'^incentive/delete/(?P<pk>[0-9]+)/$', views.delete_incentive, name='delete_incentive'),
-                       url(r'^incentive/list/$', views.list_incentive, name='list_incentive'),
+                       # # incentive crud
+                       # url(r'^incentive/add/$', views.incentive, name='add_incentive'),
+                       # url(r'^incentive/edit/(?P<pk>[0-9]+)/$', views.incentive, name='edit_incentive'),
+                       # url(r'^incentive/delete/(?P<pk>[0-9]+)/$', views.delete_incentive, name='delete_incentive'),
+                       # url(r'^incentive/list/$', views.list_incentive, name='list_incentive'),
 
                        # allowance crud
                        url(r'^allowance/add/$', views.allowance, name='add_allowance'),
@@ -34,6 +34,9 @@ urlpatterns = patterns('',
 
                        # deductions crud
                        url(r'^deduction/$', views.deduction, name='deduction'),
+
+                       # incentivenames crud
+                       url(r'^incentives/$', views.incentivename_curd, name='incentivename_curd'),
 
                        # taxation crud
                        # url(r'^tax/scheme/$', views.tax_scheme, name='tax_scheme'),
