@@ -6,6 +6,7 @@ $(document).ready(function () {
 
 function ImprestJV(data) {
     var self = this;
+    console.log(data);
 
     self.voucher_no = ko.observable();
     self.date = ko.observable();

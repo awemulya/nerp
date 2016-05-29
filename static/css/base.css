@@ -466,7 +466,7 @@ li.link a {
     overflow-x: auto;
 }*/
 
-.form-control { 
+.form-control {
     margin-bottom: 0px !important;
     padding: 7px 0 4px 0 !important;
 }
@@ -480,28 +480,25 @@ td div.btn-group {
 }
 
 td + td {
-    border-left: 1px solid #ddd;
-    border-left-width: 1px;
-    border-left-style: solid;
-    border-left-color: rgb(221, 221, 221);
+    border-left: 1px solid rgb(221, 221, 221);
 }
 
 .body-center {
-   width: 400px;
-   height: 400px;
-   position: absolute;
-   left: 50%;
-   top: 50%; 
-   margin-left: -200px;
-   margin-top: -200px;
+    width: 400px;
+    height: 400px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -200px;
+    margin-top: -200px;
 }
 
-.center-headings th{
+.center-headings th {
     text-align: center;
     vertical-align: middle !important;
 }
 
-tr.total, tr.category, tr.subtotal{
+tr.total, tr.category, tr.subtotal {
     font-weight: bold;
 }
 
@@ -517,10 +514,10 @@ tr.total, tr.category, tr.subtotal{
     width: 100%;
 }
 
-.panel-title a{
+.panel-title a {
     cursor: pointer;
 }
 
-.selectize-control.invalid{
+.selectize-control.invalid {
     border: 1px solid #ff2d4d;
 }
