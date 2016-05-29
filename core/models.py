@@ -153,6 +153,7 @@ class Activity(models.Model):
 
 class BudgetHead(TranslatableNumberModel):
     name = models.CharField(max_length=254)
+    recurrent = models.BooleanField(default=True)
     no = models.PositiveIntegerField()
     _translatable_number_fields = ('no',)
 

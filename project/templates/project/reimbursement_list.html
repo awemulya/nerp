@@ -73,7 +73,7 @@
         </form>
     </div>
     <a class="btn btn-success btn-raised btn-lg"
-       href="{% url 'reimbursement_add' project.id %}">{% trans 'New' %} {% trans 'Expense' %}</a>
+       href="{% url 'reimbursement_add' project.project_fy.id %}">{% trans 'New' %} {% trans 'Expense' %}</a>
 
     {% paginate %}
 
