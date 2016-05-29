@@ -125,6 +125,10 @@ def salary_taxation_unit(employee, f_y_item):
         *f_y_item['f_y']
     )
     salary = employee.current_salary_by_day(
+        *f_y_item['f_y'],
+        apply_grade_rate=True
+    )
+    scale_salary = employee.current_salary_by_day(
         *f_y_item['f_y']
     )
 
@@ -141,7 +145,7 @@ def salary_taxation_unit(employee, f_y_item):
                 else:
                     salary += item.amount_rate / 100.0 * salary
 
-    scale_salary = employee.designation.grade.salary_scale
+    # scale_salary = employee.designation.grade.salary_scale
     allowance = 0
 
     for ob in employee.allowances.all():
@@ -457,8 +461,14 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 
     salary = employee.current_salary_by_day(
         paid_from_date,
+        paid_to_date,
+        apply_grade_rate=True
+    )
+    scale_salary = employee.current_salary_by_day(
+        paid_from_date,
         paid_to_date
     )
+    # scale_salary = employee.designation.grade.salary_scale
 
     deductions = sorted(
         Deduction.objects.all(), key=lambda obj: obj.priority)
@@ -476,7 +486,6 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 
     # Now add allowance to the salary(salary = salary + allowance)
     # Question here is do we need to deduct from incentove(I gues not)
-    scale_salary = employee.designation.grade.salary_scale
     allowance = 0
     # for obj in employee.allowances.all():
     for _name in AllowanceName.objects.all():

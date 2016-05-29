@@ -236,7 +236,7 @@ class Employee(models.Model):
     # Permanent has extra functionality while deduction from salary
     is_permanent = models.BooleanField(default=False)
 
-    def current_salary_by_month(self, from_date, to_date):
+    def current_salary_by_month(self, from_date, to_date, **kwargs):
         grade_salary = self.designation.grade.salary_scale
         grade_number = self.designation.grade.grade_number
         grade_rate = self.designation.grade.grade_rate
@@ -255,13 +255,16 @@ class Employee(models.Model):
                         days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.appoint_date)))
 
             years_worked = days_worked.days / 365
-            if years_worked <= grade_number:
-                salary += grade_salary + int(years_worked) * grade_rate
-            elif years_worked > grade_number:
-                salary += grade_salary + grade_number * grade_rate
+            if kwargs.get('apply_grade_rate'):
+                if years_worked <= grade_number:
+                    salary += grade_salary + int(years_worked) * grade_rate
+                elif years_worked > grade_number:
+                    salary += grade_salary + grade_number * grade_rate
+            else:
+                salary += grade_salary
         return salary
 
-    def current_salary_by_day(self, from_date, to_date):
+    def current_salary_by_day(self, from_date, to_date, **kwargs):
         if from_date.year == to_date.year and from_date.month == to_date.month:
             salary_pure_months = 0
             lhs_month_salary = 0
@@ -285,7 +288,8 @@ class Employee(models.Model):
 
             rhs_month_salary = self.current_salary_by_month(
                 month,
-                month
+                month,
+                **kwargs
             )
 
         elif are_side_months(from_date, to_date):
@@ -310,11 +314,13 @@ class Employee(models.Model):
                     to_date_month_days = bs[rhs_month.year][rhs_month.month - 1]
             lhs_month_salary = self.current_salary_by_month(
                 lhs_month,
-                lhs_month
+                lhs_month,
+                **kwargs
             )
             rhs_month_salary = self.current_salary_by_month(
                 rhs_month,
-                rhs_month
+                rhs_month,
+                **kwargs
             )
         else:
             # Get pure months
@@ -355,15 +361,18 @@ class Employee(models.Model):
 
             salary_pure_months = self.current_salary_by_month(
                 from_date_m,
-                to_date_m
+                to_date_m,
+                **kwargs
             )
             lhs_month_salary = self.current_salary_by_month(
                 lhs_month,
-                lhs_month
+                lhs_month,
+                **kwargs
             )
             rhs_month_salary = self.current_salary_by_month(
                 rhs_month,
-                rhs_month
+                rhs_month,
+                **kwargs
             )
         lhs_salary = lhs_month_salary / float(from_date_month_days) * lhs_days
         rhs_salary = rhs_month_salary / float(to_date_month_days) * rhs_days
