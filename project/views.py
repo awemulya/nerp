@@ -313,31 +313,35 @@ def base_save(request, model):
     params = json.loads(request.body)
     project_fy_id = params.get('project_fy_id')
     dct = {'rows': {}}
+    table_view = ('budget_head_view', 'capital_expenditure_view')
     try:
-        for index, row in enumerate(params.get('table_view').get('rows')):
-            if invalid(row, ['budget_head_id']):
-                continue
-            values = {'budget_head_id': row.get('budget_head_id'),
-                      'project_fy_id': project_fy_id}
-            dct['rows'][index] = {}
-            if row.get('goa_id') or row.get('goa_amount'):
-                values['amount'] = empty_to_none(row.get('goa_amount'))
-                submodel, created = model.objects.get_or_create(id=row.get('goa_id'), defaults=values)
-                if not created:
-                    submodel = save_model(submodel, values)
-                if not row.get('goa_amount') and row.get('goa_id'):
-                    model.objects.get(id=row.get('goa_id')).delete()
-                dct['rows'][index]['goa_id'] = submodel.id
-            for aid in params.get('count'):
-                if row.get(aid) or row.get(aid + '-id'):
-                    values['aid_id'] = aid.split('-')[0]
-                    values['amount'] = empty_to_none(row.get(aid))
-                    submodel, created = model.objects.get_or_create(id=row.get(aid + '-id'), defaults=values)
+        for view in table_view:
+            for index, row in enumerate(params.get(view).get('rows')):
+                if invalid(row, ['budget_head_id']):
+                    continue
+                values = {'budget_head_id': row.get('budget_head_id'),
+                          'project_fy_id': project_fy_id}
+                dct['rows'][index] = {}
+                if row.get('goa_id') or row.get('goa_amount'):
+                    values['amount'] = empty_to_none(row.get('goa_amount'))
+                    submodel, created = model.objects.get_or_create(id=row.get('goa_id'), defaults=values)
                     if not created:
                         submodel = save_model(submodel, values)
-                    if not row.get(aid) and row.get(aid + '-id'):
-                        model.objects.get(id=row.get(aid + '-id')).delete()
-                    dct['rows'][index][aid + '-id'] = submodel.id
+                    if not row.get('goa_amount') and row.get('goa_id'):
+                        model.objects.get(id=row.get('goa_id')).delete()
+                    dct['rows'][index]['goa_id'] = submodel.id
+                    dct['rows'][index]['recurrent'] = submodel.budget_head.recurrent
+                for aid in params.get('count'):
+                    if row.get(aid) or row.get(aid + '-id'):
+                        values['aid_id'] = aid.split('-')[0]
+                        values['amount'] = empty_to_none(row.get(aid))
+                        submodel, created = model.objects.get_or_create(id=row.get(aid + '-id'), defaults=values)
+                        if not created:
+                            submodel = save_model(submodel, values)
+                        if not row.get(aid) and row.get(aid + '-id'):
+                            model.objects.get(id=row.get(aid + '-id')).delete()
+                        dct['rows'][index][aid + '-id'] = submodel.id
+                        dct['rows'][index]['recurrent'] = submodel.budget_head.recurrent
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
@@ -345,7 +349,8 @@ def base_save(request, model):
             dct['error_message'] = str(e)
         else:
             dct['error_message'] = 'Error in form data!'
-    delete_budget_allocation(params.get('table_view').get('deleted_rows'), model)
+    for view in table_view:
+        delete_budget_allocation(params.get(view).get('deleted_rows'), model)
     return JsonResponse(dct)
 
 

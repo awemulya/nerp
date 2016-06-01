@@ -17,7 +17,6 @@ function Expenditure(data) {
     });
 
 
-
     self.aids = ko.observableArray();
 
     self.count = []
@@ -43,10 +42,10 @@ function Expenditure(data) {
     for (var i in data.rows) {
         var val = data.rows[i].budget_head_id
         if (data.rows[i].recurrent) {
-                self.values = self.budget_head_values
-            } else {
-                self.values = self.capital_expenditure_values
-            }
+            self.values = self.budget_head_values
+        } else {
+            self.values = self.capital_expenditure_values
+        }
         if (self.value_count.indexOf(val) == -1) {
             self.value_count.push(val);
             self.values.push({
@@ -87,20 +86,33 @@ function Expenditure(data) {
 
                     for (var i in msg.rows) {
                         for (var aid in msg.rows[i]) {
-                            self.table_view.rows()[i][aid](msg.rows[i][aid]);
-                            if (self.table_view.rows()[i].aid_amount().length != 0) {
-                                self.table_view.rows()[i].aid_amount().push({'id': msg.rows[i][aid]});
-                            }
+                            if (msg.rows[i].recurrent) {
+                                if (aid != 'recurrent') {
+                                    self.budget_head_view.rows()[i][aid](msg.rows[i][aid]);
+                                    if (self.budget_head_view.rows()[i].aid_amount().length != 0) {
+                                        self.budget_head_view.rows()[i].aid_amount().push({'id': msg.rows[i][aid]});
+                                    }
                                 }
+                            } else {
+                                if (aid != 'recurrent') {
+                                    self.capital_expenditure_view.rows()[i][aid](msg.rows[i][aid]);
+                                    if (self.capital_expenditure_view.rows()[i].aid_amount().length != 0) {
+                                        self.capital_expenditure_view.rows()[i].aid_amount().push({'id': msg.rows[i][aid]});
+                                    }
+                                }
+                            }
+
                         }
-                        self.table_view.deleted_rows([]);
                     }
+                    self.budget_head_view.deleted_rows([]);
+                    self.capital_expenditure_view.deleted_rows([]);
                 }
-                ,
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
-                }
-            });
+            }
+            ,
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
+            }
+        });
     }
 }
 
