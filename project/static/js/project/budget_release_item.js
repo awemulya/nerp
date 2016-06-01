@@ -92,6 +92,8 @@ function BudgetReleaseItem(data) {
                                 self.budget_head_view.rows()[i].aid_amount().push({'id': msg.rows.budget_head_view[i][aid]});
                             }
                         }
+                    }
+                    for (var i in msg.rows.capital_expenditure_view) {
                         for (var aid in msg.rows.capital_expenditure_view[i]) {
                             self.capital_expenditure_view.rows()[i][aid](msg.rows.capital_expenditure_view[i][aid]);
                             if (self.capital_expenditure_view.rows()[i].aid_amount().length != 0) {
