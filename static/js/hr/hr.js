@@ -442,8 +442,8 @@ function PayrollEntry(pr_data) {
     //     };
     // });
 
-    self.getGroupSalary = ko.computed(function(){
-        if(self.paid_from_date() && self.paid_to_date() && self.branch() && self.payroll_type() == 'GROUP')
+    self.getGroupSalary = function(){
+        if(self.branch() && self.payroll_type() == 'GROUP')
         $.ajax({
             url: 'get_employees_account/',
             method: 'POST',
@@ -527,7 +527,7 @@ function PayrollEntry(pr_data) {
             },
 //            self.budget_heads = ko.observableArray(data);
         });
-    });
+    };
     self.get_employee_options = ko.computed(function(){
         if(self.payroll_type() == 'INDIVIDUAL'){
 

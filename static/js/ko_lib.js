@@ -32,11 +32,6 @@ ko.bindingHandlers.selectize = {
         if (typeof allBindingsAccessor.get('optionsCaption') == 'undefined')
             allBindingsAccessor = inject_binding(allBindingsAccessor, 'optionsCaption', 'Choose...');
 
-
-        var value_binding = allBindingsAccessor.get('value')().slice(0);
-        ko.bindingHandlers.options.init(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-//        ko.bindingHandlers.options.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
-
         //ko.bindingHandlers.options.update(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext);
 
         var options = {
@@ -61,7 +56,7 @@ ko.bindingHandlers.selectize = {
             $select = $(element).selectize(options)[0].selectize;
 
             if (typeof allBindingsAccessor.get('value') == 'function') {
-                $select.addItem(value_binding);
+                $select.addItem(allBindingsAccessor.get('value')());
                 allBindingsAccessor.get('value').subscribe(function (new_val) {
                     $select.addItem(new_val);
                 })
@@ -94,7 +89,7 @@ ko.bindingHandlers.selectize = {
             }
 
             if (typeof init_selectize == 'function') {
-                //init_selectize($select);
+                init_selectize($select);
             }
             if (typeof valueAccessor().subscribe == 'function') {
                 valueAccessor().subscribe(function (changes) {
@@ -168,7 +163,6 @@ ko.bindingHandlers.selectize = {
 
     }
 }
-
 
 ko.bindingHandlers.autosize = {
     init: function (element, valueAccessor, allBindingsAccessor) {
