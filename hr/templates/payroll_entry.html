@@ -25,14 +25,15 @@
 
 {% block alert %}
     <!-- ko foreach: messages -->
-        <div class="alert alert-warning" role="alert" >
-            <span data-bind="text: $data"></span>
+        <div class="row">
+            <span class="alert alert-warning pull-right" role="alert" >
+                <span  class="font-weight-bold text-info" data-bind="text: $data"></span>
+                <button type="button" class="close" aria-label="Close" data-bind="click: $parent.remove_alert">
+                    <span aria-hidden="true">x</span>
+                </button>
+            </span>
         </div>
     <!-- /ko -->
-    <div class="alert alert-warning" role="alert" data-bind="visible: invalid_date_range() != null">
-        <span data-bind="text: invalid_date_range"></span>
-    </div>
-
 {% endblock %}
 
 {% block  content %}
@@ -41,9 +42,13 @@
         <input type="checkbox" data-bind="checked: monthly_payroll"></input>
     </div>
     <div id="main" class="row">
-        <div class="col-lg-3">
+        <div class="col-lg-2">
             {{ m_form.payroll_type.label }}
             {{ m_form.payroll_type }}
+        </div>
+        <div class="col-lg-2">
+            
+            {{ m_form.branch.label }}
             {{ m_form.branch }}
         </div>
         <div class="col-lg-3" data-bind="css:{'bg-warning': paid_from_date_error() != null}">
@@ -53,11 +58,10 @@
         </div>
         <div class="col-lg-3" data-bind="css:{'bg-warning': paid_from_date_error() != null}">
             {{ m_form.to_date.label }}
-        
             {{ m_form.to_date }}
             <p data-bind="text: paid_to_date_error"></p>
         </div>
-        <div class="col-lg-3" >
+        <div class="col-lg-2" >
             <input type="button" class="btn btn-raised btn-primary" data-bind="click: getGroupSalary, visible: !switch_p_type()" value="Get">
         </div>
     </div>
@@ -137,9 +141,9 @@
                 <!-- /ko -->
             
             </table>
-            <input type="button" class="#" value="Add Another" data-bind="visible: switch_p_type, click: addRow">
+            <input type="button" class="btn btn-raised btn-primary" value="Add Another" data-bind="visible: switch_p_type, click: addRow">
             
-            <input type="submit" class="#" value="Save" data-bind="visible: rows().length>0 && !entry_saved()">
+            <input type="submit" class="btn btn-raised btn-primary" value="Save" data-bind="visible: rows().length>0 && !entry_saved()">
         </form>
         <input type="button" class="btn btn-raised btn-primary" value="Approve" data-bind="visible: rows().length > 0 && !entry_approved() && entry_saved(), click: approve_entry">
         <input type="button" class="btn btn-raised btn-primary" value="Approved" data-bind="visible: rows().length > 0 && entry_approved()">

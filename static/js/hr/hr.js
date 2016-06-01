@@ -154,14 +154,12 @@ function PaymentEntryRow(per_data) {
                         vm.paid_to_date_error(null);
                     };
                     if(response.errors.invalid_date_range){
-                        vm.invalid_date_range(response.errors.invalid_date_range);
-                    }else{
-                        vm.invalid_date_range(null);
+                        vm.messages.push(response.errors.invalid_date_range);
                     };
                 }else{
                     vm.paid_from_date_error(null);
                     vm.paid_to_date_error(null);
-                    vm.invalid_date_range(null);
+                    // vm.invalid_date_range(null);
                     var mapping = {
                         'ignore': ["paid_employee", "emp_options"]
                     }
@@ -266,7 +264,7 @@ function PayrollEntry(pr_data) {
     self.paid_from_date_error = ko.observable();
     self.paid_to_date_error = ko.observable();
 
-    self.invalid_date_range = ko.observable();
+    // self.invalid_date_range = ko.observable();
 
     self.monthly_payroll = ko.observable(true);
 
@@ -469,15 +467,13 @@ function PayrollEntry(pr_data) {
                         self.paid_to_date_error(null);
                     };
                     if(response.errors.invalid_date_range){
-                        self.invalid_date_range(response.errors.invalid_date_range);
-                    }else{
-                        self.invalid_date_range(null);
+                        self.messages.push(response.errors.invalid_date_range);
                     };
 
                 }else{
                     self.paid_from_date_error(null);
                     self.paid_to_date_error(null);
-                    self.invalid_date_range(null);
+                    // self.invalid_date_range(null);
 
 
                     console.log(response);
@@ -616,6 +612,11 @@ function PayrollEntry(pr_data) {
             };
         };
     });
+    self.remove_alert = function(alert_msg){
+        console.log(alert_msg);
+        self.messages.remove(alert_msg);
+    };
+
 };
 
 
