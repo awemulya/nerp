@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load i18n staticfiles filters %}
+
+
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% trans 'Categories' %}
+{% endblock %}
+
+{% block content %}
+    {% load mptt_tags %}
+
+    <div class="well">
+
+        <ul class="list-group">
+            {% recursetree object_list %}
+                <li class="list-group-item link">
+                    <a href="{% url 'category_edit' node.id %}">{{ node.name }}</a>
+                    {% if not node.is_leaf_node %}
+                        <ul class="children">
+                            {{ children }}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endrecursetree %}
+        </ul>
+    </div>
+
+
+    <a class="btn btn-success btn-raised btn-lg"
+       href="{% url 'category_add' %}">{% trans 'New' %} {% trans 'Category' %}</a>
+{% endblock %}

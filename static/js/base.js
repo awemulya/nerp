@@ -1002,6 +1002,49 @@ apply_select2 = function (form) {
     });
 }
 
+handle_ajax_response = function (obj) {
+
+    var no_of_modals = $('.reveal-modal').length;
+    $('#reveal-modal' + $('.reveal-modal').length).find($('.close-reveal-modal')).click();
+    $select = window.last_active_select.pop();
+
+    if ($select.$input.data('bind') && $select.$input.data('bind').indexOf('selectize') != -1) {
+        var matches = $select.$input.data('bind').match(/selectize: \$root\.([a-z_]+)/);
+        if ($select.$input.data('to')) {
+        }
+        else if (matches) {
+            var match = matches[1];
+            if (typeof(vm) == 'undefined') {
+                item[match].push(obj);
+            } else if (typeof(item) == 'undefined') {
+                vm[match].push(obj);
+            } else if (typeof vm[match] == 'function' && typeof item[match] == 'function') {
+                vm[match].push(obj);
+                item[match].push(obj);
+            } else {
+                vm[match].push(obj);
+            }
+            $select.addItem(obj.id);
+        }
+    }
+    else {
+        $select.$input.append("<option value='" + obj.id + "'>" + obj.name + "</option>");
+        $select.addOption({
+            text: obj.name,
+            value: obj.id
+        });
+        $select.addItem(obj.id);
+        $select.refreshItems();
+    }
+    $select.$wrapper.find('> .appended-link').remove();
+    if ($select.$input.closest('.reveal-modal').length) {
+        $select.$input.closest('.reveal-modal').modal('hide');
+    } else {
+        $('.modal').modal('hide');
+    }
+}
+
+
 override_form = function (event) {
     var $form = $(this);
     var $target = $('#reveal-modal' + $('.reveal-modal').length);
@@ -1016,6 +1059,7 @@ override_form = function (event) {
         data: $form.serialize(),
 
         success: function (data, status) {
+            handle_ajax_response(data);
             //write the reply
             $target.append(data);
             //form sent by callback is also overwritten to submit via ajax
@@ -1140,8 +1184,14 @@ function empty_or_undefined(o) {
 }
 
 function empty_to_zero(o) {
-    if (o == '' || typeof o == 'undefined')
+    if (o == '' || typeof o == 'undefined' || isNaN(o))
         return 0;
+    return parseFloat(o);
+}
+
+function empty_to_blank(o) {
+    if (o == '' || typeof o == 'undefined' || isNaN(o))
+        return '';
     return parseFloat(o);
 }
 
@@ -1214,8 +1264,7 @@ String.prototype.toDash = function () {
 
 String.prototype.toTitleCase = function () {
     var smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|vs?\.?|via)$/i;
-
-    return this.replace(/([^\W_]+[^\s-]*) */g, function (match, p1, index, title) {
+    return this.replace('_', ' ').replace(/([^\W_]+[^\s-]*) */g, function (match, p1, index, title) {
         if (index > 0 && index + p1.length !== title.length &&
             p1.search(smallWords) > -1 && title.charAt(index - 2) !== ":" &&
             title.charAt(index - 1).search(/[^\s-]/) < 0) {
@@ -1596,3 +1645,34 @@ $(document).ready(function () {
 var unilarize = function (str) {
     return str.substring(0, str.length - 1) + '(s)';
 }
+
+function selectize_validation_fix($select) {
+
+    $select.$input.on('invalid', function (event) {
+        event.preventDefault();
+        $select.focus(true);
+        $select.$wrapper.addClass('invalid');
+    });
+
+    $select.$input.on('change', function (event) {
+        if (event.target.validity && event.target.validity.valid) {
+            $select.$wrapper.removeClass('invalid');
+        }
+    });
+
+}
+
+$(function () {
+    if ($('.selectize').length) {
+        var $select = $('.selectize').selectize();
+
+        $($select).each(function () {
+            init_selectize(this.selectize);
+            selectize_validation_fix(this.selectize);
+        });
+    }
+});
+
+Array.prototype.diff = function(a) {
+    return this.filter(function(i) {return a.indexOf(i) < 0;});
+};

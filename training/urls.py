@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 import views
 
-urlpatterns = patterns('',
+urlpatterns = [
                        url(r'^$', views.index, name='training_index'),
                        url(r'^add/$', views.training_form, name='add_training'),
                        url(r'^delete/(?P<pk>[0-9]+)/$', views.delete_training, name='delete_training'),
@@ -38,4 +38,4 @@ urlpatterns = patterns('',
                        url(r'^report/$', views.training_report, name='training_report'),
                        # url(r'^author/(?P<slug>[a-zA-Z0-9_.-]+)/$', views.view_author, name='view_author'),
                        # url(r'^search/(?P<keyword>.*)$', views.search, name='search'),
-)
+]

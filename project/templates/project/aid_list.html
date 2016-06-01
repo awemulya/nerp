@@ -1,0 +1,42 @@
+{% extends "_project_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Aid' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "aid_list" project.id %}">{% trans 'Aids' %}</a></li>
+{% endblock %}
+
+{% block content %}
+
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+    {% load filters %}
+
+    {% autosort object_list as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+    <div class="well">
+    <table class="table table-striped">
+        <thead>
+        <th>{% anchor name _('Name') %}</th>
+        </thead>
+        <tbody>
+        {% for aid in paginated_objects %}
+            <tr>
+                <td class="link">
+                    <a href="{% url 'aid_edit' project.id aid.id %}">{{ aid }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+
+    <a class="btn btn-success btn-raised btn-lg"
+       href="{% url 'aid_add' project.id %}">{% trans 'New' %} {% trans 'Aid' %}</a>
+
+    {% paginate %}
+
+{% endblock %}

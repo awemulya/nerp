@@ -4,8 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeAccountFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm
-from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, set_transactions, delete_rows, JournalEntry, Incentive, Allowance, MaritalStatus, SalaryAccount
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeIncentiveFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet
+from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, MaritalStatus
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -13,7 +13,14 @@ from njango.nepdate import bs
 from .models import get_y_m_tuple_list
 from .bsdate import BSDate
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, emp_salary_eligibility, month_cnt_inrange, fiscal_year_data
+from account.models import set_transactions
+from hr.filters import EmployeeFilter
 import pdb
+
+from hr.models import ACC_CAT_BASIC_SALARY_ID,\
+    ACC_CAT_SALARY_GIVING_ID,\
+    ACC_CAT_PRO_TEMPORE_ID,\
+    ACC_CAT_TAX_ID
 
 
 CALENDAR = 'BS'
@@ -125,6 +132,10 @@ def salary_taxation_unit(employee, f_y_item):
         *f_y_item['f_y']
     )
     salary = employee.current_salary_by_day(
+        *f_y_item['f_y'],
+        apply_grade_rate=True
+    )
+    scale_salary = employee.current_salary_by_day(
         *f_y_item['f_y']
     )
 
@@ -135,14 +146,13 @@ def salary_taxation_unit(employee, f_y_item):
     # Addition of PF and bima to salary if employee is permanent
     for item in sorted_deductions:
         if employee.is_permanent:
-            if item.add2_init_salary and item.deduction_for == 'EMPLOYEE ACC':
+            if item.add2_init_salary:
                 if item.deduct_type == 'AMOUNT':
                     salary += item.amount * total_month
                 else:
-                    # Rate
                     salary += item.amount_rate / 100.0 * salary
 
-    scale_salary = employee.designation.grade.salary_scale
+    # scale_salary = employee.designation.grade.salary_scale
     allowance = 0
 
     for ob in employee.allowances.all():
@@ -184,7 +194,7 @@ def salary_taxation_unit(employee, f_y_item):
     for ob in employee.incentives.all():
         try:
             obj = ob.incentives.filter(
-                employee_grade=employee.designation.grade
+                employee=employee
             )[0]
         except IndexError:
             raise IndexError('%s not defined for grade %s' % (ob.name, employee.designation.grade.grade_name))
@@ -213,46 +223,16 @@ def salary_taxation_unit(employee, f_y_item):
                 incentive += obj.amount_rate / 100.0 * scale_salary
 
     deduction = 0
-    # deduction_detail = []
     for obj in deductions.filter(is_tax_free=True):
-        # deduction_detail_object = {}
-        if obj.deduction_for == 'EMPLOYEE ACC':
-            # name = '_'.join(obj.in_acc_type.name.split(' ')).lower
-            # employee_response['deduction_%d' % (obj.id)] = 0
+        if obj in deductions.filter(is_optional=False) or obj in employee.optional_deductions.all():
 
-            if (employee.is_permanent or obj.with_temporary_employee) and employee.has_account(obj.in_acc_type):
-
-                if obj.deduct_type == 'AMOUNT':
-                    # employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
-                    deduction += obj.amount * total_month
-                else:
-                    # Rate
-                    # deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
-                    # employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
-                    deduction += obj.amount_rate / 100.0 * salary
-
-                if employee.is_permanent:
-                    if obj.in_acc_type.permanent_multiply_rate:
-                        # deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
-                        # employee_response['deduction_%d' % (obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
-                        deduction *= obj.in_acc_type.permanent_multiply_rate                 
-                # deduction += deduction_detail_object['amount']
-                # deduction += employee_response['deduction_%d' % (obj.id)]
-
-        else:
-            # name = '_'.join(obj.name.split(' ')).lower()
-            # employee_response['deduction_%d' % (obj.id)] = 0
-
-            # EXPLICIT ACC
             if obj.deduct_type == 'AMOUNT':
-                # deduction_detail_object[
-                #     'amount'] += obj.amount * total_month
-                # employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
                 deduction += obj.amount * total_month
             else:
-                # employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
                 deduction += obj.amount_rate / 100.0 * salary
-            # deduction += employee_response['deduction_%d' % (obj.id)]
+
+            if employee.is_permanent:
+                deduction *= obj.permanent_multiply_rate
 
     taxable_amount = (salary + allowance + incentive - deduction)
 
@@ -488,17 +468,20 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 
     salary = employee.current_salary_by_day(
         paid_from_date,
+        paid_to_date,
+        apply_grade_rate=True
+    )
+    scale_salary = employee.current_salary_by_day(
+        paid_from_date,
         paid_to_date
     )
-
-    deductions = sorted(
-        Deduction.objects.all(), key=lambda obj: obj.priority)
+    deductions = Deduction.objects.all()
 
     # Addition of PF and bima to salary if employee is permanent
     addition_pf = 0
     for item in deductions:
         if employee.is_permanent:
-            if item.add2_init_salary and item.deduction_for == 'EMPLOYEE ACC':
+            if item.add2_init_salary:
                 if item.deduct_type == 'AMOUNT':
                     addition_pf += item.amount * total_month
                 else:
@@ -507,13 +490,13 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 
     # Now add allowance to the salary(salary = salary + allowance)
     # Question here is do we need to deduct from incentove(I gues not)
-    scale_salary = employee.designation.grade.salary_scale
     allowance = 0
     # for obj in employee.allowances.all():
     for _name in AllowanceName.objects.all():
         # name = '_'.join(_name.name.split(' ')).lower()
         if _name in employee.allowances.all():
             try:
+
                 obj = _name.allowances.all().filter(employee_grade=employee.designation.grade)[0]
             except IndexError:
                 raise IndexError('%s not defined for grade %s' % (_name.name, employee.designation.grade.grade_name))
@@ -572,9 +555,9 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         # name = '_'.join(obj.name.split(' ')).lower()
         if _name in employee.incentives.all():
             try:
-                obj = _name.incentives.all().filter(employee_grade=employee.designation.grade)[0]
+                obj = _name.incentives.all().filter(employee=employee)[0]
             except IndexError:
-                raise IndexError('%s not defined for grade %s' % (ob.name, employee.designation.grade.grade_name))
+                raise IndexError('%s not defined for grade %s' % (_name.name, employee.full_name))
             # if obj:
             #     obj = obj[0]
                 # pdb.set_trace()
@@ -619,6 +602,12 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         else:
             employee_response['incentive_%d' % (_name.id)] = 0
 
+        # Here we should check for scale and calculate from scale
+        if _name.with_scale:
+            # Get scale here for this employee of this incentive and get value that is
+            # scale = none
+            # employee_response['incentive_%d' % (_name.id)] = scale / 100 * employee_response['incentive_%d' % (_name.id)]
+            pass
     employee_response['incentive'] = incentive
     # salary += incentive
 
@@ -626,39 +615,17 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     deduction = 0
     # deduction_detail = []
     for obj in deductions:
-        # deduction_detail_object = {}
-        if obj.deduction_for == 'EMPLOYEE ACC':
-            # name = '_'.join(obj.in_acc_type.name.split(' ')).lower
+        if obj in deductions.filter(is_optional=False) or obj in employee.optional_deductions.all():
             employee_response['deduction_%d' % (obj.id)] = 0
-
-            if (employee.is_permanent or obj.with_temporary_employee) and employee.has_account(obj.in_acc_type):
-
-                if obj.deduct_type == 'AMOUNT':
-                    employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
-                else:
-                    # Rate
-                    # deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
-                    employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
-
-                if employee.is_permanent:
-                    if obj.in_acc_type.permanent_multiply_rate:
-                        # deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
-                        employee_response['deduction_%d' % (obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
-                # deduction += deduction_detail_object['amount']
-                deduction += employee_response['deduction_%d' % (obj.id)]
-
-        else:
-            # name = '_'.join(obj.name.split(' ')).lower()
-            employee_response['deduction_%d' % (obj.id)] = 0
-
-            # EXPLICIT ACC
             if obj.deduct_type == 'AMOUNT':
-                # deduction_detail_object[
-                #     'amount'] += obj.amount * total_month
                 employee_response['deduction_%d' % (obj.id)] += obj.amount * total_month
             else:
                 employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
+            if employee.is_permanent:
+                employee_response['deduction_%d' % (obj.id)] *= obj.permanent_multiply_rate                 
             deduction += employee_response['deduction_%d' % (obj.id)]
+        else:
+            employee_response['deduction_%d' % (obj.id)] = 0
 
     # PF deduction amount in case of loan from PF
     employee_response['pf_deduction_amount'] = employee.pf_monthly_deduction_amount * total_month
@@ -1003,10 +970,10 @@ def entry_detail(request, pk=None):
         i_title = _(ob.name.title())
         incentive_titles.append(i_title)
     for ob in all_deductions:
-        if ob.deduction_for == 'EMPLOYEE ACC':
-            d_name = '_'.join(ob.in_acc_type.name.split(' ')).lower()
-        else:
-            d_name = '_'.join(ob.name.split(' ')).lower()
+        # if ob.deduction_for == 'EMPLOYEE ACC':
+        #     d_name = '_'.join(ob.in_acc_type.name.split(' ')).lower()
+        # else:
+        d_name = '_'.join(ob.name.split(' ')).lower()
         d_title = ' '.join(d_name.split('_')).title()
         deduction_titles.append(d_title)
 
@@ -1128,16 +1095,17 @@ def transact_entry(request, pk=None):
         employee = entry.paid_employee
         salary = entry.salary
 
-        employee_salary_account = employee.accounts.all().filter(
-            employee_account__is_salary_account=True
-        )[0]
-        salary_giving_account = Account.objects.filter(
-            company_account__is_salary_giving=True
-        )[0]
+        salary_giving_account = Account.objects.get(
+            category_id=ACC_CAT_SALARY_GIVING_ID,
+            name='SalaryGivingAccount'
+        )
 
         # NeedUpdate
         # Later This will be one by its fiscal year
-        salary_account = SalaryAccount.objects.get(id=1).account
+        emp_basic_salary_account = Account.objects.get(
+            category_id=ACC_CAT_BASIC_SALARY_ID,
+            employee_account__employee=employee
+        )
         # First ma slary and allowance transact grade_name
         # SET TRANSACTION HERE FOR SALARY: DR IN EMP ACC
         set_transactions(
@@ -1145,19 +1113,40 @@ def transact_entry(request, pk=None):
             p_e.entry_datetime,
             *[
                 ('cr', salary_giving_account, salary),
-                ('dr', salary_account, salary),
+                ('dr', emp_basic_salary_account, salary),
             ]
         )
+
+        # Transact Pro Tempore
+        protempore_account = Account.objects.get(
+            category_id=ACC_CAT_PRO_TEMPORE_ID,
+            employee_account__employee=employee
+        )
+        pro_tempore_amount = entry.pro_tempore_amount
+
         set_transactions(
             entry,
             p_e.entry_datetime,
             *[
-                ('cr', salary_account, salary),
-                ('dr', employee_salary_account, salary),
+                ('cr', salary_giving_account, pro_tempore_amount),
+                ('dr', protempore_account, pro_tempore_amount),
             ]
         )
+
+        set_transactions(
+            entry,
+            p_e.entry_datetime,
+            *[
+                ('cr', protempore_account, pro_tempore_amount),
+                ('dr', emp_basic_salary_account, pro_tempore_amount),
+            ]
+        )
+
         for allowance_details_item in entry.allowance_details.all():
-            a_account = allowance_details_item.allowance.allowances.all().filter(employee_grade=employee.designation.grade)[0].account.account
+            a_account = Account.objects.get(
+                category=allowance_details_item.allowance.account_category,
+                employee_account__employee=employee
+            )
             a_amount = allowance_details_item.amount
 
             # Should be changed
@@ -1175,13 +1164,15 @@ def transact_entry(request, pk=None):
                 *[
                     # ('dr', employee_salary_account, a_amount),
                     ('cr', a_account, a_amount),
-                    ('dr', employee_salary_account, a_amount),
+                    ('dr', emp_basic_salary_account, a_amount),
                 ]
             )
-        # pdb.set_trace()
 
         for incentive_details_item in entry.incentive_details.all():
-            i_account = incentive_details_item.incentive.incentives.all().filter(employee_grade=employee.designation.grade)[0].account.account
+            i_account = Account.objects.get(
+                category=incentive_details_item.incentive.account_category,
+                employee_account__employee=employee
+            )
             i_amount = incentive_details_item.amount
 
             set_transactions(
@@ -1197,51 +1188,51 @@ def transact_entry(request, pk=None):
                 p_e.entry_datetime,
                 *[
                     ('cr', i_account, i_amount),
-                    ('dr', employee_salary_account, i_amount),
+                    ('dr', emp_basic_salary_account, i_amount),
                 ]
             )
-        # pdb.set_trace()
 
         for deduction_details_item in entry.deduction_details.all():
             deduction_obj = deduction_details_item.deduction
-            d_account = deduction_obj.account.account
+            d_account = a_account = Account.objects.get(
+                category=deduction_obj.deduct_in_category,
+                employee_account__employee=employee
+            )
             d_amount = deduction_details_item.amount
-
-            if deduction_obj.deduction_for == 'EXPLICIT ACC':
-                d_dr_account = deduction_obj.explicit_acc
-            else:
-                d_dr_account_type = deduction_obj.in_acc_type
-                d_dr_account = employee.accounts.all().filter(
-                    employee_account__other_account_type=d_dr_account_type,
-                    employee_account__account_meta_type='OTHER_ACCOUNT',
-                )[0]
 
             set_transactions(
                 entry,
                 p_e.entry_datetime,
                 *[
-                    ('cr', salary_giving_account, d_amount),
+                    ('cr', emp_basic_salary_account, d_amount),
                     ('dr', d_account, d_amount),
                 ]
             )
-            set_transactions(
-                entry,
-                p_e.entry_datetime,
-                *[
-                    ('cr', d_account, d_amount),
-                    ('dr', d_dr_account, d_amount),
-                ]
-            )
 
-            # set_transactions(
-            #     entry,
-            #     p_e.entry_datetime,
-            #     *[
-            #         ('cr', employee_salary_account, d_amount),
-            #         ('dr', d_dr_account, d_amount),
-            #         ('dr', d_account, d_amount),
-            #     ]
-            # )
+        # Transact Tax
+        emp_tax_account = Account.objects.get(
+            category_id=ACC_CAT_TAX_ID,
+            employee_account__employee=employee
+        )
+        tax_amount = entry.income_tax
+
+        set_transactions(
+            entry,
+            p_e.entry_datetime,
+            *[
+                ('cr', emp_basic_salary_account, tax_amount),
+                ('dr', emp_tax_account, tax_amount),
+            ]
+        )
+
+        set_transactions(
+            entry,
+            p_e.entry_datetime,
+            *[
+                ('cr', emp_tax_account, tax_amount),
+                ('dr', salary_giving_account, tax_amount),
+            ]
+        )
 
     p_e.transacted = True
     p_e.save()
@@ -1263,28 +1254,28 @@ def employee(request, pk=None):
 
     if request.method == "POST":
         employee_form = EmployeeForm(request.POST, instance=employee)
-        employee_account_formset = EmployeeAccountFormSet(request.POST, instance=employee)
-        if employee_form.is_valid() and employee_account_formset.is_valid():
+        employee_incentive_formset = EmployeeIncentiveFormSet(request.POST, instance=employee)
+        if employee_form.is_valid() and employee_incentive_formset.is_valid():
             employee_form.save()
-            employee_account_formset.save()
+            employee_incentive_formset.save()
             return redirect(reverse('list_employee'))
     else:
         employee_form = EmployeeForm(instance=employee)
-        employee_account_formset = EmployeeAccountFormSet(instance=employee)
+        employee_incentive_formset = EmployeeIncentiveFormSet(instance=employee)
 
     return render(
         request,
         'employee_cu.html',
         {
             'employee_form': employee_form,
-            'employee_account_formset': employee_account_formset,
+            'employee_incentive_formset': employee_incentive_formset,
             'ko_data': ko_data,
             'obj_id': obj_id,
         })
 
 
 def list_employee(request):
-    objects = Employee.objects.all()
+    objects = EmployeeFilter(request.GET, queryset=Employee.objects.all())
     return render(
         request,
         'employee_list.html',
@@ -1294,65 +1285,69 @@ def list_employee(request):
     )
 
 
-def delete_employee(request, pk=None):
+def toggle_employee_activeness(request, pk=None):
     obj = Employee.objects.get(id=pk)
     # employee_accounts = EmployeeAccount.objects.filter(employee=obj)
-    obj.delete()
+    if obj.is_active:
+        obj.is_active = False
+    else:
+        obj.is_active = True
+    obj.save()
     # for emp_acc in employee_accounts:
     #     emp_acc.delete()
     return redirect(reverse('list_employee'))
 
 
-def incentive(request, pk=None):
-    ko_data = {}
+# def incentive(request, pk=None):
+#     ko_data = {}
 
-    if pk:
-        obj_id = pk
-        incentive_name = IncentiveName.objects.get(id=pk)
-    else:
-        obj_id = None
-        incentive_name = IncentiveName()
+#     if pk:
+#         obj_id = pk
+#         incentive_name = IncentiveName.objects.get(id=pk)
+#     else:
+#         obj_id = None
+#         incentive_name = IncentiveName()
 
-    if request.method == "POST":
-        incentive_name_form = IncentiveNameForm(request.POST, instance=incentive_name)
-        incentive_formset = IncentiveNameFormSet(request.POST, instance=incentive_name)
-        if incentive_name_form.is_valid() and incentive_formset.is_valid():
-            incentive_name_form.save()
-            incentive_formset.save()
-            return redirect(reverse('list_incentive'))
-    else:
-        incentive_name_form = IncentiveNameForm(instance=incentive_name)
-        incentive_formset = IncentiveNameFormSet(instance=incentive_name)
+#     if request.method == "POST":
+#         incentive_name_form = IncentiveNameForm(request.POST, instance=incentive_name)
+#         incentive_formset = IncentiveNameFormSet(request.POST, instance=incentive_name)
+#         if incentive_name_form.is_valid() and incentive_formset.is_valid():
+#             incentive_name_form.save()
+#             incentive_formset.save()
+#             return redirect(reverse('list_incentive'))
+#     else:
+#         incentive_name_form = IncentiveNameForm(instance=incentive_name)
+#         incentive_formset = IncentiveNameFormSet(instance=incentive_name)
 
-    return render(
-        request,
-        'incentive_cu.html',
-        {
-            'incentive_name_form': incentive_name_form,
-            'incentive_formset': incentive_formset,
-            'ko_data': ko_data,
-            'obj_id': obj_id,
-        })
-
-
-def list_incentive(request):
-    objects = IncentiveName.objects.all()
-    return render(
-        request,
-        'incentive_list.html',
-        {
-            'objects': objects,
-        }
-    )
+#     return render(
+#         request,
+#         'incentive_cu.html',
+#         {
+#             'incentive_name_form': incentive_name_form,
+#             'incentive_formset': incentive_formset,
+#             'ko_data': ko_data,
+#             'obj_id': obj_id,
+#         })
 
 
-def delete_incentive(request, pk=None):
-    obj = IncentiveName.objects.get(id=pk)
-    # inc_details = Incentive.objects.filter(name=obj)
-    obj.delete()
-    # for inc in inc_details():
-    #     inc.delete()
-    return redirect(reverse('list_incentive'))
+# def list_incentive(request):
+#     objects = IncentiveName.objects.all()
+#     return render(
+#         request,
+#         'incentive_list.html',
+#         {
+#             'objects': objects,
+#         }
+#     )
+
+
+# def delete_incentive(request, pk=None):
+#     obj = IncentiveName.objects.get(id=pk)
+#     # inc_details = Incentive.objects.filter(name=obj)
+#     obj.delete()
+#     # for inc in inc_details():
+#     #     inc.delete()
+#     return redirect(reverse('list_incentive'))
 
 
 def allowance(request, pk=None):
@@ -1529,3 +1524,26 @@ def delete_taxscheme(request, pk=None):
     # for alw in alw_details():
     #     alw.delete()
     return redirect(reverse('list_tax_scheme'))
+
+
+def incentivename_curd(request):
+    if request.method == "POST":
+
+        incentivename_formset = IncentiveNameDetailFormSet(
+            request.POST,
+            queryset=IncentiveName.objects.all(),
+        )
+        if incentivename_formset.is_valid():
+            incentivename_formset.save()
+            return redirect(reverse('incentivename_curd'))
+    else:
+        incentivename_formset = IncentiveNameDetailFormSet(
+            queryset=IncentiveName.objects.all(),
+        )
+
+    return render(
+        request,
+        'incentivename_curd.html',
+        {
+            'incentivename_formset': incentivename_formset,
+        })

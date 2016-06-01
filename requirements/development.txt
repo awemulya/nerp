@@ -15,7 +15,7 @@ Pillow
 django-haystack
 pyelasticsearch
 django-froala-editor
-https://github.com/helber/django-dbsettings/tarball/master#egg=django-dbsettings
+# https://github.com/helber/django-dbsettings/tarball/master#egg=django-dbsettings
 django-modeltranslation
 https://github.com/awecode/njango/tarball/master#egg=njango
 sorl-thumbnail==11.12.1b
@@ -24,3 +24,5 @@ jsonfield
 openpyxl
 WeasyPrint
 requests
+django-admin-sortable2
+django-solo

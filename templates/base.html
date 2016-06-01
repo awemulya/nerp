@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load staticfiles %}
+{% load solo_tags %}
 
 <!DOCTYPE html>
 <!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
@@ -64,7 +65,8 @@
                 </div>
             </div>
             <ul class="nav navbar-nav">
-            <li><a href="/"><h3>{{ 'core.models.app_setting.site_name'|setting }}</h3></a></li>
+            {% get_solo 'core.AppSetting' as app_setting %}
+            <li><a href="/"><h3>{{ app_setting.site_name }}</h3></a></li>
                 
             </ul>
             </div>
@@ -74,7 +76,7 @@
     <ol class="breadcrumb well">
         {% block breadcrumbs %}
             <li><a href="/">{% trans 'Home' %}</a>
-            <li>
+            </li>
         {% endblock %}
         {% block breadcrumbs_right %}
             <li class="pull-right">

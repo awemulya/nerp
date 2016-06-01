@@ -1,4 +1,5 @@
 import os
+
 from django.contrib import messages
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -53,21 +54,24 @@ INSTALLED_APPS = (
     'froala_editor',
     'haystack',
     'sorl.thumbnail',
+    'adminsortable2',
     'njango',
 
     'users',
     'inventory',
     'account',
     'core',
-    # 'ils',
-    # 'training',
+    'ils',
+    'training',
     'key',
+    'project',
 
-    'dbsettings',
+    'solo',
     'hr',
 )
 
 TIME_ZONE = 'Asia/Kathmandu'
+DEFAULT_CALENDAR = 'bs'
 USE_TZ = True
 USE_L10N = True
 USE_I18N = True
@@ -121,3 +125,4 @@ MESSAGE_TAGS = {
 }
 
 FROALA_INCLUDE_JQUERY = False
+

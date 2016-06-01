@@ -2,7 +2,7 @@ def invalid(row, required_fields):
     invalid_attrs = []
     for attr in required_fields:
         # if one of the required attributes isn't received or is an empty string
-        if not attr in row or row.get(attr) == "":
+        if not attr in row or row.get(attr) == "" or row.get(attr) is None:
             invalid_attrs.append(attr)
     if len(invalid_attrs) is 0:
         return False

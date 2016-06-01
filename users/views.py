@@ -5,7 +5,14 @@ from django.contrib.auth import logout as auth_logout
 
 def index(request):
     if request.user.is_authenticated():
-        return render(request, 'dashboard_index.html')
+        context = {}
+        try:
+            from project.models import Project
+
+            context['projects'] = Project.objects.filter(active=True)
+        except ImportError:
+            pass
+        return render(request, 'dashboard_index.html', context)
     return login(request)
 
 
@@ -15,7 +22,7 @@ def web_login(request, **kwargs):
     else:
         if request.method == 'POST':
             if request.POST.has_key('remember_me'):
-                request.session.set_expiry(1209600) # 2 weeks
+                request.session.set_expiry(1209600)  # 2 weeks
             else:
                 request.session.set_expiry(0)
         return login(request, **kwargs)

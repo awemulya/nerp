@@ -8,11 +8,20 @@
     <script src="{% static 'js/vendors/jquery-formset.js' %}"></script>
     <script type="text/javascript">
         $(function () {
-            $('.employee-account-form').formset({
-                prefix: '{{ employee_account_formset.prefix }}'
+            $('.employee-incentive-form').formset({
+                prefix: '{{ employee_incentive_formset.prefix }}'
             });
         });
     </script>
+{% endblock %}
+{% block breadcrumbs %}
+    {{ block.super }}
+        <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
+        <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
+        <li><a href="{% url 'list_employee' %}">{% trans 'Employee List' %}</a>
+
+{% endblock %}
+{% block breadcrumbs_before_print %}
 {% endblock %}
 
 {% block alert %}
@@ -30,21 +39,21 @@
 {% if obj_id %}
     <form method="POST" action="{% url 'edit_employee' obj_id %}">
 {% else %}
-    <form method="POST" action="{% url 'employee_add' %}">
+    <form method="POST" action="{% url 'add_employee' %}">
 {% endif %}
     {% csrf_token %}
     <div class="row">
-        {{ employee_form.as_table }}
+        {{ employee_form.as_ul }}
     </div>
-    <div class="employee-accouts-form">
-        {% for employee_account_form in employee_account_formset %}
-            <div class="row employee-account-form">
-                {{ employee_account_form.as_table }}
-                {% if employee_account_form.instance.pk %}{{ employee_account_form.DELETE }}{% endif %}
+    <div class="employee-incentives-form">
+        {% for employee_incentive_form in employee_incentive_formset %}
+            <div class="row employee-incentive-form">
+                {{ employee_incentive_form.as_table }}
+                {% if employee_incentive_form.instance.pk %}{{ employee_incentive_form.DELETE }}{% endif %}
             </div>
         {% endfor %}
     </div>
-    {{ employee_account_formset.management_form }}
+    {{ employee_incentive_formset.management_form }}
     <input type="submit" value="Save"></input>
 
 </form>

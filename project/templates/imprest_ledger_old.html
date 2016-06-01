@@ -1,0 +1,154 @@
+{% extends '_imprest_base.html' %}
+{% load i18n static filters %}
+
+{% block title %}{% trans 'Imprest Ledger' %} -  {{ fy }}{% endblock %}
+
+{% block head_end %}
+    <script src="{% static 'js/project/imprest_ledger.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+    <link href="{% static 'fontawesome/css/font-awesome.min.css' %}" type="text/css" media="all" rel="stylesheet"/>
+{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="{% url "imprest_ledger" %}">{% trans 'Imprest Ledger' %}</a></li>
+{% endblock %}
+
+{% block content %}
+
+    <div class="visible-print-block form-header">
+        <h4 class="text-center">{% localize_header %}</h4>
+        <h4 class="text-center">{% trans 'Imprest Ledger' %} - {{ fy }}</h4>
+    </div>
+
+    <div class="well">
+
+        <form method="post" enctype="multipart/form-data" data-bind="submit: save" name="demand-form">
+            {% csrf_token %}
+
+            <div data-bind="with: table_view">
+                <table class="table table-striped table-responsive table-bordered center-headings imprest-ledger">
+                    <thead>
+                    <tr>
+                        <th rowspan="3">{% trans 'S.N.' %}</th>
+                        <th rowspan="3">{% trans 'Particular(s)' %}</th>
+                        <th colspan="5">{% trans 'Amount Received/Replenished' %}</th>
+                        <th colspan="6">{% trans 'Payment from Imprest Account' %}</th>
+                        <th rowspan="3">{% trans 'Balance (USD)' %}</th>
+                        <th rowspan="3" class="hidden-print"></th>
+                    </tr>
+                    <tr>
+                        <th rowspan="2">{% trans 'WA No.' %}</th>
+                        <th rowspan="2">{% trans 'Ref' %}</th>
+                        <th rowspan="2">{% trans 'Date' %}</th>
+                        <th colspan="2">{% trans 'Amount' %}</th>
+                        <th rowspan="2">{% trans 'Description' %}</th>
+                        <th rowspan="2">{% trans 'Date' %}</th>
+                        <th rowspan="2">{% trans 'Amount (NRS)' %}</th>
+                        <th rowspan="2">{% trans 'Ex. Rate' %}</th>
+                        <th colspan="2">{% trans 'Equivalent USD' %}</th>
+                    </tr>
+                    <tr>
+                        <th>{% trans 'NRS' %}</th>
+                        <th>{% trans 'USD' %}</th>
+                        <th>{% trans 'Reimbursement to Ka.7.17' %}</th>
+                        <th>{% trans 'Payment from Imprest Account' %}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- ko foreach: rows -->
+                    <tr>
+                        <td>
+                            <span data-bind="text:  $index()+1, localize: true"> </span>
+                        </td>
+                        <td data-bind="editableText: name" class="name">
+                        </td>
+                        <td data-bind="editableText: wa_no, disable_editable: type() != 'initial_deposit'">
+                        </td>
+                        <td data-bind="editableText: ref, disable_editable: entry_type()=='cr'">
+                        </td>
+                        <td data-bind="editableText: date, disable_editable: entry_type()=='cr'">
+                        </td>
+                        <td data-bind="editableText: amount_nrs, disable_editable: entry_type()=='cr' || type() == 'initial_deposit'">
+                        </td>
+                        <td data-bind="editableText: amount_usd, disable_editable: entry_type()=='cr'">
+                        </td>
+                        <td data-bind="editableText: description, disable_editable: entry_type()=='dr'">
+                        </td>
+                        <td data-bind="editableText: date, disable_editable: entry_type()=='dr'">
+                        </td>
+                        <td data-bind="editableText: amount_nrs, disable_editable: entry_type()=='dr'">
+                        </td>
+                        <td data-bind="editableText: exchange_rate, disable_editable: entry_type()=='dr'">
+                        </td>
+                        <td data-bind="text: usd_reimbursement">
+                        </td>
+                        <td data-bind="text: usd_payment">
+                        </td>
+                        <td data-bind="text: balance($root, $index)"></td>
+                        </td>
+                        <td><a href="#" class="close tiny secondary hidden-print" data-bind="click: $parent.removeRow">x</a></td>
+
+                    </tr>
+                    <!-- /ko -->
+                    <tr class="total">
+                        <td></td>
+                        <td>{% trans 'TOTAL' %}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+                {#                <a class="btn btn-default btn-raised" data-bind="click: addRow">#}
+                {#                    {% trans 'Add New Row' %}#}
+                {#                </a>#}
+
+            </div>
+            <div class="transaction-buttons hidden-print">
+                <button class="btn btn-default btn-raised"
+                        data-bind="click: add_initial_deposit, enable: count_transaction_types('initial_deposit')()==0">
+                    <i class="fa fa-plus-circle"></i>
+                    {% trans 'Initial Deposit' %}
+                </button>
+
+                <button class="btn btn-default btn-raised" data-bind="click: add_replenishment_received">
+                    <i class="fa fa-plus-circle"></i>
+                    {% trans 'Replenishment Received' %}
+                </button>
+
+                <button class="btn btn-default btn-raised" data-bind="click: add_gon_fund_transfer">
+                    <i class="fa fa-minus-circle"></i>
+                    {% trans 'GON Fund Transfer' %}
+                </button>
+
+                <button class="btn btn-default btn-raised" data-bind="click: add_payment">
+                    <i class="fa fa-minus-circle"></i>
+                    {% trans 'Payment' %}
+                </button>
+
+                <button class="btn btn-default btn-raised" data-bind="click: add_liquidation">
+                    <i class="fa fa-minus-circle"></i>
+                    {% trans 'Liquidation' %}
+                </button>
+
+            </div>
+            <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
+        </form>
+
+    </div>
+
+{% endblock %}

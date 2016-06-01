@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% load filters %}
+{% load i18n %}
+
+{% block head_end %}
+    <script src="{% static 'js/vendors/jquery-formset.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.incentivename-form').formset({
+                prefix: '{{ incentivename_formset.prefix }}'
+            });
+        });
+    </script>
+{% endblock %}
+{% block breadcrumbs %}
+    {{ block.super }}
+        <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
+        <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
+
+{% endblock %}
+{% block breadcrumbs_before_print %}
+{% endblock %}
+
+{% block alert %}
+
+    <!-- <div id="alert_placeholder">
+        <ul data-bind="foreach: errors.items" class="alert-error">
+            <li>
+                Budget for "<span data-bind="text: budget.name()"></span>" from source "<span data-bind="text: source"></span>" exceeds
+            </li>
+        </ul>
+    </div> -->
+{% endblock %}
+
+{% block  content %}
+
+<form method="POST" action="{% url 'incentivename_curd' %}">
+
+    {% csrf_token %}
+
+    <div class="incentivename-formset">
+        {% for incentivename_form in incentivename_formset %}
+            <div class="row incentivename-form">
+                {{ incentivename_form.as_table }}
+                {% if incentivename_form.instance.pk %}{{ incentivename_form.DELETE }}{% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    {{ incentivename_formset.management_form }}
+    <input type="submit" value="Save"></input>
+
+</form>
+    
+    
+{% endblock %}

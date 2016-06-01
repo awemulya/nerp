@@ -7,6 +7,14 @@
 {% block head_end %}
 
 {% endblock %}
+{% block breadcrumbs %}
+    {{ block.super }}
+        <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
+        <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
+
+{% endblock %}
+{% block breadcrumbs_before_print %}
+{% endblock %}
 
 {% block alert %}
 
@@ -20,16 +28,21 @@
 {% endblock %}
 
 {% block  content %}
-    <table class="table" >
+    <form action="" method="get">
+        {{ objects.form }}
+        <input type="submit" value="Filter" />
+    </form>
+
+    <table class="table table-striped" >
         <tr>
-            <th>Employee</th>
-            <th>Employee Designation</th>
-            <th>Employee Grade</th>
-            <th>Working Branch</th>
-            <th>Employee Sex</th>
-            <th>Marital Status</th>
-            <th>Is Permanent</th>
-            <th>Controls</th>
+            <th>{% trans 'Name' %}</th>
+            <th>{% trans 'Designation' %}</th>
+            <th>{% trans 'Grade' %}</th>
+            <th>{% trans 'Branch' %}</th>
+            <th>{% trans 'Sex' %}</th>
+            <th>{% trans 'Marital Status' %}</th>
+            <th>{% trans 'Permanent?' %}</th>
+            <th>{% trans 'Controls' %}</th>
         </tr>
         {% for obj in objects %}
             <tr>
@@ -40,12 +53,16 @@
                 <td>{{ obj.sex }}</td>
                 <td>{{ obj.marital_status }}</td>
                 <td>{{ obj.is_permanent }}</td>
-                <td><a href={% url 'delete_employee' obj.id %}><button type="button">Delete</button></a></td>
+                {% if obj.is_active %}
+                    <td><a href={% url 'toggle_employee_activeness' obj.id %}><button class="btn btn-raised btn-danger" type="button">{% trans 'Deactivate' %}</button></a></td>
+                {% else %}
+                    <td><a href={% url 'toggle_employee_activeness' obj.id %}><button class="btn btn-raised btn-primary" type="button">{% trans 'Activate' %}</button></a></td>
+                {% endif %}
 
             </tr>
         {% endfor %}
     </table>
-<a href={% url 'add_employee' %}><input type="button" value="Add New Employee"></a>
+<a href={% url 'add_employee' %}><input class="btn btn-raised btn-primary" type="button" value="Add New Employee"></a>
     
     
 {% endblock %}

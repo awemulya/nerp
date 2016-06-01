@@ -5,6 +5,8 @@ from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#,
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
 from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, TaxScheme, TaxCalcScheme, MaritalStatus
+from account.models import Account
+from app.utils.forms import HTML5BootstrapModelForm
 # import pdb
 
 # class DateSelectorWidget(MultiWidget):
@@ -49,10 +51,10 @@ def get_deduction_names():
     deductions = Deduction.objects.all()
     names = []
     for obj in deductions:
-        if obj.deduction_for == 'EMPLOYEE ACC':
-            name = '_'.join(obj.in_acc_type.name.split(' ')).lower()
-        else:
-            name = '_'.join(obj.name.split(' ')).lower()
+        # if obj.deduction_for == 'EMPLOYEE ACC':
+        #     name = '_'.join(obj.in_acc_type.name.split(' ')).lower()
+        # else:
+        name = '_'.join(obj.name.split(' ')).lower()
         names.append((name, obj.id))
     return names
 
@@ -122,7 +124,7 @@ class AllowanceDataForm(forms.Form):
             )
 
 
-class PaymentRowForm(forms.ModelForm):
+class PaymentRowForm(HTML5BootstrapModelForm):
     # deduced_amount = forms.FloatField(
     #     widget=NumberInput(attrs={'data-bind': "value: deduced_amount, disable: disable_input"})
     # )
@@ -153,7 +155,7 @@ class PaymentRowForm(forms.ModelForm):
     #     self.fields["paid_employee"].choices = [("", _("Select Employee")),] + list(self.fields["paid_employee"].choices)[1:]
 
 
-class PayrollEntryForm(forms.ModelForm):
+class PayrollEntryForm(HTML5BootstrapModelForm):
     class Meta:
         model = PayrollEntry
         fields = '__all__'
@@ -248,46 +250,52 @@ class EmployeeAccountInlineFormset(forms.BaseInlineFormSet):
     def clean(self):
         if any(self.errors):
             return
-        account_types = []
-        bank_account_count = 0
-        cntr = 0
         for form in self.forms:
+            account_categories = []
             if form.cleaned_data:
-                other_account_type = form.cleaned_data['other_account_type']
-                is_salary_account = form.cleaned_data['is_salary_account']
-                account_meta_type = form.cleaned_data['account_meta_type']
-
-                if account_meta_type == 'BANK_ACCOUNT':
-                    if other_account_type:
-                        form.add_error(
-                            'other_account_type',
-                            _('Employee Bank account cant have account type %s. Should be None type' % other_account_type)
-                        )
-                    if is_salary_account:
-                        cntr += 1
-                    bank_account_count += 1
-                else:
-                    if not other_account_type:
-                        form.add_error(
-                            'other_account_type',
-                            _('Employee Other account on account meta type need other account type')
-                        )
-                    if is_salary_account:
-                        form.add_error(
-                            'is_salary_account',
-                            _('Only Employee bank account be a salary account')
-                        )
-                    if other_account_type in account_types:
-                        acc_type_name = _(other_account_type.name)
-                        raise forms.ValidationError(
-                            _('Cannot have more than one type of %s' % acc_type_name))
-                    account_types.append(other_account_type)
-                if cntr > 1:
+                employee_acc = form.cleaned_data['account']
+                account_category = employee_acc.category
+                if account_category in account_categories:
                     raise forms.ValidationError(
-                            _('Cannot have more than one salary account'))
-        if bank_account_count == 0:
-            raise forms.ValidationError(
-                _('Employee Needs at least one bank account'))
+                        _('All accont category should be unique to each other'))
+                account_categories.append(
+                    account_category
+                )
+
+        #         is_salary_account = form.cleaned_data['is_salary_account']
+        #         account_meta_type = form.cleaned_data['account_meta_type']
+
+        #         if account_meta_type == 'BANK_ACCOUNT':
+        #             if other_account_type:
+        #                 form.add_error(
+        #                     'other_account_type',
+        #                     _('Employee Bank account cant have account type %s. Should be None type' % other_account_type)
+        #                 )
+        #             if is_salary_account:
+        #                 cntr += 1
+        #             bank_account_count += 1
+        #         else:
+        #             if not other_account_type:
+        #                 form.add_error(
+        #                     'other_account_type',
+        #                     _('Employee Other account on account meta type need other account type')
+        #                 )
+        #             if is_salary_account:
+        #                 form.add_error(
+        #                     'is_salary_account',
+        #                     _('Only Employee bank account be a salary account')
+        #                 )
+        #             if other_account_type in account_types:
+        #                 acc_type_name = _(other_account_type.name)
+        #                 raise forms.ValidationError(
+        #                     _('Cannot have more than one type of %s' % acc_type_name))
+        #             account_types.append(other_account_type)
+        #         if cntr > 1:
+        #             raise forms.ValidationError(
+        #                     _('Cannot have more than one salary account'))
+        # if bank_account_count == 0:
+        #     raise forms.ValidationError(
+        #         _('Employee Needs at least one bank account'))
 
 
 class IncentiveInlineFormset(forms.BaseInlineFormSet):
@@ -363,10 +371,6 @@ class DeductionModelFormSet(forms.BaseModelFormSet):
                 amount = form.cleaned_data.get("amount")
                 amount_rate = form.cleaned_data.get("amount_rate")
 
-                deduction_for = form.cleaned_data.get("deduction_for")
-                explicit_acc = form.cleaned_data.get("explicit_acc")
-                in_acc_type = form.cleaned_data.get("in_acc_type")
-
                 if deduct_type == 'AMOUNT' and not amount:
                     form.add_error(
                         'amount',
@@ -377,15 +381,15 @@ class DeductionModelFormSet(forms.BaseModelFormSet):
                         'amount_rate',
                         'Need amount rate field to be filled up when Sum Type is Rate'
                     )
-                if deduction_for == 'EXPLICIT ACC' and not explicit_acc:
+                if deduct_type == 'AMOUNT' and amount_rate:
                     form.add_error(
-                        'explicit_acc',
-                        'This field is required with Deduction for Explicit Account'
+                        'amount_rate',
+                        'Amount Rate should be None as DeductType is Amount'
                     )
-                elif deduction_for == 'EMPLOYEE ACC' and not in_acc_type:
+                elif deduct_type == 'RATE' and amount:
                     form.add_error(
-                        'in_acc_type',
-                        'This field is required with Deduction for Employee Account'
+                        'amount',
+                        'Amount should be None as DeductType is Rate'
                     )
 
 
@@ -536,7 +540,7 @@ class TaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
                         pass
 
 
-class AllowanceForm(forms.ModelForm):
+class AllowanceForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = Allowance
@@ -636,29 +640,34 @@ class DeductionForm(forms.ModelForm):
             )
 
 
-class EmployeeForm(forms.ModelForm):
+class EmployeeForm(HTML5BootstrapModelForm):
+
+    def __init__(self, *args, **kwargs):
+        # extra = kwargs.pop('extra')
+        super(EmployeeForm, self).__init__(*args, **kwargs)
+        self.fields['optional_deductions'].queryset = Deduction.objects.filter(is_optional=True)
 
     class Meta:
         model = Employee
         # fields = '__all__'
-        exclude = ('accounts',)
+        exclude = ('accounts', 'incentives')
 
 
-class IncentiveNameForm(forms.ModelForm):
+class IncentiveNameForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = IncentiveName
         fields = '__all__'
 
 
-class AllowanceNameForm(forms.ModelForm):
+class AllowanceNameForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = AllowanceName
         fields = '__all__'
 
 
-class MaritalStatusForm(forms.ModelForm):
+class MaritalStatusForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = MaritalStatus
@@ -666,7 +675,7 @@ class MaritalStatusForm(forms.ModelForm):
         # exclude = ('accounts',)
 
 
-class TaxSchemeForm(forms.ModelForm):
+class TaxSchemeForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = TaxScheme
@@ -773,12 +782,12 @@ AllowanceFormSet = forms.formset_factory(AllowanceDataForm)
 
 
 # These are crud formset
-EmployeeAccountFormSet = forms.inlineformset_factory(
+EmployeeIncentiveFormSet = forms.inlineformset_factory(
     Employee,
-    EmployeeAccount,
+    Incentive,
     extra=1,
     fields='__all__',
-    formset=EmployeeAccountInlineFormset
+    formset=IncentiveInlineFormset
 )
 IncentiveNameFormSet = forms.inlineformset_factory(
     IncentiveName,
@@ -799,8 +808,18 @@ DeductionDetailFormSet = forms.modelformset_factory(
     Deduction,
     extra=1,
     can_delete=True,
-    exclude=('account',),
+    exclude=('deduct_in_category',),
+    # fields='__all__',
     formset=DeductionModelFormSet
+)
+
+IncentiveNameDetailFormSet = forms.modelformset_factory(
+    IncentiveName,
+    extra=1,
+    can_delete=True,
+    exclude=('account_category',),
+    # fields='__all__',
+    # formset=DeductionModelFormSet
 )
 
 TaxSchemeFormSet = forms.inlineformset_factory(

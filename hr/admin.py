@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import AccountType, Account,EmployeeAccount, Transaction, EmployeeGrade, Employee, Designation, Incentive, Allowance, TaxScheme, BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry, IncentiveName, AllowanceName, DeductionDetail, IncentiveDetail, AllowanceDetail, AllowanceAccount, IncentiveAccount, DeductionAccount, JournalEntry, CompanyAccount, MaritalStatus, SalaryAccount
-from .forms import EmployeeAccountInlineFormset, AllowanceForm, IncentiveForm, DeductionForm
+from .models import EmployeeAccount, EmployeeGrade, Employee, Designation, Incentive, Allowance, TaxScheme, BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry, IncentiveName, AllowanceName, DeductionDetail, IncentiveDetail, AllowanceDetail, MaritalStatus
+from .forms import EmployeeAccountInlineFormset, AllowanceForm, IncentiveForm, DeductionForm, EmployeeForm
 
 
 class EmployeeAccountInline(admin.TabularInline):
@@ -9,9 +9,15 @@ class EmployeeAccountInline(admin.TabularInline):
     extra = 1
 
 
+class EmployeeIncentiveInline(admin.TabularInline):
+    model = Incentive
+    # formset = EmployeeAccountInlineFormset
+    extra = 1
+
+
 class EmployeeAdmin(admin.ModelAdmin):
-    inlines = (EmployeeAccountInline,)
-    # form = EmployeeForm
+    inlines = (EmployeeAccountInline, EmployeeIncentiveInline)
+    form = EmployeeForm
     pass
 
 
@@ -44,9 +50,9 @@ class DeductionAdmin(admin.ModelAdmin):
 #     pass
 
 
-admin.site.register(AccountType)
-admin.site.register(Account)
-admin.site.register(Transaction)
+# admin.site.register(AccountType)
+# admin.site.register(Account)
+# admin.site.register(Transaction)
 
 admin.site.register(EmployeeGrade)
 admin.site.register(Employee, EmployeeAdmin)
@@ -67,10 +73,10 @@ admin.site.register(DeductionDetail)
 admin.site.register(IncentiveDetail)
 admin.site.register(AllowanceDetail)
 
-admin.site.register(AllowanceAccount)
-admin.site.register(IncentiveAccount)
-admin.site.register(DeductionAccount)
-admin.site.register(JournalEntry)
-admin.site.register(CompanyAccount)
+# admin.site.register(AllowanceAccount)
+# admin.site.register(IncentiveAccount)
+# admin.site.register(DeductionAccount)
+# admin.site.register(JournalEntry)
+# admin.site.register(CompanyAccount)
 admin.site.register(MaritalStatus)
-admin.site.register(SalaryAccount)
+# admin.site.register(SalaryAccount)

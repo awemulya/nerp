@@ -1,11 +1,13 @@
 {% extends "admin/base.html" %}
 {% load i18n %}
 {% load filters %}
+{% load solo_tags %}
 
-{% block title %}{{ title }} | {{ 'core.models.app_setting.site_name'|setting }} {% trans 'Admin' %}{% endblock %}
+{% get_solo 'core.AppSetting' as app_setting %}
+{% block title %}{{ title }} | {{ app_setting.site_name }} {% trans 'Admin' %}{% endblock %}
 
 {% block branding %}
-    <h1 id="site-name">{{ 'core.models.app_setting.site_name'|setting }}</h1>
+    <h1 id="site-name">{{ app_setting.site_name }}</h1>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}
@@ -16,7 +18,7 @@
         <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
     {% endif %}
     <a href="/">{% trans 'App Home' %}</a> /
-    <a href={% url 'site_settings' %}>{% trans 'Settings' %}</a> /
+    {# <a href={% url 'site_settings' %}>{% trans 'Settings' %}</a> / #}
     <a href={% url 'change_fiscal_year' %}>{% trans 'Change Fiscal Year' %}</a> /
     {#    <a href={% url 'clear_cache' %}>{% trans 'Clear Cache' %}</a> /#}
     {% if user.has_usable_password %}
