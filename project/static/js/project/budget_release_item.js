@@ -82,14 +82,18 @@ function BudgetReleaseItem(data) {
                 }
                 else {
                     alert.success('Saved!');
-
+                    $("#tbody > tr").each(function (i) {
+                        $($("#tbody > tr")[i]).addClass('invalid-row');
+                    });
                     for (var i in msg.rows) {
+                        console.log(msg.rows)
                         for (var aid in msg.rows[i]) {
                             if (msg.rows[i].recurrent) {
                                 if (aid != 'recurrent') {
                                     self.budget_head_view.rows()[i][aid](msg.rows[i][aid]);
                                     if (self.budget_head_view.rows()[i].aid_amount().length != 0) {
                                         self.budget_head_view.rows()[i].aid_amount().push({'id': msg.rows[i][aid]});
+                                        $($("#tbody > tr")[i]).removeClass('invalid-row');
                                     }
                                 }
                             } else {
@@ -97,6 +101,7 @@ function BudgetReleaseItem(data) {
                                     self.capital_expenditure_view.rows()[i][aid](msg.rows[i][aid]);
                                     if (self.capital_expenditure_view.rows()[i].aid_amount().length != 0) {
                                         self.capital_expenditure_view.rows()[i].aid_amount().push({'id': msg.rows[i][aid]});
+                                        $($("#tbody > tr")[i]).removeClass('invalid-row');
                                     }
                                 }
                             }
