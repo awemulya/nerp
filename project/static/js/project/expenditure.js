@@ -64,7 +64,8 @@ function Expenditure(data) {
         }
     }
 
-    self.table_view = new TableViewModel({rows: self.values, argument: self}, RowVM);
+    self.budget_head_view = new TableViewModel({rows: self.values, argument: self}, RowVM);
+    self.capital_expenditure_view = new TableViewModel({rows: self.values, argument: self}, RowVM);
 
     self.save = function () {
         $.ajax({
