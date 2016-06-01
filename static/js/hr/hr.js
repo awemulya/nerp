@@ -297,7 +297,7 @@ function PayrollEntry(pr_data) {
 
     self.saveAndAdd = function(formElement){
         var has_error = false;
-        for(row of self.rows()){
+        for(var row of self.rows()){
             if(row.row_errors().length > 0){
                 // here has true should be true 
                 has_error = true;
@@ -338,10 +338,10 @@ function PayrollEntry(pr_data) {
     self.setup_formset = function(){
         var row_elements = $('.payment-row-table').children().children();
         var cntr = 0;
-        for(i=1; i<row_elements.length;i++ ){
+        for(var i=1; i<row_elements.length;i++ ){
             var ele = $(row_elements[i]).children();
             if(ele.children().length == 0){continue;};
-            for(j=0; j<ele.length-1;j++){
+            for(var j=0; j<ele.length-1;j++){
                 var input_element = $(ele[j]).children()[0];
                 var name_attr = $(input_element).attr('name');
                 if(name_attr){    
@@ -462,7 +462,7 @@ function PayrollEntry(pr_data) {
                     self.rows([]);
 
                     var c = 0;
-                    for(data of response.data){
+                    for(var data of response.data){
                         c += 1;
                         // var row = new PaymentRowWitDeduction(data);
                         // var mapping = {
@@ -556,7 +556,7 @@ function PayrollEntry(pr_data) {
     // Removes row with designation and grade and no employee selected
     self.del_row_ind_gc = ko.computed(function(){
         if(self.payroll_type() == 'INDIVIDUAL' && self.branch()){    
-            for(roo of self.rows()){
+            for(var roo of self.rows()){
                 if(!roo.paid_employee() && roo.employee_designation && roo.employee_grade()){
                     self.rows.remove(roo);
                             
