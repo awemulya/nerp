@@ -703,7 +703,7 @@ def payroll_entry(request):
     ko_data['deduction_data'] = {}
     ko_data['incentive_data'] = {}
     ko_data['allowance_data'] = {}
-    ko_data['calender'] = CALENDAR
+    ko_data['calendar'] = CALENDAR
 
     for name, id in get_deduction_names():
         ko_data['deduction_data']['deduction_%d' % (id)] = ''

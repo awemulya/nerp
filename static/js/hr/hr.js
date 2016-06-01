@@ -22,12 +22,32 @@
 
 
 $(document).ready(function () {
+
     vm = new PayrollEntry(ko_data);
     ko.applyBindings(vm);
     // $('.change-on-ready').trigger('change');
     // $('.dropdown-menu').click(function (event) {
     //     event.stopPropagation();
     // });
+    // if(ko_data.calendar != 'BS'){
+    //     $('#id_from_date').nepaliDatePicker({
+    //         npdMonth: true,
+	 //        npdYear: true,
+	 //        npdYearCount: 10
+    //     });
+    //     $('#id_to_date').nepaliDatePicker({
+    //         npdMonth: true,
+	 //        npdYear: true,
+	 //        npdYearCount: 10
+    //     });
+    // }else{
+    //     $('#id_from_date').datepicker({
+    //         format: 'yyyy-mm-dd',
+    //     });
+    //     $('#id_to_date').datepicker({
+    //         format: 'yyyy-mm-dd',
+    //     });
+    // };
 });
 
 function PaymentRowWitDeduction(pwd_data){
@@ -378,7 +398,7 @@ function PayrollEntry(pr_data) {
         if(self.payroll_type() != 'GROUP'){
             
             if(self.paid_from_date() && self.paid_to_date()){
-                for(let o of self.rows()){
+                for(var o of self.rows()){
                     // console.log(self.paid_from_date());
                     // console.log(self.paid_to_date());
                     o.paid_from_date(self.paid_from_date());

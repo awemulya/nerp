@@ -5,7 +5,11 @@
 {% load i18n %}
 
 {% block head_end %}
-<script src="{% static 'js/vendors/knockout-mapping-plugin.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/bootstrap/datepicker.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendors/nepali.datepicker.v2.1.min.css' %}">
+    <script src="{% static 'js/vendors/knockout-mapping-plugin.js' %}"></script>
+    <script src="{% static 'js/vendors/nepali.datepicker.v2.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'js/hr/hr.js' %}"></script>
     <script>
         ko_data = {{ko_data|jsonify}};
@@ -59,6 +63,9 @@
         
             {{ m_form.to_date }}
             <p data-bind="text: paid_to_date_error"></p>
+        </div>
+        <div class="col-lg-3" >
+            <input type="button" class="btn btn-raised btn-primary" data-bind="" value="Get">
         </div>
     </div>
     <div>
@@ -141,10 +148,10 @@
             
             <input type="submit" class="#" value="Save" data-bind="visible: rows().length>0 && !entry_saved()">
         </form>
-        <input type="button" class="#" value="Approve" data-bind="visible: rows().length > 0 && !entry_approved() && entry_saved(), click: approve_entry">
-        <input type="button" class="#" value="Approved" data-bind="visible: rows().length > 0 && entry_approved()">
-        <input type="button" class="#" value="Transact" data-bind="visible: rows().length > 0 && entry_approved() && !entry_transacted(), click: transact">
-        <input type="button" class="#" value="Transacted" data-bind="visible: rows().length > 0 && entry_approved() && entry_transacted()">
+        <input type="button" class="btn btn-raised btn-primary" value="Approve" data-bind="visible: rows().length > 0 && !entry_approved() && entry_saved(), click: approve_entry">
+        <input type="button" class="btn btn-raised btn-primary" value="Approved" data-bind="visible: rows().length > 0 && entry_approved()">
+        <input type="button" class="btn btn-raised btn-primary" value="Transact" data-bind="visible: rows().length > 0 && entry_approved() && !entry_transacted(), click: transact">
+        <input type="button" class="btn btn-raised btn-primary" value="Transacted" data-bind="visible: rows().length > 0 && entry_approved() && entry_transacted()">
         <!-- <input type="button" class="#" value="Delete Entry" data-bind="click: entry_delete, visible: entry_saved()"> -->
     </div>
     
