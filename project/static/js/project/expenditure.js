@@ -37,10 +37,16 @@ function Expenditure(data) {
     ;
 
 
-    self.values = []
+    self.budget_head_values = []
+    self.capital_expenditure_values = []
     self.value_count = []
     for (var i in data.rows) {
         var val = data.rows[i].budget_head_id
+        if (data.rows[i].recurrent) {
+                self.values = self.budget_head_values
+            } else {
+                self.values = self.capital_expenditure_values
+            }
         if (self.value_count.indexOf(val) == -1) {
             self.value_count.push(val);
             self.values.push({
@@ -64,8 +70,8 @@ function Expenditure(data) {
         }
     }
 
-    self.budget_head_view = new TableViewModel({rows: self.values, argument: self}, RowVM);
-    self.capital_expenditure_view = new TableViewModel({rows: self.values, argument: self}, RowVM);
+    self.budget_head_view = new TableViewModel({rows: self.budget_head_values, argument: self}, RowVM);
+    self.capital_expenditure_view = new TableViewModel({rows: self.capital_expenditure_values, argument: self}, RowVM);
 
     self.save = function () {
         $.ajax({

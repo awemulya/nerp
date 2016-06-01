@@ -41,6 +41,7 @@ class AidSerializer(serializers.ModelSerializer):
 class BaseStatementSerializer(serializers.ModelSerializer):
     budget_head_id = serializers.ReadOnlyField(source='budget_head.id')
     aid_name = serializers.SerializerMethodField()
+    recurrent = serializers.ReadOnlyField(source='budget_head.recurrent')
 
     class Meta:
         model = BudgetAllocationItem
