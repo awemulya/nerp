@@ -464,3 +464,6 @@ class ReimbursementList(ReimbursementView, ListView):
 
 class ReimbursementDelete(ReimbursementView, DeleteView):
     pass
+
+def statement_of_fund_template(request, project_fy_id):
+    return render(request, 'project/statement_of_funds.html')
