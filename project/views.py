@@ -321,7 +321,11 @@ def base_save(request, model):
                     continue
                 values = {'budget_head_id': row.get('budget_head_id'),
                           'project_fy_id': project_fy_id}
-                dct['rows'][index] = {}
+                import ipdb
+
+                # ipdb.set_trace()
+                dct['rows'][view] = {}
+                dct['rows'][view][index] = {}
                 if not row.get('goa_amount') and row.get('goa_id'):
                     model.objects.get(id=row.get('goa_id')).delete()
                     print 'delete goa' + ' ' + view
@@ -330,14 +334,13 @@ def base_save(request, model):
                     submodel, created = model.objects.get_or_create(id=row.get('goa_id'), defaults=values)
                     if not created:
                         submodel = save_model(submodel, values)
-                    dct['rows'][index]['goa_id'] = submodel.id
-                    import ipdb
-                    ipdb.set_trace()
-                    dct['rows'][index]['recurrent'] = submodel.budget_head.recurrent
+                    dct['rows'][view][index]['goa_id'] = submodel.id
+
+                    # dct['rows'][view][index]['recurrent'] = submodel.budget_head.recurrent
                 for aid in params.get('count'):
                     if not row.get(aid) and row.get(aid + '-id'):
                         import ipdb
-                        ipdb.set_trace()
+                        # ipdb.set_trace()
                         print 'delete aid' + ' ' + aid + ' ' + view
                         model.objects.get(id=row.get(aid + '-id')).delete()
                     if row.get(aid) and not row.get(aid + '-id'):
@@ -346,8 +349,8 @@ def base_save(request, model):
                         submodel, created = model.objects.get_or_create(id=row.get(aid + '-id'), defaults=values)
                         if not created:
                             submodel = save_model(submodel, values)
-                        dct['rows'][index][aid + '-id'] = submodel.id
-                        dct['rows'][index]['recurrent'] = submodel.budget_head.recurrent
+                        dct['rows'][view][index][aid + '-id'] = submodel.id
+                        # dct['rows'][view][index]['recurrent'] = submodel.budget_head.recurrent
     # except Exception as e:
     #     if hasattr(e, 'messages'):
     #         dct['error_message'] = '; '.join(e.messages)
