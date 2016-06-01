@@ -5,7 +5,16 @@ $(document).ready(function () {
 
 function BudgetAllocationItem(data) {
     var self = this;
-    self.budget_heads = ko.observableArray(data.budget_heads);
+    self.budget_heads = ko.observableArray([]);
+    self.capital_expenditure = ko.observableArray([]);
+
+    ko.utils.arrayForEach(data.budget_heads, function (obj) {
+        if (obj.recurrent) {
+            self.budget_heads.push(obj);
+        } else {
+            self.capital_expenditure.push(obj);
+        }
+    });
 
     self.aids = ko.observableArray();
 
@@ -23,10 +32,16 @@ function BudgetAllocationItem(data) {
     ;
 
 
-    self.values = []
+    self.budget_head_values = []
+    self.capital_expenditure_values = []
     self.value_count = []
     for (var i in data.rows) {
         var val = data.rows[i].budget_head_id
+        if (data.rows[i].recurrent) {
+            self.values = self.budget_head_values
+        } else {
+            self.values = self.capital_expenditure_values
+        }
         if (self.value_count.indexOf(val) == -1) {
             self.value_count.push(val);
             self.values.push({
@@ -50,23 +65,24 @@ function BudgetAllocationItem(data) {
         }
     }
 
+    self.budget_head_view = new TableViewModel({rows: self.budget_head_values, argument: self}, RowVM);
+    self.capital_expenditure_view = new TableViewModel({rows: self.capital_expenditure_values, argument: self}, RowVM);
+
     self.available_budget_heads = ko.observableArray(data.budget_heads.diff([]));
 
     self.selected_budget_heads = ko.observableArray([]);
 
-    self.table_view = new TableViewModel({rows: self.values, argument: self}, RowVM);
 
-
-    self.selected_budget_heads = ko.computed(function () {
-        var heads = [];
-        ko.utils.arrayForEach(self.table_view.rows(), function (row) {
-            if (row.budget_head()) {
-                heads.push(row.budget_head());
-                //row.dummy.notifySubscribers();
-            }
-        });
-        return heads;
-    });
+    //self.selected_budget_heads = ko.computed(function () {
+    //    var heads = [];
+    //    ko.utils.arrayForEach(self.table_view.rows(), function (row) {
+    //        if (row.budget_head()) {
+    //            heads.push(row.budget_head());
+    //            //row.dummy.notifySubscribers();
+    //        }
+    //    });
+    //    return heads;
+    //});
 
 
     self.save = function () {
@@ -83,13 +99,26 @@ function BudgetAllocationItem(data) {
 
                     for (var i in msg.rows) {
                         for (var aid in msg.rows[i]) {
-                            self.table_view.rows()[i][aid](msg.rows[i][aid]);
-                            if (self.table_view.rows()[i].aid_amount().length != 0) {
-                                self.table_view.rows()[i].aid_amount().push({'id': msg.rows[i][aid]});
+                            if (msg.rows[i].recurrent) {
+                                if (aid != 'recurrent') {
+                                    self.budget_head_view.rows()[i][aid](msg.rows[i][aid]);
+                                    if (self.budget_head_view.rows()[i].aid_amount().length != 0) {
+                                        self.budget_head_view.rows()[i].aid_amount().push({'id': msg.rows[i][aid]});
+                                    }
+                                }
+                            } else {
+                                if (aid != 'recurrent') {
+                                    self.capital_expenditure_view.rows()[i][aid](msg.rows[i][aid]);
+                                    if (self.capital_expenditure_view.rows()[i].aid_amount().length != 0) {
+                                        self.capital_expenditure_view.rows()[i].aid_amount().push({'id': msg.rows[i][aid]});
+                                    }
+                                }
                             }
+
                         }
                     }
-                    self.table_view.deleted_rows([]);
+                    self.budget_head_view.deleted_rows([]);
+                    self.capital_expenditure_view.deleted_rows([]);
                 }
             }
             ,
@@ -124,7 +153,7 @@ function RowVM(row, vm) {
                     self.goa_id(row.aid_amount[i].id);
                 }
                 //else {
-                    //self.goa_amount(self.goa_amount() + row.aid_amount[i].amount);
+                //self.goa_amount(self.goa_amount() + row.aid_amount[i].amount);
                 //}
             }
             if (self[row.aid_amount[i].aid_name] != undefined) {
@@ -146,18 +175,18 @@ function RowVM(row, vm) {
 
     //self.available_budget_heads = ko.observableArray(vm.budget_heads().diff([]));
 
-    self.available_budget_heads = ko.computed(function () {
-        self.dummy();
-        var heads = vm.budget_heads().diff(vm.selected_budget_heads())
-        if (self.budget_head()) {
-            heads.push(self.budget_head());
-        }
-        return heads;
-    });
+    //self.available_budget_heads = ko.computed(function () {
+    //    self.dummy();
+    //    var heads = vm.budget_heads().diff(vm.selected_budget_heads())
+    //    if (self.budget_head()) {
+    //        heads.push(self.budget_head());
+    //    }
+    //    return heads;
+    //});
 
     //self.available_budget_heads.subscribe(function () {
-        //debugger;
-        //$(document).trigger('reload-selectize');
+    //debugger;
+    //$(document).trigger('reload-selectize');
     //});
 
 
