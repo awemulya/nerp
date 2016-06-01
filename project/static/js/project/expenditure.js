@@ -5,7 +5,18 @@ $(document).ready(function () {
 
 function Expenditure(data) {
     var self = this;
-    self.budget_heads = ko.observableArray(data.budget_heads);
+    self.budget_heads = ko.observableArray([]);
+    self.capital_expenditure = ko.observableArray([]);
+
+    ko.utils.arrayForEach(data.budget_heads, function (obj) {
+        if (obj.recurrent) {
+            self.budget_heads.push(obj);
+        } else {
+            self.capital_expenditure.push(obj);
+        }
+    });
+
+
 
     self.aids = ko.observableArray();
 
