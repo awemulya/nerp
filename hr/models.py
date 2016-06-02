@@ -130,6 +130,7 @@ class IncentiveName(models.Model):
     description = models.CharField(max_length=250)
     account_category = models.ForeignKey(Category, null=True, blank=True)
     with_scale = models.BooleanField(default=False)
+    amount_editable = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
@@ -173,6 +174,7 @@ class Deduction(models.Model):
     is_tax_free = models.BooleanField(default=False)
 
     is_optional = models.BooleanField(default=False)
+    amount_editable = models.BooleanField(default=False)
 
     def __unicode__(self):
         if self.deduct_type == 'AMOUNT':
@@ -705,7 +707,6 @@ class PaymentRecord(models.Model):
     absent_days = models.PositiveIntegerField()
     allowance = models.FloatField(null=True, blank=True)
     incentive = models.FloatField(null=True, blank=True)
-    pf_deduction_amount = models.PositiveIntegerField(null=True, blank=True)
     deduced_amount = models.FloatField(null=True, blank=True)
     deduction_details = models.ManyToManyField(DeductionDetail, blank=True)
     incentive_details = models.ManyToManyField(IncentiveDetail, blank=True)

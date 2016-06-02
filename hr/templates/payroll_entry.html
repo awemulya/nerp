@@ -89,8 +89,6 @@
                     {% endfor %}
                     
                     <th>{% trans 'Total Deduced Amount' %}</th>
-                    
-                    <th>{% trans 'PF Deduced Amount' %}</th>
 
                     <th>{% trans 'Income Tax' %}</th>
                     <th>{% trans 'Pro Tempore Amount' %}</th>
@@ -120,16 +118,23 @@
                         <td data-bind="editableText: allowance, disable_content_editable: disable_input, numeric: true"></td>
                         
                         {% for field in ko_data.incentive_data %}
-                            <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
+                            {% if field.editable %}
+                                <td data-bind="editableText: {{ field.observable_name }}, numeric: true"></td>
+                            {% else %}
+                                <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
+                            {% endif %}
                         {% endfor %}
                         <td data-bind="editableText: incentive, disable_content_editable: disable_input, numeric: true"></td>
                         
                         {% for field in ko_data.deduction_data %}
-                            <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
+                            {% if field.editable %}
+                                <td data-bind="editableText: {{ field.observable_name }}, numeric: true"></td>
+                            {% else %}
+                                <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
+                            {% endif %}
                         {% endfor %}
                         <td data-bind="editableText: deduced_amount, disable_content_editable: disable_input, numeric: true"></td>
                         
-                        <td data-bind="editableText: pf_deduction_amount, disable_content_editable: disable_input, numeric: true"></td>
                         <td data-bind="editableText: income_tax, disable_content_editable: disable_input, numeric: true"></td>
                         <td data-bind="editableText: pro_tempore_amount, disable_content_editable: disable_input, numeric: true"></td>
                         <td data-bind="editableText: salary, disable_content_editable: disable_input, numeric: true"></td>

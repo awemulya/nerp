@@ -55,7 +55,7 @@ def get_deduction_names():
         #     name = '_'.join(obj.in_acc_type.name.split(' ')).lower()
         # else:
         name = '_'.join(obj.name.split(' ')).lower()
-        names.append((name, obj.id))
+        names.append((name, obj.id, obj.amount_editable))
     return names
 
 
@@ -68,7 +68,7 @@ def get_incentive_names():
         # else:
         #     name = '_'.join(obj.name.split(' ')).lower()
         name = '_'.join(obj.name.split(' ')).lower()
-        names.append((name, obj.id))
+        names.append((name, obj.id, obj.amount_editable))
     return names
 
 
@@ -131,23 +131,23 @@ class PaymentRowForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = PaymentRecord
-        exclude = ('deduction_detail',)
-        # fields = '__all__'
+        # exclude = ('deduction_detail',)
+        fields = ('paid_employee',)
 
         # fields = ('name', 'title', 'birth_date')
         widgets = {
             'paid_employee': Select(attrs={'data-bind': "value: paid_employee, event:{ change: employee_changed}, readOnly: disable_input, selectize: emp_options"}),
             # 'paid_from_date': DateInput(attrs={'data-bind': "value:$parent.paid_from_date, disable: disable_input"}),
             # 'paid_to_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date, disable: disable_input"}),
-            'absent_days': NumberInput(attrs={'data-bind': "visible: false, readOnly: disable_input"}),
-            'allowance': NumberInput(attrs={'data-bind': "value: allowance, readOnly: disable_input"}),
-            'incentive': NumberInput(attrs={'data-bind': "value: incentive, readOnly: disable_input"}),
-            'pf_deduction_amount': NumberInput(attrs={'data-bind': "value: pf_deduction_amount", "step": "any"}),
-            'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount, readOnly: disable_input"}),
-            'income_tax': NumberInput(attrs={'data-bind': "value: income_tax, readOnly: disable_input"}),
-            'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount, readOnly: disable_input"}),
-            'salary': NumberInput(attrs={'data-bind': "value: salary, readOnly: disable_input"}),
-            'paid_amount': NumberInput(attrs={'data-bind': "value: paid_amount, readOnly: disable_input"}),
+            # 'absent_days': NumberInput(attrs={'data-bind': "visible: false, readOnly: disable_input"}),
+            # 'allowance': NumberInput(attrs={'data-bind': "value: allowance, readOnly: disable_input"}),
+            # 'incentive': NumberInput(attrs={'data-bind': "value: incentive, readOnly: disable_input"}),
+            # 'pf_deduction_amount': NumberInput(attrs={'data-bind': "value: pf_deduction_amount", "step": "any"}),
+            # 'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount, readOnly: disable_input"}),
+            # 'income_tax': NumberInput(attrs={'data-bind': "value: income_tax, readOnly: disable_input"}),
+            # 'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount, readOnly: disable_input"}),
+            # 'salary': NumberInput(attrs={'data-bind': "value: salary, readOnly: disable_input"}),
+            # 'paid_amount': NumberInput(attrs={'data-bind': "value: paid_amount, readOnly: disable_input"}),
         }
 
     # def __init__(self, *args, **kwargs):

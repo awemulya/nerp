@@ -98,7 +98,6 @@ function PaymentEntryRow() {
     self.absent_days = ko.observable();
     self.allowance = ko.observable();
     self.incentive = ko.observable();
-    self.pf_deduction_amount = ko.observable();
     self.deduced_amount = ko.observable();
     self.income_tax = ko.observable();
     self.pro_tempore_amount = ko.observable();

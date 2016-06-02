@@ -707,23 +707,25 @@ def payroll_entry(request):
 
     ko_data['deduction_data'] = []
 
-    for name, id in get_deduction_names():
+    for name, id, editable in get_deduction_names():
         ko_data['deduction_data'].append(
             {
                 'observable_name': 'deduction_%d' % (id),
                 'id': id,
-                'field_name': ' '.join(name.split('_')).title()
+                'field_name': ' '.join(name.split('_')).title(),
+                'editable': True if editable else False,
             }
         )
         # ['deduction_%d' % (id)] = ''
 
     ko_data['incentive_data'] = []
-    for name, id in get_incentive_names():
+    for name, id, editable in get_incentive_names():
         ko_data['incentive_data'].append(
             {
                 'observable_name': 'incentive_%d' % (id),
                 'id': id,
-                'field_name': ' '.join(name.split('_')).title()
+                'field_name': ' '.join(name.split('_')).title(),
+                'editable': True if editable else False,
             }
         )
 
@@ -739,9 +741,9 @@ def payroll_entry(request):
 
     main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
     row_form = PaymentRowFormSet()[0]
-    deduction_form = DeductionFormSet()[0]
-    incentive_form = IncentiveFormSet()[0]
-    allowance_form = AllowanceFormSet()[0]
+    # deduction_form = DeductionFormSet()[0]
+    # incentive_form = IncentiveFormSet()[0]
+    # allowance_form = AllowanceFormSet()[0]
     # underscore_row_form = get_underscore_formset(str(row_form))
     return render(
         request,
@@ -749,9 +751,6 @@ def payroll_entry(request):
         {
           'r_form': row_form,
           'm_form': main_form,
-          'deduction_form': deduction_form,
-          'allowance_form': allowance_form,
-          'incentive_form': incentive_form,
           'ko_data': ko_data
         })
 
