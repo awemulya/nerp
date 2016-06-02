@@ -25,10 +25,7 @@ $(document).ready(function () {
 
     vm = new PayrollEntry(ko_data);
     ko.applyBindings(vm);
-    // $('.change-on-ready').trigger('change');
-    // $('.dropdown-menu').click(function (event) {
-    //     event.stopPropagation();
-    // });
+   
     // if(ko_data.calendar != 'BS'){
     //     $('#id_from_date').nepaliDatePicker({
     //         npdMonth: true,
@@ -51,21 +48,28 @@ $(document).ready(function () {
 });
 
 function PaymentRowWitDeduction(pwd_data){
+    var extract_obsevable_name = function(ko_obj){
+        var observabe_names = {};
+        for (var obj of ko_obj){
+            observabe_names[obj.observable_name] = '';
+        };
+        return observabe_names;
+    };
     var PER = new PaymentEntryRow();
     if(pwd_data.deduction_data){
         // var PER = new PaymentEntryRow();
-        var DeductionPER = ko.mapping.fromJS(pwd_data.deduction_data);
+        var DeductionPER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.deduction_data));
         $.extend(PER, DeductionPER);
     };
 
     if(pwd_data.incentive_data){
         // var PER = new PaymentEntryRow();
-        var IncentivePER = ko.mapping.fromJS(pwd_data.incentive_data);
+        var IncentivePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.incentive_data));
         $.extend(PER, IncentivePER);
     };
     if(pwd_data.allowance_data){
         // var PER = new PaymentEntryRow();
-        var AllowancePER = ko.mapping.fromJS(pwd_data.allowance_data);
+        var AllowancePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.allowance_data));
         $.extend(PER, AllowancePER);
     };
 
@@ -80,7 +84,7 @@ function PaymentRowWitDeduction(pwd_data){
 };
 
 
-function PaymentEntryRow(per_data) {
+function PaymentEntryRow() {
     //debugger;
     var self = this;
     self.id = ko.observable();

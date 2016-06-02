@@ -705,14 +705,37 @@ def payroll_entry(request):
     ko_data['allowance_data'] = {}
     ko_data['calendar'] = CALENDAR
 
+    ko_data['deduction_data'] = []
+
     for name, id in get_deduction_names():
-        ko_data['deduction_data']['deduction_%d' % (id)] = ''
+        ko_data['deduction_data'].append(
+            {
+                'observable_name': 'deduction_%d' % (id),
+                'id': id,
+                'field_name': ' '.join(name.split('_')).title()
+            }
+        )
+        # ['deduction_%d' % (id)] = ''
 
+    ko_data['incentive_data'] = []
     for name, id in get_incentive_names():
-        ko_data['incentive_data']['incentive_%d' % (id)] = ''
+        ko_data['incentive_data'].append(
+            {
+                'observable_name': 'incentive_%d' % (id),
+                'id': id,
+                'field_name': ' '.join(name.split('_')).title()
+            }
+        )
 
+    ko_data['allowance_data'] = []
     for name, id in get_allowance_names():
-        ko_data['allowance_data']['allowance_%d' % (id)] = ''
+        ko_data['allowance_data'].append(
+            {
+                'observable_name': 'allowance_%d' % (id),
+                'id': id,
+                'field_name': ' '.join(name.split('_')).title()
+            }
+        )
 
     main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
     row_form = PaymentRowFormSet()[0]
