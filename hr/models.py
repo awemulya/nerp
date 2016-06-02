@@ -562,9 +562,7 @@ class Incentive(models.Model):
     )
     employee = models.ForeignKey(Employee)
     # Any one of the two should be filled
-    incentive_deduct_choice = copy.deepcopy(deduct_choice)
-    incentive_deduct_choice.append(('NOTFIXED', _('Not Fixed')))
-    sum_type = models.CharField(max_length=50, choices=incentive_deduct_choice)
+    sum_type = models.CharField(max_length=50, choices=deduct_choice)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? == May be we should keep it in setting

@@ -326,17 +326,6 @@ class IncentiveInlineFormset(forms.BaseInlineFormSet):
                         'Need amount rate field to be \
                         filled up when Sum Type is Rate'
                     )
-                elif sum_type == 'NOTFIXED' and (
-                    (amount and amount_rate) or
-                        (amount or amount_rate)):
-                    form.add_error(
-                        'amount',
-                        'Amount should be None when Sum Type is Not Fixed'
-                    )
-                    form.add_error(
-                        'amount_rate',
-                        'Amount Rate should be None when Sum Type is Not Fixed'
-                    )
                 if payment_cycle == 'Y' and not year_payment_cycle_month:
                     form.add_error(
                         'year_payment_cycle_month',
