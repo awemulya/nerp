@@ -628,7 +628,6 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             employee_response['deduction_%d' % (obj.id)] = 0
 
     # PF deduction amount in case of loan from PF
-    employee_response['pf_deduction_amount'] = employee.pf_monthly_deduction_amount * total_month
 
     # Income tax logic
     f_y_data = fiscal_year_data(paid_from_date, paid_to_date)
@@ -674,7 +673,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     #     employee, 'bank_account')
 
     employee_response['paid_amount'] = salary - deduction - income_tax +\
-        p_t_amount + incentive + allowance - employee_response['pf_deduction_amount']
+        p_t_amount + incentive + allowance
 
     if row_errors:
         for item in employee_response:
@@ -893,7 +892,7 @@ def save_payroll_entry(request):
 
                 p_r.absent_days = 0
                 p_r.deduced_amount = float(request.POST.get('form-%d-deduced_amount' % (i), None))
-                p_r.pf_deduction_amount = float(request.POST.get('form-%d-pf_deduction_amount' % (i), None))
+                
                 p_r.allowance = float(request.POST.get('form-%d-allowance' % (i), None))
                 p_r.incentive = float(request.POST.get('form-%d-incentive' % (i), None))
                 p_r.income_tax = float(request.POST.get('form-%d-income_tax' % (i), None))
@@ -1055,7 +1054,7 @@ def entry_detail(request, pk=None):
             entry_row_data['deduction_data'] = deduction_amounts
             entry_row_data['deduced_amount'] = row.deduced_amount
 
-            entry_row_data['pf_deduction_amount'] = (row.pf_deduction_amount)
+            
             entry_row_data['income_tax'] = (row.income_tax)
             entry_row_data['pro_tempore_amount'] = (row.pro_tempore_amount)
             entry_row_data['salary'] = (row.salary)

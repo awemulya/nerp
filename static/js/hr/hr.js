@@ -48,31 +48,52 @@ $(document).ready(function () {
 });
 
 function PaymentRowWitDeduction(pwd_data){
-    var extract_obsevable_name = function(ko_obj){
+    var extract_obsevable_name = function(ko_obj, dict_output){
         var observabe_names = {};
+        var observable_list = []
         for (var obj of ko_obj){
             observabe_names[obj.observable_name] = '';
+            observable_list.push(obj.observable_name);
         };
-        return observabe_names;
+        if (dict_output){
+            return observabe_names;
+        }else{
+            return observabe_list;
+        };
     };
     var PER = new PaymentEntryRow();
     if(pwd_data.deduction_data){
         // var PER = new PaymentEntryRow();
-        var DeductionPER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.deduction_data));
+        var DeductionPER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.deduction_data, true));
         $.extend(PER, DeductionPER);
     };
 
     if(pwd_data.incentive_data){
         // var PER = new PaymentEntryRow();
-        var IncentivePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.incentive_data));
+        var IncentivePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.incentive_data, true));
         $.extend(PER, IncentivePER);
     };
     if(pwd_data.allowance_data){
         // var PER = new PaymentEntryRow();
-        var AllowancePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.allowance_data));
+        var AllowancePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.allowance_data, true));
         $.extend(PER, AllowancePER);
     };
-
+    
+    PER.compute_editable_totals = ko.computed(function(){
+        var total_deduction = 0;
+        var total_incentive = 0;
+        for(var obs of extract_obsevable_name(pwd_data.deduction_data, true)){
+            total_deduction += PER[obs]();
+        };
+        for(var obs of extract_obsevable_name(pwd_data.incentive_data, true)){
+            total_incentive += PER[obs]();
+        };
+        PER.deduced_amount(total_deduction);
+        PER.incentive(total_incentive);
+        var total_paid_amount = PER.salary() - PER.deduced_amount() - PER.income_tax() + PER.pro_tempore_amount() + PER.incentive() + PER.allowance();
+        PER.paid_amount(total_paid_amount);
+    });
+    
     return PER;
 
     // var self = this;
