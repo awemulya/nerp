@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import EmployeeAccount, EmployeeGrade, Employee, Designation, Incentive, Allowance, TaxScheme, BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry, IncentiveName, AllowanceName, DeductionDetail, IncentiveDetail, AllowanceDetail, MaritalStatus
-from .forms import EmployeeAccountInlineFormset, AllowanceForm, IncentiveForm, DeductionForm, EmployeeForm
+from .forms import EmployeeAccountInlineFormset, AllowanceForm, IncentiveForm, DeductionForm, EmployeeForm, IncentiveInlineFormset
 
 
 class EmployeeAccountInline(admin.TabularInline):
@@ -11,7 +11,7 @@ class EmployeeAccountInline(admin.TabularInline):
 
 class EmployeeIncentiveInline(admin.TabularInline):
     model = Incentive
-    # formset = EmployeeAccountInlineFormset
+    formset = IncentiveInlineFormset
     extra = 1
 
 

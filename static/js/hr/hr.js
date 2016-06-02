@@ -330,17 +330,17 @@ function PayrollEntry(pr_data) {
         if(!has_error){
             // debugger;
             // var post_data = $(formElement).find("input[type='hidden'], :input:not(:hidden), select").serialize() + '&row_count=' + String(self.rows().length);
-            var post_data = $(formElement).serialize() +
-                '&row_count=' + String(self.rows().length) +
-                '&paid_from_date=' + self.paid_from_date() +
-                '&paid_to_date=' + self.paid_to_date() +    
-                '&branch=' + self.branch() +
-                '&monthly_payroll=' + self.monthly_payroll();
+            // var post_data = $(formElement).serialize() +
+            //     '&row_count=' + String(self.rows().length) +
+            //     '&paid_from_date=' + self.paid_from_date() +
+            //     '&paid_to_date=' + self.paid_to_date() +    
+            //     '&branch=' + self.branch() +
+            //     '&monthly_payroll=' + self.monthly_payroll();
             $.ajax({
                 url: 'save_payroll_entry/',
                 method: 'POST',
                 dataType: 'json',
-                data: post_data,
+                data: ko.toJSON(self),
                 // async: true,
                 success: function (response) {
                     console.log(response);

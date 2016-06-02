@@ -311,17 +311,31 @@ class IncentiveInlineFormset(forms.BaseInlineFormSet):
                 amount = form.cleaned_data.get("amount")
                 amount_rate = form.cleaned_data.get("amount_rate")
                 payment_cycle = form.cleaned_data.get("payment_cycle")
-                year_payment_cycle_month = form.cleaned_data.get("year_payment_cycle_month")
+                year_payment_cycle_month = form.cleaned_data.get(
+                    "year_payment_cycle_month")
 
                 if sum_type == 'AMOUNT' and not amount:
                     form.add_error(
                         'amount',
-                        'Need amount field to be filled up when Sum Type is Amount'
+                        'Need amount field to be \
+                        filled up when Sum Type is Amount'
                     )
                 elif sum_type == 'RATE' and not amount_rate:
                     form.add_error(
                         'amount_rate',
-                        'Need amount rate field to be filled up when Sum Type is Rate'
+                        'Need amount rate field to be \
+                        filled up when Sum Type is Rate'
+                    )
+                elif sum_type == 'NOTFIXED' and (
+                    (amount and amount_rate) or
+                        (amount or amount_rate)):
+                    form.add_error(
+                        'amount',
+                        'Amount should be None when Sum Type is Not Fixed'
+                    )
+                    form.add_error(
+                        'amount_rate',
+                        'Amount Rate should be None when Sum Type is Not Fixed'
                     )
                 if payment_cycle == 'Y' and not year_payment_cycle_month:
                     form.add_error(

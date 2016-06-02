@@ -18,6 +18,7 @@ from django.dispatch.dispatcher import receiver
 
 from account.models import Account, Category
 from django.db.models.signals import post_save
+import copy
 
 
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
@@ -561,7 +562,9 @@ class Incentive(models.Model):
     )
     employee = models.ForeignKey(Employee)
     # Any one of the two should be filled
-    sum_type = models.CharField(max_length=50, choices=deduct_choice)
+    incentive_deduct_choice = copy.deepcopy(deduct_choice)
+    incentive_deduct_choice.append(('NOTFIXED', _('Not Fixed')))
+    sum_type = models.CharField(max_length=50, choices=incentive_deduct_choice)
     amount = models.FloatField(null=True, blank=True)
     amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? == May be we should keep it in setting
@@ -579,8 +582,10 @@ class Incentive(models.Model):
     def __unicode__(self):
         if self.sum_type == 'AMOUNT':
             return '%s, %f' % (self.name, self.amount)
-        else:
+        elif self.sum_type == 'RATE':
             return '%s, %f' % (self.name, self.rate)
+        else:
+            return '%s-NOTFIXED' % (self.name)
 
     def save(self, *args, **kwargs):
         if self.sum_type == 'AMOUNT':
@@ -759,7 +764,7 @@ class PayrollEntry(models.Model):
 
 def employee_account_validator(acc_id):
     category = Account.objects.get(id=acc_id).category
-    if category.id == ACC_CAT_BASIC_SALARY_ID or category.parent.parent.id == ACC_CAT_PAY_HEAD_ID:
+    if category.id == ACC_CAT_BASIC_SALARY_ID or category.parent.parent.id == ACC_CAT_PAY_HEAD_ID or category.parent_id == ACC_CAT_PAY_HEAD_ID:
         pass
     else:
         raise ValidationError(
