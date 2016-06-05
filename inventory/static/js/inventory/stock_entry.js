@@ -38,7 +38,6 @@ function StockEntryViewModel(data) {
             success: function (msg) {
                 if (typeof (msg.error_message) != 'undefined') {
                     alert.error(msg.error_message);
-                    self.status('errorlist');
                 }
                 else {
                     alert.success('Saved!');
