@@ -1769,10 +1769,17 @@ def save_stock_entry(request):
             item.save(account_no=row.get('account_no'), opening_balance=row.get('opening_stock'),
                       opening_rate=row.get('opening_rate'), opening_rate_vattable=row.get('opening_rate_vattable'))
             if int(row.get('opening_stock')) > 0:
-                entry_report_row = EntryReportRow(sn=1, item=item, quantity=row.get('opening_stock'), unit=item.unit, rate=row.get('opening_rate'),
-                                                  vattable=row.get('opening_rate_vattable'), remarks="Opening Balance")
+                if submodel.entry_report_row:
+                    entry_report_row = submodel.entry_report_row
+                    entry_report_row.quantity = row.get('opening_stock')
+                    entry_report_row.rate= row.get('opening_rate')
+                    entry_report_row.vattable= row.get('opening_rate_vattable')
+                else:
+                    entry_report_row = EntryReportRow(sn=1, item=item, quantity=row.get('opening_stock'), unit=item.unit, rate=row.get('opening_rate'),
+                                                      vattable=row.get('opening_rate_vattable'), remarks="Opening Balance")
                 date = datetime.date.today()
                 entry_report_row.save()
+                submodel.entry_report_row = entry_report_row
                 set_transactions(entry_report_row, date,
                                  ['ob', entry_report_row.item.account, int(row.get('opening_stock'))],
                                  )
