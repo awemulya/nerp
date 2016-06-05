@@ -27,7 +27,7 @@
 
 	            <input type="text" class="pull-right text-right form-control" required="required"
 	                                       name="date" id="id_date"
-	                                       data-bind="value: date, autosize:3">
+	                                       data-bind="value: date, autosize:3, localize: true">
 	            {{ form.date.errors }}
 	            </div>
 	        </div>
@@ -72,12 +72,12 @@
                     <td data-bind="editableText: name"></td>
                 	<td data-bind="editableText: description"></td>
                 	<td data-bind="editableText: unit"></td>
-                    <td data-bind="editableText: opening_stock, numeric: true"></td>
-                	<td data-bind="editableText: account_no, numeric: true"></td>
+                    <td data-bind="editableText: opening_stock, numeric: true, localize: 2"></td>
+                	<td data-bind="editableText: account_no, numeric: true, localize: 2"></td>
                     <td>
                         <input class="hidden-print" type="checkbox" data-bind="checked: opening_rate_vattable">
                     </td>
-                	<td data-bind="editableText: opening_rate, numeric: true"></td>
+                	<td data-bind="editableText: opening_rate, numeric: true, localize:2"></td>
                     <td>
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
                     </td>
