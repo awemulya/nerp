@@ -1008,8 +1008,8 @@ def fiscal_year_changed(sender, **kwargs):
 
 class StockEntry(models.Model):
     voucher_no = models.PositiveIntegerField(verbose_name=_('Voucher No.'))
-    date = BSDateField(default=today, validators=[validate_in_fy])
-
+    date = BSDateField(default=today, validators=[validate_in_fy], blank=True, null=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
     objects = FYManager()
 
     def save(self, *args, **kwargs):
