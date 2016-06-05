@@ -879,7 +879,7 @@ def create_item_location(request, id=None):
         base_template = 'modal.html'
     else:
         base_template = 'inventory_base.html'
-    return render(request, 'item_form.html', {
+    return render(request, 'item_location.html', {
         'scenario': scenario,
         'form': form,
         'base_template': base_template,
