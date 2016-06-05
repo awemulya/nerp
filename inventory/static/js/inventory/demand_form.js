@@ -391,7 +391,9 @@ function DemandRow(row, demand_vm) {
         if (self.release_vms().length) {
             for (var k in self.release_vms()) {
                 var release = self.release_vms()[k];
-                total += release.count();
+                if (release.count) {
+                    total += release.count();
+                }
             }
         }
         return total;
