@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_delete
 from django.dispatch.dispatcher import receiver
 from django.db.models import F
 from mptt.models import MPTTModel, TreeForeignKey
@@ -108,7 +108,8 @@ class InventoryAccount(models.Model):
         obj = self
         le_data = {}
         if obj.item.type == 'consumable' and year:
-            last_entry = JournalEntry.objects.filter(transactions__account_id=obj.id, date__lt=FiscalYear.start(year)).order_by(
+            last_entry = JournalEntry.objects.filter(transactions__account_id=obj.id,
+                                                     date__lt=FiscalYear.start(year)).order_by(
                 'date', 'id').last()
             if last_entry:
                 le_data = InventoryAccountRowSerializer(last_entry).data
@@ -116,7 +117,8 @@ class InventoryAccount(models.Model):
                 le_data['income_rate'] = None
                 le_data['expense_quantity'] = None
                 le_data['voucher_no'] = 'Last FY'
-            journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id, date__gte=FiscalYear.start(year),
+            journal_entries = JournalEntry.objects.filter(transactions__account_id=obj.id,
+                                                          date__gte=FiscalYear.start(year),
                                                           date__lte=FiscalYear.end(year)).order_by('date', 'id') \
                 .prefetch_related('transactions', 'account_row', 'creator', 'content_type',
                                   'transactions__account').select_related()
@@ -233,6 +235,13 @@ class Item(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+def item_delete(sender, instance, **kwargs):
+    instance.account.delete()
+
+
+post_delete.connect(item_delete, sender=Item)
 
 
 class ItemLocation(models.Model):
@@ -885,7 +894,8 @@ class QuotationComparisonRow(models.Model):
 class PartyQuotation(models.Model):
     party = models.ForeignKey(Party, related_name='party_quote')
     per_unit_price = models.FloatField()
-    quotation_comparison_row = models.ForeignKey(QuotationComparisonRow, related_name='bidder_quote', blank=True, null=True)
+    quotation_comparison_row = models.ForeignKey(QuotationComparisonRow, related_name='bidder_quote', blank=True,
+                                                 null=True)
 
 
 class ItemInstance(models.Model):
