@@ -55,9 +55,7 @@
                     <th class="span2">{% trans 'Name.' %}</th>
                     <th class="span2">{% trans 'Description' %}</th>
                     <th class="span2">{% trans 'Unit' %}</th>
-                    {% if scenario == 'Create' %}
-                    	<th class="span3">{% trans 'Opening stock' %}</th>
-                    {% endif %}
+                    <th class="span3">{% trans 'Opening stock' %}</th>
                     <th class="span3">{% trans 'Account no.' %}</th>
                     <th class="span2">{% trans 'Vattable' %}</th>
                     <th class="span3 hidden-print">{% trans 'Opening rate' %}</th>
@@ -74,9 +72,7 @@
                     <td data-bind="editableText: name"></td>
                 	<td data-bind="editableText: description"></td>
                 	<td data-bind="editableText: unit"></td>
-                    {% if scenario == 'Create' %}
-	                	<td data-bind="editableText: opening_stock, numeric: true"></td>
-					{% endif %}
+                    <td data-bind="editableText: opening_stock, numeric: true"></td>
                 	<td data-bind="editableText: account_no, numeric: true"></td>
                     <td>
                         <input class="hidden-print" type="checkbox" data-bind="checked: opening_rate_vattable">
