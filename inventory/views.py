@@ -1734,7 +1734,7 @@ def save_stock_entry(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date')}
+    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'description': params.get('description')}
     if params.get('id'):
         obj = StockEntry.objects.get(id=params.get('id'))
     else:
