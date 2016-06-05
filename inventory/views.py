@@ -712,7 +712,7 @@ def item_form(request, id=None):
             if int(opening_balance) > 0:
                 entry_report_row = EntryReportRow(sn=1, item=item, quantity=opening_balance, unit=item.unit, rate=opening_rate,
                                                   vattable=opening_rate_vattable, remarks="Opening Balance")
-                date = datetime.datetime.now()
+                date = datetime.date.today()
                 entry_report_row.save()
                 set_transactions(entry_report_row, date,
                                  ['ob', entry_report_row.item.account, opening_balance],
@@ -1771,7 +1771,7 @@ def save_stock_entry(request):
             if int(row.get('opening_stock')) > 0:
                 entry_report_row = EntryReportRow(sn=1, item=item, quantity=row.get('opening_stock'), unit=item.unit, rate=row.get('opening_rate'),
                                                   vattable=row.get('opening_rate_vattable'), remarks="Opening Balance")
-                date = datetime.datetime.now()
+                date = datetime.date.today()
                 entry_report_row.save()
                 set_transactions(entry_report_row, date,
                                  ['ob', entry_report_row.item.account, int(row.get('opening_stock'))],
