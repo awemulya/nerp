@@ -248,7 +248,7 @@ function DemandRow(row, demand_vm) {
         }
     }
 
-    self.to_json = function(){
+    self.to_json = function () {
         self.index = self.ind();
         return ko.toJSON(self);
     }
@@ -370,18 +370,24 @@ function DemandRow(row, demand_vm) {
 
     self.total_quantity = ko.computed(function () {
         var total = 0;
-        for (var k in self.groups()) {
-            var group = self.groups()[k];
-            total += group.count();
+        if (self.groups().length) {
+            for (var k in self.groups()) {
+                var group = self.groups()[k];
+                if (group) {
+                    total += group.count();
+                }
+            }
         }
         return total;
     });
 
     self.total_release = ko.computed(function () {
         var total = 0;
-        for (var k in self.release_vms()) {
-            var release = self.release_vms()[k];
-            total += release.count();
+        if (self.release_vms().length) {
+            for (var k in self.release_vms()) {
+                var release = self.release_vms()[k];
+                total += release.count();
+            }
         }
         return total;
     });

@@ -1026,6 +1026,9 @@ class StockEntry(models.Model):
     def __str__(self):
         return str(self.voucher_no)
 
+    class Meta:
+        verbose_name_plural = 'Stock Entries'
+
 
 class StockEntryRow(models.Model):
     sn = models.PositiveIntegerField()

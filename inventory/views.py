@@ -1643,7 +1643,7 @@ def view_inventory_account(request, id, year=None):
     if le_data:
         data.insert(0, le_data)
     if year == '0000':
-        year = 'All Years'
+        year = _('All Years')
     elif not year:
         year = FiscalYear.get()
     else:
