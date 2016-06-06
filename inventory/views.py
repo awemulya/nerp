@@ -1141,7 +1141,7 @@ def save_purchase_order(request):
         dct['id'] = obj.id
         model = PurchaseOrderRow
         for ind, row in enumerate(params.get('table_view').get('rows')):
-            if invalid(row, ['quantity', 'unit', 'rate', 'item_id']):
+            if invalid(row, ['quantity', 'unit', 'item_id']):
                 continue
             # else:
             if row.get('budget_title_no') == '':
