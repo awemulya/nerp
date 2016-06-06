@@ -873,7 +873,7 @@ def create_item_location(request, id=None):
             i_loc = form.save()
         if request.is_ajax():
             return json_from_object(i_loc)
-        return redirect('/')
+        return redirect('itemlocation_list')
     form = ItemLocationForm(instance=il)
     if request.is_ajax():
         base_template = 'modal.html'
@@ -884,6 +884,11 @@ def create_item_location(request, id=None):
         'form': form,
         'base_template': base_template,
     })
+
+def delete_item_location(request, id):
+    obj = get_object_or_404(ItemLocation, id=id)
+    obj.delete()
+    return redirect('itemlocation_list')
 
 
 @group_required('Store Keeper', 'Chief')

@@ -17,24 +17,29 @@
     {% autosort object_list as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
     <div class="well">
-    <table class="table table-striped">
-        <thead>
-        <th>{% anchor name _('Name') %}</th>
-        <th>{% trans 'Remarks' %}</th>
-        </thead>
-        <tbody>
-        {% for item in paginated_objects %}
-            <tr>
-                <td class="link">
-                    <a href="{% url 'itemlocation_detail' item.id %}">{{ item }}</a>
-                </td>
-                <td>{{ item.remarks |default:''}}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <table class="table table-striped">
+            <thead>
+            <th>{% anchor name _('Name') %}</th>
+            <th>{% trans 'Remarks' %}</th>
+            <th></th>
+            </thead>
+            <tbody>
+            {% for item in paginated_objects %}
+                <tr>
+                    <td class="link">
+                        <a href="{% url 'itemlocation_detail' item.id %}">{{ item }}</a>
+                    </td>
+                    <td>{{ item.remarks |default:'' }}</td>
+                    <td><a href="{% url "update_item_location" item.id %}">{% trans 'Edit' %}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     {% paginate %}
+
+    <a class="btn btn-success btn-raised btn-lg"
+       href="{% url 'create_item_location' %}">{% trans 'New' %} {% trans 'Item' %} {% trans 'Location' %}</a>
 
 {% endblock %}
