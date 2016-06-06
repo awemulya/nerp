@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse_lazy
 from django import forms
 
 from app.utils.forms import KOModelForm, UserModelChoiceField
@@ -128,6 +129,10 @@ class ItemInstanceForm(KOModelForm):
         fields = '__all__'
         exclude = ['source', 'other_properties']
 
+        widgets = {
+            'location': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('create_item_location')}),
+            'user': forms.Select(attrs={'class': 'selectize'}),
+        }
 
 class ItemInstanceEditForm(KOModelForm):
     class Meta:
