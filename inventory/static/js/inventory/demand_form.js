@@ -222,7 +222,7 @@ function DemandRow(row, demand_vm) {
             for (var k in row.releases) {
                 var release = row.releases[k];
                 if (release.item_instance != null) {
-                    if ('rate' in release.item_instance.properties) {
+                    if (release.item_instance.properties['rate'] != undefined) {
                         release.item_instance.properties['rate'] = release.item_instance.item_rate + '';
                     }
                     var id = JSON.stringify(release.item_instance.properties);
