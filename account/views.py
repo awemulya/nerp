@@ -7,7 +7,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from django.views.generic import ListView
 
-from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView
+from app.utils.mixins import AjaxableResponseMixin, UpdateView, CreateView, DeleteView, json_from_object
 from account.forms import CategoryForm, AccountForm
 from core.models import AppSetting, FiscalYear
 from account.models import Receipt, ReceiptRow, JournalEntry, Account, Category
@@ -155,7 +155,7 @@ def party_form(request, id=None):
             obj = form.save(commit=False)
             obj.save()
             if request.is_ajax():
-                return render(request, 'callback.html', {'obj': PartySerializer(obj).data})
+                return json_from_object(obj)
             return redirect(reverse('list_parties'))
     else:
         form = PartyForm(instance=obj)

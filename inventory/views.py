@@ -22,7 +22,7 @@ from openpyxl.cell import get_column_letter
 from core.models import AppSetting, FiscalYear, FISCAL_YEARS
 from account.models import Party
 from app.utils.helpers import invalid, save_model, empty_to_none
-from app.utils.mixins import PDFView, LoginRequiredMixin
+from app.utils.mixins import PDFView, LoginRequiredMixin, json_from_object
 # from app.utils.mixins import TemplateView as PDFView
 from users.models import group_required, User
 
@@ -730,7 +730,7 @@ def item_form(request, id=None):
                     item_instance.other_properties = item.other_properties
                     item_instance.save()
             if request.is_ajax():
-                return render(request, 'callback.html', {'obj': ItemSerializer(item).data})
+                return json_from_object(item)
             return redirect('/inventory/items/')
     else:
         form = ItemForm(instance=item, user=request.user)
@@ -872,7 +872,7 @@ def create_item_location(request, id=None):
         if form.is_valid():
             i_loc = form.save()
         if request.is_ajax():
-            return render(request, 'callback.html', {'obj': ItemLocationSerializer(i_loc).data})
+            return json_from_object(i_loc)
         return redirect('/')
     form = ItemLocationForm(instance=il)
     if request.is_ajax():
