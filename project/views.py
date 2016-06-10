@@ -8,10 +8,9 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from django.utils.translation import ugettext_lazy as _
-
 from core.serializers import BudgetSerializer
 from account.serializers import AccountSerializer
-from app.utils.helpers import save_model, invalid, empty_to_none, merge_dicts
+from app.utils.helpers import save_model, invalid, empty_to_none
 from core.models import FiscalYear, BudgetHead
 from inventory.models import delete_rows
 from models import Aid, ProjectFy, ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure, \
@@ -465,5 +464,10 @@ class ReimbursementList(ReimbursementView, ListView):
 class ReimbursementDelete(ReimbursementView, DeleteView):
     pass
 
+
 def statement_of_fund_template(request, project_fy_id):
     return render(request, 'project/statement_of_funds.html')
+
+
+def memorandom_statement(request, project_fy_id):
+    return render(request, 'project/memorandom_statement.html')

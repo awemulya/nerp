@@ -75,6 +75,9 @@ urlpatterns = [
         name='reimbursement_delete'),
 
     url(r'^(?P<project_fy_id>[0-9]+)/statement_of_funds/$', views.statement_of_fund_template,
-        name='statement_of_funds_list'),
+        name='statement_of_funds'),
+
+    url(r'^(?P<project_fy_id>[0-9]+)/memorandom_statement/$', views.memorandom_statement,
+        name='memorandom_statement'),
 
 ]

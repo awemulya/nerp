@@ -1,0 +1,148 @@
+{% extends '_project_base.html' %}
+{% load i18n %}
+
+{% block title %}{{ scenario }} {% trans 'Memorandom Statement' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <li><a href="#">{% trans 'Memorandom Statements' %}</a></li>
+    <li><span>{% trans scenario %} {% trans 'Memorandom Statement' %}</span></li>
+{% endblock %}
+
+{% block content %}
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+    <div class="well">
+        <form method="POST">
+            {% csrf_token %}
+            <table class="table table-striped table-responsive table-bordered center-headings">
+                <thead>
+                <td></td>
+                <th>{% trans "NRs." %}</th>
+                <th>{% trans "US $" %}</th>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="5"><b>{% trans "A. Balance of Account as at 16 July, 2015" %}</b></td>
+                </tr>
+                <tr>
+                    <td>
+                        (Ex Rate $1 = NRs.101.14)
+                    </td>
+                    <td>30,342,00.00</td>
+                    <td>300,000.00</td>
+                </tr>
+                <tr>
+                    <td colspan="5"><b>{% trans "B. Outstanding Replenishment as at 16 July, 2015" %}</b></td>
+                </tr>
+                <tr>
+                    <td>
+                        Direct Payment
+                    </td>
+                    <td>4106038.14</td>
+                    <td>44381.73</td>
+                </tr>
+                <tr>
+                    <td>
+                        Ka-7-17 Transfer
+                    </td>
+                    <td>4106038.14</td>
+                    <td>44381.73</td>
+                </tr>
+
+                <tr>
+                    <td><b>Total</b></td>
+                    <td>28121629.06</td>
+                    <td>294638.19</td>
+                </tr>
+
+                <tr>
+                    <td colspan="5"><b>{% trans "C. Disbursement during 2014/15" %}</b></td>
+                </tr>
+                <tr>
+                    <td>
+                        Direct Payment
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        Ka-7-17 Transfer
+                    </td>
+                    <td>63923920.98</td>
+                    <td>646857.75</td>
+                </tr>
+
+                <tr>
+                    <td><b>Total</b></td>
+                    <td>63923920.98</td>
+                    <td>646857.75</td>
+                </tr>
+
+                <tr>
+                    <td colspan="5"><b>{% trans "D. Replenishment(Liquidation) during 2014/15" %}</b></td>
+                </tr>
+                <tr>
+                    <td>
+                        Direct Payment
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        Ka-7-17 Transfer
+                    </td>
+                    <td>92045550.04</td>
+                    <td>941495.94</td>
+                </tr>
+
+                <tr>
+                    <td><b>Total</b></td>
+                    <td>92045550.04</td>
+                    <td>941495.94</td>
+                </tr>
+
+                <tr>
+                    <td colspan="5"><b>{% trans "E. Outstandin Replenishment as at 16 July, 2015" %}</b></td>
+                </tr>
+                <tr>
+                    <td>
+                        Direct Payment
+                    </td>
+                    <td>4106038.14</td>
+                    <td>44981.73</td>
+                </tr>
+                <tr>
+                    <td>
+                        Ka-7-17 Transfer
+                    </td>
+                    <td>(4106038.14)</td>
+                    <td>(44981.73)</td>
+                </tr>
+
+                <tr>
+                    <td><b>Total</b></td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+
+                <tr>
+                    <td><b>{% trans "F. Exchange Gain (A+E)-G" %}</b></td>
+                    <td>4287000.00</td>
+                    <td></td>
+                </tr>
+
+                <tr>
+                    <td><b>{% trans "G. IMPREST Account Initial Deposit (US $300,000 @ 1=86.85, 17 Dec, 2012" %}</b></td>
+                    <td>26055000.00</td>
+                    <td>300000.00</td>
+                </tr>
+
+
+                </tbody>
+            </table>
+        </form>
+    </div>
+{% endblock %}
