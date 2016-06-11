@@ -57,11 +57,15 @@
             </div>
 
             <div>
-                <a href="{% url 'ledger_list' project.project_fy.id %}">{% trans 'Ledger' %}</a>
+                <a href="{% url 'account_view' project.project_fy.id project.project_fy.imprest_ledger.id %}">{% trans 'Imprest Account' %}</a>
             </div>
 
             <div>
-                {#                <a href="{% url 'account_view' project_fy.id project_fy.imprest_ledger.id %}">{% trans 'Imprest Account' %}</a>#}
+                <a href="{% url 'ledger_list' project.project_fy.id %}">{% trans 'Ledger' %}</a>
+            </div>
+            
+            <div>
+                <a href="{% url 'disbursement_detail_list' project.project_fy.id %}">{% trans 'Disbursement Details' %}</a>
             </div>
 
             <div>
