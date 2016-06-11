@@ -34,7 +34,7 @@
                 <div class="col-sm-12 col-md-4">
                     {{ form.wa_no.label_tag }}
                     <input class="form-control"
-                           data-bind="value: wa_no, enable: cr_ledger() && cr_ledger().name == 'Initial Deposit'" id="id_wa_no"
+                           data-bind="value: wa_no, enable: cr_ledger() && cr_ledger().name.startsWith('Initial Deposit')" id="id_wa_no"
                            maxlength="10" name="wa_no" type="text">
                 </div>
                 <div class="col-sm-12 col-md-4">
