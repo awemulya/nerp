@@ -41,28 +41,37 @@
             </div>
 
             <div>
-                <a href="{% url 'application' project.project_fy.id %}">{% trans 'Applications (Notes to Account 1)' %}</a>
+                <a href="{% url 'application' project.project_fy.id %}">{% trans 'Note 1: Applications' %}</a>
+            </div>
+
+            <div>
+                <a href="{% url 'statement_of_funds' project.project_fy.id %}">{% trans 'Note 2 - Statement of Funds' %}</a>
+            </div>
+
+            <div>
+                <a href="{% url 'memorandum_statement' project.project_fy.id %}">{% trans 'Note 4: Memorandum Statement of Imprest Account' %}</a>
             </div>
 
             <div>
                 <a href="{% url 'imprest_journal_voucher_list' project.project_fy.id %}">{% trans 'Journal Vouchers' %}</a>
             </div>
-            
+
             <div>
                 <a href="{% url 'budget_allocation' project.project_fy.id %}">{% trans 'Budget Allocation' %}</a>
             </div>
-            
+
             <div>
                 <a href="{% url 'budget_release' project.project_fy.id %}">{% trans 'Budget Release' %}</a>
             </div>
-            
+
             <div>
                 <a href="{% url 'budget_expenditure' project.project_fy.id %}">{% trans 'Budget Expenditure' %}</a>
             </div>
+            
             <div>
                 <a href="{% url 'reimbursement_list' project.project_fy.id %}">{% trans 'Reimbursements as per FCGO records' %}</a>
             </div>
-            
+
 
         </div>
     </div>
