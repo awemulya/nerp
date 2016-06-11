@@ -13,6 +13,8 @@ IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_
 
 AID_TYPES = (('loan', 'Loan'), ('grant', 'Grant'))
 
+DISBURSEMENT_METHOD = (('reimbursement', 'Reimbursement'), ('replenishment', 'Replenishment'), ('liquidation', 'Liquidation'), ('direct_payment', 'Direct Payment') )
+
 DEFAULT_LEDGERS = [
     'Initial Deposit',
     'Ka-7-15',
@@ -260,3 +262,15 @@ class Reimbursement(models.Model):
 
     def __str__(self):
         return str(self.bank_voucher_no) + ':' + str(self.wa_no)
+
+
+class DisbursementDetail(models.Model):
+    wa_no = models.PositiveIntegerField(blank=True, null=True)
+    aid = models.ForeignKey(Aid)
+    requested_date = BSDateField(null=True, blank=True, default=today, validators=[validate_in_fy])
+    disbursement_method = models.CharField(max_length=255, choices=DISBURSEMENT_METHOD)
+    project_fy = models.ForeignKey(ProjectFy)
+    remarks = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return str(self.aid) + ' - ' + self.disbursement_method
