@@ -288,7 +288,7 @@ class DisbursementDetail(models.Model):
     requested_date = BSDateField(null=True, blank=True, default=today, validators=[validate_in_fy])
     disbursement_method = models.CharField(max_length=255, choices=DISBURSEMENT_METHOD)
     project_fy = models.ForeignKey(ProjectFy)
-    remarks = models.CharField(max_length=255, blank=True, null=True)
+    remarks = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return str(self.aid) + ' - ' + self.disbursement_method
