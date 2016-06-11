@@ -20,7 +20,7 @@ from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, \
     ExpenseSerializer, AidSerializer, BaseStatementSerializer, ImprestJVSerializer
-from app.utils.mixins import AjaxableResponseMixin, UpdateView, DeleteView
+from app.utils.mixins import AjaxableResponseMixin, UpdateView, DeleteView, json_from_object
 
 
 class ProjectCreateView(BaseCreateView):
@@ -192,6 +192,8 @@ class ProjectMixin(object):
 
     def post(self, request, *args, **kwargs):
         super(ProjectMixin, self).post(request, *args, **kwargs)
+        if self.request.is_ajax():
+            return json_from_object(self.object)
         return HttpResponseRedirect(reverse(self.success_url, kwargs={'project_id': self.kwargs['project_id']}))
 
     def get_context_data(self, **kwargs):
@@ -490,6 +492,13 @@ class DisbursementDetailView(ProjectFYView):
     def get_success_url(self):
         return reverse_lazy('disbursement_detail_list', kwargs={'project_fy_id': self.project_fy.id})
 
+    def get_context_data(self, **kwargs):
+        context = super(DisbursementDetailView, self).get_context_data(**kwargs)
+        if 'form' in context:
+            form = context['form']
+            form.fields['aid'].widget.attrs.update(
+                {'data-url': reverse_lazy('aid_add', kwargs={'project_id': context['project_fy'].project.id})})
+        return context
 
 class DisbursementDetailList(DisbursementDetailView, ListView):
     pass
