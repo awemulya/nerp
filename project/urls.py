@@ -3,14 +3,9 @@ from django.conf.urls import url
 import views
 
 urlpatterns = [
-    # url(r'^imprest_ledger/$', views.ImprestLedger.as_view(), name='imprest_ledger'),
-    # url(r'^imprest_ledger/save/$', views.save_imprest_ledger, name='save_imprest_ledger'),
-    # url(r'^application/$', views.Application.as_view(), name='application'),
-    # url(r'^application/save/$', views.save_application, name='save_application'),
 
     url(r'^$', views.index, name='project_index'),
-    url(r'^(?P<project_id>[0-9]+)/imprest_ledger/$', views.ImprestLedger.as_view(), name='imprest_ledger'),
-    url(r'^(?P<project_id>[0-9]+)/imprest_ledger/save/$', views.save_imprest_ledger, name='save_imprest_ledger'),
+    url(r'^(?P<project_fy_id>[0-9]+)/imprest_ledger/$', views.ImprestLedger.as_view(), name='imprest_ledger'),
     url(r'^(?P<project_fy_id>[0-9]+)/application/$', views.Application.as_view(), name='application'),
     url(r'^application/save/$', views.save_application, name='save_application'),
 
@@ -57,7 +52,7 @@ urlpatterns = [
         name='save_budget_allocation'),
 
     url(r'^(?P<project_fy_id>[0-9]+)/budget_release/$', views.BudgetRelease.as_view(),
-            name='budget_release'),
+        name='budget_release'),
     url(r'^budget_release/save/$', views.save_budget_release,
         name='save_budget_release'),
 

@@ -55,6 +55,10 @@
             <div>
                 <a href="{% url 'imprest_journal_voucher_list' project.project_fy.id %}">{% trans 'Journal Vouchers' %}</a>
             </div>
+            
+            <div>
+                <a href="{% url 'imprest_ledger' project.project_fy.id %}">{% trans 'Imprest Account' %}</a>
+            </div>
 
             <div>
                 <a href="{% url 'budget_allocation' project.project_fy.id %}">{% trans 'Budget Allocation' %}</a>

@@ -67,7 +67,8 @@ class ProjectFy(models.Model):
         if not self.replenishments_id:
             self.replenishments = Account.objects.create(name='Replenishments (' + str(self.project.name) + ')', fy=self.fy)
         if not self.additional_advances_id:
-            self.additional_advances = Account.objects.create(name='Additional Advances (' + str(self.project.name) + ')', fy=self.fy)
+            self.additional_advances = Account.objects.create(name='Additional Advances (' + str(self.project.name) + ')',
+                                                              fy=self.fy)
         super(ProjectFy, self).save(*args, **kwargs)
 
     def get_ledgers(self):
@@ -249,6 +250,20 @@ class ImprestJournalVoucher(models.Model):
     exchange_rate = models.FloatField(blank=True, null=True)
     wa_no = models.CharField(max_length=10, blank=True, null=True)
     project_fy = models.ForeignKey(ProjectFy)
+
+    def is_dr(self):
+        if (self.dr.name.startswith('Imprest Ledger')):
+            return True
+
+    def is_cr(self):
+        if (self.cr.name.startswith('Imprest Ledger')):
+            return True
+        
+    def against(self):
+        if self.is_dr():
+            return self.cr
+        elif self.is_cr():
+            return self.dr
 
     def __str__(self):
         return str(self.voucher_no)
