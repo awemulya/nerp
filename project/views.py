@@ -474,5 +474,5 @@ def statement_of_fund_template(request, project_fy_id):
     return render(request, 'project/statement_of_funds.html')
 
 
-def memorandom_statement(request, project_fy_id):
-    return render(request, 'project/memorandom_statement.html')
+def memorandum_statement(request, project_fy_id):
+    return render(request, 'project/memorandum_statement.html')
