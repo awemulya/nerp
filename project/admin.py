@@ -2,7 +2,7 @@ from django.contrib import admin
 from adminsortable2.admin import SortableAdminMixin
 
 from .models import ImprestTransaction, Expense, ExpenseCategory, ExpenseRow, Project, Aid, ProjectFy, Signatory, \
-    ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure, Reimbursement
+    ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure, Reimbursement, DisbursementDetail
 
 
 class AidInline(admin.TabularInline):
@@ -37,3 +37,4 @@ admin.site.register(Signatory)
 admin.site.register(ProjectFy)
 admin.site.register(ImprestJournalVoucher)
 admin.site.register(Reimbursement)
+admin.site.register(DisbursementDetail)
