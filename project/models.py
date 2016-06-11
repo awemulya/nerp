@@ -54,6 +54,7 @@ class ProjectFy(models.Model):
     imprest_ledger = models.ForeignKey(Account, related_name='imprest_for')
     initial_deposit = models.ForeignKey(Account, related_name='deposit_for')
     replenishments = models.ForeignKey(Account, related_name='replenishments_for')
+    additional_advances = models.ForeignKey(Account, related_name='additional_advances_for')
 
     def __str__(self):
         return str(self.project) + ' - ' + str(self.fy)
@@ -65,6 +66,8 @@ class ProjectFy(models.Model):
             self.initial_deposit = Account.objects.create(name='Initial Deposit (' + str(self.project.name) + ')', fy=self.fy)
         if not self.replenishments_id:
             self.replenishments = Account.objects.create(name='Replenishments (' + str(self.project.name) + ')', fy=self.fy)
+        if not self.additional_advances_id:
+            self.additional_advances = Account.objects.create(name='Additional Advances (' + str(self.project.name) + ')', fy=self.fy)
         super(ProjectFy, self).save(*args, **kwargs)
 
     def get_ledgers(self):
@@ -78,7 +81,7 @@ class ProjectFy(models.Model):
                 Account.objects.filter(name='Ka-7-17', fy=self.fy).first()] + party_ledgers
 
     def cr_ledgers(self):
-        return [self.imprest_ledger, self.initial_deposit, self.replenishments]
+        return [self.imprest_ledger, self.initial_deposit, self.replenishments, self.additional_advances]
 
     class Meta:
         unique_together = ('project', 'fy')

@@ -23,7 +23,7 @@ function ImprestJV(data) {
     self.dr_ledgers = ko.observableArray();
     self.cr_ledgers = ko.observableArray();
 
-    for (var k in data.jv){
+    for (var k in data.jv) {
         if (ko.isObservable(self[k]))
             self[k](data.jv[k]);
     }
@@ -42,6 +42,11 @@ function ImprestJV(data) {
     self.save = function () {
         if (!self.date()) {
             alert.error('Date is required!');
+            return false;
+        }
+
+        if (self.dr() == self.cr()) {
+            alert.error('You can\'t debit and credit the same account.');
             return false;
         }
         return true;

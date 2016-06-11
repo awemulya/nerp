@@ -95,7 +95,7 @@
                 {% trans 'Submit' %}</button>
             {% if scenario == 'Update' %}
                 <a class="btn btn-danger btn-raised"
-                   href="{% url 'expense_delete' project.id form.instance.id %}">{% trans 'Delete' %}!</a>
+                   href="{% url 'imprest_journal_voucher_delete' project_fy.id form.instance.id %}">{% trans 'Delete' %}!</a>
             {% endif %}
         </div>
     </form>
