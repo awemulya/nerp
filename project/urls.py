@@ -77,4 +77,14 @@ urlpatterns = [
     url(r'^(?P<project_fy_id>[0-9]+)/memorandum_statement/$', views.memorandum_statement,
         name='memorandum_statement'),
 
+    url(r'^(?P<project_fy_id>[0-9]+)/aid_disbursement/$', views.aid_disbursement,
+        name='aid_disbursement'),
+
+    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_details/$', views.DisbursementDetailList.as_view(), name='disbursement_detail_list'),
+    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/add/$', views.DisbursementDetailCreate.as_view(), name='disbursement_detail_add'),
+    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/edit/(?P<pk>\d+)/$', views.DisbursementDetailUpdate.as_view(),
+        name='disbursement_detail_edit'),
+    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/delete/(?P<pk>\d+)/$', views.DisbursementDetailDelete.as_view(),
+        name='disbursement_detail_delete'),
+
 ]
