@@ -1,11 +1,11 @@
 {% extends "_project_base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Reimbursement' %}{% endblock %}
+{% block title %}{% trans 'Reimbursements as per FCGO records' %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url "reimbursement_list" project.id %}">{% trans 'Reimbursements' %}</a></li>
+    <li><a href="{% url "reimbursement_list" project.id %}">{% trans 'Reimbursements as per FCGO records' %}</a></li>
 {% endblock %}
 
 {% block content %}
@@ -73,7 +73,7 @@
         </form>
     </div>
     <a class="btn btn-success btn-raised btn-lg"
-       href="{% url 'reimbursement_add' project.project_fy.id %}">{% trans 'New' %} {% trans 'Expense' %}</a>
+       href="{% url 'reimbursement_add' project.project_fy.id %}">{% trans 'New' %} {% trans 'Reimbursements as per FCGO records' %}</a>
 
     {% paginate %}
 
