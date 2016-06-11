@@ -80,4 +80,7 @@ urlpatterns = [
     url(r'^(?P<project_fy_id>[0-9]+)/memorandom_statement/$', views.memorandom_statement,
         name='memorandom_statement'),
 
+    url(r'^(?P<project_fy_id>[0-9]+)/aid_disbursement/$', views.aid_disbursement,
+        name='aid_disbursement'),
+
 ]

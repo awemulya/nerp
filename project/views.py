@@ -476,3 +476,7 @@ def statement_of_fund_template(request, project_fy_id):
 
 def memorandom_statement(request, project_fy_id):
     return render(request, 'project/memorandom_statement.html')
+
+
+def aid_disbursement(request, project_fy_id):
+    return render(request, 'project/aid_disbursement.html')
