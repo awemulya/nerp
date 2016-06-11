@@ -5,7 +5,7 @@ import views
 urlpatterns = [
 
     url(r'^$', views.index, name='project_index'),
-    url(r'^(?P<project_fy_id>[0-9]+)/imprest_ledger/$', views.ImprestLedger.as_view(), name='imprest_ledger'),
+    url(r'^(?P<project_fy_id>[0-9]+)/account/(?P<account_id>[0-9]+)/$', views.ImprestLedger.as_view(), name='account_view'),
     url(r'^(?P<project_fy_id>[0-9]+)/application/$', views.Application.as_view(), name='application'),
     url(r'^application/save/$', views.save_application, name='save_application'),
 

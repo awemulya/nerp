@@ -1,5 +1,6 @@
 import json
 
+from django.db.models import Q
 from django.views.generic.edit import CreateView as BaseCreateView
 from django.http.response import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -7,8 +8,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
+
 from django.utils.translation import ugettext_lazy as _
 
+from account.models import Account
 from core.serializers import BudgetSerializer
 from account.serializers import AccountSerializer
 from app.utils.helpers import save_model, invalid, empty_to_none
@@ -440,6 +443,16 @@ class ImprestJVList(ImprestJVView, ListView):
 
 class ImprestLedger(ImprestJVView, ListView):
     template_name = 'project/imprestledger_list.html'
+
+    def get_queryset(self):
+        qs = super(ImprestLedger, self).get_queryset()
+        return qs.filter(Q(dr_id=self.kwargs.get('account_id')) | Q(cr_id=self.kwargs.get('account_id')))
+
+    def get_context_data(self, **kwargs):
+        context = super(ImprestLedger, self).get_context_data()
+        account_id = self.kwargs.get('account_id')
+        context['account'] = Account.objects.get(id=account_id)
+        return context
 
 
 class ImprestJVDelete(ImprestJVView, DeleteView):

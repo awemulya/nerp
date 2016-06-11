@@ -14,7 +14,9 @@
 
         {% for account in accounts %}
             <div>
-                {{ account }}
+                <a href="{% url 'account_view' project_fy.id account.id %}">
+                    {{ account }}
+                </a>
             </div>
         {% endfor %}
     </div>

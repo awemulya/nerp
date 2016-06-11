@@ -1,13 +1,12 @@
 {% extends "_project_base.html" %}
-{% load i18n %}
+{% load i18n pfs_filters %}
 
 {% block title %}{% trans 'Imprest Account' %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li>
-        <a href="{% url "imprest_ledger" project_fy.id %}">{% trans 'Imprest Account' %}</a>
-    </li>
+    <li><a href="{% url "ledger_list" project_fy.id %}">{% trans 'Accounts' %}</a></li>
+    <li>{{ account }}</li>
 {% endblock %}
 
 {% block content %}
@@ -19,11 +18,12 @@
     {% autosort object_list as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
     <div class="well">
+        <h1>{{ account }}</h1>
         <table class="table table-striped">
             <thead>
             <tr class="">
                 <th rowspan="2">{% anchor date _('Date') %}</th>
-                <th rowspan="2">{% anchor against _('Particular(s)') %}</th>
+                <th rowspan="2">{% trans 'Particular(s)' %}</th>
                 <th rowspan="2">{% anchor voucher_no _('Voucher No') %}</th>
                 <th colspan="3">{% anchor dr _('Dr') %}</th>
                 <th colspan="3">{% anchor cr _('Cr') %}</th>
@@ -41,12 +41,12 @@
             {% for obj in paginated_objects %}
                 <tr>
                     <td>{{ obj.date }}</td>
-                    <td>{{ obj.against }}</td>
+                    <td>{{ obj|against:account }}</td>
                     <td class="link">
                         <a href="{% url 'imprest_journal_voucher_edit' project_fy.id obj.id %}">{{ obj.voucher_no }}</a>
                     </td>
 
-                    {% if obj.is_dr %}
+                    {% if obj.dr == account %}
                         <td>{{ obj.amount_nrs }}</td>
                         <td>{{ obj.amount_usd }}</td>
                         <td>{{ obj.exchange_rate }}</td>
@@ -55,7 +55,7 @@
                         <td></td>
                         <td></td>
                     {% endif %}
-                    {% if obj.is_cr %}
+                    {% if obj.cr == account %}
                         <td>{{ obj.amount_nrs }}</td>
                         <td>{{ obj.amount_usd }}</td>
                         <td>{{ obj.exchange_rate }}</td>
