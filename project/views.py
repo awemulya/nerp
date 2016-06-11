@@ -8,10 +8,9 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from django.utils.translation import ugettext_lazy as _
-
 from core.serializers import BudgetSerializer
 from account.serializers import AccountSerializer
-from app.utils.helpers import save_model, invalid, empty_to_none, merge_dicts
+from app.utils.helpers import save_model, invalid, empty_to_none
 from core.models import FiscalYear, BudgetHead
 from inventory.models import delete_rows
 from models import Aid, ProjectFy, ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure, \
@@ -314,30 +313,34 @@ def base_save(request, model):
     project_fy_id = params.get('project_fy_id')
     dct = {'rows': {}}
     try:
-        for index, row in enumerate(params.get('table_view').get('rows')):
-            if invalid(row, ['budget_head_id']):
-                continue
-            values = {'budget_head_id': row.get('budget_head_id'),
-                      'project_fy_id': project_fy_id}
-            dct['rows'][index] = {}
-            if row.get('goa_id') or row.get('goa_amount'):
-                values['amount'] = empty_to_none(row.get('goa_amount'))
-                submodel, created = model.objects.get_or_create(id=row.get('goa_id'), defaults=values)
-                if not created:
-                    submodel = save_model(submodel, values)
-                if not row.get('goa_amount') and row.get('goa_id'):
-                    model.objects.get(id=row.get('goa_id')).delete()
-                dct['rows'][index]['goa_id'] = submodel.id
-            for aid in params.get('count'):
-                if row.get(aid) or row.get(aid + '-id'):
-                    values['aid_id'] = aid.split('-')[0]
-                    values['amount'] = empty_to_none(row.get(aid))
-                    submodel, created = model.objects.get_or_create(id=row.get(aid + '-id'), defaults=values)
+        table_view = ('budget_head_view', 'capital_expenditure_view')
+        for view in table_view:
+            dct['rows'][view] = {}
+            for index, row in enumerate(params.get(view).get('rows')):
+                if invalid(row, ['budget_head_id']):
+                    continue
+                values = {'budget_head_id': row.get('budget_head_id'),
+                          'project_fy_id': project_fy_id}
+
+                dct['rows'][view][index] = {}
+                if row.get('goa_id') or row.get('goa_amount'):
+                    values['amount'] = empty_to_none(row.get('goa_amount'))
+                    submodel, created = model.objects.get_or_create(id=row.get('goa_id'), defaults=values)
                     if not created:
                         submodel = save_model(submodel, values)
-                    if not row.get(aid) and row.get(aid + '-id'):
-                        model.objects.get(id=row.get(aid + '-id')).delete()
-                    dct['rows'][index][aid + '-id'] = submodel.id
+                    if not row.get('goa_amount') and row.get('goa_id'):
+                        model.objects.get(id=row.get('goa_id')).delete()
+                    dct['rows'][view][index]['goa_id'] = submodel.id
+                for aid in params.get('count'):
+                    if row.get(aid) or row.get(aid + '-id'):
+                        values['aid_id'] = aid.split('-')[0]
+                        values['amount'] = empty_to_none(row.get(aid))
+                        submodel, created = model.objects.get_or_create(id=row.get(aid + '-id'), defaults=values)
+                        if not created:
+                            submodel = save_model(submodel, values)
+                        if not row.get(aid) and row.get(aid + '-id'):
+                            model.objects.get(id=row.get(aid + '-id')).delete()
+                        dct['rows'][view][index][aid + '-id'] = submodel.id
     except Exception as e:
         if hasattr(e, 'messages'):
             dct['error_message'] = '; '.join(e.messages)
@@ -345,7 +348,8 @@ def base_save(request, model):
             dct['error_message'] = str(e)
         else:
             dct['error_message'] = 'Error in form data!'
-    delete_budget_allocation(params.get('table_view').get('deleted_rows'), model)
+    delete_budget_allocation(params.get('budget_head_view').get('deleted_rows'), model)
+    delete_budget_allocation(params.get('capital_expenditure_view').get('deleted_rows'), model)
     return JsonResponse(dct)
 
 
@@ -465,5 +469,10 @@ class ReimbursementList(ReimbursementView, ListView):
 class ReimbursementDelete(ReimbursementView, DeleteView):
     pass
 
+
 def statement_of_fund_template(request, project_fy_id):
     return render(request, 'project/statement_of_funds.html')
+
+
+def memorandom_statement(request, project_fy_id):
+    return render(request, 'project/memorandom_statement.html')

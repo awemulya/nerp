@@ -5,7 +5,16 @@ $(document).ready(function () {
 
 function BudgetReleaseItem(data) {
     var self = this;
-    self.budget_heads = ko.observableArray(data.budget_heads);
+    self.budget_heads = ko.observableArray([]);
+    self.capital_expenditure = ko.observableArray([]);
+
+    ko.utils.arrayForEach(data.budget_heads, function (obj) {
+        if (obj.recurrent) {
+            self.budget_heads.push(obj);
+        } else {
+            self.capital_expenditure.push(obj);
+        }
+    });
 
     self.aids = ko.observableArray();
 
@@ -26,10 +35,16 @@ function BudgetReleaseItem(data) {
     ;
 
 
-    self.values = []
+    self.budget_head_values = []
+    self.capital_expenditure_values = []
     self.value_count = []
     for (var i in data.rows) {
         var val = data.rows[i].budget_head_id
+        if (data.rows[i].recurrent) {
+            self.values = self.budget_head_values
+        } else {
+            self.values = self.capital_expenditure_values
+        }
         if (self.value_count.indexOf(val) == -1) {
             self.value_count.push(val);
             self.values.push({
@@ -53,7 +68,8 @@ function BudgetReleaseItem(data) {
         }
     }
 
-    self.table_view = new TableViewModel({rows: self.values, argument: self}, RowVM);
+    self.budget_head_view = new TableViewModel({rows: self.budget_head_values, argument: self}, RowVM);
+    self.capital_expenditure_view = new TableViewModel({rows: self.capital_expenditure_values, argument: self}, RowVM);
 
     self.save = function () {
         $.ajax({
@@ -66,23 +82,34 @@ function BudgetReleaseItem(data) {
                 }
                 else {
                     alert.success('Saved!');
-
-                    for (var i in msg.rows) {
-                        for (var aid in msg.rows[i]) {
-                            self.table_view.rows()[i][aid](msg.rows[i][aid]);
-                            if (self.table_view.rows()[i].aid_amount().length != 0) {
-                                self.table_view.rows()[i].aid_amount().push({'id': msg.rows[i][aid]});
+                    $("#tbody > tr").each(function (i) {
+                        $($("#tbody > tr")[i]).addClass('invalid-row');
+                    });
+                    for (var i in msg.rows.budget_head_view) {
+                        for (var aid in msg.rows.budget_head_view[i]) {
+                            self.budget_head_view.rows()[i][aid](msg.rows.budget_head_view[i][aid]);
+                            if (self.budget_head_view.rows()[i].aid_amount().length != 0) {
+                                self.budget_head_view.rows()[i].aid_amount().push({'id': msg.rows.budget_head_view[i][aid]});
                             }
-                                }
                         }
-                        self.table_view.deleted_rows([]);
                     }
+                    for (var i in msg.rows.capital_expenditure_view) {
+                        for (var aid in msg.rows.capital_expenditure_view[i]) {
+                            self.capital_expenditure_view.rows()[i][aid](msg.rows.capital_expenditure_view[i][aid]);
+                            if (self.capital_expenditure_view.rows()[i].aid_amount().length != 0) {
+                                self.capital_expenditure_view.rows()[i].aid_amount().push({'id': msg.rows.capital_expenditure_view[i][aid]});
+                            }
+                        }
+                    }
+                    self.budget_head_view.deleted_rows([]);
+                    self.capital_expenditure_view.deleted_rows([]);
                 }
-                ,
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
-                }
-            });
+            }
+            ,
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert.error(textStatus.toTitleCase() + ' - ' + errorThrown);
+            }
+        });
     }
 }
 
