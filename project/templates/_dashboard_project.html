@@ -57,6 +57,10 @@
             </div>
             
             <div>
+                <a href="{% url 'ledger_list' project.project_fy.id %}">{% trans 'Ledger' %}</a>
+            </div>
+            
+            <div>
                 <a href="{% url 'imprest_ledger' project.project_fy.id %}">{% trans 'Imprest Account' %}</a>
             </div>
 

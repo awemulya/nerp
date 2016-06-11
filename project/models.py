@@ -72,7 +72,7 @@ class ProjectFy(models.Model):
         super(ProjectFy, self).save(*args, **kwargs)
 
     def get_ledgers(self):
-        self_ledgers = [self.imprest_ledger, self.initial_deposit, self.replenishments]
+        self_ledgers = [self.imprest_ledger, self.initial_deposit, self.replenishments, self.additional_advances]
         party_ledgers = [party.account for party in Party.objects.all()]
         return self_ledgers + party_ledgers
 

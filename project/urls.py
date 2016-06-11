@@ -15,6 +15,8 @@ urlpatterns = [
         name='imprest_journal_voucher_edit'),
     url(r'^(?P<project_fy_id>[0-9]+)/journal_voucher/(?P<pk>\d+)/delete/$', views.ImprestJVDelete.as_view(),
         name='imprest_journal_voucher_delete'),
+    url(r'^(?P<project_fy_id>[0-9]+)/ledgers/$', views.ledgers,
+        name='ledger_list'),
 
     url(r'^(?P<project_id>[0-9]+)/aids/$', views.AidList.as_view(), name='aid_list'),
     url(r'^(?P<project_id>[0-9]+)/aid/add/$', views.AidCreate.as_view(), name='aid_add'),

@@ -8,16 +8,17 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from django.utils.translation import ugettext_lazy as _
+
 from core.serializers import BudgetSerializer
 from account.serializers import AccountSerializer
 from app.utils.helpers import save_model, invalid, empty_to_none
-from core.models import FiscalYear, BudgetHead
+from core.models import BudgetHead
 from inventory.models import delete_rows
 from models import Aid, ProjectFy, ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure, \
     Reimbursement
 from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm, ImprestJVForm, ReimbursementForm
-from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, Project
-from serializers import ImprestTransactionSerializer, ExpenseRowSerializer, ExpenseCategorySerializer, \
+from models import ExpenseRow, ExpenseCategory, Expense, Project
+from serializers import ExpenseRowSerializer, ExpenseCategorySerializer, \
     ExpenseSerializer, AidSerializer, BaseStatementSerializer, ImprestJVSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, DeleteView
 
@@ -436,6 +437,7 @@ class ImprestJVUpdate(ImprestJVView, UpdateView):
 class ImprestJVList(ImprestJVView, ListView):
     pass
 
+
 class ImprestLedger(ImprestJVView, ListView):
     template_name = 'project/imprestledger_list.html'
 
@@ -479,3 +481,9 @@ def statement_of_fund_template(request, project_fy_id):
 
 def memorandum_statement(request, project_fy_id):
     return render(request, 'project/memorandum_statement.html')
+
+
+def ledgers(request, project_fy_id):
+    project_fy = ProjectFy.objects.get(id=project_fy_id)
+    context = {'accounts': project_fy.get_ledgers(), 'project_fy': project_fy}
+    return render(request, 'project/ledger_list.html', context)
