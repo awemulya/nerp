@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "_project_base.html" %}
 {% load i18n filters staticfiles %}
 
 {% block title %}{{ scenario }} {% trans 'Imprest Journal Voucher' %}{% endblock %}
@@ -13,9 +13,9 @@
 {% block breadcrumbs %}
     {{ block.super }}
     <li>
-        <a href="{% url "imprest_journal_voucher_list" project.id %}">{% trans 'Imprest Journal Vouchers' %}</a>
+        <a href="{% url "imprest_journal_voucher_list" project_fy.id %}">{% trans 'Imprest Journal Vouchers' %}</a>
     </li>
-    <li>{% trans 'Add' %}</li>
+    <li>{% trans scenario %}</li>
 {% endblock %}
 
 {% block content %}
