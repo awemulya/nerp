@@ -42,7 +42,11 @@ function ReleaseVM(group, instance_id, location) {
 function GroupVM(group) {
     var self = this;
     self.instances = ko.observableArray(group.instances);
-    var property = JSON.parse(group.property);
+
+    var property = {};
+    if (typeof(group.property) != 'undefined') {
+        property = JSON.parse(group.property);
+    }
     self.rate = property.rate;
     delete property.rate;
     self.property = property;
@@ -214,36 +218,41 @@ function DemandRow(row, demand_vm) {
 
     if (row) {
         //var vms = [];
+        if (row.releases.length > 0) {
+            for (var k in row.releases) {
+                var release = row.releases[k];
+                if (release.item_instance != null) {
+                    if (release.item_instance.properties['rate'] != undefined) {
+                        release.item_instance.properties['rate'] = release.item_instance.item_rate + '';
+                    }
+                    var id = JSON.stringify(release.item_instance.properties);
+                    var group = get_by_id(self.groups(), id);
+                    if (typeof group == 'undefined') {
+                        var group_data = {'instances': [], property: id};
+                        var group = new GroupVM(group_data);
+                        self.groups.push(group);
+                    }
+                    var match = null;
+                    var release_vm;
+                    for (var k in self.release_vms()) {
+                        release_vm = self.release_vms()[k];
+                        if (release_vm.id == id && release_vm.location_id == release.location) {
+                            match = release_vm;
+                            break;
+                        }
+                    }
 
-        for (var k in row.releases) {
-            var release = row.releases[k];
-            release.item_instance.properties['rate'] = release.item_instance.item_rate + '';
-            var id = JSON.stringify(release.item_instance.properties);
-            var group = get_by_id(self.groups(), id);
-            if (typeof group == 'undefined') {
-                var group_data = {'instances': [], property: id};
-                var group = new GroupVM(group_data);
-                self.groups.push(group);
-            }
-            var match = null;
-            var release_vm;
-            for (var k in self.release_vms()) {
-                release_vm = self.release_vms()[k];
-                if (release_vm.id == id && release_vm.location_id == release.location) {
-                    match = release_vm;
-                    break;
+                    if (match) {
+                        release_vm.instances.push(release.item_instance.id);
+                    }
+                    else if (group) {
+                        release_vm = new ReleaseVM(group, release.item_instance.id, release.location);
+                        self.release_vms.push(release_vm);
+                    }
+                    if (release_vm) {
+                        get_by_id(self.groups(), release_vm.id).instances.remove(release.item_instance.id);
+                    }
                 }
-            }
-
-            if (match) {
-                release_vm.instances.push(release.item_instance.id);
-            }
-            else if (group) {
-                release_vm = new ReleaseVM(group, release.item_instance.id, release.location);
-                self.release_vms.push(release_vm);
-            }
-            if (release_vm) {
-                get_by_id(self.groups(), release_vm.id).instances.remove(release.item_instance.id);
             }
         }
     }
@@ -370,11 +379,14 @@ function DemandRow(row, demand_vm) {
 
     self.total_quantity = ko.computed(function () {
         var total = 0;
-        if (self.groups().length) {
-            for (var k in self.groups()) {
-                var group = self.groups()[k];
-                if (group) {
-                    total += group.count();
+        //debugger;
+        if (self.groups() != null) {
+            if (self.groups().length) {
+                for (var k in self.groups()) {
+                    var group = self.groups()[k];
+                    if (group.count) {
+                        total += group.count();
+                    }
                 }
             }
         }
@@ -386,7 +398,9 @@ function DemandRow(row, demand_vm) {
         if (self.release_vms().length) {
             for (var k in self.release_vms()) {
                 var release = self.release_vms()[k];
-                total += release.count();
+                if (release.count) {
+                    total += release.count();
+                }
             }
         }
         return total;

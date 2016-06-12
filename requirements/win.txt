@@ -1,5 +1,5 @@
 # Production and Development
-Django==1.8.4
+Django==1.9.2
 django-mptt
 -e git+https://github.com/zyga/django-pagination.git@master#egg=linaro-django-pagination
 django-filter
