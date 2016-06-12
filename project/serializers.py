@@ -1,7 +1,9 @@
 from rest_framework import serializers
 
 
-from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, BudgetAllocationItem, Aid, ImprestJournalVoucher
+from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, BudgetAllocationItem, Aid, ImprestJournalVoucher, \
+    DisbursementDetail
+
 
 class ImprestTransactionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -57,3 +59,10 @@ class ImprestJVSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImprestJournalVoucher
 
+
+class DisburesmentDetailSerializer(serializers.ModelSerializer):
+    aid_id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = DisbursementDetail
+        exclude = ('aid',)

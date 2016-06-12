@@ -13,7 +13,9 @@ IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_
 
 AID_TYPES = (('loan', 'Loan'), ('grant', 'Grant'))
 
-DISBURSEMENT_METHOD = (('reimbursement', 'Reimbursement'), ('replenishment', 'Replenishment'), ('liquidation', 'Liquidation'), ('direct_payment', 'Direct Payment') )
+DISBURSEMENT_METHOD = (
+('reimbursement', 'Reimbursement'), ('replenishment', 'Replenishment'), ('liquidation', 'Liquidation'),
+('direct_payment', 'Direct Payment'))
 
 DEFAULT_LEDGERS = [
     'Initial Deposit',
@@ -62,11 +64,14 @@ class ProjectFy(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.imprest_ledger_id:
-            self.imprest_ledger = Account.objects.create(name='Imprest Ledger (' + str(self.project.name) + ')', fy=self.fy)
+            self.imprest_ledger = Account.objects.create(name='Imprest Ledger (' + str(self.project.name) + ')',
+                                                         fy=self.fy)
         if not self.initial_deposit_id:
-            self.initial_deposit = Account.objects.create(name='Initial Deposit (' + str(self.project.name) + ')', fy=self.fy)
+            self.initial_deposit = Account.objects.create(name='Initial Deposit (' + str(self.project.name) + ')',
+                                                          fy=self.fy)
         if not self.replenishments_id:
-            self.replenishments = Account.objects.create(name='Replenishments (' + str(self.project.name) + ')', fy=self.fy)
+            self.replenishments = Account.objects.create(name='Replenishments (' + str(self.project.name) + ')',
+                                                         fy=self.fy)
         super(ProjectFy, self).save(*args, **kwargs)
 
     def get_ledgers(self):
@@ -274,3 +279,17 @@ class DisbursementDetail(models.Model):
 
     def __str__(self):
         return str(self.aid) + ' - ' + self.disbursement_method
+
+
+class DisbursementParticulars(models.Model):
+    expense_category = models.ForeignKey(ExpenseCategory)
+    request_nrs = models.PositiveIntegerField(blank=True, null=True)
+    request_usd = models.PositiveIntegerField(blank=True, null=True)
+    request_sdr = models.PositiveIntegerField(blank=True, null=True)
+    response_nrs = models.PositiveIntegerField(blank=True, null=True)
+    response_usd = models.PositiveIntegerField(blank=True, null=True)
+    response_sdr = models.PositiveIntegerField(blank=True, null=True)
+    with_held_nrs = models.PositiveIntegerField(blank=True, null=True)
+    with_held_usd = models.PositiveIntegerField(blank=True, null=True)
+    with_held_sdr = models.PositiveIntegerField(blank=True, null=True)
+    disbursement_detail = models.ForeignKey(DisbursementDetail, related_name="rows")
