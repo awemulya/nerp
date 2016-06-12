@@ -1,12 +1,11 @@
 {% extends '_project_base.html' %}
 {% load i18n %}
 
-{% block title %}{{ scenario }} {% trans 'Memorandum Statement' %}{% endblock %}
+{% block title %}{{ scenario }} {% trans 'Memorandum Statement of Imprest Account' %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="#">{% trans 'Memorandum Statements' %}</a></li>
-    <li><span>{% trans scenario %} {% trans 'Memorandum Statement' %}</span></li>
+    <li><span>{% trans scenario %} {% trans 'Memorandum Statement of Imprest Account' %}</span></li>
 {% endblock %}
 
 {% block content %}
