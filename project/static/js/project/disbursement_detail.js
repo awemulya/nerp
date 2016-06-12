@@ -7,6 +7,7 @@ $(document).ready(function () {
 function DisbursementDetailViewModel(data) {
 
     var self = this;
+    self.id = ko.observable();
     self.aid = ko.observable();
 
     self.disbursement_methods = ko.observableArray([
@@ -55,6 +56,11 @@ function DisbursementDetailViewModel(data) {
 //            }
         });
     }
+
+    self.id.subscribe(function (id) {
+        history.pushState(id, id, window.location.href + id + '/');
+    });
+
 }
 
 function DisbursementParticularRow(row) {
