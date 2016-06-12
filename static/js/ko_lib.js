@@ -230,7 +230,14 @@ ko.bindingHandlers.localize = {
         if (allBindingsAccessor().disable_editable)
             original_text = '';
 
-        var txt = localize(empty_to_blank(original_text), lang_code);
+        var text;
+        if (typeof(original_text) == 'string' ) {
+            text = original_text;
+        } else {
+            text = empty_to_blank(original_text);
+        }
+
+        var txt = localize(text, lang_code);
 
         $(element).html(txt);
         $(element).val(txt);
@@ -256,7 +263,6 @@ ko.bindingHandlers.max = {
         //$(element).attr('max', valueAccessor());
     },
     update: function (element, valueAccessor, allBindingsAccessor) {
-
         $(element).on('change', function (e) {
             if (allBindingsAccessor().hasOwnProperty('localize')) {
                 var val = localize($(element).val(), window.lang, true)

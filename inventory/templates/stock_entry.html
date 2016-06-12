@@ -27,7 +27,7 @@
 
 	            <input type="text" class="pull-right text-right form-control" required="required"
 	                                       name="date" id="id_date"
-	                                       data-bind="value: date, autosize:3">
+	                                       data-bind="value: date, autosize:3, localize: true">
 	            {{ form.date.errors }}
 	            </div>
 	        </div>
@@ -35,9 +35,13 @@
 
 	        {% trans 'Voucher' %} {% trans 'No.' %}:
 	        <div class="form-inline inline">
-
 	        <input type="text" name="voucher_no" min="0" class="form-control form-inline input-inline" id="id_voucher_no"
 	               required data-bind="value: voucher_no, localize: true">
+            <br/>
+            {% trans 'Description' %}:
+	        <input type="text" name="description" min="0" class="form-control form-inline input-inline" id="id_description"
+	               required data-bind="value: description">
+
 	        </div>
         </div>
 
@@ -51,9 +55,7 @@
                     <th class="span2">{% trans 'Name.' %}</th>
                     <th class="span2">{% trans 'Description' %}</th>
                     <th class="span2">{% trans 'Unit' %}</th>
-                    {% if scenario == 'Create' %}
-                    	<th class="span3">{% trans 'Opening stock' %}</th>
-                    {% endif %}
+                    <th class="span3">{% trans 'Opening stock' %}</th>
                     <th class="span3">{% trans 'Account no.' %}</th>
                     <th class="span2">{% trans 'Vattable' %}</th>
                     <th class="span3 hidden-print">{% trans 'Opening rate' %}</th>
@@ -70,14 +72,12 @@
                     <td data-bind="editableText: name"></td>
                 	<td data-bind="editableText: description"></td>
                 	<td data-bind="editableText: unit"></td>
-                    {% if scenario == 'Create' %}
-	                	<td data-bind="editableText: opening_stock, numeric: true"></td>
-					{% endif %}
-                	<td data-bind="editableText: account_no, numeric: true"></td>
+                    <td data-bind="editableText: opening_stock, numeric: true, localize: 2"></td>
+                	<td data-bind="editableText: account_no, numeric: true, localize: 2"></td>
                     <td>
                         <input class="hidden-print" type="checkbox" data-bind="checked: opening_rate_vattable">
                     </td>
-                	<td data-bind="editableText: opening_rate, numeric: true"></td>
+                	<td data-bind="editableText: opening_rate, numeric: true, localize:2"></td>
                     <td>
                         <a href="#" class="close tiny secondary" data-bind="click: $parent.removeRow">x</a>
                     </td>

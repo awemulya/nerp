@@ -109,7 +109,7 @@
                     <td {% ifusergroup 'Store Keeper' 'Chief' %}{% else %}class="visible-print-block tableprintview"{% endifusergroup %}>
                         <div class="btn-group">
 
-                            <button type="button" class="btn btn-default dropdown-toggle onlyprintbutton" data-toggle="dropdown"
+                            <button type="button" class="btn btn-default release-button dropdown-toggle onlyprintbutton" data-toggle="dropdown"
                                     data-bind="text: total_release(), event: {focus: release_focused}, localize: true"
                                     aria-haspopup="true">
                             </button>
@@ -248,7 +248,7 @@
                     {#                    {{ form.instance.date|date:"Y-m-d" }}#}
                     <div class="form-inline inline">
                     <input class="form-control inline" type="text" required="required" name="date" id="id_date"
-                           data-bind="value: date">
+                           data-bind="value: date, localize: true">
                     </div>
                 </div>
                 <div>

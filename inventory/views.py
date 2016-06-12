@@ -22,7 +22,7 @@ from openpyxl.cell import get_column_letter
 from core.models import AppSetting, FiscalYear, FISCAL_YEARS
 from account.models import Party
 from app.utils.helpers import invalid, save_model, empty_to_none
-from app.utils.mixins import PDFView, LoginRequiredMixin
+from app.utils.mixins import PDFView, LoginRequiredMixin, json_from_object
 # from app.utils.mixins import TemplateView as PDFView
 from users.models import group_required, User
 
@@ -730,7 +730,7 @@ def item_form(request, id=None):
                     item_instance.other_properties = item.other_properties
                     item_instance.save()
             if request.is_ajax():
-                return render(request, 'callback.html', {'obj': ItemSerializer(item).data})
+                return json_from_object(item)
             return redirect('/inventory/items/')
     else:
         form = ItemForm(instance=item, user=request.user)
@@ -872,18 +872,23 @@ def create_item_location(request, id=None):
         if form.is_valid():
             i_loc = form.save()
         if request.is_ajax():
-            return render(request, 'callback.html', {'obj': ItemLocationSerializer(i_loc).data})
-        return redirect('/')
+            return json_from_object(i_loc)
+        return redirect('itemlocation_list')
     form = ItemLocationForm(instance=il)
     if request.is_ajax():
         base_template = 'modal.html'
     else:
         base_template = 'inventory_base.html'
-    return render(request, 'item_form.html', {
+    return render(request, 'item_location.html', {
         'scenario': scenario,
         'form': form,
         'base_template': base_template,
     })
+
+def delete_item_location(request, id):
+    obj = get_object_or_404(ItemLocation, id=id)
+    obj.delete()
+    return redirect('itemlocation_list')
 
 
 @group_required('Store Keeper', 'Chief')
@@ -1141,7 +1146,7 @@ def save_purchase_order(request):
         dct['id'] = obj.id
         model = PurchaseOrderRow
         for ind, row in enumerate(params.get('table_view').get('rows')):
-            if invalid(row, ['quantity', 'unit', 'rate', 'item_id']):
+            if invalid(row, ['quantity', 'unit', 'item_id']):
                 continue
             # else:
             if row.get('budget_title_no') == '':
@@ -1734,7 +1739,7 @@ def save_stock_entry(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date')}
+    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'description': params.get('description')}
     if params.get('id'):
         obj = StockEntry.objects.get(id=params.get('id'))
     else:
@@ -1769,10 +1774,17 @@ def save_stock_entry(request):
             item.save(account_no=row.get('account_no'), opening_balance=row.get('opening_stock'),
                       opening_rate=row.get('opening_rate'), opening_rate_vattable=row.get('opening_rate_vattable'))
             if int(row.get('opening_stock')) > 0:
-                entry_report_row = EntryReportRow(sn=1, item=item, quantity=row.get('opening_stock'), unit=item.unit, rate=row.get('opening_rate'),
-                                                  vattable=row.get('opening_rate_vattable'), remarks="Opening Balance")
+                if submodel.entry_report_row:
+                    entry_report_row = submodel.entry_report_row
+                    entry_report_row.quantity = row.get('opening_stock')
+                    entry_report_row.rate= row.get('opening_rate')
+                    entry_report_row.vattable= row.get('opening_rate_vattable')
+                else:
+                    entry_report_row = EntryReportRow(sn=1, item=item, quantity=row.get('opening_stock'), unit=item.unit, rate=row.get('opening_rate'),
+                                                      vattable=row.get('opening_rate_vattable'), remarks="Opening Balance")
                 date = datetime.date.today()
                 entry_report_row.save()
+                submodel.entry_report_row = entry_report_row
                 set_transactions(entry_report_row, date,
                                  ['ob', entry_report_row.item.account, int(row.get('opening_stock'))],
                                  )

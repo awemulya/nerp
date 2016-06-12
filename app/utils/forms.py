@@ -179,7 +179,7 @@ def form_view(some_func):
                 obj = form.save(commit=False)
                 obj.save()
                 if request.is_ajax():
-                    return render(request, 'callback.html', {'obj': dct['serializer'](obj).data})
+                    return json_from_object(obj)
                 return redirect(reverse(dct['listing_url']))
         else:
             form = dct['form'](instance=obj)

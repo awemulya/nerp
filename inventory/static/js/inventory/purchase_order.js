@@ -112,7 +112,7 @@ function PurchaseOrderViewModel(data) {
                     if (msg.id)
                         self.id(msg.id);
                     $("#tbody > tr").each(function (i) {
-                        $($("#tbody > tr")[i]).addClass('invalid-row');
+                        $($("#tbody > tr:not(.dont-validate)")[i]).addClass('invalid-row');
                     });
                     for (var i in msg.rows) {
                         self.table_view.rows()[i].id = msg.rows[i];
@@ -130,7 +130,7 @@ function PurchaseOrderViewModel(data) {
 function PurchaseRow(row) {
 
     var self = this;
-
+    self.id = ko.observable();
     self.budget_title_no = ko.observable();
     self.item_id = ko.observable();
     self.specification = ko.observable();
