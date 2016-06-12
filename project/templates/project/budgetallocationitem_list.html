@@ -29,13 +29,15 @@
             <div class="selectize_width">
                 <table class="table table-striped table-responsive table-bordered center-headings">
                     <thead>
-                    <th>{% trans "Budget Head" %}</th>
-                    <th>{% trans "GON" %}</th>
-                    <!-- ko foreach: $root.aids -->
-                    <th data-bind="text: $data "></th>
-                    <!-- /ko -->
-                    <th>{% trans 'Total' %}</th>
-                    <th></th>
+                    <tr>
+                        <th>{% trans "Budget Head" %}</th>
+                        <th>{% trans "GON" %}</th>
+                        <!-- ko foreach: $root.aids -->
+                        <th data-bind="text: $data "></th>
+                        <!-- /ko -->
+                        <th>{% trans 'Total' %}</th>
+                        <th></th>
+                    </tr>
                     </thead>
                     <tbody id="budget-allocation">
                      <!-- ko with: budget_head_view -->
@@ -80,6 +82,10 @@
                     </tr>
                     <!-- /ko -->
                     <!-- /ko -->
+                    <tr class="total">
+                        <td>{% trans "Total" %}</td>
+                        <td colspan=2 data-bind="text: grand_total()"></td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
