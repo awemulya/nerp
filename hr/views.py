@@ -24,16 +24,7 @@ from hr.models import ACC_CAT_BASIC_SALARY_ID,\
 
 
 CALENDAR = 'BS'
-if CALENDAR == 'BS':
-    CURRENT_FISCAL_YEAR = (
-        BSDate(*FiscalYear.start()),
-        BSDate(*FiscalYear.end())
-    )
-# else:
-#     CURRENT_FISCAL_YEAR = (
-#         BSDate(*FiscalYear.start()),
-#         BSDate(*FiscalYear.end())
-#     )
+
 
 # Taxation singleton setting dbsettings
 F_TAX_DISCOUNT_LIMIT = 300000
@@ -127,6 +118,17 @@ def salary_deduction_unit():
 
 
 def salary_taxation_unit(employee, f_y_item):
+    if CALENDAR == 'BS':
+        CURRENT_FISCAL_YEAR = (
+            BSDate(*FiscalYear.start()),
+            BSDate(*FiscalYear.end())
+        )
+    # else:
+    #     CURRENT_FISCAL_YEAR = (
+    #         BSDate(*FiscalYear.start()),
+    #         BSDate(*FiscalYear.end())
+    #     )
+
     # First calculate all the uncome of employee
     total_month, total_work_day = delta_month_date_impure(
         *f_y_item['f_y']

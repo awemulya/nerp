@@ -66,7 +66,6 @@ INSTALLED_APPS = (
     'training',
     'key',
     'project',
-    'solo',
     'hr',
 
 )
