@@ -167,16 +167,17 @@ class PayrollEntryForm(HTML5BootstrapModelForm):
 
 
 class GroupPayrollForm(forms.Form):
-    branch_choices = [(o.id, o.name) for o in BranchOffice.objects.all()]
-    branch_choices.insert(0, ('ALL', 'All'))
+    # branch_choices = [(o.id, o.name) for o in BranchOffice.objects.all()]
+    # branch_choices.insert(0, ('ALL', 'All'))
     payroll_type = forms.ChoiceField(
         choices=[
                  ('INDIVIDUAL', _('Individual')),
                  ('GROUP', _('Group'))],
         widget=Select(attrs={'data-bind': 'value: payroll_type'})
                  )
-    branch = forms.ChoiceField(
-        choices=branch_choices,
+    branch = forms.ModelChoiceField(
+        queryset=BranchOffice.objects.all(),
+        empty_label="All",
         widget=Select(attrs={'data-bind': 'value: branch'})
         )
     from_date = forms.DateField(
