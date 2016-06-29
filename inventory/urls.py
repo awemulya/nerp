@@ -34,8 +34,9 @@ urlpatterns = [
     url(r'^items.json$', views.items_as_json, name='items_as_json'),
     url(r'^item_instances.json$', views.item_instances_as_json, name='item_instances_as_json'),
     url(r'^items_locations.json$', views.items_locations_as_json, name='get_items_locations'),
-    url(r'^create_item_location$', views.create_item_location, name='create_item_location'),
-    url(r'^il/(?P<id>[0-9]+)/$', views.create_item_location, name='update_item_location'),
+    url(r'^create_item_location/$', views.create_item_location, name='create_item_location'),
+    url(r'^update_item_location/(?P<id>[0-9]+)/$', views.create_item_location, name='update_item_location'),
+    url(r'^delete_item_location/(?P<id>[0-9]+)/$', views.delete_item_location, name='delete_item_location'),
 
     url(r'^accounts/$', views.list_inventory_accounts, name='list_inventory_accounts'),
     url(r'^accounts/consumable/$', views.list_consumable_accounts,

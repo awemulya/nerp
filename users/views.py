@@ -7,9 +7,10 @@ def index(request):
     if request.user.is_authenticated():
         context = {}
         try:
-            from project.models import Project
-
-            context['projects'] = Project.objects.filter(active=True)
+            pass
+            # from project.models import Project
+            #
+            # context['projects'] = Project.objects.filter(active=True)
         except ImportError:
             pass
         return render(request, 'dashboard_index.html', context)
