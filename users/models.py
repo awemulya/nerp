@@ -52,9 +52,11 @@ class User(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False)
     groups = models.ManyToManyField(Group, related_name='users', blank=True)
 
-    # USERNAME_FIELD = 'username'
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['full_name', 'email']
+
+    def get_full_name(self):
+        return self.full_name
 
     def __unicode__(self):
         return self.username
@@ -105,13 +107,14 @@ def group_required(*group_names):
 
     def in_groups(u):
         if u.is_authenticated():
-            #if bool(u.groups.filter(name__in=group_names)) | u.is_superuser():
+            # if bool(u.groups.filter(name__in=group_names)) | u.is_superuser():
             #    return True
             if bool(u.groups.filter(name__in=group_names)):
                 return True
         return False
 
     return user_passes_test(in_groups)
+
 
 class GroupProxy(Group):
     class Meta:

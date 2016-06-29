@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'adminsortable2',
     'njango',
+    'solo',
 
     'users',
     'inventory',
@@ -65,9 +66,9 @@ INSTALLED_APPS = (
     'training',
     'key',
     'project',
-
     'solo',
     'hr',
+
 )
 
 TIME_ZONE = 'Asia/Kathmandu'
@@ -104,7 +105,7 @@ MIDDLEWARE_CLASSES = (
     'linaro_django_pagination.middleware.PaginationMiddleware',
     'webstack_django_sorting.middleware.SortingMiddleware',
     'njango.middleware.CalendarMiddleware',
-    # 'key.middleware.KeyMiddleware',
+    'key.middleware.KeyMiddleware',
 )
 
 HAYSTACK_CONNECTIONS = {
@@ -125,4 +126,3 @@ MESSAGE_TAGS = {
 }
 
 FROALA_INCLUDE_JQUERY = False
-

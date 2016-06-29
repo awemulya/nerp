@@ -1,3 +1,6 @@
+from django.db import connection
+
+
 def invalid(row, required_fields):
     invalid_attrs = []
     for attr in required_fields:
@@ -37,11 +40,13 @@ def zero_for_none(obj):
     else:
         return obj
 
+
 def float_zero_for_none(obj):
     if obj is None or obj is '':
         return 0
     else:
         return float(obj)
+
 
 def none_for_zero(obj):
     if not obj:
@@ -61,3 +66,17 @@ def add(*args):
 
 def title_case(line):
     return ' '.join([s[0].upper() + s[1:] for s in line.split(' ')])
+
+
+def model_exists_in_db(model):
+    return model._meta.db_table in connection.introspection.table_names()
+
+def merge_dicts(*dict_args):
+    '''
+    Given any number of dicts, shallow copy and merge into a new dict,
+    precedence goes to key value pairs in latter dicts.
+    '''
+    result = {}
+    for dictionary in dict_args:
+        result.update(dictionary)
+    return result

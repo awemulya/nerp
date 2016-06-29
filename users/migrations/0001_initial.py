@@ -36,6 +36,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Group',
                 'proxy': True,
+                'verbose_name_plural': 'Groups',
             },
             bases=('auth.group',),
             managers=[
@@ -45,6 +46,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='groups',
-            field=models.ManyToManyField(related_name='users', to='auth.Group'),
+            field=models.ManyToManyField(related_name='users', to='auth.Group', blank=True),
         ),
     ]

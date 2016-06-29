@@ -1,17 +1,28 @@
 $(document).ready(function () {
     vm = new BudgetAllocationItem(ko_data);
     ko.applyBindings(vm);
+    var total_col = $(".total").prev().children().length;
+    $(".total td:first").first().attr('colspan', total_col - 2);
 });
 
 function BudgetAllocationItem(data) {
     var self = this;
-    self.budget_heads = ko.observableArray(data.budget_heads);
+    self.budget_heads = ko.observableArray([]);
+    self.capital_expenditure = ko.observableArray([]);
+
+    ko.utils.arrayForEach(data.budget_heads, function (obj) {
+        if (obj.recurrent) {
+            self.budget_heads.push(obj);
+        } else {
+            self.capital_expenditure.push(obj);
+        }
+    });
 
     self.aids = ko.observableArray();
 
-    self.count = []
+    self.count = [];
 
-    self.project_fy_id = ko.observable(data.project_fy_id)
+    self.project_fy_id = ko.observable(data.project_fy_id);
     for (var k in data.aids) {
         if (data.aids[k].aid_name != null) {
             if (self.count.indexOf(data.aids[k].aid_name) == -1) {
@@ -20,13 +31,18 @@ function BudgetAllocationItem(data) {
             }
         }
     }
-    ;
 
 
-    self.values = []
-    self.value_count = []
+    self.budget_head_values = [];
+    self.capital_expenditure_values = [];
+    self.value_count = [];
     for (var i in data.rows) {
-        var val = data.rows[i].budget_head_id
+        var val = data.rows[i].budget_head_id;
+        if (data.rows[i].recurrent) {
+            self.values = self.budget_head_values;
+        } else {
+            self.values = self.capital_expenditure_values;
+        }
         if (self.value_count.indexOf(val) == -1) {
             self.value_count.push(val);
             self.values.push({
@@ -35,7 +51,7 @@ function BudgetAllocationItem(data) {
                     'id': data.rows[i].id,
                     'aid_name': data.rows[i].aid_name,
                     'amount': data.rows[i].amount
-                }],
+                }]
             });
 
         } else {
@@ -50,23 +66,37 @@ function BudgetAllocationItem(data) {
         }
     }
 
+    self.budget_head_view = new TableViewModel({rows: self.budget_head_values, argument: self}, RowVM);
+    self.capital_expenditure_view = new TableViewModel({rows: self.capital_expenditure_values, argument: self}, RowVM);
+
+
+    self.grand_total = function() {
+        var total=0;
+        self.budget_head_view.rows().forEach(function (i) {
+            total = total + i.total();
+        }) ;
+
+        self.capital_expenditure_view.rows().forEach(function (i) {
+            total += i.total();
+        });
+        return total;
+    };
+
     self.available_budget_heads = ko.observableArray(data.budget_heads.diff([]));
 
     self.selected_budget_heads = ko.observableArray([]);
 
-    self.table_view = new TableViewModel({rows: self.values, argument: self}, RowVM);
 
-
-    self.selected_budget_heads = ko.computed(function () {
-        var heads = [];
-        ko.utils.arrayForEach(self.table_view.rows(), function (row) {
-            if (row.budget_head()) {
-                heads.push(row.budget_head());
-                //row.dummy.notifySubscribers();
-            }
-        });
-        return heads;
-    });
+    //self.selected_budget_heads = ko.computed(function () {
+    //    var heads = [];
+    //    ko.utils.arrayForEach(self.table_view.rows(), function (row) {
+    //        if (row.budget_head()) {
+    //            heads.push(row.budget_head());
+    //            //row.dummy.notifySubscribers();
+    //        }
+    //    });
+    //    return heads;
+    //});
 
 
     self.save = function () {
@@ -80,16 +110,24 @@ function BudgetAllocationItem(data) {
                 }
                 else {
                     alert.success('Saved!');
-
-                    for (var i in msg.rows) {
-                        for (var aid in msg.rows[i]) {
-                            self.table_view.rows()[i][aid](msg.rows[i][aid]);
-                            if (self.table_view.rows()[i].aid_amount().length != 0) {
-                                self.table_view.rows()[i].aid_amount().push({'id': msg.rows[i][aid]});
+                    for (var i in msg.rows.budget_head_view) {
+                        for (var aid in msg.rows.budget_head_view[i]) {
+                            self.budget_head_view.rows()[i][aid](msg.rows.budget_head_view[i][aid]);
+                            if (self.budget_head_view.rows()[i].aid_amount().length != 0) {
+                                self.budget_head_view.rows()[i].aid_amount().push({'id': msg.rows.budget_head_view[i][aid]});
                             }
                         }
                     }
-                    self.table_view.deleted_rows([]);
+                    for (var i in msg.rows.capital_expenditure_view) {
+                        for (var aid in msg.rows.capital_expenditure_view[i]) {
+                            self.capital_expenditure_view.rows()[i][aid](msg.rows.capital_expenditure_view[i][aid]);
+                            if (self.capital_expenditure_view.rows()[i].aid_amount().length != 0) {
+                                self.capital_expenditure_view.rows()[i].aid_amount().push({'id': msg.rows.capital_expenditure_view[i][aid]});
+                            }
+                        }
+                    }
+                    self.budget_head_view.deleted_rows([]);
+                    self.capital_expenditure_view.deleted_rows([]);
                 }
             }
             ,
@@ -108,7 +146,7 @@ function RowVM(row, vm) {
     self.goa_id = ko.observable();
     self.aid_amount = ko.observableArray();
     self.budget_head = ko.observable();
-    self.vm = ko.observable(vm);
+    //self.vm = ko.observable(vm);
     self.dummy = ko.observable();
 
     for (i in vm.count) {
@@ -124,7 +162,7 @@ function RowVM(row, vm) {
                     self.goa_id(row.aid_amount[i].id);
                 }
                 //else {
-                    //self.goa_amount(self.goa_amount() + row.aid_amount[i].amount);
+                //self.goa_amount(self.goa_amount() + row.aid_amount[i].amount);
                 //}
             }
             if (self[row.aid_amount[i].aid_name] != undefined) {
@@ -146,18 +184,18 @@ function RowVM(row, vm) {
 
     //self.available_budget_heads = ko.observableArray(vm.budget_heads().diff([]));
 
-    self.available_budget_heads = ko.computed(function () {
-        self.dummy();
-        var heads = vm.budget_heads().diff(vm.selected_budget_heads())
-        if (self.budget_head()) {
-            heads.push(self.budget_head());
-        }
-        return heads;
-    });
+    //self.available_budget_heads = ko.computed(function () {
+    //    self.dummy();
+    //    var heads = vm.budget_heads().diff(vm.selected_budget_heads())
+    //    if (self.budget_head()) {
+    //        heads.push(self.budget_head());
+    //    }
+    //    return heads;
+    //});
 
     //self.available_budget_heads.subscribe(function () {
-        //debugger;
-        //$(document).trigger('reload-selectize');
+    //debugger;
+    //$(document).trigger('reload-selectize');
     //});
 
 

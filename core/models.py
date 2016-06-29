@@ -42,7 +42,11 @@ class FiscalYear(models.Model):
     def get(year=None):
         if not year:
             year = AppSetting.get_solo().fiscal_year
-        return FiscalYear.objects.get(year=year)
+        try:
+            fy = FiscalYear.objects.get(year=year)
+        except FiscalYear.DoesNotExist:
+            fy = FiscalYear.objects.create(year=year)
+        return fy
 
     @staticmethod
     def start(year=None):
@@ -114,27 +118,6 @@ class Language(models.Model):
         #     super(Language, self).save(*args, **kwargs)
 
 
-class Party(models.Model):
-    name = models.CharField(max_length=254, verbose_name=_('Name'))
-    address = models.CharField(max_length=254, blank=True, null=True)
-    phone_no = models.CharField(max_length=100, blank=True, null=True)
-    pan_no = models.CharField(max_length=50, blank=True, null=True)
-    # account = models.OneToOneField(Account, related_name='party')
-
-    # def save(self, *args, **kwargs):
-    #     if self.pk is None:
-    #         # account = Account(name_en=self.name_en, name_ne=self.name_ne)
-    #         account.save()
-    #         self.account = account
-    #     super(Party, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = _('Parties')
-
-
 class Employee(models.Model):
     name = models.CharField(max_length=254)
 
@@ -143,6 +126,8 @@ class Employee(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk is None:
+            from account.models import Account
+
             account = Account(name_en=self.name_en, name_ne=self.name_ne)
             account.save()
             self.account = account
@@ -169,6 +154,7 @@ class Activity(models.Model):
 
 class BudgetHead(TranslatableNumberModel):
     name = models.CharField(max_length=254)
+    recurrent = models.BooleanField(default=True)
     no = models.PositiveIntegerField()
     _translatable_number_fields = ('no',)
 

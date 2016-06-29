@@ -2,7 +2,7 @@
 {% load i18n filters solo_tags %}
 
 {% block breadcrumbs %}
-    <li><a href="">{% trans 'Project Account' %}</a></li>
+    <li><a href="{% url 'project_index' %}">{% trans 'Project Account' %}</a></li>
 {% endblock %}
 
 {% block breadcrumbs_before_print %}

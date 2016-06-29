@@ -1,5 +1,10 @@
 {% load filters i18n %}
 
+
+<div>
+    <a href="{% url 'project_list' %}">{% trans 'Projects' %}</a>
+</div>
+
 <div>
     <a href="{% url 'list_parties' %}">{% trans 'Parties' %}</a>
 </div>
@@ -7,6 +12,11 @@
 <div>
     <a href="{% url 'donor_list' %}">{% trans 'Donors' %}</a>
 </div>
+
+<div>
+    <a href="{% url 'budget_head_list' %}">{% trans 'Budget Heads' %}</a>
+</div>
+
 
 
 {% for project in projects %}
@@ -31,12 +41,49 @@
             </div>
 
             <div>
-                <a href="{% url 'application' project.project_fy.id %}">{% trans 'Applications (Notes to Account 1)' %}</a>
+                <a href="{% url 'application' project.project_fy.id %}">{% trans 'Note 1: Applications' %}</a>
+            </div>
+
+            <div>
+                <a href="{% url 'statement_of_funds' project.project_fy.id %}">{% trans 'Note 2 - Statement of Funds' %}</a>
+            </div>
+
+            <div>
+                <a href="{% url 'memorandum_statement' project.project_fy.id %}">{% trans 'Note 4: Memorandum Statement of Imprest Account' %}</a>
             </div>
 
             <div>
                 <a href="{% url 'imprest_journal_voucher_list' project.project_fy.id %}">{% trans 'Journal Vouchers' %}</a>
             </div>
+
+            <div>
+                <a href="{% url 'account_view' project.project_fy.id project.project_fy.imprest_ledger.id %}">{% trans 'Imprest Account' %}</a>
+            </div>
+
+            <div>
+                <a href="{% url 'ledger_list' project.project_fy.id %}">{% trans 'Ledger' %}</a>
+            </div>
+            
+            <div>
+                <a href="{% url 'disbursement_detail_list' project.project_fy.id %}">{% trans 'Disbursement Details' %}</a>
+            </div>
+
+            <div>
+                <a href="{% url 'budget_allocation' project.project_fy.id %}">{% trans 'Budget Allocation' %}</a>
+            </div>
+
+            <div>
+                <a href="{% url 'budget_release' project.project_fy.id %}">{% trans 'Budget Release' %}</a>
+            </div>
+
+            <div>
+                <a href="{% url 'budget_expenditure' project.project_fy.id %}">{% trans 'Budget Expenditure' %}</a>
+            </div>
+
+            <div>
+                <a href="{% url 'reimbursement_list' project.project_fy.id %}">{% trans 'Reimbursements as per FCGO records' %}</a>
+            </div>
+
 
         </div>
     </div>

@@ -18,8 +18,9 @@
 {% block content %}
 
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-        <div class="panel panel-default">
-            {% ifappexists inventory %}
+
+        {% ifappexists inventory %}
+            <div class="panel panel-default">
                 <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#inventory" aria-expanded="true">
                     <h4 class="panel-title">
                         <a>{% trans 'Inventory' %}</a>
@@ -30,11 +31,11 @@
                         {% include '_dashboard_inventory.html' %}
                     </div>
                 </div>
-            {% endifappexists %}
-        </div>
+            </div>
+        {% endifappexists %}
 
-        <div class="panel panel-default">
-            {% ifappexists training %}
+        {% ifappexists training %}
+            <div class="panel panel-default">
                 <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#training" aria-expanded="false">
                     <h4 class="panel-title">
                         <a>{% trans 'Training' %}</a>
@@ -100,11 +101,11 @@
                         {% endifusergroup %}
                     </div>
                 </div>
-            {% endifappexists %}
-        </div>
+            </div>
+        {% endifappexists %}
 
-        <div class="panel panel-default">
-            {% ifappexists ils %}
+        {% ifappexists ils %}
+            <div class="panel panel-default">
                 <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#library">
                     <h4 class="panel-title">
                         <a>{% trans 'Library' %}</a>
@@ -180,24 +181,21 @@
 
                         {{ form.models }}
 
-                        {#            {{ form.as_p }}#}
-
                         <input type="submit" value="Search!" class="btn btn-default btn-raised">
                     </form>
                     <br>
                 </div>
-            {% endifappexists %}
-
-        </div>
+            </div>
+        {% endifappexists %}
 
         {% ifappexists project %}
             <div class="panel panel-default">
-                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#project" aria-expanded="false">
+                <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#project">
                     <h4 class="panel-title">
                         <a>{% trans 'Project Accounts' %}</a>
                     </h4>
                 </div>
-                <div id="project" class="panel-collapse collapse in">
+                <div id="project" class="panel-collapse collapse">
                     <div class="panel-body">
                         {% include '_dashboard_project.html' %}
                     </div>
@@ -205,6 +203,9 @@
 
             </div>
         {% endifappexists %}
+
+    </div>
+
 
     </div>
 

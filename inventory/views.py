@@ -3,10 +3,9 @@ import json
 import datetime
 # from datetime import date
 from django.contrib import messages
-from django.core.exceptions import ValidationError
 from django.db.models import Count, Sum
 from njango.utils import get_calendar
-from njango.nepdate import bs, bs2ad, tuple_from_string, ad2bs, string_from_tuple
+from njango.nepdate import ad2bs, string_from_tuple
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -20,13 +19,12 @@ from openpyxl.styles import Style, Font, Alignment
 from openpyxl.worksheet.dimensions import ColumnDimension, RowDimension
 from openpyxl.cell import get_column_letter
 
-from core.models import AppSetting, FiscalYear, Party, FISCAL_YEARS
+from core.models import AppSetting, FiscalYear, FISCAL_YEARS
+from account.models import Party
 from app.utils.helpers import invalid, save_model, empty_to_none
 from app.utils.mixins import PDFView, LoginRequiredMixin
 # from app.utils.mixins import TemplateView as PDFView
 from users.models import group_required, User
-
-from inventory.filters import InventoryItemFilter
 
 from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderForm, HandoverForm, EntryReportForm, \
     ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm, InstanceHistoryForm, ExpenseForm, \
@@ -714,7 +712,7 @@ def item_form(request, id=None):
             if int(opening_balance) > 0:
                 entry_report_row = EntryReportRow(sn=1, item=item, quantity=opening_balance, unit=item.unit, rate=opening_rate,
                                                   vattable=opening_rate_vattable, remarks="Opening Balance")
-                date = datetime.datetime.now()
+                date = datetime.date.today()
                 entry_report_row.save()
                 set_transactions(entry_report_row, date,
                                  ['ob', entry_report_row.item.account, opening_balance],
@@ -1618,7 +1616,8 @@ class ExpenseCreate(CreateView):
 class ExpenseUpdate(CreateView):
     model = Expense
     form_class = ExpenseForm
-    
+
+
 @group_required('Store Keeper', 'Chief')
 def view_inventory_account(request, id, year=None):
     obj = get_object_or_404(InventoryAccount, id=id)
@@ -1642,7 +1641,7 @@ def view_inventory_account(request, id, year=None):
     if le_data:
         data.insert(0, le_data)
     if year == '0000':
-        year = 'All Years'
+        year = _('All Years')
     elif not year:
         year = FiscalYear.get()
     else:
@@ -1662,7 +1661,6 @@ class LedgersPDF(LoginRequiredMixin, PDFView):
 
 
 class VoucherPDF(PDFView, DetailView):
-
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
         return {
@@ -1722,6 +1720,7 @@ def stock_entry(request, pk=None):
     return render(request, 'stock_entry.html',
                   {'form': form, 'data': object_data, 'scenario': scenario})
 
+
 @group_required('Store Keeper', 'Chief')
 def delete_stock_entry(request, id):
     obj = get_object_or_404(StockEntry, id=id)
@@ -1735,7 +1734,7 @@ def save_stock_entry(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date') }
+    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date')}
     if params.get('id'):
         obj = StockEntry.objects.get(id=params.get('id'))
     else:
@@ -1752,7 +1751,7 @@ def save_stock_entry(request):
                       'unit': row.get('unit'), 'account_no': row.get('account_no'), 'opening_stock': row.get('opening_stock'),
                       'opening_rate': row.get('opening_rate'), 'opening_rate_vattable': row.get('opening_rate_vattable'),
                       'stock_entry': obj}
-            
+
             submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
             # messages.add_message(request, messages.ERROR, 'Sending request to same company')
             if not created:
@@ -1760,15 +1759,35 @@ def save_stock_entry(request):
                 item = submodel.item
                 item.name = row.get('name')
                 item.description = row.get('description')
-                item.unit = row.get('unit') 
+                item.unit = row.get('unit')
             else:
                 item = Item(
-                    name=row.get('name'), 
+                    name=row.get('name'),
                     description=row.get('description'),
                     unit=row.get('unit')
-                    )
+                )
             item.save(account_no=row.get('account_no'), opening_balance=row.get('opening_stock'),
-                          opening_rate=row.get('opening_rate'), opening_rate_vattable=row.get('opening_rate_vattable'))
+                      opening_rate=row.get('opening_rate'), opening_rate_vattable=row.get('opening_rate_vattable'))
+            if int(row.get('opening_stock')) > 0:
+                entry_report_row = EntryReportRow(sn=1, item=item, quantity=row.get('opening_stock'), unit=item.unit, rate=row.get('opening_rate'),
+                                                  vattable=row.get('opening_rate_vattable'), remarks="Opening Balance")
+                date = datetime.date.today()
+                entry_report_row.save()
+                set_transactions(entry_report_row, date,
+                                 ['ob', entry_report_row.item.account, int(row.get('opening_stock'))],
+                                 )
+                store = ItemLocation.objects.get(name='Store')
+                for i in range(0, int(row.get('opening_stock'))):
+                    item_instance = ItemInstance()
+                    item_instance.item = item
+                    multiplier = 1
+                    if row.get('opening_rate_vattable'):
+                        multiplier = 1.13
+                    item_instance.item_rate = float(row.get('opening_rate')) * multiplier
+                    item_instance.location = store
+                    item_instance.source = entry_report_row
+                    item_instance.other_properties = item.other_properties
+                    item_instance.save()
             submodel.item = item
             submodel.save()
             dct['rows'][index] = submodel.id

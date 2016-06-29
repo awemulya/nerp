@@ -100,7 +100,7 @@ function ApplicationVM(data) {
 
     //self.table_view = new TableViewModel({rows: data.rows, argument: self, auto_add_first: false}, ExpenseRow);
 
-    self.fy_id = ko.observable(data.fy_id);
+    self.project_fy_id = ko.observable(data.project_fy_id);
 
     self.categories = ko.observableArray();
 

@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "_project_base.html" %}
 {% load i18n filters staticfiles %}
 
 {% block title %}{{ scenario }} {% trans 'Imprest Journal Voucher' %}{% endblock %}
@@ -12,15 +12,17 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "imprest_journal_voucher_list" project.id %}">{% trans 'Imprest Journal Vouchers' %}</a>
-    <li>{% trans 'Add' %}</li>
+    <li>
+        <a href="{% url "imprest_journal_voucher_list" project_fy.id %}">{% trans 'Imprest Journal Vouchers' %}</a>
+    </li>
+    <li>{% trans scenario %}</li>
 {% endblock %}
 
 {% block content %}
 
     {{ form.non_field_errors }}
     {{ form.errors }}
-    <form method="post">
+    <form method="post" data-bind="submit: save">
         {% csrf_token %}
         <div class="well">
 
@@ -31,7 +33,9 @@
                 </div>
                 <div class="col-sm-12 col-md-4">
                     {{ form.wa_no.label_tag }}
-                    <input class="form-control" data-bind="value: wa_no, enable: cr_ledger() && cr_ledger().name == 'Initial Deposit'" id="id_wa_no" maxlength="10" name="wa_no" type="text">
+                    <input class="form-control"
+                           data-bind="value: wa_no, enable: cr_ledger() && cr_ledger().name.startsWith('Initial Deposit')" id="id_wa_no"
+                           maxlength="10" name="wa_no" type="text">
                 </div>
                 <div class="col-sm-12 col-md-4">
                     {{ form.date.label_tag }}
@@ -58,8 +62,8 @@
                 <tbody>
                 <tr>
                     <td>
-                        <select data-bind="selectize: $root.dr_ledgers, value: dr, object: dr_ledger"
-{#                                data-url="{% url 'create_inventory_item' %}"#}
+                        <select data-bind="selectize: $root.dr_ledgers, value: dr, object: dr_ledger" name="dr" required
+                                {#                                data-url="{% url 'create_inventory_item' %}"#}
                                 ></select>
                     </td>
                     <td>{{ form.amount_nrs }}</td>
@@ -71,8 +75,8 @@
                 </tr>
                 <tr>
                     <td>
-                        <select data-bind="selectize: $root.cr_ledgers, value: cr, object: cr_ledger"
-                                data-url="{% url 'create_inventory_item' %}"
+                        <select data-bind="selectize: $root.cr_ledgers, value: cr, object: cr_ledger" name="cr" required
+{#                                data-url="{% url 'create_inventory_item' %}"    #}
                                 ></select>
                     </td>
                     <td></td>
@@ -91,7 +95,7 @@
                 {% trans 'Submit' %}</button>
             {% if scenario == 'Update' %}
                 <a class="btn btn-danger btn-raised"
-                   href="{% url 'expense_delete' project.id form.instance.id %}">{% trans 'Delete' %}!</a>
+                   href="{% url 'imprest_journal_voucher_delete' project_fy.id form.instance.id %}">{% trans 'Delete' %}!</a>
             {% endif %}
         </div>
     </form>

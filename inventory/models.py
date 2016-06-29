@@ -16,7 +16,8 @@ from njango.fields import BSDateField, today
 
 from app.utils.helpers import zero_for_none, none_for_zero
 from users.models import User
-from core.models import FiscalYear, Party, validate_in_fy, FYManager
+from core.models import FiscalYear, validate_in_fy, FYManager
+from account.models import Party
 
 
 def alter(account, date, diff):
@@ -61,7 +62,7 @@ def set_transactions(model, date, *args):
         transaction.account.current_balance += diff
         transaction.current_balance = transaction.account.current_balance
         transaction.account.save()
-        journal_entry.transactions.add(transaction, bulk=False)
+        journal_entry.transactions.add(transaction)
         alter(transaction.account, date, diff)
 
 
@@ -1024,6 +1025,9 @@ class StockEntry(models.Model):
 
     def __str__(self):
         return str(self.voucher_no)
+
+    class Meta:
+        verbose_name_plural = 'Stock Entries'
 
 
 class StockEntryRow(models.Model):
