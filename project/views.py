@@ -500,6 +500,7 @@ def statement_of_fund(request, project_fy_id):
     }
     return render(request, 'project/statement_of_funds.html', context={
         'data': data,
+        'project_fy': project_fy,
     })
 
 
@@ -513,8 +514,18 @@ def ledgers(request, project_fy_id):
     return render(request, 'project/ledger_list.html', context)
 
 
-def aid_disbursement(request, project_fy_id):
-    return render(request, 'project/aid_disbursement.html')
+def aid_disbursement(request, project_fy_id, aid_id):
+    project_fy = ProjectFy.objects.get(pk=project_fy_id)
+    aid = Aid.objects.get(pk=aid_id)
+    disbursements = aid.get_disbursements(project_fy)
+    data = {
+        'disbursements': disbursements,
+    }
+    return render(request, 'project/aid_disbursement.html', context={
+        'data': data,
+        'project_fy': project_fy,
+        'aid': aid,
+    })
 
 
 class DisbursementView(ProjectFYView):

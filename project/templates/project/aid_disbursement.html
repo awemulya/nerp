@@ -1,12 +1,19 @@
 {% extends '_project_base.html' %}
-{% load i18n %}
+{% load i18n staticfiles filters %}
 
-{% block title %}{{ scenario }} {% trans 'AID Disbursement' %}{% endblock %}
+{% block title %}{{ aid }} {% trans ' Disbursement' %}{% endblock %}
+
+{% block head_end %}
+    <script src="{% static 'js/project/aid_disbursement.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="#">{% trans 'AID Disbursements' %}</a></li>
-    <li><span>{% trans scenario %} {% trans 'AID Disbursement' %}</span></li>
+    <li><a href="#">{% trans 'Aid Disbursements' %}</a></li>
+    <li><span>{{ aid }} {% trans ' Disbursement' %}</span></li>
 {% endblock %}
 
 {% block content %}

@@ -4,7 +4,7 @@
 {% block title %}{{ scenario }} {% trans 'Note 2: Statement of Funds' %}{% endblock %}
 
 {% block head_end %}
-    <script src="{% static 'js/project/statement_of_funds.js' %}"></script>
+    <script src="{% static 'js/project/aid_disbursement.js' %}"></script>
     <script>
         ko_data = {{data|jsonify}};
     </script>
@@ -12,8 +12,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="#">{% trans 'Statement of Funds' %}</a></li>
-    <li><span>{% trans scenario %} {% trans 'Statement of Funds' %}</span></li>
+    <li>{% trans 'Statement of Funds' %}</li>
 {% endblock %}
 
 {% block content %}
@@ -56,7 +55,7 @@
                     <td></td>
                     <td></td>
                 </tr>
-            
+
                 <tr>
                     <td colspan="5"><b>{% trans "(B) Less: Unspent Balance" %}</b></td>
                 </tr>

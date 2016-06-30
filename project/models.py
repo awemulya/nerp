@@ -148,6 +148,9 @@ class Aid(models.Model):
     active = models.BooleanField(default=True)
     project = models.ForeignKey(Project, related_name='aids')
 
+    def get_disbursements(self, project_fy):
+        return self.disbursements.filter(project_fy=project_fy)
+
     def __str__(self):
         return str(self.donor) + ' ' + str(self.get_type_display()) + ' ' + self.key
 
@@ -317,7 +320,7 @@ class Reimbursement(models.Model):
 
 class DisbursementDetail(models.Model):
     wa_no = models.PositiveIntegerField(blank=True, null=True)
-    aid = models.ForeignKey(Aid)
+    aid = models.ForeignKey(Aid, related_name='disbursements')
     requested_date = BSDateField(null=True, blank=True, default=today, validators=[validate_in_fy])
     disbursement_method = models.CharField(max_length=255, choices=DISBURSEMENT_METHOD)
     project_fy = models.ForeignKey(ProjectFy)
