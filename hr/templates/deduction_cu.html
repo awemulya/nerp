@@ -47,25 +47,29 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th><label>Name</label></th>
-                    <th><label>Description</label></th>
-                    <th><label>Priority</label></th>
-                    <th><label>Permanent Multiply Rate</label></th>
-                    <th><label>Deduct Type</label></th>
-                    <th><label>Amount</label></th>
-                    <th><label>Amount Rate</label></th>
-                    <th><label>Amount Editable</label></th>
-                    <th><label>Add with Init Salary</label></th>
-                    <th><label>Is Tax Free</label></th>
-                    <th><label>Is optional</label></th>
-                    <th><label>Remove</label></th>
+                    {% with firstform=deduction_formset.0 %}
+                        <th><label>{{ firstform.name.label }}</label></th>
+                        <th><label>{{ firstform.description.label }}</label></th>
+                        <th><label>{{ firstform.priority.label }}</label></th>
+                        <th><label>{{ firstform.permanent_multiply_rate.label }}</label></th>
+                        <th><label>{{ firstform.deduct_type.label }}</label></th>
+                        <th><label>{{ firstform.amount.label }}</label></th>
+                        <th><label>{{ firstform.amount_rate.label }}</label></th>
+                        <th><label>{{ firstform.amount_editable.label }}</label></th>
+                        <th><label>{{ firstform.add2_init_salary.label }}</label></th>
+                        <th><label>{{ firstform.is_tax_free.label }}</label></th>
+                        <th><label>{{ firstform.is_optional.label }}</label></th>
+                        <th><label>Remove</label></th>
+                    {% endwith %}
 
                 </tr>
             </thead>
             <tbody>
                 {% for deduction_form in deduction_formset %}
                     <tr class="deduction-form">
-
+                        {% for hidden in deduction_form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
                         <td>
                             {{ deduction_form.name.errors }}
                             {{ deduction_form.name }}
