@@ -15,7 +15,7 @@ IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_
 
 AID_TYPES = (('loan', 'Loan'), ('grant', 'Grant'))
 
-DISBURSEMENT_METHOD = (
+DISBURSEMENT_METHODS = (
     ('direct_payment', 'Direct Payment'),
     ('reimbursement', 'Reimbursement'),
     ('replenishment', 'Replenishment'),
@@ -149,7 +149,7 @@ class Aid(models.Model):
     project = models.ForeignKey(Project, related_name='aids')
 
     def get_disbursements(self, project_fy):
-        return self.disbursements.filter(project_fy=project_fy)
+        return self.disbursements.filter(project_fy=project_fy).select_related('category')
 
     def __str__(self):
         return str(self.donor) + ' ' + str(self.get_type_display()) + ' ' + self.key
@@ -322,7 +322,7 @@ class DisbursementDetail(models.Model):
     wa_no = models.PositiveIntegerField(blank=True, null=True)
     aid = models.ForeignKey(Aid, related_name='disbursements')
     requested_date = BSDateField(null=True, blank=True, default=today, validators=[validate_in_fy])
-    disbursement_method = models.CharField(max_length=255, choices=DISBURSEMENT_METHOD)
+    disbursement_method = models.CharField(max_length=255, choices=DISBURSEMENT_METHODS)
     project_fy = models.ForeignKey(ProjectFy)
     remarks = models.TextField(blank=True, null=True)
     party = models.ForeignKey(Party, blank=True, null=True)
@@ -332,8 +332,12 @@ class DisbursementDetail(models.Model):
     response_usd = models.PositiveIntegerField(blank=True, null=True)
     response_sdr = models.PositiveIntegerField(blank=True, null=True)
 
+    def get_data(self):
+        return {'id': self.id, 'category': str(self.category), 'code': self.category.code, 'nrs': self.response_nrs, 'usd': self.response_usd,
+                'sdr': self.response_sdr}
+
     def __str__(self):
-        return str(self.aid) + ' - ' + self.disbursement_method
+        return str(self.aid) + ' - ' + self.get_disbursement_method_display()
 
 
 class DisbursementParticulars(models.Model):

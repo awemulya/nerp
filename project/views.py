@@ -516,15 +516,25 @@ def ledgers(request, project_fy_id):
 
 def aid_disbursement(request, project_fy_id, aid_id):
     project_fy = ProjectFy.objects.get(pk=project_fy_id)
-    aid = Aid.objects.get(pk=aid_id)
+    aid = Aid.objects.get(pk=aid_id, project_id=project_fy.project_id)
     disbursements = aid.get_disbursements(project_fy)
+    modes = {}
+    from .models import DISBURSEMENT_METHODS
+
+    for method in DISBURSEMENT_METHODS:
+        modes[method[0]] = {'name': method[1], 'disbursements': []}
+    for disbursement in disbursements:
+        modes[disbursement.disbursement_method]['disbursements'].append(disbursement.get_data())
     data = {
-        'disbursements': disbursements,
+        'modes': modes,
+        # TODO Get real initial deposit
+        'initial_deposit': {'nrs': 12, 'usd': 13, 'sdr': 14}
     }
     return render(request, 'project/aid_disbursement.html', context={
         'data': data,
         'project_fy': project_fy,
         'aid': aid,
+        'index': list(Aid.objects.filter(project_id=project_fy.project_id).values_list('id', flat=True)).index(aid.id) + 1,
     })
 
 
@@ -544,7 +554,7 @@ class DisbursementView(ProjectFYView):
         return context
 
 
-class DisbursementCreate(CreateView, DisbursementView):
+class DisbursementCreate(DisbursementView, CreateView):
     pass
 
 
