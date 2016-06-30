@@ -21,7 +21,6 @@
 </div>
 
 
-
 {% for project in projects %}
 
     <div class="panel panel-default">
@@ -75,8 +74,14 @@
                     </div>
 
                     <div class="item">
-                        <a href="{% url 'account_view' project.project_fy.id project.project_fy.imprest_ledger.id %}">{% trans 'Imprest Account' %}</a>
+
                     </div>
+
+                    {% for aid in project.aids.all %}
+                        <div class="item">
+                            <a href="{% url 'account_view' project.project_fy.id aid.imprest_ledger.id %}">{% trans 'Imprest Account' %} ({{ aid }})</a>
+                        </div>
+                    {% endfor %}
 
                     <div class="item">
                         <a href="{% url 'ledger_list' project.project_fy.id %}">{% trans 'Ledger' %}</a>

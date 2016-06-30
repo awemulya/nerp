@@ -60,7 +60,6 @@ class Project(models.Model):
 class ProjectFy(models.Model):
     project = models.ForeignKey(Project)
     fy = models.ForeignKey(FiscalYear)
-    imprest_ledger = models.ForeignKey(Account, related_name='imprest_for')
     initial_deposit = models.ForeignKey(Account, related_name='deposit_for')
     replenishments = models.ForeignKey(Account, related_name='replenishments_for')
     additional_advances = models.ForeignKey(Account, related_name='additional_advances_for')
@@ -69,9 +68,6 @@ class ProjectFy(models.Model):
         return str(self.project) + ' - ' + str(self.fy)
 
     def save(self, *args, **kwargs):
-        if not self.imprest_ledger_id:
-            self.imprest_ledger = Account.objects.create(name='Imprest Ledger (' + str(self.project.name) + ')',
-                                                         fy=self.fy)
         if not self.initial_deposit_id:
             self.initial_deposit = Account.objects.create(name='Initial Deposit (' + str(self.project.name) + ')',
                                                           fy=self.fy)
@@ -82,18 +78,21 @@ class ProjectFy(models.Model):
                                                               fy=self.fy)
         super(ProjectFy, self).save(*args, **kwargs)
 
+    def get_imprest_accounts(self):
+        return [aid.imprest_ledger for aid in self.project.aids.all()]
+
     def get_ledgers(self):
-        self_ledgers = [self.imprest_ledger, self.initial_deposit, self.replenishments, self.additional_advances]
+        self_ledgers = [self.initial_deposit, self.replenishments, self.additional_advances]
         party_ledgers = [party.account for party in Party.objects.all()]
-        return self_ledgers + party_ledgers
+        return self.get_imprest_accounts() + self_ledgers + party_ledgers
 
     def dr_ledgers(self):
         party_ledgers = [party.account for party in Party.objects.all()]
-        return [self.imprest_ledger, Account.objects.filter(name='Ka-7-15', fy=self.fy).first(),
-                Account.objects.filter(name='Ka-7-17', fy=self.fy).first()] + party_ledgers
+        return self.get_imprest_accounts() + [Account.objects.filter(name='Ka-7-15', fy=self.fy).first(),
+                                              Account.objects.filter(name='Ka-7-17', fy=self.fy).first()] + party_ledgers
 
     def cr_ledgers(self):
-        return [self.imprest_ledger, self.initial_deposit, self.replenishments, self.additional_advances]
+        return self.get_imprest_accounts() + [self.initial_deposit, self.replenishments, self.additional_advances]
 
     def get_budget_usage(self):
         aids = self.project.aids.all().select_related('project', 'donor')
@@ -147,9 +146,15 @@ class Aid(models.Model):
     key = models.CharField(max_length=50)
     active = models.BooleanField(default=True)
     project = models.ForeignKey(Project, related_name='aids')
+    imprest_ledger = models.ForeignKey(Account, related_name='imprest_for')
 
     def get_disbursements(self, project_fy):
         return self.disbursements.filter(project_fy=project_fy).select_related('category')
+
+    def save(self, *args, **kwargs):
+        if not self.imprest_ledger_id:
+            self.imprest_ledger = Account.objects.create(name='Imprest Ledger (' + str(self) + ')')
+        super(Aid, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(self.donor) + ' ' + str(self.get_type_display()) + ' ' + self.key
@@ -333,7 +338,8 @@ class DisbursementDetail(models.Model):
     response_sdr = models.PositiveIntegerField(blank=True, null=True)
 
     def get_data(self):
-        return {'id': self.id, 'category': str(self.category), 'code': self.category.code, 'nrs': self.response_nrs, 'usd': self.response_usd,
+        return {'id': self.id, 'category': str(self.category), 'code': self.category.code, 'nrs': self.response_nrs,
+                'usd': self.response_usd,
                 'sdr': self.response_sdr}
 
     def __str__(self):

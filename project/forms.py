@@ -8,7 +8,7 @@ from models import Aid, Project, ExpenseCategory, Expense, ImprestJournalVoucher
 class AidForm(HTML5BootstrapModelForm):
     class Meta:
         model = Aid
-        exclude = ('project',)
+        exclude = ('project', 'imprest_ledger')
         widgets = {
             'donor': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('donor_add')}),
             'project': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('project_add')}),

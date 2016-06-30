@@ -1,5 +1,9 @@
 from django.db import connection
 
+def truncate_model(model):
+    cursor = connection.cursor()
+    cursor.execute("TRUNCATE TABLE " + model._meta.db_table + " CASCADE;")
+
 
 def invalid(row, required_fields):
     invalid_attrs = []
