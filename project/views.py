@@ -60,10 +60,10 @@ class ProjectFYView(object):
         context_data['project_fy'] = self.project_fy
         context_data['project'] = self.project
         context_data['fy'] = self.fy
-        if 'data' in context_data:
-            context_data['data']['project_fy_id'] = self.project_fy.id
-            context_data['data']['fy_id'] = self.fy.id
-            context_data['data']['project_id'] = self.project.id
+        context_data['data'] = context_data.get('data') or {}
+        context_data['data']['project_fy_id'] = self.project_fy.id
+        context_data['data']['fy_id'] = self.fy.id
+        context_data['data']['project_id'] = self.project.id
         return context_data
 
 
@@ -142,11 +142,12 @@ class Application(ProjectFYView, ListView):
         context_data = super(Application, self).get_context_data(**kwargs)
         categories = ExpenseCategory.objects.filter(enabled=True, project=self.project)
         expenses = Expense.objects.filter(enabled=True, project=self.project)
-        context_data['data'] = {
+        context_data['data'].update({
             'rows': ExpenseRowSerializer(context_data['object_list'], many=True).data,
             'categories': ExpenseCategorySerializer(categories, many=True).data,
             'expenses': ExpenseSerializer(expenses, many=True).data,
-        }
+        })
+
         return context_data
 
 
@@ -525,7 +526,7 @@ class DisbursementView(ProjectFYView):
         return context
 
 
-class DisbursementCreate(DisbursementView, CreateView):
+class DisbursementCreate(CreateView, DisbursementView):
     pass
 
 
