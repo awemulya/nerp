@@ -504,8 +504,15 @@ def statement_of_fund(request, project_fy_id):
     })
 
 
-def memorandum_statement(request, project_fy_id):
-    return render(request, 'project/memorandum_statement.html')
+def memorandum_statement(request, project_fy_id, aid_id):
+    project_fy = ProjectFy.objects.get(pk=project_fy_id)
+    aid = Aid.objects.get(pk=aid_id, project_id=project_fy.project_id)
+    return render(request, 'project/memorandum_statement.html', context={
+        # 'data': data,
+        'project_fy': project_fy,
+        'aid': aid,
+        'index': list(Aid.objects.filter(project_id=project_fy.project_id).values_list('id', flat=True)).index(aid.id) + 1,
+    })
 
 
 def ledgers(request, project_fy_id):

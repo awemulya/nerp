@@ -74,7 +74,7 @@ urlpatterns = [
     url(r'^(?P<project_fy_id>[0-9]+)/statement_of_funds/$', views.statement_of_fund,
         name='statement_of_funds'),
 
-    url(r'^(?P<project_fy_id>[0-9]+)/memorandum_statement/$', views.memorandum_statement,
+    url(r'^(?P<project_fy_id>[0-9]+)/memorandum_statement/(?P<aid_id>[0-9]+)/$', views.memorandum_statement,
         name='memorandum_statement'),
 
     url(r'^(?P<project_fy_id>[0-9]+)/aid_disbursement/(?P<aid_id>[0-9]+)/$', views.aid_disbursement,
