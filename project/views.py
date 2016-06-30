@@ -492,8 +492,15 @@ class ReimbursementDelete(ReimbursementView, DeleteView):
     pass
 
 
-def statement_of_fund_template(request, project_fy_id):
-    return render(request, 'project/statement_of_funds.html')
+def statement_of_fund(request, project_fy_id):
+    project_fy = ProjectFy.objects.get(pk=project_fy_id)
+    budget_usage = project_fy.get_budget_usage()
+    data = {
+        'budget_usage': budget_usage,
+    }
+    return render(request, 'project/statement_of_funds.html', context={
+        'data': data,
+    })
 
 
 def memorandum_statement(request, project_fy_id):

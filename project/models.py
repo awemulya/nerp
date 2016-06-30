@@ -1,6 +1,8 @@
 from django.db import models
+from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
 from njango.fields import BSDateField, today
 
 from app.utils.helpers import model_exists_in_db
@@ -93,6 +95,30 @@ class ProjectFy(models.Model):
     def cr_ledgers(self):
         return [self.imprest_ledger, self.initial_deposit, self.replenishments, self.additional_advances]
 
+    def get_budget_usage(self):
+        aids = self.project.aids.all().select_related('project', 'donor')
+        lst = []
+        #  Add GON Budget/Fund
+        data = {
+            'id': None,
+            'name': str(_('GON Fund')),
+            'release': BudgetReleaseItem.objects.filter(aid=None, project_fy=self).aggregate(Sum('amount')).get(
+                'amount__sum') or 0,
+            'spent': Expenditure.objects.filter(aid=None, project_fy_id=self).aggregate(Sum('amount')).get('amount__sum') or 0,
+        }
+        lst.append(data)
+        # Add Donor Funds
+        for aid in aids:
+            data = {
+                'id': aid.id,
+                'name': str(aid),
+                'release': BudgetReleaseItem.objects.filter(aid=aid, project_fy=self).aggregate(Sum('amount')).get(
+                    'amount__sum') or 0,
+                'spent': Expenditure.objects.filter(aid=aid, project_fy_id=self).aggregate(Sum('amount')).get('amount__sum') or 0,
+            }
+            lst.append(data)
+        return lst
+
     class Meta:
         unique_together = ('project', 'fy')
         verbose_name = 'Project Fiscal Year'
@@ -120,7 +146,7 @@ class Aid(models.Model):
     type = models.CharField(choices=AID_TYPES, max_length=10)
     key = models.CharField(max_length=50)
     active = models.BooleanField(default=True)
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project, related_name='aids')
 
     def __str__(self):
         return str(self.donor) + ' ' + str(self.get_type_display()) + ' ' + self.key
@@ -212,7 +238,7 @@ class ExpenseRow(models.Model):
 class BudgetAllocationItem(models.Model):
     budget_head = models.ForeignKey(BudgetHead)
     aid = models.ForeignKey(Aid, blank=True, null=True)
-    amount = models.PositiveIntegerField(blank=True, null=True)
+    amount = models.FloatField(blank=True, null=True)
     project_fy = models.ForeignKey(ProjectFy)
 
     def __str__(self):
@@ -225,7 +251,7 @@ class BudgetAllocationItem(models.Model):
 class BudgetReleaseItem(models.Model):
     budget_head = models.ForeignKey(BudgetHead)
     aid = models.ForeignKey(Aid, blank=True, null=True)
-    amount = models.PositiveIntegerField(blank=True, null=True)
+    amount = models.FloatField(blank=True, null=True)
     project_fy = models.ForeignKey(ProjectFy)
 
     def __str__(self):
@@ -238,7 +264,7 @@ class BudgetReleaseItem(models.Model):
 class Expenditure(models.Model):
     budget_head = models.ForeignKey(BudgetHead)
     aid = models.ForeignKey(Aid, blank=True, null=True)
-    amount = models.PositiveIntegerField(blank=True, null=True)
+    amount = models.FloatField(blank=True, null=True)
     project_fy = models.ForeignKey(ProjectFy)
 
     def __str__(self):
