@@ -1,99 +1,148 @@
 {% load filters i18n %}
 
+<div class="panel">
+    <div class="panel-body">
+        <div class="item">
+            <a href="{% url 'project_list' %}">{% trans 'Projects' %}</a>
+        </div>
 
-<div>
-    <a href="{% url 'project_list' %}">{% trans 'Projects' %}</a>
-</div>
+        <div class="item">
+            <a href="{% url 'list_parties' %}">{% trans 'Parties' %}</a>
+        </div>
 
-<div>
-    <a href="{% url 'list_parties' %}">{% trans 'Parties' %}</a>
-</div>
+        <div class="item">
+            <a href="{% url 'donor_list' %}">{% trans 'Donors' %}</a>
+        </div>
 
-<div>
-    <a href="{% url 'donor_list' %}">{% trans 'Donors' %}</a>
-</div>
-
-<div>
-    <a href="{% url 'budget_head_list' %}">{% trans 'Budget Heads' %}</a>
+        <div class="item">
+            <a href="{% url 'budget_head_list' %}">{% trans 'Budget Heads' %}</a>
+        </div>
+    </div>
 </div>
 
 
 
 {% for project in projects %}
-    <h2>{{ project.name }}</h2>
-    <div class="row">
-        <div class="col-sm-12">
-            <div>
-                <a href="{% url 'aid_list' project.id %}">{% trans 'Aids' %}</a>
-            </div>
 
-            <div>
-                <a href="{% url 'expense_category_list' project.id %}">{% trans 'Expense Categories' %}</a>
-            </div>
+    <div class="panel panel-default">
 
-            <div>
-                <a href="{% url 'expense_list' project.id %}">{% trans 'Expenses' %}</a>
-            </div>
+        <div class="panel-heading"><h2>{{ project.name }}</h2></div>
 
+        <div class="panel-body">
 
-            <div>
-                {#    <a href="{% url 'imprest_ledger' project.project_fy.id %}">{% trans 'Imprest Ledger' %}</a>#}
-            </div>
+            <div class="inner-block">
+                <h3>{% trans 'Project Data' %}</h3>
 
-            <div>
-                <a href="{% url 'application' project.project_fy.id %}">{% trans 'Note 1: Applications' %}</a>
-            </div>
+                <div class="well">
 
-            <div>
-                <a href="{% url 'statement_of_funds' project.project_fy.id %}">{% trans 'Note 2: Statement of Funds' %}</a>
-            </div>
+                    <div class="item">
+                        <a href="{% url 'aid_list' project.id %}">{% trans 'Aids' %}</a>
+                    </div>
 
+                    <div class="item">
+                        <a href="{% url 'expense_category_list' project.id %}">{% trans 'Expense Categories' %}</a>
+                    </div>
 
-            {% for aid in project.aids.all %}
-                <div>
-                    <a href="{% url 'aid_disbursement' project.project_fy.id aid.id %}">
-                        {% trans 'Note 3' %}{{ forloop.counter|to_char }}: {{ aid }} {% trans 'Disbursement' %}
-                    </a>
+                    <div class="item">
+                        <a href="{% url 'expense_list' project.id %}">{% trans 'Expenses' %}</a>
+                    </div>
                 </div>
-            {% endfor %}
-
-            <div>
-                <a href="{% url 'memorandum_statement' project.project_fy.id %}">{% trans 'Note 4: Memorandum Statement of Imprest Account' %}</a>
             </div>
 
-            <div>
-                <a href="{% url 'imprest_journal_voucher_list' project.project_fy.id %}">{% trans 'Journal Vouchers' %}</a>
+            <div class="inner-block">
+                <h3>{% trans 'Detail Forms' %}</h3>
+
+                <div class="well">
+
+                    <div class="item">
+                        <a href="{% url 'disbursement_detail_list' project.project_fy.id %}">{% trans 'Disbursements' %}</a>
+                    </div>
+
+                    <div class="item">
+                        <a href="{% url 'reimbursement_list' project.project_fy.id %}">{% trans 'Reimbursements' %}</a>
+                    </div>
+
+                </div>
             </div>
 
-            <div>
-                <a href="{% url 'account_view' project.project_fy.id project.project_fy.imprest_ledger.id %}">{% trans 'Imprest Account' %}</a>
+            <div class="inner-block">
+                <h3>{% trans 'Imprest Account' %}</h3>
+
+                <div class="well">
+
+                    <div class="item">
+                        <a href="{% url 'imprest_journal_voucher_list' project.project_fy.id %}">{% trans 'Journal Vouchers' %}</a>
+                    </div>
+
+                    <div class="item">
+                        <a href="{% url 'account_view' project.project_fy.id project.project_fy.imprest_ledger.id %}">{% trans 'Imprest Account' %}</a>
+                    </div>
+
+                    <div class="item">
+                        <a href="{% url 'ledger_list' project.project_fy.id %}">{% trans 'Ledger' %}</a>
+                    </div>
+
+                    {#                    <div class="item">#}
+                    {#    <a href="{% url 'imprest_ledger' project.project_fy.id %}">{% trans 'Imprest Ledger' %}</a>#}
+                    {#                    </div>#}
+
+                </div>
             </div>
 
-            <div>
-                <a href="{% url 'ledger_list' project.project_fy.id %}">{% trans 'Ledger' %}</a>
+            <div class="inner-block">
+                <h3>{% trans 'Budget' %}</h3>
+
+                <div class="well">
+
+                    <div class="item">
+                        <a href="{% url 'budget_allocation' project.project_fy.id %}">{% trans 'Budget Allocation' %}</a>
+                    </div>
+
+                    <div class="item">
+                        <a href="{% url 'budget_release' project.project_fy.id %}">{% trans 'Budget Release' %}</a>
+                    </div>
+
+                    <div class="item">
+                        <a href="{% url 'budget_expenditure' project.project_fy.id %}">{% trans 'Budget Expenditure' %}</a>
+                    </div>
+
+                    <div class="item">
+                        <a href="{% url 'budget_expenditure' project.project_fy.id %}">{% trans 'Budget Balance' %}</a>
+                    </div>
+
+                </div>
             </div>
 
-            <div>
-                <a href="{% url 'disbursement_detail_list' project.project_fy.id %}">{% trans 'Disbursement Details' %}</a>
-            </div>
+            <div class="inner-block">
+                <h3>{% trans 'Notes to Accounts' %}</h3>
 
-            <div>
-                <a href="{% url 'budget_allocation' project.project_fy.id %}">{% trans 'Budget Allocation' %}</a>
-            </div>
+                <div class="well">
 
-            <div>
-                <a href="{% url 'budget_release' project.project_fy.id %}">{% trans 'Budget Release' %}</a>
-            </div>
+                    <div class="item">
+                        <a href="{% url 'application' project.project_fy.id %}">{% trans 'Note 1: Applications' %}</a>
+                    </div>
 
-            <div>
-                <a href="{% url 'budget_expenditure' project.project_fy.id %}">{% trans 'Budget Expenditure' %}</a>
-            </div>
+                    <div class="item">
+                        <a href="{% url 'statement_of_funds' project.project_fy.id %}">{% trans 'Note 2: Statement of Funds' %}</a>
+                    </div>
 
-            <div>
-                <a href="{% url 'reimbursement_list' project.project_fy.id %}">{% trans 'Reimbursements as per FCGO records' %}</a>
-            </div>
 
+                    {% for aid in project.aids.all %}
+                        <div class="item">
+                            <a href="{% url 'aid_disbursement' project.project_fy.id aid.id %}">
+                                {% trans 'Note 3' %}{{ forloop.counter|to_char }}: {{ aid }} {% trans 'Disbursement' %}
+                            </a>
+                        </div>
+                    {% endfor %}
+
+                    <div class="item">
+                        <a href="{% url 'memorandum_statement' project.project_fy.id %}">{% trans 'Note 4: Memorandum Statement of Imprest Account' %}</a>
+                    </div>
+
+                </div>
+            </div>
 
         </div>
     </div>
+
 {% endfor %}
