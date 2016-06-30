@@ -68,6 +68,8 @@ INSTALLED_APPS = (
     'project',
     'hr',
 
+    'debug_toolbar'
+
 )
 
 TIME_ZONE = 'Asia/Kathmandu'

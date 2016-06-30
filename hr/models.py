@@ -29,14 +29,25 @@ payment_cycle = [('M', _('Monthly')),
                  ]
 
 # Accout Category settingShoul
-ACC_CAT_PAY_HEAD_ID = 2
-ACC_CAT_DEDUCTION_ID = 5
-ACC_CAT_ALLOWANCE_ID = 4
+
+# Account Category
+#  >> Pay Head
+#    >> Basic Salary
+#    >> Deduction
+#    >> Allowance
+#    >> Incentive
+#    >> Tax
+#    >> Pro Tempore
+#  >> Salary Giving
+
+ACC_CAT_PAY_HEAD_ID = 1
+ACC_CAT_DEDUCTION_ID = 4
+ACC_CAT_ALLOWANCE_ID = 5
 ACC_CAT_INCENTIVE_ID = 6
 ACC_CAT_BASIC_SALARY_ID = 3
 ACC_CAT_TAX_ID = 7
-ACC_CAT_SALARY_GIVING_ID = 13
-ACC_CAT_PRO_TEMPORE_ID = 14
+ACC_CAT_SALARY_GIVING_ID = 2
+ACC_CAT_PRO_TEMPORE_ID = 8
 
 
 class EmployeeGrade(models.Model):

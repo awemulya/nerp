@@ -50,43 +50,50 @@ $(document).ready(function () {
 function PaymentRowWitDeduction(pwd_data){
     var extract_obsevable_name = function(ko_obj, dict_output){
         var observabe_names = {};
-        var observable_list = []
+        var observable_list = [];
         for (var obj of ko_obj){
-            observabe_names[obj.observable_name] = '';
-            observable_list.push(obj.observable_name);
-        };
+            observabe_names[obj] = '';
+            observable_list.push(obj);
+        }
         if (dict_output){
             return observabe_names;
         }else{
             return observabe_list;
-        };
+        }
     };
     var PER = new PaymentEntryRow();
     if(pwd_data.deduction_data){
         // var PER = new PaymentEntryRow();
-        var DeductionPER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.deduction_data, true));
+        // var DeductionPER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.deduction_data, true));
+        var DeductionPER = ko.mapping.fromJS({});
         $.extend(PER, DeductionPER);
-    };
+    }
 
     if(pwd_data.incentive_data){
         // var PER = new PaymentEntryRow();
-        var IncentivePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.incentive_data, true));
+        // var IncentivePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.incentive_data, true));
+        var IncentivePER = ko.mapping.fromJS({});
         $.extend(PER, IncentivePER);
-    };
+    }
     if(pwd_data.allowance_data){
         // var PER = new PaymentEntryRow();
-        var AllowancePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.allowance_data, true));
+        // var AllowancePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.allowance_data, true));
+        var AllowancePER = ko.mapping.fromJS({});
         $.extend(PER, AllowancePER);
-    };
+    }
     
     PER.compute_editable_totals = ko.computed(function(){
         var total_deduction = 0;
         var total_incentive = 0;
-        for(var obs of extract_obsevable_name(pwd_data.deduction_data, true)){
-            total_deduction += PER[obs]();
+
+        var extracted_deduction_obs_names = extract_obsevable_name(pwd_data.deduction_data, true);
+        for(var obs in extracted_deduction_obs_names){
+            total_deduction += PER[extracted_deduction_obs_names[obs]]();
         };
-        for(var obs of extract_obsevable_name(pwd_data.incentive_data, true)){
-            total_incentive += PER[obs]();
+
+        var extracted_incentive_obs_names = extract_obsevable_name(pwd_data.incentive_data, true);
+        for(var obs in extracted_incentive_obs_names){
+            total_incentive += PER[extracted_incentive_obs_names[obs]]();
         };
         PER.deduced_amount(total_deduction);
         PER.incentive(total_incentive);
@@ -117,7 +124,7 @@ function PaymentEntryRow() {
     self.paid_from_date = ko.observable();
     self.paid_to_date = ko.observable();
     self.absent_days = ko.observable();
-    self.allowance = ko.observable();
+    self.allowance = ko.observable(0);
     self.incentive = ko.observable();
     self.deduced_amount = ko.observable();
     self.income_tax = ko.observable();
