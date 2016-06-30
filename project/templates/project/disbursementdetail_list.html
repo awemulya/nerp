@@ -25,7 +25,7 @@
         {% for disbursement_detail in paginated_objects %}
             <tr>
                 <td class="link">
-                    <a href="{% url 'disbursement_detail_edit' project.id disbursement_detail.id %}">{{ disbursement_detail }}</a>
+                    <a href="{% url 'disbursement_detail_edit' project_fy.id disbursement_detail.id %}">{{ disbursement_detail }}</a>
                 </td>
             </tr>
         {% endfor %}

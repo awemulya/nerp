@@ -56,5 +56,5 @@ class DisbursementDetailForm(HTML5BootstrapModelForm):
         exclude = ('project_fy',)
         widgets = {
             'aid': forms.Select(attrs={'class': 'selectize'}),
-            'disbursement_method': forms.Select(attrs={'class': 'selectize'}),
+            # 'disbursement_method': forms.Select(attrs={'class': 'selectize'}),
         }

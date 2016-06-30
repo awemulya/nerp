@@ -14,8 +14,11 @@ IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_
 AID_TYPES = (('loan', 'Loan'), ('grant', 'Grant'))
 
 DISBURSEMENT_METHOD = (
-    ('reimbursement', 'Reimbursement'), ('replenishment', 'Replenishment'), ('liquidation', 'Liquidation'),
-    ('direct_payment', 'Direct Payment'))
+    ('direct_payment', 'Direct Payment'),
+    ('reimbursement', 'Reimbursement'),
+    ('replenishment', 'Replenishment'),
+    ('liquidation', 'Liquidation'),
+)
 
 DEFAULT_LEDGERS = [
     'Initial Deposit',
@@ -293,6 +296,12 @@ class DisbursementDetail(models.Model):
     disbursement_method = models.CharField(max_length=255, choices=DISBURSEMENT_METHOD)
     project_fy = models.ForeignKey(ProjectFy)
     remarks = models.TextField(blank=True, null=True)
+    party = models.ForeignKey(Party, blank=True, null=True)
+    category = models.ForeignKey(ExpenseCategory)
+    value_date = BSDateField(null=True, blank=True, default=today, validators=[validate_in_fy])
+    response_nrs = models.PositiveIntegerField(blank=True, null=True)
+    response_usd = models.PositiveIntegerField(blank=True, null=True)
+    response_sdr = models.PositiveIntegerField(blank=True, null=True)
 
     def __str__(self):
         return str(self.aid) + ' - ' + self.disbursement_method

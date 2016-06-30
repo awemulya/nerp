@@ -80,11 +80,11 @@ urlpatterns = [
     url(r'^(?P<project_fy_id>[0-9]+)/aid_disbursement/$', views.aid_disbursement,
         name='aid_disbursement'),
 
-    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_details/$', views.DisbursementDetailList.as_view(), name='disbursement_detail_list'),
-    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/$', views.DisbursementDetailCreate.as_view(), name='disbursement_detail_add'),
-    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/(?P<pk>\d+)/$', views.DisbursementDetailCreate.as_view(),
+    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_details/$', views.DisbursementList.as_view(), name='disbursement_detail_list'),
+    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/$', views.DisbursementCreate.as_view(), name='disbursement_detail_add'),
+    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/(?P<pk>\d+)/$', views.DisbursementUpdate.as_view(),
         name='disbursement_detail_edit'),
-    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/delete/(?P<pk>\d+)/$', views.DisbursementDetailDelete.as_view(),
+    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/delete/(?P<pk>\d+)/$', views.DisbursementDelete.as_view(),
         name='disbursement_detail_delete'),
     url(r'^disbursement_detail/save/$', views.save_disbursement_detail, name='save_save_disbursement_detail'),
 

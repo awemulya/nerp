@@ -24,7 +24,7 @@ from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
 from models import ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ExpenseRowSerializer, ExpenseCategorySerializer, \
     ExpenseSerializer, AidSerializer, BaseStatementSerializer, ImprestJVSerializer, DisbursementDetailSerializer
-from app.utils.mixins import AjaxableResponseMixin, UpdateView, DeleteView, json_from_object
+from app.utils.mixins import AjaxableResponseMixin, UpdateView, DeleteView, json_from_object, CreateView
 
 
 class ProjectCreateView(BaseCreateView):
@@ -509,7 +509,7 @@ def aid_disbursement(request, project_fy_id):
     return render(request, 'project/aid_disbursement.html')
 
 
-class DisbursementDetailView(ProjectFYView):
+class DisbursementView(ProjectFYView):
     model = DisbursementDetail
     form_class = DisbursementDetailForm
 
@@ -517,7 +517,7 @@ class DisbursementDetailView(ProjectFYView):
         return reverse_lazy('disbursement_detail_list', kwargs={'project_fy_id': self.project_fy.id})
 
     def get_context_data(self, **kwargs):
-        context = super(DisbursementDetailView, self).get_context_data(**kwargs)
+        context = super(DisbursementView, self).get_context_data(**kwargs)
         if 'form' in context:
             form = context['form']
             form.fields['aid'].widget.attrs.update(
@@ -525,39 +525,47 @@ class DisbursementDetailView(ProjectFYView):
         return context
 
 
-class DisbursementDetailList(DisbursementDetailView, ListView):
+class DisbursementCreate(DisbursementView, CreateView):
     pass
 
 
-class DisbursementDetailCreate(DisbursementDetailView, TemplateView):
-    serializer_class = DisbursementDetailSerializer
-    template_name = "project/disbursementdetail_form.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(DisbursementDetailCreate, self).get_context_data(**kwargs)
-        if 'pk' in self.kwargs:
-            pk = int(self.kwargs.get('pk'))
-            obj = get_object_or_404(self.model, pk=pk, project_fy=context['project_fy'])
-            scenario = 'Update'
-        else:
-            obj = self.model(project_fy=context['project_fy'])
-            scenario = 'Create'
-        data = self.serializer_class(obj).data
-        aids = Aid.objects.filter(active=True, project=context['project_fy'].project)
-        expense_category = ExpenseCategory.objects.all()
-        context['data'] = data
-        context['scenario'] = scenario
-        context['obj'] = obj
-        context['data']['aids'] = AidSerializer(aids, many=True).data
-        context['data']['expense_category'] = ExpenseCategorySerializer(expense_category, many=True).data
-        return context
-
-
-class DisbursementDetailUpdate(DisbursementDetailView, UpdateView):
+class DisbursementUpdate(DisbursementView, UpdateView):
     pass
 
 
-class DisbursementDetailDelete(DisbursementDetailView, DeleteView):
+class DisbursementList(DisbursementView, ListView):
+    pass
+
+
+# class DisbursementDetailCreate(DisbursementDetailView, TemplateView):
+#     serializer_class = DisbursementDetailSerializer
+#     template_name = "project/disbursementdetail_form.html"
+# 
+#     def get_context_data(self, **kwargs):
+#         context = super(DisbursementDetailCreate, self).get_context_data(**kwargs)
+#         if 'pk' in self.kwargs:
+#             pk = int(self.kwargs.get('pk'))
+#             obj = get_object_or_404(self.model, pk=pk, project_fy=context['project_fy'])
+#             scenario = 'Update'
+#         else:
+#             obj = self.model(project_fy=context['project_fy'])
+#             scenario = 'Create'
+#         data = self.serializer_class(obj).data
+#         aids = Aid.objects.filter(active=True, project=context['project_fy'].project)
+#         expense_category = ExpenseCategory.objects.all()
+#         context['data'] = data
+#         context['scenario'] = scenario
+#         context['obj'] = obj
+#         context['data']['aids'] = AidSerializer(aids, many=True).data
+#         context['data']['expense_category'] = ExpenseCategorySerializer(expense_category, many=True).data
+#         return context
+# 
+# 
+# class DisbursementDetailUpdate(DisbursementDetailView, UpdateView):
+#     pass
+# 
+
+class DisbursementDelete(DisbursementView, DeleteView):
     pass
 
 
