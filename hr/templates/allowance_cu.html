@@ -42,10 +42,10 @@
     <form method="POST" action="{% url 'add_allowance' %}">
 {% endif %}
     {% csrf_token %}
-    <div class="row">
+    <div class="well">
         {{ allowance_name_form.as_table }}
     </div>
-    <div class="allowance-formset">
+    <div class="allowance-formset well">
         {% for allowance_form in allowance_formset %}
             <div class="row allowance-form">
                 {{ allowance_form.as_table }}

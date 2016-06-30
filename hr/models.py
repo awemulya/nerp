@@ -178,7 +178,7 @@ class Deduction(models.Model):
     priority = models.IntegerField(unique=True)
 
     # Whether to include this deduction with temporary employee
-    with_temporary_employee = models.BooleanField(default=False)
+    # with_temporary_employee = models.BooleanField(default=False)
     # For permanent
     add2_init_salary = models.BooleanField(default=False)
     permanent_multiply_rate = models.PositiveIntegerField(default=1)

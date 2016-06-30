@@ -5,7 +5,7 @@
 {% load i18n %}
 
 {% block head_end %}
-    <script src="{% static 'js/vendors/jquery-formset.js' %}"></script>
+    <script src="{% static 'js/vendors/jquery-formset.js' %}" xmlns="http://www.w3.org/1999/html"></script>
     <script type="text/javascript">
         $(function () {
             $('.deduction-form').formset({
@@ -13,6 +13,9 @@
             });
         });
     </script>
+{% endblock %}
+{% block title %}
+    {% trans 'Add or Remove Deductions' %}
 {% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
@@ -40,18 +43,85 @@
 
     {% csrf_token %}
 
-    <div class="deduction-formset">
-        {% for deduction_form in deduction_formset %}
-            <div class="row deduction-form">
-                {{ deduction_form.as_table }}
-                {% if deduction_form.instance.pk %}{{ deduction_form.DELETE }}{% endif %}
-            </div>
-        {% endfor %}
+    <div class="deduction-formset well">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th><label>Name</label></th>
+                    <th><label>Description</label></th>
+                    <th><label>Priority</label></th>
+                    <th><label>Permanent Multiply Rate</label></th>
+                    <th><label>Deduct Type</label></th>
+                    <th><label>Amount</label></th>
+                    <th><label>Amount Rate</label></th>
+                    <th><label>Amount Editable</label></th>
+                    <th><label>Add with Init Salary</label></th>
+                    <th><label>Is Tax Free</label></th>
+                    <th><label>Is optional</label></th>
+                    <th><label>Remove</label></th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for deduction_form in deduction_formset %}
+                    <tr class="deduction-form">
+
+                        <td>
+                            {{ deduction_form.name.errors }}
+                            {{ deduction_form.name }}
+                        </td>
+                        <td>
+                            {{ deduction_form.description.errors }}
+                            {{ deduction_form.description }}
+                        </td>
+                        <td>
+                            {{ deduction_form.priority.errors }}
+                            {{ deduction_form.priority }}
+                        </td>
+                        <td>
+                            {{ deduction_form.permanent_multiply_rate.errors }}
+                            {{ deduction_form.permanent_multiply_rate }}
+                        </td>
+                        <td>
+                            {{ deduction_form.deduct_type.errors }}
+                            {{ deduction_form.deduct_type }}
+                        </td>
+                        <td>
+                            {{ deduction_form.amount.errors }}
+                            {{ deduction_form.amount }}
+                        </td>
+                        <td>
+                            {{ deduction_form.amount_rate.errors }}
+                            {{ deduction_form.amount_rate }}
+                        </td>
+                        <td>
+                            {{ deduction_form.amount_editable.errors }}
+                            {{ deduction_form.amount_editable }}
+                        </td>
+                        <td>
+                            {{ deduction_form.add2_init_salary.errors }}
+                            {{ deduction_form.add2_init_salary }}
+                        </td>
+                        <td>
+                            {{ deduction_form.is_tax_free.errors }}
+                            {{ deduction_form.is_tax_free }}
+                        </td>
+                        <td>
+                            {{ deduction_form.is_optional.errors }}
+                            {{ deduction_form.is_optional }}
+                        </td>
+                        <td>
+                            {% if deduction_form.instance.pk %}{{ deduction_form.DELETE }}{% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
     {{ deduction_formset.management_form }}
-    <input type="submit" value="Save"></input>
+    <input class="btn btn-raised btn-primary" type="submit" value="Save">
 
 </form>
-    
+
     
 {% endblock %}

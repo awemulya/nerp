@@ -155,7 +155,6 @@ class PaymentRowForm(HTML5BootstrapModelForm):
     #     self.fields["paid_employee"].choices = [("", _("Select Employee")),] + list(self.fields["paid_employee"].choices)[1:]
 
 
-# This class is not used anywhere
 class PayrollEntryForm(HTML5BootstrapModelForm):
     class Meta:
         model = PayrollEntry
@@ -669,7 +668,7 @@ class AllowanceNameForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = AllowanceName
-        fields = '__all__'
+        exclude = ('account_category',)
 
 
 class MaritalStatusForm(HTML5BootstrapModelForm):
