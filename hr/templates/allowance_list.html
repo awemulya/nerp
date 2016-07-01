@@ -28,20 +28,24 @@
 {% endblock %}
 
 {% block  content %}
-    <table class="table" >
-        <tr>
-            <th>Allowance Name</th>
-            <th>Controls</th>
-        </tr>
-        {% for obj in objects %}
+    <table class="table table-striped" >
+        <thead>
             <tr>
-                <td><a href={% url 'edit_allowance' obj.id %}>{{ obj }}</a></td>
-                <td><a href={% url 'delete_allowance' obj.id %}><button type="button">Delete</button></a></td>
-
+                <th>Allowance Name</th>
+                <th>Controls</th>
             </tr>
-        {% endfor %}
+        </thead>
+        <tbody>
+            {% for obj in objects %}
+                <tr>
+                    <td><a href={% url 'edit_allowance' obj.id %}>{{ obj }}</a></td>
+                    <td><a href={% url 'delete_allowance' obj.id %}><button type="button">Delete</button></a></td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
-    <a href={% url 'add_allowance' %}><input type="button" value="Add New Allowance"></a>
+    <a href={% url 'add_allowance' %}><input class="btn btn-raised btn-primary" type="button" value="Add New Allowance"></a>
     
     
 {% endblock %}
