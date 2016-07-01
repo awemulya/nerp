@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from njango.fields import BSDateField, today
 
-from app.utils.helpers import model_exists_in_db
+from app.utils.helpers import model_exists_in_db, internet, fetch_npr_conversion
 from core.models import Currency, FiscalYear, validate_in_fy, Donor, BudgetHead
 from account.models import Account, Party
 
@@ -360,11 +360,21 @@ class DisbursementParticulars(models.Model):
     disbursement_detail = models.ForeignKey(DisbursementDetail, related_name="rows")
 
 
-class ExchangeRate(models.Model):
-    currency_from = models.ForeignKey(Currency, related_name='exchanged_from')
-    currency_to = models.ForeignKey(Currency, related_name='exchanged_to')
+class NPRExchange(models.Model):
+    currency = models.ForeignKey(Currency, related_name='npr_exchanges')
     date = BSDateField(default=today)
     rate = models.FloatField()
 
+    @staticmethod
+    def get(date, currency='USD'):
+        try:
+            return NPRExchange.objects.get(currency__code=currency, date=date)
+        except NPRExchange.DoesNotExist:
+            if internet():
+                # TODO date to AD
+                conversion = fetch_npr_conversion(date, currency=currency)
+                currency_obj, created = Currency.objects.get_or_create(code=currency, defaults={'name': currency})
+                return NPRExchange.objects.create(currency=currency_obj, date=date, rate=conversion.get('TargetBuy'))
+
     def __str__(self):
-        return str(self.date) + ' - ' + str(self.currency_from) + ' -> ' + str(self.currency_to) + ' : ' + str(self.rate)
+        return str(self.date) + ' : ' + str(self.currency) + ' : ' + str(self.rate)

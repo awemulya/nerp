@@ -1,8 +1,42 @@
 from django.db import connection
+import socket
+import urllib
+import json
+from datetime import date
+
+
+def fetch_npr_conversion(from_date, to_date=None, currency=None):
+    if from_date > date.today():
+        raise ValueError("We can't forecast, nor travel to future.")
+    url = 'http://nrb.org.np/exportForexJSON.php?YY=' + str(from_date.year) + '&MM=' + str(from_date.month).zfill(
+        2) + '&DD=' + str(from_date.day).zfill(2)
+    if to_date:
+        url += '&YY1=' + str(to_date.year) + '&MM1=' + str(to_date.month).zfill(2) + '&DD1=' + str(to_date.day).zfill(2)
+    response = urllib.urlopen(url)
+    data = json.loads(response.read()).get('Conversion').get('Currency')
+    if currency and not to_date:
+        return next(obj for obj in data if obj.get('BaseCurrency') == currency)
+    return data
+
 
 def truncate_model(model):
     cursor = connection.cursor()
     cursor.execute("TRUNCATE TABLE " + model._meta.db_table + " CASCADE;")
+
+
+def internet(host="8.8.8.8", port=53, timeout=3):
+    """
+    Host: 8.8.8.8 (google-public-dns-a.google.com)
+    OpenPort: 53/tcp
+    Service: domain (DNS/TCP)
+    """
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except Exception as ex:
+        print ex.message
+        return False
 
 
 def invalid(row, required_fields):
@@ -74,6 +108,7 @@ def title_case(line):
 
 def model_exists_in_db(model):
     return model._meta.db_table in connection.introspection.table_names()
+
 
 def merge_dicts(*dict_args):
     '''
