@@ -7,6 +7,9 @@
 {% block head_end %}
 
 {% endblock %}
+{% block title %}
+    {% trans 'Allowance List' %}
+{% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
         <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
@@ -28,6 +31,8 @@
 {% endblock %}
 
 {% block  content %}
+    <div class="well">
+
     <table class="table table-striped" >
         <thead>
             <tr>
@@ -42,9 +47,12 @@
                     <td><a href={% url 'delete_allowance' obj.id %}><button type="button">Delete</button></a></td>
 
                 </tr>
+                {% empty %}
+                <tr><td colspan="100%"><strong>{% trans 'No Allowances Added Yet' %}</strong></td></tr>
             {% endfor %}
         </tbody>
     </table>
+    </div>
     <a href={% url 'add_allowance' %}><input class="btn btn-raised btn-primary" type="button" value="Add New Allowance"></a>
     
     
