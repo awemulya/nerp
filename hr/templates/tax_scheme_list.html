@@ -28,14 +28,13 @@
 {% endblock %}
 
 {% block  content %}
-    <table class="table" >
+    <table class="table table-striped" >
         
         {% if m_objects %}
         <tr>
-            <td colspan="50%"><a href={% url 'edit_taxscheme' m_objects.0.marital_status.id %}>MARRIED</a></td>
-            <td colspan="50%"><a href={% url 'delete_taxscheme' m_objects.0.marital_status.id %}><input type="button" value="Delete"></a></td>
+            <td colspan="100%" class="active"><a href={% url 'edit_taxscheme' m_objects.0.marital_status.id %}>MARRIED</a> <span class="pull-right"><a href={% url 'delete_taxscheme' m_objects.0.marital_status.id %}><input class="btn btn-raised btn-danger" type="button" value="Delete"></a></span></td>
         </tr>
-        <tr>
+        <tr class="active">
             <th>From</th>
             <th>To</th>
             
@@ -54,10 +53,16 @@
         {% endfor %}
         {% if u_objects %}
         <tr>
-            <td colspan="50%"><a href={% url 'edit_taxscheme' u_objects.0.marital_status.id %}>UNMARRIED</a></td>
-            <td colspan="50%"><a href={% url 'delete_taxscheme' u_objects.0.marital_status.id %}><input type="button" value="Delete"></a></td>
+            <td colspan="100%" class="active">
+                <a href={% url 'edit_taxscheme' u_objects.0.marital_status.id %}>UNMARRIED</a>
+                <span class="pull-right">
+                    <a href={% url 'delete_taxscheme' u_objects.0.marital_status.id %}>
+                        <input class="btn btn-raised btn-danger" type="button" value="Delete">
+                    </a>
+                </span>
+            </td>
         </tr>
-        <tr>
+        <tr class="active">
             <th>From</th>
             <th>To</th>
             
@@ -76,7 +81,7 @@
             </tr>
         {% endfor %}
     </table>
-    <a href={% url 'add_taxscheme' %}><input type="button" value="Add New Scheme"></a>
+    <a href={% url 'add_taxscheme' %}><input class="btn btn-raised btn-primary" type="button" value="Add New Scheme"></a>
     
     
 {% endblock %}

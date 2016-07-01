@@ -438,7 +438,8 @@ class TaxSchemeInlineFormSet(forms.BaseInlineFormSet):
                     'First range must start from 0',
                 )
             for index, item in enumerate(sorted_dict_list):
-                if index == 0:
+                if index == 0 and len(sorted_dict_list) > 1:
+
                     if item['end_to'] is not None:
                         item['form'].add_error(
                             'end_to',

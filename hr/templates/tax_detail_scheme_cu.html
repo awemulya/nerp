@@ -46,19 +46,39 @@
     <form method="POST" action="{% url 'add_tax_scheme' %}">
 {% endif %}
     {% csrf_token %}
-    <div class="row">
-        {{ tax_scheme_form.as_table }}
+    <div class="well">
+        {{ tax_scheme_form }}
     </div>
-    <div class="tax-calc-scheme-formset">
-        {% for tax_calc_scheme_form in tax_calc_scheme_formset %}
-            <div class="row tax-calc-scheme-form">
-                {{ tax_calc_scheme_form.as_table }}
-                {% if tax_calc_scheme_form.instance.pk %}{{ tax_calc_scheme_form.DELETE }}{% endif %}
-            </div>
+    <div class="well">
+        {{ tax_calc_scheme_formset.non_form_errors.as_ul }}
+        <table id="formset" class="form table table-striped">
+        {% for form in tax_calc_scheme_formset.forms %}
+          {% if forloop.first %}
+          <thead><tr>
+            {% for field in form.visible_fields %}
+            <th>{{ field.label|capfirst }}</th>
+            {% endfor %}
+          </tr></thead>
+          {% endif %}
+          <tr class="{% cycle row1,row2 %} tax-calc-scheme-form">
+          {% for field in form.visible_fields %}
+            <td>
+            {# Include the hidden fields in the form #}
+            {% if forloop.first %}
+              {% for hidden in form.hidden_fields %}
+              {{ hidden }}
+              {% endfor %}
+            {% endif %}
+              {{ field.errors.as_ul }}
+              {{ field }}
+            </td>
+          {% endfor %}
+          </tr>
         {% endfor %}
+        </table>
     </div>
     {{ tax_calc_scheme_formset.management_form }}
-    <input type="submit" value="Save"></input>
+    <input class="btn btn-raised btn-primary" type="submit" value="Save">
 
 </form>
     
