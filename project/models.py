@@ -358,3 +358,13 @@ class DisbursementParticulars(models.Model):
     with_held_usd = models.PositiveIntegerField(blank=True, null=True)
     with_held_sdr = models.PositiveIntegerField(blank=True, null=True)
     disbursement_detail = models.ForeignKey(DisbursementDetail, related_name="rows")
+
+
+class ExchangeRate(models.Model):
+    currency_from = models.ForeignKey(Currency, related_name='exchanged_from')
+    currency_to = models.ForeignKey(Currency, related_name='exchanged_to')
+    date = BSDateField(default=today)
+    rate = models.FloatField()
+
+    def __str__(self):
+        return str(self.date) + ' - ' + str(self.currency_from) + ' -> ' + str(self.currency_to) + ' : ' + str(self.rate)

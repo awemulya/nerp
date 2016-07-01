@@ -3,7 +3,7 @@ from adminsortable2.admin import SortableAdminMixin
 
 from .models import ImprestTransaction, Expense, ExpenseCategory, ExpenseRow, Project, Aid, ProjectFy, Signatory, \
     ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure, Reimbursement, DisbursementDetail, \
-    DisbursementParticulars
+    DisbursementParticulars, ExchangeRate
 
 
 class AidInline(admin.TabularInline):
@@ -40,3 +40,4 @@ admin.site.register(ImprestJournalVoucher)
 admin.site.register(Reimbursement)
 admin.site.register(DisbursementDetail)
 admin.site.register(DisbursementParticulars)
+admin.site.register(ExchangeRate)
