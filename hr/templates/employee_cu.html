@@ -42,19 +42,43 @@
     <form method="POST" action="{% url 'add_employee' %}">
 {% endif %}
     {% csrf_token %}
-    <div class="row">
-        {{ employee_form.as_ul }}
+    <div class="well">
+        {{ employee_form }}
     </div>
-    <div class="employee-incentives-form">
-        {% for employee_incentive_form in employee_incentive_formset %}
-            <div class="row employee-incentive-form">
-                {{ employee_incentive_form.as_table }}
-                {% if employee_incentive_form.instance.pk %}{{ employee_incentive_form.DELETE }}{% endif %}
-            </div>
+
+
+    <div class="well">
+        {{ employee_incentive_formset.non_form_errors.as_ul }}
+        <table id="formset" class="form table table-striped">
+        {% for form in employee_incentive_formset.forms %}
+          {% if forloop.first %}
+          <thead><tr>
+            {% for field in form.visible_fields %}
+            <th>{{ field.label|capfirst }}</th>
+            {% endfor %}
+          </tr></thead>
+          {% endif %}
+          <tr class="{% cycle row1,row2 %} employee-incentive-form">
+          {% for field in form.visible_fields %}
+            <td>
+            {# Include the hidden fields in the form #}
+            {% if forloop.first %}
+              {% for hidden in form.hidden_fields %}
+              {{ hidden }}
+              {% endfor %}
+            {% endif %}
+              {{ field.errors.as_ul }}
+              {{ field }}
+            </td>
+          {% endfor %}
+
+          </tr>
         {% endfor %}
+        </table>
     </div>
+
     {{ employee_incentive_formset.management_form }}
-    <input type="submit" value="Save"></input>
+    <input class="btn btn-raised btn-primary" type="submit" value="Save">
 
 </form>
     

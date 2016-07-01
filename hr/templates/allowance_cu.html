@@ -45,61 +45,35 @@
         <div class="well">
             {{ allowance_name_form.as_table }}
         </div>
-        <div class="allowance-formset well">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        {% with firstform=allowance_formset.0 %}
-                            <td><label>{{ firstform.employee_grade.label }}</label></td>
-                            <td><label>{{ firstform.sum_type.label }}</label></td>
-                            <td><label>{{ firstform.amount.label }}</label></td>
-                            <td><label>{{ firstform.amount_rate.label }}</label></td>
-                            <td><label>{{ firstform.payment_cycle.label }}</label></td>
-                            <td><label>{{ firstform.year_payment_cycle_month.label }}</label></td>
-                            <td>Remove</td>
-                        {% endwith %}
-                    </tr>
-                </thead>
-                {% for allowance_form in allowance_formset %}
-                        <tr class="allowance-form">
-                            {% for hidden in allowance_form.hidden_fields %}
-                                {{ hidden }}
-                            {% endfor %}
-                            <td>
-                                {{ allowance_form.employee_grade.errors }}
-                                {{ allowance_form.employee_grade }}
-                            </td>
-                            <td>
-                                {{ allowance_form.sum_type.errors }}
-                                {{ allowance_form.sum_type }}
-                            </td>
-                            <td>
-                                {{ allowance_form.amount.errors }}
-                                {{ allowance_form.amount }}
-                            </td>
-                            <td>
-                                {{ allowance_form.amount_rate.errors }}
-                                {{ allowance_form.amount_rate }}
-                            </td>
-                            <td>
-                                {{ allowance_form.payment_cycle.errors }}
-                                {{ allowance_form.payment_cycle }}
-                            </td>
-                            <td>
-                                {{ allowance_form.year_payment_cycle_month.errors }}
-                                {{ allowance_form.year_payment_cycle_month }}
-                            </td>
-                            <td>
-                                {% if allowance_form.instance.pk %}{{ allowance_form.DELETE }}{% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                <tbody>
 
-                </tbody>
-            </table>
-
-        </div>
+    <div class="well">
+        {{ allowance_formset.non_form_errors.as_ul }}
+        <table id="formset" class="form table table-striped">
+        {% for form in allowance_formset.forms %}
+          {% if forloop.first %}
+          <thead><tr>
+            {% for field in form.visible_fields %}
+            <th>{{ field.label|capfirst }}</th>
+            {% endfor %}
+          </tr></thead>
+          {% endif %}
+          <tr class="{% cycle row1,row2 %} allowance-form">
+          {% for field in form.visible_fields %}
+            <td>
+            {# Include the hidden fields in the form #}
+            {% if forloop.first %}
+              {% for hidden in form.hidden_fields %}
+              {{ hidden }}
+              {% endfor %}
+            {% endif %}
+              {{ field.errors.as_ul }}
+              {{ field }}
+            </td>
+          {% endfor %}
+          </tr>
+        {% endfor %}
+        </table>
+    </div>
         {{ allowance_formset.management_form }}
         <input class="btn btn-raised btn-primary" type="submit" value="Save">
 

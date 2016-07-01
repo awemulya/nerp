@@ -43,83 +43,32 @@
 
     {% csrf_token %}
 
-    <div class="deduction-formset well">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    {% with firstform=deduction_formset.0 %}
-                        <th><label>{{ firstform.name.label }}</label></th>
-                        <th><label>{{ firstform.description.label }}</label></th>
-                        <th><label>{{ firstform.priority.label }}</label></th>
-                        <th><label>{{ firstform.permanent_multiply_rate.label }}</label></th>
-                        <th><label>{{ firstform.deduct_type.label }}</label></th>
-                        <th><label>{{ firstform.amount.label }}</label></th>
-                        <th><label>{{ firstform.amount_rate.label }}</label></th>
-                        <th><label>{{ firstform.amount_editable.label }}</label></th>
-                        <th><label>{{ firstform.add2_init_salary.label }}</label></th>
-                        <th><label>{{ firstform.is_tax_free.label }}</label></th>
-                        <th><label>{{ firstform.is_optional.label }}</label></th>
-                        <th><label>Remove</label></th>
-                    {% endwith %}
-
-                </tr>
-            </thead>
-            <tbody>
-                {% for deduction_form in deduction_formset %}
-                    <tr class="deduction-form">
-                        {% for hidden in deduction_form.hidden_fields %}
-                            {{ hidden }}
-                        {% endfor %}
-                        <td>
-                            {{ deduction_form.name.errors }}
-                            {{ deduction_form.name }}
-                        </td>
-                        <td>
-                            {{ deduction_form.description.errors }}
-                            {{ deduction_form.description }}
-                        </td>
-                        <td>
-                            {{ deduction_form.priority.errors }}
-                            {{ deduction_form.priority }}
-                        </td>
-                        <td>
-                            {{ deduction_form.permanent_multiply_rate.errors }}
-                            {{ deduction_form.permanent_multiply_rate }}
-                        </td>
-                        <td>
-                            {{ deduction_form.deduct_type.errors }}
-                            {{ deduction_form.deduct_type }}
-                        </td>
-                        <td>
-                            {{ deduction_form.amount.errors }}
-                            {{ deduction_form.amount }}
-                        </td>
-                        <td>
-                            {{ deduction_form.amount_rate.errors }}
-                            {{ deduction_form.amount_rate }}
-                        </td>
-                        <td>
-                            {{ deduction_form.amount_editable.errors }}
-                            {{ deduction_form.amount_editable }}
-                        </td>
-                        <td>
-                            {{ deduction_form.add2_init_salary.errors }}
-                            {{ deduction_form.add2_init_salary }}
-                        </td>
-                        <td>
-                            {{ deduction_form.is_tax_free.errors }}
-                            {{ deduction_form.is_tax_free }}
-                        </td>
-                        <td>
-                            {{ deduction_form.is_optional.errors }}
-                            {{ deduction_form.is_optional }}
-                        </td>
-                        <td>
-                            {% if deduction_form.instance.pk %}{{ deduction_form.DELETE }}{% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
+    <div class="well">
+        {{ deduction_formset.non_form_errors.as_ul }}
+        <table id="formset" class="form table table-striped">
+        {% for form in deduction_formset.forms %}
+          {% if forloop.first %}
+          <thead><tr>
+            {% for field in form.visible_fields %}
+            <th>{{ field.label|capfirst }}</th>
+            {% endfor %}
+          </tr></thead>
+          {% endif %}
+          <tr class="{% cycle row1,row2 %} deduction-form">
+          {% for field in form.visible_fields %}
+            <td>
+            {# Include the hidden fields in the form #}
+            {% if forloop.first %}
+              {% for hidden in form.hidden_fields %}
+              {{ hidden }}
+              {% endfor %}
+            {% endif %}
+              {{ field.errors.as_ul }}
+              {{ field }}
+            </td>
+          {% endfor %}
+          </tr>
+        {% endfor %}
         </table>
     </div>
     {{ deduction_formset.management_form }}
