@@ -40,13 +40,33 @@
 
     {% csrf_token %}
 
-    <div class="incentivename-formset">
-        {% for incentivename_form in incentivename_formset %}
-            <div class="row incentivename-form">
-                {{ incentivename_form.as_table }}
-                {% if incentivename_form.instance.pk %}{{ incentivename_form.DELETE }}{% endif %}
-            </div>
+    <div class="well">
+        {{ incentivename_formset.non_form_errors.as_ul }}
+        <table id="formset" class="form table table-striped">
+        {% for form in incentivename_formset.forms %}
+          {% if forloop.first %}
+          <thead><tr>
+            {% for field in form.visible_fields %}
+            <th>{{ field.label|capfirst }}</th>
+            {% endfor %}
+          </tr></thead>
+          {% endif %}
+          <tr class="{% cycle row1,row2 %} incentivename-form">
+          {% for field in form.visible_fields %}
+            <td>
+            {# Include the hidden fields in the form #}
+            {% if forloop.first %}
+              {% for hidden in form.hidden_fields %}
+              {{ hidden }}
+              {% endfor %}
+            {% endif %}
+              {{ field.errors.as_ul }}
+              {{ field }}
+            </td>
+          {% endfor %}
+          </tr>
         {% endfor %}
+        </table>
     </div>
     {{ incentivename_formset.management_form }}
     <input type="submit" value="Save"></input>
