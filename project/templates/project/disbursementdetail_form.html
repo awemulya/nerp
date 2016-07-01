@@ -13,7 +13,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url "disbursement_detail_list" project.id %}">{% trans 'Disbursement Details' %}</a></li>
+    <li><a href="{% url "disbursement_detail_list" project_fy.id %}">{% trans 'Disbursement Details' %}</a></li>
     <li><span>{% trans scenario %} {% trans 'Disbursement Detail' %}</span></li>
 {% endblock %}
 

@@ -1,4 +1,5 @@
 import json
+from datetime import date
 
 from django.db.models import Q
 from django.views.generic.base import TemplateView
@@ -10,12 +11,13 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from django.utils.translation import ugettext_lazy as _
+from njango.middleware import get_calendar
 
 from account.models import Account
 from core.serializers import BudgetSerializer
 from account.serializers import AccountSerializer
 from app.utils.helpers import save_model, invalid, empty_to_none
-from core.models import BudgetHead
+from core.models import BudgetHead, FiscalYear
 from inventory.models import delete_rows
 from models import Aid, ProjectFy, ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure, \
     Reimbursement, DisbursementDetail, DisbursementParticulars
@@ -507,11 +509,16 @@ def statement_of_fund(request, project_fy_id):
 def memorandum_statement(request, project_fy_id, aid_id):
     project_fy = ProjectFy.objects.get(pk=project_fy_id)
     aid = Aid.objects.get(pk=aid_id, project_id=project_fy.project_id)
+    fy_end = FiscalYear.end(project_fy.fy.year)
+    calendar = get_calendar()
+    if calendar == 'ad':
+        fy_end = date(*fy_end)
     return render(request, 'project/memorandum_statement.html', context={
         # 'data': data,
         'project_fy': project_fy,
         'aid': aid,
         'index': list(Aid.objects.filter(project_id=project_fy.project_id).values_list('id', flat=True)).index(aid.id) + 1,
+        'fy_end': fy_end,
     })
 
 
