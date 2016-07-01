@@ -3,6 +3,14 @@
 
 {% block title %}{{ scenario }} {% trans 'Memorandum Statement of Imprest Account' %}{% endblock %}
 
+{% block head_end %}
+    <script src="{% static 'js/project/imprest_memorandum.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}
+
+
 {% block breadcrumbs %}
     {{ block.super }}
     <li><span>{% trans 'Note 4' %}{{ index|to_char }}: {% trans 'Memorandum Statement of Imprest Account' %} ({{ aid }})</span></li>
