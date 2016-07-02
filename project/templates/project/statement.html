@@ -1,0 +1,148 @@
+{% extends "_project_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Aid' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="well">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th></th>
+            <th>{% trans 'Notes No.' %}</th>
+            <th>{% trans 'Previous Year' %}</th>
+            <th>{% trans 'Current Year' %}</th>
+            <th>{% trans 'Cummulative up to current year' %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td colspan="5" class="text-center">{% trans "Sources" %}</td>
+        </tr>
+        <tr>
+            <td>{% trans "GON FUND" %}</td>
+            <td>2</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{% trans "GON Reimbursable Fund" %}</td>
+            <td>2</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{% trans "ADB Grant" %}</td>
+            <td>2</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><b>{% trans "Sub total (A)" %}</b></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{% trans "Imprest Account Initial Deposit" %}</td>
+            <td>2</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{% trans "Exchange Gain/Loss" %}</td>
+            <td>2</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><b>{% trans "Sub total (B)" %}</b></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><b>{% trans "Total (A+B)" %}</b></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td colspan="5" class="text-center">{% trans "Application" %}</td>
+        </tr>
+        <tr>
+            <td>{% trans "GON FUND" %}</td>
+            <td>2</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{% trans "GON Reimbursable Fund" %}</td>
+            <td>2</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{% trans "ADB Grant" %}</td>
+            <td>2</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><b>{% trans "Sub total (A)" %}</b></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{% trans "Imprest Account Initial Deposit" %}</td>
+            <td>2</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>{% trans "Exchange Gain/Loss" %}</td>
+            <td>2</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><b>{% trans "Sub total (B)" %}</b></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><b>{% trans "Total (A+B)" %}</b></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+
+
+
+{% endblock %}

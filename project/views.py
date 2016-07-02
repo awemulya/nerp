@@ -682,3 +682,7 @@ class NPRExchangeUpdate(NPRExchangeView, UpdateView):
 
 class NPRExchangeDelete(NPRExchangeView, DeleteView):
     pass
+
+
+def statement(request):
+    return render(request, 'project/statement.html')
