@@ -35,9 +35,11 @@
                     <td colspan="5"><b>{% trans "A. Balance of Account as at" %} {{ fy_end }}</b></td>
                 </tr>
                 <tr>
+
                     <td>
-                        (Ex Rate $1 = NRs.101.14)
+                    <a href="{% url 'exchange_with_date' fy_end|date:'Y-m-d' %}">    (Ex Rate $1 = NRs.101.14)</a>
                     </td>
+
                     <td>30,342,00.00</td>
                     <td>300,000.00</td>
                 </tr>

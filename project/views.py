@@ -1,5 +1,5 @@
 import json
-from datetime import date
+from datetime import date, datetime
 
 from django.db.models import Q
 from django.views.generic.base import TemplateView
@@ -671,7 +671,13 @@ class NPRExchangeCreate(AjaxableResponseMixin, NPRExchangeView, CreateView):
 
 
 class NPRExchangeUpdate(NPRExchangeView, UpdateView):
-    pass
+
+    def get_object(self, queryset=None):
+        if 'date' in self.kwargs:
+            _date = datetime.strptime(self.kwargs.get('date'), '%Y-%m-%d')
+            return NPRExchange.get(_date.date())
+        obj = super(NPRExchangeUpdate, self).get_object()
+        return obj
 
 
 class NPRExchangeDelete(NPRExchangeView, DeleteView):
