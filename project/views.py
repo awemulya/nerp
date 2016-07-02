@@ -658,7 +658,7 @@ def save_disbursement_detail(request):
 
 class NPRExchangeView(object):
     model = NPRExchange
-    success_url = reverse_lazy('npr_exchange_list')
+    success_url = reverse_lazy('exchange_list')
     form_class = NPRExchangeForm
 
 

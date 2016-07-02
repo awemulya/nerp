@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <a href="{% url "npr_exchange_list" %}">{% trans 'NPR Exhange' %}</a>
+    <a href="{% url "exchange_list" %}">{% trans 'NPR Exhange' %}</a>
 {% endblock %}
 
 {% block content %}
@@ -35,7 +35,7 @@
 
 
     <a class="btn btn-success btn-raised btn-lg"
-       href="{% url 'npr_exchange_add' %}">{% trans 'New' %} {% trans 'NPR Exhange' %}</a>
+       href="{% url 'exchange_add' %}">{% trans 'New' %} {% trans 'NPR Exhange' %}</a>
 
     {% paginate %}
 

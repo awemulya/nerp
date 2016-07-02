@@ -5,7 +5,7 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url "npr_exchange_list" %}">{% trans 'NPR Exchange' %}</a></li>
+    <li><a href="{% url "exchange_list" %}">{% trans 'NPR Exchange' %}</a></li>
     <li><span>{% trans scenario %} {% trans 'NPR Exchange' %}</span></li>
 {% endblock %}
 
@@ -22,7 +22,7 @@
                     {% trans 'Submit' %}</button>
                 {% if scenario == 'Update' %}
                     <a class="btn btn-danger btn-raised"
-                       href="{% url 'npr_exchange_delete' form.instance.id %}">{% trans 'Delete' %}!</a>
+                       href="{% url 'exchange_delete' form.instance.id %}">{% trans 'Delete' %}!</a>
                 {% endif %}
             </div>
     </form>
