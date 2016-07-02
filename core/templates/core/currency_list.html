@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Currency' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url "currencies_list" %}">{% trans 'Currencies' %}</a>
+{% endblock %}
+
+{% block content %}
+
+    {% load pagination_tags %}
+    {% load sorting_tags %}
+    {% load filters %}
+
+    {% autosort object_list as sorted_objects %}
+    {% autopaginate sorted_objects 25 as paginated_objects %}
+    <div class="well">
+    <table class="table table-striped">
+        <thead>
+        <th>{% anchor name _('Name') %}</th>
+        </thead>
+        <tbody>
+        {% for currency in paginated_objects %}
+            <tr>
+                <td class="link">
+                    <a href="{% url 'currency_edit' currency.id %}">{{ currency }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+
+    <a class="btn btn-success btn-raised btn-lg"
+       href="{% url 'currency_add' %}">{% trans 'New' %} {% trans 'Currency' %}</a>
+
+    {% paginate %}
+
+{% endblock %}

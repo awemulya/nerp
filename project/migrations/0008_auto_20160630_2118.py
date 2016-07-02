@@ -8,7 +8,10 @@ from app.utils.helpers import truncate_model
 def delete_aids(apps, schema):
     from project.models import Aid
 
-    truncate_model(Aid)
+    try:
+        truncate_model(Aid)
+    except Exception as e:
+        pass
 
 
 class Migration(migrations.Migration):

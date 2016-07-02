@@ -6,9 +6,9 @@ from django.utils.http import is_safe_url
 from django.contrib.auth.decorators import user_passes_test
 
 from app.utils.forms import form_view
-from core.forms import EmployeeForm, DonorForm, BudgetHeadForm
+from core.forms import EmployeeForm, DonorForm, BudgetHeadForm, CurrencyForm
 
-from core.models import Employee, BudgetHead, Donor, Activity, TaxScheme, Language, FISCAL_YEARS, FiscalYear
+from core.models import Employee, BudgetHead, Donor, Activity, TaxScheme, Language, FISCAL_YEARS, FiscalYear, Currency
 
 from core.serializers import EmployeeSerializer, BudgetSerializer, ActivitySerializer, DonorSerializer, \
     TaxSchemeSerializer, LanguageSerializer
@@ -166,3 +166,27 @@ class BudgetHeadUpdate(BudgetHeadView, UpdateView):
 
 class BudgetHeadDelete(BudgetHeadView, DeleteView):
     pass
+
+
+
+class CurrencyView(object):
+    model = Currency
+    success_url = reverse_lazy('currencies_list')
+    form_class = CurrencyForm
+
+
+class CurrencyList(CurrencyView, ListView):
+    pass
+
+
+class CurrencyCreate(AjaxableResponseMixin, CurrencyView, CreateView):
+    pass
+
+
+class CurrencyUpdate(CurrencyView, UpdateView):
+    pass
+
+
+class CurrencyDelete(CurrencyView, DeleteView):
+    pass
+

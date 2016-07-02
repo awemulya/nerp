@@ -30,4 +30,9 @@ urlpatterns = [
     url(r'^budget_head/add/$', views.BudgetHeadCreate.as_view(), name='budget_head_add'),
     url(r'^budget_head/edit/(?P<pk>\d+)/$', views.BudgetHeadUpdate.as_view(), name='budget_head_edit'),
     url(r'^budget_head/delete/(?P<pk>\d+)/$', views.BudgetHeadDelete.as_view(), name='budget_head_delete'),
+
+    url(r'^currencies/$', views.CurrencyList.as_view(), name='currencies_list'),
+    url(r'^currency/add/$', views.CurrencyCreate.as_view(), name='currency_add'),
+    url(r'^currency/edit/(?P<pk>\d+)/$', views.CurrencyUpdate.as_view(), name='currency_edit'),
+    url(r'^currency/delete/(?P<pk>\d+)/$', views.CurrencyDelete.as_view(), name='currency_delete'),
 ]
