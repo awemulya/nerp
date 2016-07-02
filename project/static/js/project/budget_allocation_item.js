@@ -70,6 +70,29 @@ function BudgetAllocationItem(data) {
     self.capital_expenditure_view = new TableViewModel({rows: self.capital_expenditure_values, argument: self}, RowVM);
 
 
+    self.budget_head_goa_sub_total = function() {
+        var sum = 0;
+        self.budget_head_view.rows().forEach(function (budget_head) {
+            if (budget_head.goa_amount()) {
+                sum += parseFloat(budget_head.goa_amount());
+            }
+        });
+        return round2(sum);
+    };
+
+
+    self.capital_expenditure_goa_sub_total = function() {
+        var sum = 0;
+        self.capital_expenditure_view.rows().forEach(function (capital_expenditure) {
+            if (capital_expenditure.goa_amount()) {
+                sum += parseFloat(capital_expenditure.goa_amount());
+            }
+        });
+        return round2(sum);
+    };
+
+
+
     self.grand_total = function() {
         var total=0;
         self.budget_head_view.rows().forEach(function (i) {
