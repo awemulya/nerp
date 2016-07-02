@@ -126,53 +126,6 @@ function BudgetAllocationItem(data) {
         };
     }
 
-    //self['budget-head-1-asd-sub-total'] = function() {
-    //    var sum = 0;
-    //    self.budget_head_view.rows().forEach(function (budget_head) {
-    //        if (budget_head['1-asd']()) {
-    //            sum += parseFloat(budget_head['1-asd']());
-    //        }
-    //    });
-    //    return round2(sum);
-    //};
-    //for (var i in self.count) {
-    //    self["budget-head-" + self.count[i] + "-sub-total"].subscribe(function (item) {
-    //        console.log('a')
-    //     });
-        //var sum = 0;
-        //self.budget_head_view.rows().forEach(function (budget_head) {
-        //    if (budget_head[self.count[i]]()) {
-        //        sum += parseFloat(budget_head[self.count[i]]());
-        //    }
-        //});
-        //console.log(typeof(self.count[i]));
-        //if (typeof(self.count[i]) != 'function') {
-        //    self["budget-head-" + self.count[i] + "-sub-total"] = ko.computed( function () {
-        //        console.log('hey')
-        //        var sum = 123;
-                //self.budget_head_view.rows().forEach(function (budget_head) {
-                //    if (budget_head[self.count[i]]()) {
-                //        sum += parseFloat(budget_head[self.count[i]]());
-                //    }
-                //});
-                //console.log(sum)
-            //    return round2(sum);
-            //});
-
-        //}
-        //self["budget-head-" + self.count[i] + "-sub-total"] = function () {
-        //    var sum = 123;
-        //    self.budget_head_view.rows().forEach(function (budget_head) {
-        //        if (budget_head[self.count[i]]()) {
-        //            sum += parseFloat(budget_head[self.count[i]]());
-        //        }
-        //    });
-        //    console.log(sum)
-        //    return round2(sum);
-        //};
-        //self["budget-head-" + self.count[i] + "-sub-total"]();
-    //}
-
     self.capital_expenditure_goa_sub_total = function() {
         var sum = 0;
         self.capital_expenditure_view.rows().forEach(function (capital_expenditure) {
