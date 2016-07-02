@@ -20,9 +20,9 @@ from app.utils.helpers import save_model, invalid, empty_to_none
 from core.models import BudgetHead, FiscalYear
 from inventory.models import delete_rows
 from models import Aid, ProjectFy, ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure, \
-    Reimbursement, DisbursementDetail, DisbursementParticulars
+    Reimbursement, DisbursementDetail, DisbursementParticulars, NPRExchange
 from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm, ImprestJVForm, ReimbursementForm, \
-    DisbursementDetailForm
+    DisbursementDetailForm, NPRExchangeForm
 from models import ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ExpenseRowSerializer, ExpenseCategorySerializer, \
     ExpenseSerializer, AidSerializer, BaseStatementSerializer, ImprestJVSerializer, DisbursementDetailSerializer
@@ -654,3 +654,25 @@ def save_disbursement_detail(request):
         else:
             dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
+
+
+class NPRExchangeView(object):
+    model = NPRExchange
+    success_url = reverse_lazy('npr_exchange_list')
+    form_class = NPRExchangeForm
+
+
+class NPRExchangeList(NPRExchangeView, ListView):
+    pass
+
+
+class NPRExchangeCreate(AjaxableResponseMixin, NPRExchangeView, CreateView):
+    pass
+
+
+class NPRExchangeUpdate(NPRExchangeView, UpdateView):
+    pass
+
+
+class NPRExchangeDelete(NPRExchangeView, DeleteView):
+    pass

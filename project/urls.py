@@ -88,5 +88,8 @@ urlpatterns = [
         name='disbursement_detail_delete'),
     url(r'^disbursement_detail/save/$', views.save_disbursement_detail, name='save_save_disbursement_detail'),
 
-
+    url(r'^npr_exchange/$', views.NPRExchangeList.as_view(), name='npr_exchange_list'),
+    url(r'^npr_exchange/add/$', views.NPRExchangeCreate.as_view(), name='npr_exchange_add'),
+    url(r'^npr_exchange/edit/(?P<pk>\d+)/$', views.NPRExchangeUpdate.as_view(), name='npr_exchange_edit'),
+    url(r'^npr_exchange/delete/(?P<pk>\d+)/$', views.NPRExchangeDelete.as_view(), name='npr_exchange_delete'),
 ]

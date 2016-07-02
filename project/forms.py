@@ -2,7 +2,8 @@ from django.core.urlresolvers import reverse_lazy
 from django import forms
 
 from app.utils.forms import HTML5BootstrapModelForm, KOModelForm
-from models import Aid, Project, ExpenseCategory, Expense, ImprestJournalVoucher, Reimbursement, DisbursementDetail
+from models import Aid, Project, ExpenseCategory, Expense, ImprestJournalVoucher, Reimbursement, DisbursementDetail, \
+    NPRExchange
 
 
 class AidForm(HTML5BootstrapModelForm):
@@ -58,3 +59,12 @@ class DisbursementDetailForm(HTML5BootstrapModelForm):
             'aid': forms.Select(attrs={'class': 'selectize'}),
             # 'disbursement_method': forms.Select(attrs={'class': 'selectize'}),
         }
+
+class NPRExchangeForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = NPRExchange
+        fields = '__all__'
+        widgets = {
+            'currency': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('currency_add')}),
+        }
+
