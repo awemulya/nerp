@@ -65,9 +65,9 @@
                          <td>{% trans "Sub total" %}</td>
                          <td data-bind="text:budget_head_goa_sub_total()"></td>
                          <!-- ko foreach: count -->
-{#                         <td data-bind="text: $root['budget-head-' + $data + '-sub-total']"></td>#}
+                         <td data-bind="text: $parent['budget-head-' + $data +'-sub-total']($data)"></td>
                          <!-- /ko -->
-                         <td>total</td>
+                         <td data-bind="text: budget_head_sub_total()"></td>
                          <td></td>
                      </tr>
                     <!-- ko with: capital_expenditure_view -->
@@ -95,9 +95,9 @@
                          <td>{% trans "Sub total" %}</td>
                          <td data-bind="text: capital_expenditure_goa_sub_total()"></td>
                          <!-- ko foreach: count -->
-                         <td>1</td>
+                         <td data-bind="text: $parent['capital-expenditure-' + $data +'-sub-total']($data)"></td>
                          <!-- /ko -->
-                         <td>total</td>
+                         <td data-bind="text: capital_expenditure_sub_total()"></td>
                          <td></td>
                      </tr>
                     <tr class="total">
