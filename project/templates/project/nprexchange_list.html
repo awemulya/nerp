@@ -22,10 +22,10 @@
         <th>{% anchor name _('Name') %}</th>
         </thead>
         <tbody>
-        {% for npr_exchange in paginated_objects %}
+        {% for exchange in paginated_objects %}
             <tr>
                 <td class="link">
-                    <a href="{% url 'npr_exchange_edit' npr_exchange.id %}">{{ npr_exchange }}</a>
+                    <a href="{% url 'exchange_edit' exchange.id %}">{{ exchange }}</a>
                 </td>
             </tr>
         {% endfor %}
