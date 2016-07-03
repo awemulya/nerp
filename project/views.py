@@ -698,3 +698,22 @@ def statement(request, project_fy_id):
         'fy_end': fy_end,
     })
     return render(request, 'project/statement.html')
+
+
+class BudgetBalance(ProjectFYView, ListView):
+    model = BudgetReleaseItem
+    fy = None
+    template_name = 'project/budgetbalance_list.html'
+
+    def get_context_data(self, **kwargs):
+        context_data = super(BudgetBalance, self).get_context_data(**kwargs)
+        budget_heads = BudgetHead.objects.all()
+        expenditure = Expenditure.objects.filter(project_fy=context_data['project_fy'])
+        aids = Aid.objects.filter(active=True, project=self.project)
+        context_data['data'] = {
+            'budget_heads': BudgetSerializer(budget_heads, many=True).data,
+            'aids': AidSerializer(aids, many=True).data,
+            'rows': BaseStatementSerializer(context_data['object_list'], many=True).data,
+            'expenditure': BaseStatementSerializer(expenditure, many=True).data,
+        }
+        return context_data
