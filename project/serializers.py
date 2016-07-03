@@ -25,7 +25,7 @@ class ExpenseCategorySerializer(serializers.ModelSerializer):
         model = ExpenseCategory
 
     def get_subtotal(self, obj):
-        
+
         return 19
 
 
