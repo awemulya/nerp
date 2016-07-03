@@ -4,7 +4,7 @@ from rest_framework.fields import DateField
 
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, BudgetAllocationItem, Aid, \
     ImprestJournalVoucher, \
-    DisbursementDetail, DisbursementParticulars
+    DisbursementDetail, DisbursementParticulars, NPRExchange
 
 
 class ImprestTransactionSerializer(serializers.ModelSerializer):
@@ -88,3 +88,10 @@ class DisbursementDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = DisbursementDetail
         exclude = ('aid',)
+
+
+class NPRExchangeSerializer(serializers.ModelSerializer):
+    url = serializers.ReadOnlyField(source='get_absolute_url')
+
+    class Meta:
+        model = NPRExchange

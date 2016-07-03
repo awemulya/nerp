@@ -12,6 +12,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from django.utils.translation import ugettext_lazy as _
 from njango.middleware import get_calendar
+from njango.nepdate import bs2ad
 
 from account.models import Account
 from core.serializers import BudgetSerializer
@@ -25,7 +26,8 @@ from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm
     DisbursementDetailForm, NPRExchangeForm
 from models import ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ExpenseRowSerializer, ExpenseCategorySerializer, \
-    ExpenseSerializer, AidSerializer, BaseStatementSerializer, ImprestJVSerializer, DisbursementDetailSerializer
+    ExpenseSerializer, AidSerializer, BaseStatementSerializer, ImprestJVSerializer, DisbursementDetailSerializer, \
+    NPRExchangeSerializer
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, DeleteView, json_from_object, CreateView
 
 
@@ -540,8 +542,13 @@ def memorandum_statement(request, project_fy_id, aid_id):
     calendar = get_calendar()
     if calendar == 'ad':
         fy_end = date(*fy_end)
+        fy_end_exchange = NPRExchange.get(fy_end)
+    else:
+        fy_end_exchange = NPRExchange.get(date(*bs2ad(fy_end)))
     data = {
         'fy_end_balance': aid.get_imprest_balance(fy_end),
+        'fy_end_exchange_data': NPRExchangeSerializer(fy_end_exchange).data,
+        'disbursements': aid.get_imprest_disbursements(),
     }
 
     return render(request, 'project/memorandum_statement.html', context={
@@ -549,6 +556,7 @@ def memorandum_statement(request, project_fy_id, aid_id):
         'project_fy': project_fy,
         'aid': aid,
         'index': list(Aid.objects.filter(project_id=project_fy.project_id).values_list('id', flat=True)).index(aid.id) + 1,
+        'fy_end_exchange': fy_end_exchange,
         'fy_end': fy_end,
     })
 

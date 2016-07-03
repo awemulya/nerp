@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Sum
 from django.db.models.signals import post_save
@@ -150,11 +150,32 @@ class Aid(models.Model):
     imprest_ledger = models.OneToOneField(Account, related_name='imprest_for')
 
     def get_imprest_balance(self, dt):
+        """
+        returns (nrs_balance, usd_balance)
+        """
         dr_amounts = self.imprest_ledger.debiting_vouchers.filter(date__lt=dt).aggregate(Sum('amount_nrs'),
                                                                                          Sum('amount_usd')).values()
         cr_amounts = self.imprest_ledger.crediting_vouchers.filter(date__lt=dt).aggregate(Sum('amount_nrs'),
                                                                                           Sum('amount_usd')).values()
-        return [dr - cr for dr, cr in zip(dr_amounts, cr_amounts)]
+        return tuple([round(dr - cr, 2) for dr, cr in zip(dr_amounts, cr_amounts)])
+
+    def get_imprest_disbursements(self):
+        """
+        returns ((party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd))
+        """
+        vouchers = self.imprest_ledger.crediting_vouchers
+        party_payments_nrs = 0
+        party_payments_usd = 0
+        gon_transfer_nrs = 0
+        gon_transfer_usd = 0
+        for voucher in vouchers.all():
+            if hasattr(voucher.dr, 'party'):
+                party_payments_nrs += voucher.amount_nrs
+                party_payments_usd += voucher.amount_usd
+            else:
+                gon_transfer_nrs += voucher.amount_nrs
+                gon_transfer_usd += voucher.amount_usd
+        return (party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd)
 
     def get_disbursements(self, project_fy):
         return self.disbursements.filter(project_fy=project_fy).select_related('category')
@@ -377,12 +398,12 @@ class NPRExchange(models.Model):
     rate = models.FloatField()
 
     def get_absolute_url(self):
-        return reverse_lazy('exchange_with_date', kwargs={'date': str(self.date), 'currency': self.currency.code})
+        return reverse('exchange_with_date', kwargs={'date': str(self.date), 'currency': self.currency.code})
 
     @staticmethod
     def get(date, currency='USD'):
         try:
-            return NPRExchange.objects.get(currency__code=currency, date=date)
+            return NPRExchange.objects.select_related('currency').get(currency__code=currency, date=date)
         except NPRExchange.DoesNotExist:
             if internet():
                 # TODO date to AD
