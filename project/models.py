@@ -365,9 +365,9 @@ class NPRExchange(models.Model):
     currency = models.ForeignKey(Currency, related_name='npr_exchanges')
     date = models.DateField(help_text='Date in AD')
     rate = models.FloatField()
-    
+
     def get_absolute_url(self):
-        return reverse_lazy('exchange_with_date', )
+        return reverse_lazy('exchange_with_date', kwargs={'date': str(self.date), 'currency': self.currency.code})
 
     @staticmethod
     def get(date, currency='USD'):

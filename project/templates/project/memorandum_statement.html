@@ -39,7 +39,7 @@
 
                     <td>
                         {% with fy_end|get_exchange as exchange %}
-                            <a target="_blank" href="{{ exchange.get_absolute_url }}"> (Ex Rate $1 = NRs.101.14)</a>
+                            <a target="_blank" href="{{ exchange.get_absolute_url }}"> (Ex Rate $1 = NRs. {{ exchange.rate }})</a>
                         {% endwith %}
                     </td>
 
