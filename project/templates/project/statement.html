@@ -15,7 +15,6 @@
 {% endblock %}
 
 {% block content %}
-    {{ categories |jsonify}}
     <table class="table table-striped">
         <thead>
         <tr>
@@ -100,17 +99,10 @@
         </tr>
         <!--/ko -->
         <tr>
-            <td>{% trans "ADB Grant" %}</td>
-            <td>2</td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
             <td><b>{% trans "Sub total (A)" %}</b></td>
             <td></td>
             <td></td>
-            <td></td>
+            <td data-bind="text: categories_sub_total()"></td>
             <td></td>
         </tr>
         <tr>

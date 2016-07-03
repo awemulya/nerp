@@ -25,8 +25,10 @@ class ExpenseCategorySerializer(serializers.ModelSerializer):
         model = ExpenseCategory
 
     def get_subtotal(self, obj):
-
-        return 19
+        subtotal = 0
+        for o in obj.expense_row.all().only('amount'):
+            subtotal += o.amount
+        return subtotal
 
 
 class ExpenseSerializer(serializers.ModelSerializer):

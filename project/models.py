@@ -235,13 +235,14 @@ class Expense(models.Model):
 
 
 class ExpenseRow(models.Model):
-    category = models.ForeignKey(ExpenseCategory)
+    category = models.ForeignKey(ExpenseCategory, related_name="expense_row")
     expense = models.ForeignKey(Expense)
     amount = models.FloatField()
     project_fy = models.ForeignKey(ProjectFy)
 
     def __str__(self):
-        return str(self.fy) + '-' + str(self.category) + ' - ' + str(self.expense) + ' : ' + str(self.amount)
+
+        return str(self.project_fy) + '-' + str(self.category) + ' - ' + str(self.expense) + ' : ' + str(self.amount)
 
 
 class BudgetAllocationItem(models.Model):
