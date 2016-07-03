@@ -163,7 +163,7 @@ class Aid(models.Model):
         """
         returns ((party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd))
         """
-        vouchers = self.imprest_ledger.crediting_vouchers
+        vouchers = self.imprest_ledger.crediting_vouchers.select_related('dr__party')
         party_payments_nrs = 0
         party_payments_usd = 0
         gon_transfer_nrs = 0
