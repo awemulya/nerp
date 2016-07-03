@@ -153,17 +153,18 @@ class Aid(models.Model):
         """
         returns (nrs_balance, usd_balance)
         """
-        dr_amounts = self.imprest_ledger.debiting_vouchers.filter(date__lt=dt).aggregate(Sum('amount_nrs'),
-                                                                                         Sum('amount_usd')).values()
-        cr_amounts = self.imprest_ledger.crediting_vouchers.filter(date__lt=dt).aggregate(Sum('amount_nrs'),
+        dr_amounts = self.imprest_ledger.debiting_vouchers.filter(date__lte=dt).aggregate(Sum('amount_nrs'),
                                                                                           Sum('amount_usd')).values()
+        cr_amounts = self.imprest_ledger.crediting_vouchers.filter(date__lte=dt).aggregate(Sum('amount_nrs'),
+                                                                                           Sum('amount_usd')).values()
         return tuple([round(dr - cr, 2) for dr, cr in zip(dr_amounts, cr_amounts)])
 
-    def get_imprest_disbursements(self):
+    def get_imprest_disbursements(self, from_date, to_date):
         """
         returns ((party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd))
         """
-        vouchers = self.imprest_ledger.crediting_vouchers.select_related('dr__party')
+        vouchers = self.imprest_ledger.crediting_vouchers.select_related('dr__party').filter(date__gte=from_date,
+                                                                                             date__lte=to_date)
         party_payments_nrs = 0
         party_payments_usd = 0
         gon_transfer_nrs = 0
@@ -179,6 +180,42 @@ class Aid(models.Model):
 
     def get_disbursements(self, project_fy):
         return self.disbursements.filter(project_fy=project_fy).select_related('category')
+
+    def get_imprest_replenishments(self, project_fy):
+        """
+        returns ((party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd))
+        """
+        replenishments = self.disbursements.filter(project_fy=project_fy, disbursement_method='replenishment')
+        party_payments_nrs = 0
+        party_payments_usd = 0
+        gon_transfer_nrs = 0
+        gon_transfer_usd = 0
+        for replenishment in replenishments:
+            if replenishment.party_id:
+                party_payments_nrs += replenishment.response_nrs
+                party_payments_usd += replenishment.response_usd
+            else:
+                gon_transfer_nrs += replenishment.response_nrs
+                gon_transfer_usd += replenishment.response_usd
+        return (party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd)
+
+    def get_imprest_liquidations(self, project_fy):
+        """
+        returns ((party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd))
+        """
+        liquidations = self.disbursements.filter(project_fy=project_fy, disbursement_method='liquidation')
+        party_payments_nrs = 0
+        party_payments_usd = 0
+        gon_transfer_nrs = 0
+        gon_transfer_usd = 0
+        for liquidation in liquidations:
+            if liquidation.party_id:
+                party_payments_nrs += liquidation.response_nrs
+                party_payments_usd += liquidation.response_usd
+            else:
+                gon_transfer_nrs += liquidation.response_nrs
+                gon_transfer_usd += liquidation.response_usd
+        return (party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd)
 
     def save(self, *args, **kwargs):
         if not self.imprest_ledger_id:

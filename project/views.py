@@ -539,16 +539,18 @@ def memorandum_statement(request, project_fy_id, aid_id):
     project_fy = ProjectFy.objects.get(pk=project_fy_id)
     aid = Aid.objects.select_related('donor').get(pk=aid_id, project_id=project_fy.project_id)
     fy_end = FiscalYear.end(project_fy.fy.year)
+    fy_end_ad = fy_end
+    fy_start = FiscalYear.start(project_fy.fy.year)
     calendar = get_calendar()
-    if calendar == 'ad':
-        fy_end = date(*fy_end)
-        fy_end_exchange = NPRExchange.get(fy_end)
-    else:
-        fy_end_exchange = NPRExchange.get(date(*bs2ad(fy_end)))
+    if calendar != 'ad':
+        fy_end_ad = date(*bs2ad(fy_end))
+    fy_end_exchange = NPRExchange.get(fy_end_ad)
     data = {
         'fy_end_balance': aid.get_imprest_balance(fy_end),
         'fy_end_exchange_data': NPRExchangeSerializer(fy_end_exchange).data,
-        'disbursements': aid.get_imprest_disbursements(),
+        'disbursements': aid.get_imprest_disbursements(fy_start, fy_end),
+        'replenishments': aid.get_imprest_replenishments(project_fy),
+        'liquidations': aid.get_imprest_liquidations(project_fy),
     }
 
     return render(request, 'project/memorandum_statement.html', context={
