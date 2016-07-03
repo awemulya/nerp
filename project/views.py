@@ -465,8 +465,12 @@ class ImprestLedger(ImprestJVView, ListView):
         cr_usd = 0
         cr_nrs = 0
         for obj in context.get('object_list'):
-            bal_nrs += obj.amount_nrs
-            bal_usd += obj.amount_usd
+            if obj.dr_id == account_id:
+                bal_nrs += obj.amount_nrs
+                bal_usd += obj.amount_usd
+            elif obj.cr_id == account_id:
+                bal_nrs -= obj.amount_nrs
+                bal_usd -= obj.amount_usd
             obj.bal_nrs = bal_nrs
             obj.bal_usd = bal_usd
             if obj.dr_id == account_id:
