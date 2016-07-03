@@ -40,7 +40,7 @@
                     <tbody id="budget-allocation">
                     <!-- ko with: budget_head_view -->
                     <tr>
-                        <td colspan="100%">{% trans "Budget Head" %} <button class="btn btn-default btn-raised btn-sm"
+                        <td colspan="100%">{% trans "Recurrent" %} <button class="btn btn-default btn-raised btn-sm"
                                         data-bind="click: addRow">{% trans '+' %}</button></td>
                     </tr>
                     <!-- ko foreach: rows -->
@@ -59,6 +59,15 @@
                     </tr>
                     <!-- /ko -->
                     <!-- /ko -->
+                    <tr>
+                         <td>{% trans "Sub total" %}</td>
+                         <td data-bind="text:budget_head_goa_sub_total()"></td>
+                         <!-- ko foreach: count -->
+                         <td data-bind="text: $parent['budget-head-' + $data +'-sub-total']($data)"></td>
+                         <!-- /ko -->
+                         <td data-bind="text: budget_head_sub_total()"></td>
+                         <td></td>
+                     </tr>
                     <!-- ko with: capital_expenditure_view -->
                     <tr>
                         <td colspan="100%">{% trans "Capital Expenditure" %} <button class="btn btn-default btn-raised btn-sm"
@@ -80,6 +89,15 @@
                     </tr>
                     <!-- /ko -->
                     <!-- /ko -->
+                    <tr>
+                         <td>{% trans "Sub total" %}</td>
+                         <td data-bind="text: capital_expenditure_goa_sub_total()"></td>
+                         <!-- ko foreach: count -->
+                         <td data-bind="text: $parent['capital-expenditure-' + $data +'-sub-total']($data)"></td>
+                         <!-- /ko -->
+                         <td data-bind="text: capital_expenditure_sub_total()"></td>
+                         <td></td>
+                     </tr>
                     <tr class="total">
                         <td>{% trans "Total" %}</td>
                         <td colspan=2 data-bind="text: grand_total()"></td>
