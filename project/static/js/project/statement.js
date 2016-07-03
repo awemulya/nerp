@@ -8,7 +8,7 @@ function Statement(categories) {
     self.categories = categories;
     self.categories_sub_total = function() {
         var sum = 0;
-        for (var index=0; index < categories.length; index++) 
+        for (var index=0; index < categories.length; index++)
             sum += categories[index].subtotal;
         return sum
     };

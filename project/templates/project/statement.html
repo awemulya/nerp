@@ -98,8 +98,8 @@
             <td></td>
         </tr>
         <!--/ko -->
-        <tr>
-            <td><b>{% trans "Sub total (A)" %}</b></td>
+        <tr class="bold" data-bind="visible: categories.length > 0">
+            <td>{% trans "Sub total (A)" %}</td>
             <td></td>
             <td></td>
             <td data-bind="text: categories_sub_total()"></td>
