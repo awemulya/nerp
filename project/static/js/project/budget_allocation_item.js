@@ -70,6 +70,74 @@ function BudgetAllocationItem(data) {
     self.capital_expenditure_view = new TableViewModel({rows: self.capital_expenditure_values, argument: self}, RowVM);
 
 
+    self.budget_head_goa_sub_total = function() {
+        var sum = 0;
+        self.budget_head_view.rows().forEach(function (budget_head) {
+            if (budget_head.goa_amount()) {
+                sum += parseFloat(budget_head.goa_amount());
+            }
+        });
+        return round2(sum);
+    };
+
+    self.budget_head_sub_total = function() {
+        var sum = 0;
+        self.budget_head_view.rows().forEach(function (budget_head) {
+            if (budget_head.total()) {
+                sum += parseFloat(budget_head.total());
+            }
+        });
+        return round2(sum);
+    };
+
+    for (var index=0; index < self.count.length; index++){
+        var name = self.count[index];
+        self['budget-head-' + self.count[index] +'-sub-total'] = function(name) {
+            var sum = 0;
+            self.budget_head_view.rows().forEach(function (budget_head) {
+                if (budget_head[name]()) {
+                    sum += parseFloat(budget_head[name]());
+                }
+            });
+            return round2(sum);
+        };
+    }
+
+    self.capital_expenditure_sub_total = function() {
+        var sum = 0;
+        self.capital_expenditure_view.rows().forEach(function (capital_expenditure) {
+            if (capital_expenditure.total()) {
+                sum += parseFloat(capital_expenditure.total());
+            }
+        });
+        return round2(sum);
+    };
+
+    for (var index=0; index < self.count.length; index++){
+        var name = self.count[index];
+        self['capital-expenditure-' + self.count[index] +'-sub-total'] = function(name) {
+            var sum = 0;
+            self.capital_expenditure_view.rows().forEach(function (capital_expenditure) {
+                if (capital_expenditure[name]()) {
+                    sum += parseFloat(capital_expenditure[name]());
+                }
+            });
+            return round2(sum);
+        };
+    }
+
+    self.capital_expenditure_goa_sub_total = function() {
+        var sum = 0;
+        self.capital_expenditure_view.rows().forEach(function (capital_expenditure) {
+            if (capital_expenditure.goa_amount()) {
+                sum += parseFloat(capital_expenditure.goa_amount());
+            }
+        });
+        return round2(sum);
+    };
+
+
+
     self.grand_total = function() {
         var total=0;
         self.budget_head_view.rows().forEach(function (i) {
