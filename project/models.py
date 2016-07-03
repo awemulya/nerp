@@ -312,6 +312,9 @@ class ImprestJournalVoucher(models.Model):
     def __str__(self):
         return str(self.voucher_no)
 
+    class Meta:
+        ordering = ('date', 'id')
+
 
 class Reimbursement(models.Model):
     date = BSDateField(null=True, blank=True, default=today, validators=[validate_in_fy])

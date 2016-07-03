@@ -458,6 +458,13 @@ class ImprestLedger(ImprestJVView, ListView):
         context = super(ImprestLedger, self).get_context_data()
         account_id = self.kwargs.get('account_id')
         context['account'] = Account.objects.get(id=account_id)
+        bal_nrs = 0
+        bal_usd = 0
+        for obj in context.get('object_list'):
+            bal_nrs += obj.amount_nrs
+            bal_usd += obj.amount_usd
+            obj.bal_nrs = bal_nrs
+            obj.bal_usd = bal_usd
         return context
 
 
