@@ -54,22 +54,23 @@
                     <td>
                         {% trans 'Payment from Imprest Account' %}
                     </td>
-                    <td>4106038.14</td>
-                    <td>44381.73</td>
+                    <td data-bind="text: outstanding_old_party_nrs"></td>
+                    <td data-bind="text: outstanding_old_party_usd"></td>
                 </tr>
                 <tr>
                     <td>
                         {% trans 'GON Fund Transfer' %}
                     </td>
-                    <td>4106038.14</td>
-                    <td>44381.73</td>
+                    <td data-bind="text: outstanding_old_gon_nrs"></td>
+                    <td data-bind="text: outstanding_old_gon_usd"></td>
                 </tr>
 
                 <tr class="total">
                     <td class="text-right">{% trans 'Sub-total' %}</td>
-                    <td>28121629.06</td>
-                    <td>294638.19</td>
+                    <td data-bind="text: outstanding_old_total_nrs"></td>
+                    <td data-bind="text: outstanding_old_total_usd"></td>
                 </tr>
+
 
                 <tr>
                     <td colspan="5"><b>{% trans "C. Disbursement during" %} {{ project_fy.fy }}</b></td>
@@ -118,7 +119,7 @@
                     <td data-bind="text: replenishment_total_nrs"></td>
                     <td data-bind="text: replenishment_total_usd"></td>
                 </tr>
-                
+
                 <tr>
                     <td colspan="5"><b>{% trans "E. Liquidation during" %} {{ project_fy.fy }}</b></td>
                 </tr>
@@ -144,32 +145,33 @@
                 </tr>
 
                 <tr>
-                    <td colspan="5"><b>{% trans "F. Outstandin Replenishment as at" %} {{ fy_end }}</b></td>
+                    <td colspan="5"><b>{% trans "F. Outstanding Replenishment as at" %} {{ fy_end }}</b></td>
                 </tr>
                 <tr>
                     <td>
-                        Direct Payment
+                        {% trans 'Payment from Imprest Account' %}
                     </td>
-                    <td>4106038.14</td>
-                    <td>44981.73</td>
+                    <td data-bind="text: outstanding_party_nrs"></td>
+                    <td data-bind="text: outstanding_party_usd"></td>
                 </tr>
                 <tr>
                     <td>
-                        Ka-7-17 Transfer
+                        {% trans 'GON Fund Transfer' %}
                     </td>
-                    <td>(4106038.14)</td>
-                    <td>(44981.73)</td>
+                    <td data-bind="text: outstanding_gon_nrs"></td>
+                    <td data-bind="text: outstanding_gon_usd"></td>
                 </tr>
 
-                <tr>
-                    <td><b>Total</b></td>
-                    <td>-</td>
-                    <td>-</td>
+                <tr class="total">
+                    <td class="text-right">{% trans 'Sub-total' %}</td>
+                    <td data-bind="text: outstanding_total_nrs"></td>
+                    <td data-bind="text: outstanding_total_usd"></td>
                 </tr>
 
-                <tr>
-                    <td><b>{% trans "F. Exchange Gain (A+E)-G" %}</b></td>
-                    <td>4287000.00</td>
+
+                <tr class="total">
+                    <td>{% trans "F. Exchange Gain" %}</td>
+                    <td ddata-bind="text: exchange_gain"></td>
                     <td></td>
                 </tr>
 

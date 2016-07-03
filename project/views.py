@@ -548,6 +548,7 @@ def memorandum_statement(request, project_fy_id, aid_id):
     data = {
         'fy_end_balance': aid.get_imprest_balance(fy_end),
         'fy_end_exchange_data': NPRExchangeSerializer(fy_end_exchange).data,
+        'outstanding_old': aid.get_outstanding_old(project_fy, fy_start, fy_end),
         'disbursements': aid.get_imprest_disbursements(fy_start, fy_end),
         'replenishments': aid.get_imprest_replenishments(project_fy),
         'liquidations': aid.get_imprest_liquidations(project_fy),

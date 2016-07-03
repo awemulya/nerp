@@ -181,6 +181,16 @@ class Aid(models.Model):
     def get_disbursements(self, project_fy):
         return self.disbursements.filter(project_fy=project_fy).select_related('category')
 
+    def get_outstanding_old(self, project_fy, fy_start, fy_end):
+        """
+        returns ((party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd))
+        """
+        party_payments_nrs = 0
+        party_payments_usd = 0
+        gon_transfer_nrs = 0
+        gon_transfer_usd = 0
+        return (party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd)
+
     def get_imprest_replenishments(self, project_fy):
         """
         returns ((party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd))
