@@ -1,5 +1,5 @@
 {% extends '_project_base.html' %}
-{% load i18n filters staticfiles %}
+{% load i18n filters staticfiles pfs_filters %}
 
 {% block title %}{{ scenario }} {% trans 'Memorandum Statement of Imprest Account' %}{% endblock %}
 
@@ -13,7 +13,8 @@
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><span>{% trans 'Note 4' %}{{ index|to_char }}: {% trans 'Memorandum Statement of Imprest Account' %} ({{ aid }})</span></li>
+    <li><span>{% trans 'Note 4' %}{{ index|to_char }}: {% trans 'Memorandum Statement of Imprest Account' %} ({{ aid }})</span>
+    </li>
 {% endblock %}
 
 {% block content %}
@@ -37,7 +38,9 @@
                 <tr>
 
                     <td>
-                    <a href="{% url 'exchange_with_date' fy_end|Ymd %}">    (Ex Rate $1 = NRs.101.14)</a>
+                        {% with fy_end|get_exchange as exchange %}
+                            <a target="_blank" href="{{ exchange.get_absolute_url }}"> (Ex Rate $1 = NRs.101.14)</a>
+                        {% endwith %}
                     </td>
 
                     <td>30,342,00.00</td>

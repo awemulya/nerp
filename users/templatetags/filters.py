@@ -12,7 +12,6 @@ from django.db.models import Model
 from django import template
 from django.contrib.auth.models import Group
 from django.utils.translation import get_language
-from njango.nepdate import bs2ad
 
 from njango.utils import get_calendar
 
@@ -59,14 +58,6 @@ def handler(obj):
         return []
     else:
         raise TypeError, 'Object of type %s with value of %s is not JSON serializable' % (type(obj), repr(obj))
-
-
-@register.filter
-def Ymd(dt):
-    if type(dt) == date:
-        return str(dt)
-    else:
-        return str(date(*bs2ad(dt)))
 
 
 @register.filter

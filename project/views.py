@@ -671,11 +671,10 @@ class NPRExchangeCreate(AjaxableResponseMixin, NPRExchangeView, CreateView):
 
 
 class NPRExchangeUpdate(NPRExchangeView, UpdateView):
-
     def get_object(self, queryset=None):
         if 'date' in self.kwargs:
             _date = datetime.strptime(self.kwargs.get('date'), '%Y-%m-%d')
-            return NPRExchange.get(_date.date())
+            return NPRExchange.get(_date.date(), currency=self.kwargs.get('currency'))
         obj = super(NPRExchangeUpdate, self).get_object()
         return obj
 

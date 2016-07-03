@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse_lazy
 from django.db import models
 from django.db.models import Sum
 from django.db.models.signals import post_save
@@ -364,6 +365,9 @@ class NPRExchange(models.Model):
     currency = models.ForeignKey(Currency, related_name='npr_exchanges')
     date = models.DateField(help_text='Date in AD')
     rate = models.FloatField()
+    
+    def get_absolute_url(self):
+        return reverse_lazy('exchange_with_date', )
 
     @staticmethod
     def get(date, currency='USD'):
