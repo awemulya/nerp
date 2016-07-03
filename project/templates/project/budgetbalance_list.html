@@ -48,11 +48,11 @@
                     <!-- ko foreach: rows -->
                     <tr>
                         <td>
-                            <select data-bind="selectize: $root.budget_heads, value: budget_head_id, object: budget_head"></select>
+                            <select data-bind="selectize: $root.budget_heads, value: budget_head_id, object: budget_head" disabled></select>
                         </td>
-                        <td data-bind="editableText: goa_amount, numeric: true"></td>
+                        <td data-bind="text: goa_amount, numeric: true"></td>
                         <!-- ko foreach: $root.count -->
-                        <td data-bind="editableText: $parent[$data], numeric: true"></td>
+                        <td data-bind="text: $parent[$data], numeric: true"></td>
                         <!-- /ko-->
                         <td data-bind="text: total()"></td>
                         <td class="hidden-print">
@@ -78,11 +78,11 @@
                     <!-- ko foreach: rows -->
                     <tr>
                         <td>
-                            <select data-bind="selectize: $root.capital_expenditure, value: budget_head_id"></select>
+                            <select data-bind="selectize: $root.capital_expenditure, value: budget_head_id" disabled></select>
                         </td>
-                        <td data-bind="editableText: goa_amount, numeric: true"></td>
+                        <td data-bind="text: goa_amount, numeric: true"></td>
                         <!-- ko foreach: $root.count -->
-                        <td data-bind="editableText: $parent[$data], numeric: true"></td>
+                        <td data-bind="text: $parent[$data], numeric: true"></td>
                         <!-- /ko-->
                         <td data-bind="text: total()"></td>
                         <td class="hidden-print">
@@ -109,7 +109,6 @@
             </div>
             </div>
 
-            <input type="submit" class="btn btn-info btn-raised btn-lg" value="{% trans 'Save' %}">
         </form>
 
     </div>

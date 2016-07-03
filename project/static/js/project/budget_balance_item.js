@@ -1,14 +1,15 @@
 $(document).ready(function () {
-    vm = new BudgetReleaseItem(ko_data);
+    vm = new BudgetBalance(ko_data);
     ko.applyBindings(vm);
     var total_col = $(".total").prev().children().length;
     $(".total td:first").first().attr('colspan', total_col - 2);
 });
 
-function BudgetReleaseItem(data) {
+function BudgetBalance(data) {
     var self = this;
     self.budget_heads = ko.observableArray([]);
     self.capital_expenditure = ko.observableArray([]);
+
 
     ko.utils.arrayForEach(data.budget_heads, function (obj) {
         if (obj.recurrent) {
@@ -38,42 +39,113 @@ function BudgetReleaseItem(data) {
 
 
 
-    self.budget_head_values = [];
-    self.capital_expenditure_values = [];
-    self.value_count = [];
+    self.budget_release_recurrent_values = [];
+    self.budget_release_capital_expenditure_values = [];
+    self.budget_release_value_count = [];
 
-    for (var i in data.rows) {
-        var val = data.rows[i].budget_head_id;
-        if (data.rows[i].recurrent) {
-            self.values = self.budget_head_values;
+    for (var i=0; i< data.budget_release.length; i++) {
+        var val = data.budget_release[i].budget_head_id;
+        if (data.budget_release[i].recurrent) {
+            self.values = self.budget_release_recurrent_values;
         } else {
-            self.values = self.capital_expenditure_values;
+            self.values = self.budget_release_capital_expenditure_values;
         }
-        if (self.value_count.indexOf(val) == -1) {
-            self.value_count.push(val);
+        if (self.budget_release_value_count.indexOf(val) == -1) {
+            self.budget_release_value_count.push(val);
             self.values.push({
                 'budget_head_id': val,
                 'aid_amount': [{
-                    'id': data.rows[i].id,
-                    'aid_name': data.rows[i].aid_name,
-                    'amount': data.rows[i].amount
+                    'id': data.budget_release[i].id,
+                    'aid_name': data.budget_release[i].aid_name,
+                    'amount': data.budget_release[i].amount
                 }]
             });
 
         } else {
             var obj = $.grep(self.values, function (e) {
-                return e.budget_head_id == data.rows[i].budget_head_id;
+                return e.budget_head_id == data.budget_release[i].budget_head_id;
             });
             obj[0].aid_amount.push({
-                'id': data.rows[i].id,
-                'aid_name': data.rows[i].aid_name,
-                'amount': data.rows[i].amount
+                'id': data.budget_release[i].id,
+                'aid_name': data.budget_release[i].aid_name,
+                'amount': data.budget_release[i].amount
             });
         }
     }
 
-    self.budget_head_view = new TableViewModel({rows: self.budget_head_values, argument: self}, RowVM);
-    self.capital_expenditure_view = new TableViewModel({rows: self.capital_expenditure_values, argument: self}, RowVM);
+    self.expenditure_recurrent_values = [];
+    self.expenditure_capital_expenditure_values = [];
+    self.expenditure_value_count = [];
+
+    for (var i=0; i< data.expenditure.length; i++) {
+        var val = data.expenditure[i].budget_head_id;
+        if (data.expenditure[i].recurrent) {
+            self.values = self.expenditure_recurrent_values;
+        } else {
+            self.values = self.expenditure_capital_expenditure_values;
+        }
+        if (self.expenditure_value_count.indexOf(val) == -1) {
+            self.expenditure_value_count.push(val);
+            self.values.push({
+                'budget_head_id': val,
+                'aid_amount': [{
+                    'id': data.expenditure[i].id,
+                    'aid_name': data.expenditure[i].aid_name,
+                    'amount': data.expenditure[i].amount
+                }]
+            });
+
+        } else {
+            var obj = $.grep(self.values, function (e) {
+                return e.budget_head_id == data.expenditure[i].budget_head_id;
+            });
+            obj[0].aid_amount.push({
+                'id': data.expenditure[i].id,
+                'aid_name': data.expenditure[i].aid_name,
+                'amount': data.expenditure[i].amount
+            });
+        }
+    }
+
+    self.budget_balance_recurrent_values = []
+    self.budget_balance_expenditure_values = []
+    for (var i = 0; i < self.budget_heads().length; i++) {
+        var budget_release_obj = $.grep(self.budget_release_recurrent_values, function (e) {
+            return e.budget_head_id == self.budget_heads()[i].id;
+        })[0];
+        var expenditure_obj = $.grep(self.expenditure_recurrent_values, function (e) {
+            return e.budget_head_id == self.budget_heads()[i].id;
+        })[0];
+
+        if (budget_release_obj && expenditure_obj) {
+            obj = {}
+            obj['budget_head_id'] = self.budget_heads()[i].id;
+            obj['budget_release'] = budget_release_obj
+            obj['expenditure'] = expenditure_obj
+            self.budget_balance_recurrent_values.push(obj)
+        }
+    }
+
+    for (var i = 0; i < self.capital_expenditure().length; i++) {
+        var budget_release_obj = $.grep(self.budget_release_capital_expenditure_values, function (e) {
+            return e.budget_head_id == self.capital_expenditure()[i].id;
+        })[0];
+        var expenditure_obj = $.grep(self.expenditure_capital_expenditure_values, function (e) {
+            return e.budget_head_id == self.capital_expenditure()[i].id;
+        })[0];
+
+        if (budget_release_obj && expenditure_obj) {
+            obj = {}
+            obj['budget_head_id'] = self.capital_expenditure()[i].id;
+            obj['budget_release'] = budget_release_obj
+            obj['expenditure'] = expenditure_obj
+            self.budget_balance_expenditure_values.push(obj)
+        }
+    }
+    //console.log(self.expenditure_capital_expenditure_values);
+
+    self.budget_head_view = new TableViewModel({rows: self.budget_balance_recurrent_values, argument: self}, RowVM);
+    self.capital_expenditure_view = new TableViewModel({rows: self.budget_balance_expenditure_values, argument: self}, RowVM);
 
     self.budget_head_goa_sub_total = function() {
         var sum = 0;
@@ -202,34 +274,40 @@ function RowVM(row, vm) {
     self.goa_amount = ko.observable();
     self.goa_id = ko.observable();
     self.aid_amount = ko.observableArray();
+    self.budget_head = ko.observable();
 
     for (i in vm.count) {
         self[vm.count[i]] = ko.observable();
         self[vm.count[i] + "-id"] = ko.observable();
     }
 
-    if (row) {
-        for (i in row.aid_amount) {
-            if (row.aid_amount[i].aid_name == null) {
+    if (row.budget_release) {
+        for (i in row.budget_release.aid_amount) {
+            var expenditure_obj = $.grep(row.expenditure.aid_amount, function (e) {
+                        return e.aid_name == row.budget_release.aid_amount[i].aid_name;
+                    })[0];
+            if (row.budget_release.aid_amount[i].aid_name == null) {
                 if (self.goa_amount() == undefined) {
-                    self.goa_amount(row.aid_amount[i].amount);
-                    self.goa_id(row.aid_amount[i].id);
+                    self.goa_amount(row.budget_release.aid_amount[i].amount - expenditure_obj.amount);
+                    self.goa_id(row.budget_release.aid_amount[i].id);
                 }
                 //else {
-                //    self.goa_amount(self.goa_amount() + row.aid_amount[i].amount);
+                //    self.goa_amount(self.goa_amount() + row.budget_release.aid_amount[i].amount);
                 //}
             }
-            if (self[row.aid_amount[i].aid_name] != undefined) {
-                self[row.aid_amount[i].aid_name](row.aid_amount[i].amount);
-                self[row.aid_amount[i].aid_name + "-id"](row.aid_amount[i].id);
+            if (self[row.budget_release.aid_amount[i].aid_name] != undefined) {
+                self[row.budget_release.aid_amount[i].aid_name](row.budget_release.aid_amount[i].amount - expenditure_obj.amount);
+                self[row.budget_release.aid_amount[i].aid_name + "-id"](row.budget_release.aid_amount[i].id);
 
             }
         }
     }
-
-    for (var k in row) {
-        self[k] = ko.observable(row[k]);
+    //debugger;
+    for (var k in row.budget_release) {
+        self[k] = ko.observable(row.budget_release[k]);
     }
+
+
 
     self.total = function () {
         var total = 0;

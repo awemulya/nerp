@@ -713,7 +713,7 @@ class BudgetBalance(ProjectFYView, ListView):
         context_data['data'] = {
             'budget_heads': BudgetSerializer(budget_heads, many=True).data,
             'aids': AidSerializer(aids, many=True).data,
-            'rows': BaseStatementSerializer(context_data['object_list'], many=True).data,
+            'budget_release': BaseStatementSerializer(context_data['object_list'], many=True).data,
             'expenditure': BaseStatementSerializer(expenditure, many=True).data,
         }
         return context_data
