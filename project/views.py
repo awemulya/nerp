@@ -535,13 +535,17 @@ def statement_of_fund(request, project_fy_id):
 
 def memorandum_statement(request, project_fy_id, aid_id):
     project_fy = ProjectFy.objects.get(pk=project_fy_id)
-    aid = Aid.objects.get(pk=aid_id, project_id=project_fy.project_id)
+    aid = Aid.objects.select_related('donor').get(pk=aid_id, project_id=project_fy.project_id)
     fy_end = FiscalYear.end(project_fy.fy.year)
     calendar = get_calendar()
     if calendar == 'ad':
         fy_end = date(*fy_end)
+    data = {
+        'fy_end_balance': aid.get_imprest_balance(fy_end),
+    }
+
     return render(request, 'project/memorandum_statement.html', context={
-        # 'data': data,
+        'data': data,
         'project_fy': project_fy,
         'aid': aid,
         'index': list(Aid.objects.filter(project_id=project_fy.project_id).values_list('id', flat=True)).index(aid.id) + 1,

@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='imprestjournalvoucher',
             name='date',
-            field=njango.fields.BSDateField(default=njango.fields.today, validators=[core.models.validate_in_fy]),
+            field=njango.fields.BSDateField(default=njango.fields.today),
         ),
     ]

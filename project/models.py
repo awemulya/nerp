@@ -149,6 +149,13 @@ class Aid(models.Model):
     project = models.ForeignKey(Project, related_name='aids')
     imprest_ledger = models.OneToOneField(Account, related_name='imprest_for')
 
+    def get_imprest_balance(self, dt):
+        dr_amounts = self.imprest_ledger.debiting_vouchers.filter(date__lt=dt).aggregate(Sum('amount_nrs'),
+                                                                                         Sum('amount_usd')).values()
+        cr_amounts = self.imprest_ledger.crediting_vouchers.filter(date__lt=dt).aggregate(Sum('amount_nrs'),
+                                                                                          Sum('amount_usd')).values()
+        return [dr - cr for dr, cr in zip(dr_amounts, cr_amounts)]
+
     def get_disbursements(self, project_fy):
         return self.disbursements.filter(project_fy=project_fy).select_related('category')
 
@@ -285,7 +292,7 @@ class Expenditure(models.Model):
 
 class ImprestJournalVoucher(models.Model):
     voucher_no = models.PositiveIntegerField()
-    date = BSDateField(default=today, validators=[validate_in_fy])
+    date = BSDateField(default=today)
     # date = models.DateField()
     dr = models.ForeignKey(Account, related_name='debiting_vouchers')
     cr = models.ForeignKey(Account, related_name='crediting_vouchers')
