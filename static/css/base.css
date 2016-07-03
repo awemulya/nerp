@@ -522,12 +522,12 @@ tr.total, tr.category, tr.subtotal {
     border: 1px solid #ff2d4d;
 }
 
-.dashboard-block div.item{
+.dashboard-block div.item {
     padding: 0.2em;
     font-size: 1.2em;
 }
 
-.dashboard-block .panel-heading h2{
+.dashboard-block .panel-heading h2 {
     margin: 0;
 }
 
@@ -542,4 +542,9 @@ tr.total, tr.category, tr.subtotal {
     width: 100%;
     height: 37px;
     left: 14px;
+}
+
+span.helptext {
+    color: #BDBDBD;
+    font-size: 90%;
 }
