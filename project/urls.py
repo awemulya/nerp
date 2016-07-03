@@ -95,5 +95,7 @@ urlpatterns = [
     url(r'^exchange/(?P<date>\d{4}-\d{2}-\d{2})/(?P<currency>\w+)/$', views.NPRExchangeUpdate.as_view(), name='exchange_with_date'),
     url(r'^exchange/delete/(?P<pk>\d+)/$', views.NPRExchangeDelete.as_view(), name='exchange_delete'),
 
-    url(r'^statement/$', views.statement, name='statement'),
+    url(r'^(?P<project_fy_id>[0-9]+)/statement/$', views.statement,
+        name='statement'),
+    # url(r'^statement/$', views.statement, name='statement'),
 ]

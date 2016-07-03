@@ -18,10 +18,15 @@ class ExpenseRowSerializer(serializers.ModelSerializer):
 
 
 class ExpenseCategorySerializer(serializers.ModelSerializer):
+    subtotal = serializers.SerializerMethodField()
     url = serializers.ReadOnlyField(source='get_absolute_url')
 
     class Meta:
         model = ExpenseCategory
+
+    def get_subtotal(self, obj):
+        
+        return 19
 
 
 class ExpenseSerializer(serializers.ModelSerializer):

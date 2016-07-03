@@ -1,5 +1,5 @@
 {% extends "_project_base.html" %}
-{% load i18n %}
+{% load i18n filters staticfiles %}
 
 {% block title %}{% trans 'Aid' %}{% endblock %}
 
@@ -7,8 +7,15 @@
     {{ block.super }}
 {% endblock %}
 
+{% block head_end %}
+    <script src="{% static 'js/project/statement.js' %}"></script>
+    <script>
+        var categories = {{ categories |jsonify }}
+    </script>
+{% endblock %}
+
 {% block content %}
-    <div class="well">
+    {{ categories |jsonify}}
     <table class="table table-striped">
         <thead>
         <tr>
@@ -83,20 +90,15 @@
         <tr>
             <td colspan="5" class="text-center">{% trans "Application" %}</td>
         </tr>
+        <!-- ko foreach: categories -->
         <tr>
-            <td>{% trans "GON FUND" %}</td>
-            <td>2</td>
+            <td data-bind="text: name"></td>
+            <td>1</td>
             <td></td>
-            <td></td>
+            <td data-bind="text: subtotal"></td>
             <td></td>
         </tr>
-        <tr>
-            <td>{% trans "GON Reimbursable Fund" %}</td>
-            <td>2</td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
+        <!--/ko -->
         <tr>
             <td>{% trans "ADB Grant" %}</td>
             <td>2</td>

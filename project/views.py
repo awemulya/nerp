@@ -683,5 +683,18 @@ class NPRExchangeDelete(NPRExchangeView, DeleteView):
     pass
 
 
-def statement(request):
+def statement(request, project_fy_id):
+    project_fy = ProjectFy.objects.get(pk=project_fy_id)
+    fy_end = FiscalYear.end(project_fy.fy.year)
+    calendar = get_calendar()
+    if calendar == 'ad':
+        fy_end = date(*fy_end)
+
+    categories = ExpenseCategory.objects.filter(project_id=project_fy.project_id)
+    return render(request, 'project/statement.html', context={
+        # 'data': data,
+        'project_fy': project_fy,
+        'categories': ExpenseCategorySerializer(categories, many=True).data,
+        'fy_end': fy_end,
+    })
     return render(request, 'project/statement.html')
