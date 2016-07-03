@@ -41,25 +41,25 @@ function ImprestJV(data) {
 
     self.amount_nrs.subscribe(function () {
         if (self.amount_usd() && !self.exchange_rate()) {
-            self.exchange_rate(parseFloat(self.amount_nrs()) / parseFloat(self.amount_usd()));
+            self.exchange_rate(r2z(parseFloat(self.amount_nrs()) / parseFloat(self.amount_usd())));
         } else if (self.exchange_rate() && !self.amount_usd()) {
-            self.amount_usd(parseFloat(self.amount_nrs()) / parseFloat(self.exchange_rate()));
+            self.amount_usd(r2z(parseFloat(self.amount_nrs()) / parseFloat(self.exchange_rate())));
         }
     });
 
     self.amount_usd.subscribe(function () {
         if (self.amount_nrs() && !self.exchange_rate()) {
-            self.exchange_rate(parseFloat(self.amount_nrs()) / parseFloat(self.amount_usd()));
+            self.exchange_rate(r2z(parseFloat(self.amount_nrs()) / parseFloat(self.amount_usd())));
         } else if (self.exchange_rate() && !self.amount_nrs()) {
-            self.amount_nrs(parseFloat(self.amount_usd()) * parseFloat(self.exchange_rate()));
+            self.amount_nrs(r2z(parseFloat(self.amount_usd()) * parseFloat(self.exchange_rate())));
         }
     });
 
     self.exchange_rate.subscribe(function () {
         if (self.amount_nrs() && !self.amount_usd()) {
-            self.amount_usd(parseFloat(self.amount_nrs()) / parseFloat(self.exchange_rate()));
+            self.amount_usd(r2z(parseFloat(self.amount_nrs()) / parseFloat(self.exchange_rate())));
         } else if (self.amount_usd() && !self.amount_nrs()) {
-            self.amount_nrs(parseFloat(self.amount_usd()) * parseFloat(self.exchange_rate()));
+            self.amount_nrs(r2z(parseFloat(self.amount_usd()) * parseFloat(self.exchange_rate())));
         }
     });
 
@@ -68,7 +68,7 @@ function ImprestJV(data) {
             alert.error('Date is required!');
             return false;
         }
-        if (!((parseFloat(self.amount_nrs()) / parseFloat(self.amount_usd())) == parseFloat(self.exchange_rate()))) {
+        if (!(r2z(parseFloat(self.amount_nrs()) / parseFloat(self.amount_usd())) == r2z(parseFloat(self.exchange_rate())))) {
             alert.error('Invalid exchange rate!');
             return false;
         }
