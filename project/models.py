@@ -285,8 +285,8 @@ class Expenditure(models.Model):
 
 class ImprestJournalVoucher(models.Model):
     voucher_no = models.PositiveIntegerField()
-    # date = BSDateField(default=today, validators=[validate_in_fy])
-    date = models.DateField()
+    date = BSDateField(default=today, validators=[validate_in_fy])
+    # date = models.DateField()
     dr = models.ForeignKey(Account, related_name='debiting_vouchers')
     cr = models.ForeignKey(Account, related_name='crediting_vouchers')
     amount_nrs = models.FloatField(blank=True, null=True)

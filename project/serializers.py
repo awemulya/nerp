@@ -1,4 +1,6 @@
+from datetime import date
 from rest_framework import serializers
+from rest_framework.fields import DateField
 
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, BudgetAllocationItem, Aid, \
     ImprestJournalVoucher, \
@@ -55,7 +57,18 @@ class BaseStatementSerializer(serializers.ModelSerializer):
         return name
 
 
+class BSSerializerField(DateField):
+    # TODO Port to njango as mixin
+    # TODO implement to_internal_value to enable saving to DB via API 
+    def to_representation(self, value):
+        if type(value) == date:
+            return super(BSSerializerField, self).to_representation(value)
+        return str(value)
+
+
 class ImprestJVSerializer(serializers.ModelSerializer):
+    date = BSSerializerField()
+
     class Meta:
         model = ImprestJournalVoucher
 
