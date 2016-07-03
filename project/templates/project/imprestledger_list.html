@@ -1,5 +1,5 @@
 {% extends "_project_base.html" %}
-{% load i18n pfs_filters %}
+{% load i18n pfs_filters filters %}
 
 {% block title %}{% trans 'Imprest Account' %}{% endblock %}
 
@@ -74,6 +74,19 @@
 
                 </tr>
             {% endfor %}
+            <tr class="total">
+                <td></td>
+                <td class="text-right">{% trans 'TOTAL' %}</td>
+                <td></td>
+                <td>{{ dr_nrs }}</td>
+                <td>{{ dr_usd }}</td>
+                <td></td>
+                <td>{{ cr_nrs }}</td>
+                <td>{{ cr_usd }}</td>
+                <td></td>
+                <td>{{ dr_nrs|subtract:cr_nrs }}</td>
+                <td>{{ dr_usd|subtract:cr_usd }}</td>
+            </tr>
             </tbody>
         </table>
     </div>

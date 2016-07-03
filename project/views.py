@@ -16,7 +16,7 @@ from njango.middleware import get_calendar
 from account.models import Account
 from core.serializers import BudgetSerializer
 from account.serializers import AccountSerializer
-from app.utils.helpers import save_model, invalid, empty_to_none
+from app.utils.helpers import save_model, invalid, empty_to_none, zero_for_none
 from core.models import BudgetHead, FiscalYear
 from inventory.models import delete_rows
 from models import Aid, ProjectFy, ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure, \
@@ -456,15 +456,31 @@ class ImprestLedger(ImprestJVView, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ImprestLedger, self).get_context_data()
-        account_id = self.kwargs.get('account_id')
+        account_id = int(self.kwargs.get('account_id'))
         context['account'] = Account.objects.get(id=account_id)
         bal_nrs = 0
         bal_usd = 0
+        dr_usd = 0
+        dr_nrs = 0
+        cr_usd = 0
+        cr_nrs = 0
         for obj in context.get('object_list'):
             bal_nrs += obj.amount_nrs
             bal_usd += obj.amount_usd
             obj.bal_nrs = bal_nrs
             obj.bal_usd = bal_usd
+            if obj.dr_id == account_id:
+                dr_nrs += zero_for_none(obj.amount_nrs)
+                dr_usd += zero_for_none(obj.amount_usd)
+            if obj.cr_id == account_id:
+                cr_nrs += zero_for_none(obj.amount_nrs)
+                cr_usd += zero_for_none(obj.amount_usd)
+        context.update({
+            'dr_nrs': dr_nrs,
+            'cr_nrs': cr_nrs,
+            'dr_usd': dr_usd,
+            'cr_usd': cr_usd,
+        })
         return context
 
 
