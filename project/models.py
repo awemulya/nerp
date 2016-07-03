@@ -147,7 +147,7 @@ class Aid(models.Model):
     key = models.CharField(max_length=50)
     active = models.BooleanField(default=True)
     project = models.ForeignKey(Project, related_name='aids')
-    imprest_ledger = models.ForeignKey(Account, related_name='imprest_for')
+    imprest_ledger = models.OneToOneField(Account, related_name='imprest_for')
 
     def get_disbursements(self, project_fy):
         return self.disbursements.filter(project_fy=project_fy).select_related('category')
