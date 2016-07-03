@@ -451,7 +451,7 @@ class ImprestLedger(ImprestJVView, ListView):
     template_name = 'project/imprestledger_list.html'
 
     def get_queryset(self):
-        qs = super(ImprestLedger, self).get_queryset()
+        qs = super(ImprestLedger, self).get_queryset().select_related('dr', 'cr')
         return qs.filter(Q(dr_id=self.kwargs.get('account_id')) | Q(cr_id=self.kwargs.get('account_id')))
 
     def get_context_data(self, **kwargs):
