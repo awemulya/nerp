@@ -58,7 +58,9 @@ class DisbursementDetailForm(HTML5BootstrapModelForm):
         exclude = ('project_fy',)
         widgets = {
             'aid': forms.Select(attrs={'class': 'selectize'}),
-            # 'disbursement_method': forms.Select(attrs={'class': 'selectize'}),
+            'party': forms.Select(attrs={'class': 'selectize'}),
+            'category': forms.Select(attrs={'class': 'selectize'}),
+            'disbursement_method': forms.Select(attrs={'class': 'selectize'}),
         }
 
 class NPRExchangeForm(HTML5BootstrapModelForm):
