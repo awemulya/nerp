@@ -1,50 +1,7 @@
-// ko.bindingHandlers.customValVis = {
-//     init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-//         console.log('We are here in init');
-
-//         var value = valueAccessor();
-//         var valueUnwrapped = ko.unwrap(value);
-//         var ufn = allBindings.get('parentFieldName')
-//         console.log(bindingContext.$root[ufn]());
-//         value(bindingContext.$root[ufn])
-//         // This will be called when the binding is first applied to an element
-//         // Set up any initial state, event handlers, etc. here
-//     },
-//     update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-//         console.log('We are here');
-//         var value = valueAccessor();
-//         var valueUnwrapped = ko.unwrap(value);
-//         var ufn = allBindings.get('updateFieldName')
-//         value(bindingContext.$root[ufn])
-//         // var duration = allBindings.get('valueUpdate')
-//     }
-// };
-
-
 $(document).ready(function () {
 
     vm = new PayrollEntry(ko_data);
     ko.applyBindings(vm);
-   
-    // if(ko_data.calendar != 'BS'){
-    //     $('#id_from_date').nepaliDatePicker({
-    //         npdMonth: true,
-	 //        npdYear: true,
-	 //        npdYearCount: 10
-    //     });
-    //     $('#id_to_date').nepaliDatePicker({
-    //         npdMonth: true,
-	 //        npdYear: true,
-	 //        npdYearCount: 10
-    //     });
-    // }else{
-    //     $('#id_from_date').datepicker({
-    //         format: 'yyyy-mm-dd',
-    //     });
-    //     $('#id_to_date').datepicker({
-    //         format: 'yyyy-mm-dd',
-    //     });
-    // };
 });
 
 function PaymentRowWitDeduction(pwd_data){
@@ -63,22 +20,16 @@ function PaymentRowWitDeduction(pwd_data){
     };
     var PER = new PaymentEntryRow();
     if(pwd_data.deduction_data){
-        // var PER = new PaymentEntryRow();
         var DeductionPER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.deduction_data, true));
         $.extend(PER, DeductionPER);
-        // var DeductionPER = ko.mapping.fromJS({});
     }
 
     if(pwd_data.incentive_data){
-        // var PER = new PaymentEntryRow();
         var IncentivePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.incentive_data, true));
-        // var IncentivePER = ko.mapping.fromJS({});
         $.extend(PER, IncentivePER);
     }
     if(pwd_data.allowance_data){
-        // var PER = new PaymentEntryRow();
         var AllowancePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.allowance_data, true));
-        // var AllowancePER = ko.mapping.fromJS({});
         $.extend(PER, AllowancePER);
     }
     
@@ -103,18 +54,10 @@ function PaymentRowWitDeduction(pwd_data){
     });
     
     return PER;
-
-    // var self = this;
-    // self.deduction_id = ko.observable();
-    // self.name = ko.observable();
-    // self.amount = ko.observable();
-    // // self.credit = ko.observable();
-    // // self.description = ko.observable();
 };
 
 
 function PaymentEntryRow() {
-    //debugger;
     var self = this;
     self.id = ko.observable();
     self.paid_employee = ko.observable();
@@ -137,11 +80,6 @@ function PaymentEntryRow() {
     self.disable_input = ko.observable(false);
 
     self.emp_options = ko.observableArray();
-    
-    // self.employee_counter = ko.observable(0);
-    // self.deduction_detail = ko.observableArray();
-    // here we will do mapping instead
-    
 
     self.employee_changed = function () {
         // console.log('We entered here successfully');
@@ -357,14 +295,6 @@ function PayrollEntry(pr_data) {
             };
         };
         if(!has_error){
-            // debugger;
-            // var post_data = $(formElement).find("input[type='hidden'], :input:not(:hidden), select").serialize() + '&row_count=' + String(self.rows().length);
-            // var post_data = $(formElement).serialize() +
-            //     '&row_count=' + String(self.rows().length) +
-            //     '&paid_from_date=' + self.paid_from_date() +
-            //     '&paid_to_date=' + self.paid_to_date() +    
-            //     '&branch=' + self.branch() +
-            //     '&monthly_payroll=' + self.monthly_payroll();
             $.ajax({
                 url: 'save_payroll_entry/',
                 method: 'POST',
@@ -386,42 +316,12 @@ function PayrollEntry(pr_data) {
             });
         };
     };
-    
-    self.setup_formset = function(){
-        var row_elements = $('.payment-row-table').children().children();
-        var cntr = 0;
-        for(var i=1; i<row_elements.length;i++ ){
-            var ele = $(row_elements[i]).children();
-            if(ele.children().length == 0){continue;};
-            for(var j=0; j<ele.length-1;j++){
-                var input_element = $(ele[j]).children()[0];
-                var name_attr = $(input_element).attr('name');
-                if(name_attr){    
-                    var name_split = name_attr.split('-');
-                    name_split[1] = String(cntr);
-                    $(input_element).attr('name', name_split.join('-'));
 
-                };
-                
-                var id_attr = $(input_element).attr('id');
-                if(id_attr){    
-                    var id_split = id_attr.split('-');
-                    id_split[1] = String(cntr); 
-                    $(input_element).attr('id', id_split.join('-'));
-                };
-                
-            };
-            cntr ++;
-
-        };
-    };
     self.addRow = function(event){
         self.rows.push(new PaymentRowWitDeduction(pr_data));
-        self.setup_formset();
     };
     self.removeRow = function(row){
         self.rows.remove(row);
-        self.setup_formset();
     };
     self.set_time_stamp = ko.computed(function(){
         console.log('We are in timestamp function');
@@ -473,7 +373,8 @@ function PayrollEntry(pr_data) {
     // });
 
     self.getGroupSalary = function(){
-        if(self.branch() && self.payroll_type() == 'GROUP')
+        console.log('This is get group salary');
+        if(self.payroll_type() == 'GROUP')
         $.ajax({
             url: 'get_employees_account/',
             method: 'POST',
@@ -545,15 +446,10 @@ function PayrollEntry(pr_data) {
                         self.rows.push(row);
                     }
                 };
-                self.setup_formset();
-
-                // Here mapping should be done
-                // console.log(data);
             },
             error: function(errorThrown){
                 console.log(errorThrown);
             },
-//            self.budget_heads = ko.observableArray(data);
         });
     };
     self.get_employee_options = ko.computed(function(){
@@ -639,8 +535,7 @@ function PayrollEntry(pr_data) {
                 };
             };
             if(self.rows().length == 0){
-                console.log('gfhfgjfggh');
-                self.rows.push(new PaymentRowWitDeduction(pr_data));                        
+                self.rows.push(new PaymentRowWitDeduction(pr_data));
             };
         };
     });

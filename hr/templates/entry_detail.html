@@ -78,7 +78,7 @@
             <td>{{ row.employee }}</td>
            
             <td>{{ row.employee_grade }}</td>
-            <td>{{ row.employee_designation }}</b></td>
+            <td>{{ row.employee_designation }}</td>
            
             {% for a_data in row.allowance_data %}
                 <th>{{ a_data }}</th>
@@ -107,10 +107,10 @@
                
         
 
-    <input type="button" class="#" value="Approve" data-bind="visible: !entry_approved(), click: approve_entry">
-    <input type="button" class="#" value="Approved" data-bind="visible: entry_approved()">
-    <input type="button" class="#" value="Transact" data-bind="visible: entry_approved() && !entry_transacted(), click: transact">
-    <input type="button" class="#" value="Transacted" data-bind="visible: entry_approved() && entry_transacted()">
+    <input type="button" class="btn btn-raised btn-primary" value="Approve" data-bind="visible: !entry_approved(), click: approve_entry">
+    <input type="button" class="btn btn-raised btn-primary" value="Approved" data-bind="visible: entry_approved()">
+    <input type="button" class="btn btn-raised btn-primary" value="Transact" data-bind="visible: entry_approved() && !entry_transacted(), click: transact">
+    <input type="button" class="btn btn-raised btn-primary" value="Transacted" data-bind="visible: entry_approved() && entry_transacted()">
     
     
 {% endblock %}

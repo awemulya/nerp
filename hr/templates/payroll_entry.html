@@ -17,7 +17,7 @@
 {% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
-        <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
+    <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
 
 {% endblock %}
 {% block breadcrumbs_before_print %}
@@ -25,14 +25,14 @@
 
 {% block alert %}
     <!-- ko foreach: messages -->
-        <div class="row">
-            <span class="alert alert-warning pull-right" role="alert" >
-                <span  class="font-weight-bold text-info" data-bind="text: $data"></span>
+    <div class="row">
+            <span class="alert alert-warning pull-right" role="alert">
+                <span class="font-weight-bold text-info" data-bind="text: $data"></span>
                 <button type="button" class="close" aria-label="Close" data-bind="click: $parent.remove_alert">
-                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                 </button>
             </span>
-        </div>
+    </div>
     <!-- /ko -->
 {% endblock %}
 
@@ -47,7 +47,7 @@
             {{ m_form.payroll_type }}
         </div>
         <div class="col-lg-2">
-            
+
             {{ m_form.branch.label }}
             {{ m_form.branch }}
         </div>
@@ -61,33 +61,35 @@
             {{ m_form.to_date }}
             <p data-bind="text: paid_to_date_error"></p>
         </div>
-        <div class="col-lg-2" >
-            <input type="button" class="btn btn-raised btn-primary" data-bind="click: getGroupSalary, visible: !switch_p_type()" value="Get">
+        <div class="col-lg-2">
+            <input type="button" class="btn btn-raised btn-primary"
+                   data-bind="click: getGroupSalary, visible: !switch_p_type()" value="Get">
         </div>
     </div>
     <div>
         <form data-bind="submit: saveAndAdd">
-            <table class="table payment-row-table" >
-                <tr data-bind="visible:rows().length>0" >
+            <table class="table table-bordered payment-row-table">
+                <thead>
+                <tr data-bind="visible:rows().length>0">
                     <th>{% trans 'Employee' %}</th>
-                    
+
                     <th>{% trans 'Grade' %}</th>
                     <th>{% trans 'Designation' %}</th>
-                    
+
                     {% for field in ko_data.allowance_data %}
                         <th>{% trans field.field_name %}</th>
                     {% endfor %}
                     <th>{% trans 'Total Allowance' %}</th>
-                    
+
                     {% for field in ko_data.incentive_data %}
                         <th>{% trans field.field_name %}</th>
                     {% endfor %}
                     <th>{% trans 'Total Incentive' %}</th>
-                    
+
                     {% for field in ko_data.deduction_data %}
-                        <th>{%trans field.field_name %}</th>
+                        <th>{% trans field.field_name %}</th>
                     {% endfor %}
-                    
+
                     <th>{% trans 'Total Deduced Amount' %}</th>
 
                     <th>{% trans 'Income Tax' %}</th>
@@ -99,62 +101,69 @@
                     <th>To xxxxxxxxxxxxxx</th> -->
 
                 </tr>
-
+                </thead>
+                <tbody>
                 <!-- ko foreach: rows -->
-                    <!-- ko foreach: row_errors -->
-                        <tr data-bind="css: {warning: true}">
-                            <td colspan="100%" data-bind="text: $data"></td>
-                        </tr>
-                    <!-- /ko -->
-                    <tr data-bind="css: {warning: row_errors().length > 0}">                     
-                        <td>{{ r_form.paid_employee }}</td>
-                       
-                        <td><b data-bind="text: employee_grade"></b></td>
-                        <td><b data-bind="text: employee_designation"></b></td>
-                       
-                        {% for field in ko_data.allowance_data %}
-                            <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
-                        {% endfor %}
-                        <td data-bind="editableText: allowance, disable_content_editable: disable_input, numeric: true"></td>
-                        
-                        {% for field in ko_data.incentive_data %}
-                            {% if field.editable %}
-                                <td data-bind="editableText: {{ field.observable_name }}, numeric: true"></td>
-                            {% else %}
-                                <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
-                            {% endif %}
-                        {% endfor %}
-                        <td data-bind="editableText: incentive, disable_content_editable: disable_input, numeric: true"></td>
-                        
-                        {% for field in ko_data.deduction_data %}
-                            {% if field.editable %}
-                                <td data-bind="editableText: {{ field.observable_name }}, numeric: true"></td>
-                            {% else %}
-                                <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
-                            {% endif %}
-                        {% endfor %}
-                        <td data-bind="editableText: deduced_amount, disable_content_editable: disable_input, numeric: true"></td>
-                        
-                        <td data-bind="editableText: income_tax, disable_content_editable: disable_input, numeric: true"></td>
-                        <td data-bind="editableText: pro_tempore_amount, disable_content_editable: disable_input, numeric: true"></td>
-                        <td data-bind="editableText: salary, disable_content_editable: disable_input, numeric: true"></td>
-                        <td data-bind="editableText: paid_amount, disable_content_editable: disable_input, numeric: true"></td>
-                        <td><input type="button" value="Remove" data-bind="click: $parent.removeRow, visible: !$parent.entry_saved()"></input></td>
-                        <!-- <td>{{ r_form.paid_from_date }}</td>
-                        <td>{{ r_form.paid_to_date }}</td> -->
-                    </tr>
+                <!-- ko foreach: row_errors -->
+                <tr data-bind="css: {warning: true}">
+                    <td colspan="100%" data-bind="text: $data"></td>
+                </tr>
                 <!-- /ko -->
-            
+                <tr data-bind="css: {warning: row_errors().length > 0}">
+                    <td>{{ r_form.paid_employee }}</td>
+
+                    <td><b data-bind="text: employee_grade"></b></td>
+                    <td><b data-bind="text: employee_designation"></b></td>
+
+                    {% for field in ko_data.allowance_data %}
+                        <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
+                    {% endfor %}
+                    <td data-bind="editableText: allowance, disable_content_editable: disable_input, numeric: true"></td>
+
+                    {% for field in ko_data.incentive_data %}
+                        {% if field.editable %}
+                            <td data-bind="editableText: {{ field.observable_name }}, numeric: true"></td>
+                        {% else %}
+                            <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
+                        {% endif %}
+                    {% endfor %}
+                    <td data-bind="editableText: incentive, disable_content_editable: disable_input, numeric: true"></td>
+
+                    {% for field in ko_data.deduction_data %}
+                        {% if field.editable %}
+                            <td data-bind="editableText: {{ field.observable_name }}, numeric: true"></td>
+                        {% else %}
+                            <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
+                        {% endif %}
+                    {% endfor %}
+                    <td data-bind="editableText: deduced_amount, disable_content_editable: disable_input, numeric: true"></td>
+
+                    <td data-bind="editableText: income_tax, disable_content_editable: disable_input, numeric: true"></td>
+                    <td data-bind="editableText: pro_tempore_amount, disable_content_editable: disable_input, numeric: true"></td>
+                    <td data-bind="editableText: salary, disable_content_editable: disable_input, numeric: true"></td>
+                    <td data-bind="editableText: paid_amount, disable_content_editable: disable_input, numeric: true"></td>
+                    <td><input class="btn btn-raised btn-danger" type="button" value="Remove"
+                               data-bind="click: $parent.removeRow, visible: !$parent.entry_saved()"></td>
+                    <!-- <td>{{ r_form.paid_from_date }}</td>
+                            <td>{{ r_form.paid_to_date }}</td> -->
+                </tr>
+                <!-- /ko -->
+                </tbody>
             </table>
-            <input type="button" class="btn btn-raised btn-primary" value="Add Another" data-bind="visible: switch_p_type, click: addRow">
-            
-            <input type="submit" class="btn btn-raised btn-primary" value="Save" data-bind="visible: rows().length>0 && !entry_saved()">
+            <input type="button" class="btn btn-raised btn-primary" value="Add Another"
+                   data-bind="visible: switch_p_type, click: addRow">
+            <input type="submit" class="btn btn-raised btn-primary" value="Save"
+                   data-bind="visible: rows().length>0 && !entry_saved()">
         </form>
-        <input type="button" class="btn btn-raised btn-primary" value="Approve" data-bind="visible: rows().length > 0 && !entry_approved() && entry_saved(), click: approve_entry">
-        <input type="button" class="btn btn-raised btn-primary" value="Approved" data-bind="visible: rows().length > 0 && entry_approved()">
-        <input type="button" class="btn btn-raised btn-primary" value="Transact" data-bind="visible: rows().length > 0 && entry_approved() && !entry_transacted(), click: transact">
-        <input type="button" class="btn btn-raised btn-primary" value="Transacted" data-bind="visible: rows().length > 0 && entry_approved() && entry_transacted()">
+        <input type="button" class="btn btn-raised btn-primary" value="Approve"
+               data-bind="visible: rows().length > 0 && !entry_approved() && entry_saved(), click: approve_entry">
+        <input type="button" class="btn btn-raised btn-primary" value="Approved"
+               data-bind="visible: rows().length > 0 && entry_approved()">
+        <input type="button" class="btn btn-raised btn-primary" value="Transact"
+               data-bind="visible: rows().length > 0 && entry_approved() && !entry_transacted(), click: transact">
+        <input type="button" class="btn btn-raised btn-primary" value="Transacted"
+               data-bind="visible: rows().length > 0 && entry_approved() && entry_transacted()">
         <!-- <input type="button" class="#" value="Delete Entry" data-bind="click: entry_delete, visible: entry_saved()"> -->
     </div>
-    
+
 {% endblock %}

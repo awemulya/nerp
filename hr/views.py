@@ -242,8 +242,6 @@ def salary_taxation_unit(employee, f_y_item):
                 deduction *= obj.permanent_multiply_rate
 
     taxable_amount = (salary + allowance + incentive - deduction)
-    import ipdb
-    ipdb.set_trace()
 
     if employee.sex == 'F':
         taxable_amount -= F_TAX_DISCOUNT_LIMIT
@@ -817,27 +815,26 @@ def get_employees_account(request):
             return JsonResponse(response)
 
         branch = request.POST.get('branch', None)
-        if branch:
-            if branch == 'ALL':
-                employees = Employee.objects.all()
-            else:
-                employees = Employee.objects.filter(
-                    working_branch__id=int(branch)
-                )
+        if branch == '':
+            employees = Employee.objects.all()
+        else:
+            employees = Employee.objects.filter(
+                working_branch__id=int(branch)
+            )
 
-            for employee in employees:
-                # data_dict = {'employee_id': employee.id}
-                employee_salary_detail = get_employee_salary_detail(
-                    employee,
-                    paid_from_date,
-                    paid_to_date
-                )
+        for employee in employees:
+            # data_dict = {'employee_id': employee.id}
+            employee_salary_detail = get_employee_salary_detail(
+                employee,
+                paid_from_date,
+                paid_to_date
+            )
 
-                # data_dict.update(employee_salary_detail)
-                data_list.append(employee_salary_detail)
+            # data_dict.update(employee_salary_detail)
+            data_list.append(employee_salary_detail)
 
-            response['data'] = data_list
-            return JsonResponse(response)
+        response['data'] = data_list
+        return JsonResponse(response)
 
 
 def test(request):
@@ -897,7 +894,7 @@ def save_payroll_entry(request):
                 p_r.paid_from_date = row.get('paid_from_date')
                 p_r.paid_to_date = row.get('paid_to_date')
 
-            p_r.absent_days = row.get('absent_days')
+            p_r.absent_days = row.get('absent_days', 0)
             p_r.deduced_amount = float(row.get('deduced_amount', None))
 
             p_r.allowance = float(row.get('allowance', None))
@@ -925,6 +922,8 @@ def save_payroll_entry(request):
         save_response['entry_approved'] = False
         save_response['entry_transacted'] = False
         return JsonResponse(save_response)  # Should have permissions
+
+
 def approve_entry(request, pk=None):
     payroll_entry = PayrollEntry.objects.get(pk=pk)
     payroll_entry.approved = True
