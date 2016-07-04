@@ -20,7 +20,7 @@
     </div>
 </div>
 
-
+{% get_obj project.Project as projects %}
 {% for project in projects %}
 
     <div class="panel panel-default">
@@ -139,11 +139,11 @@
                             </a>
                         </div>
                     {% endfor %}
-                
+
                 {% for aid in project.aids.all %}
                         <div class="item">
                             <a href="{% url 'aid_disbursement' project.project_fy.id aid.id %}">
-                                
+
                             </a>
                         <a href="{% url 'memorandum_statement' project.project_fy.id aid.id %}">
                             {% trans 'Note 4' %}{{ forloop.counter|to_char }}: {% trans 'Imprest' %} ({{ aid }})
