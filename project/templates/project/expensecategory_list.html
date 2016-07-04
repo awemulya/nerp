@@ -20,6 +20,10 @@
     <table class="table table-striped">
         <thead>
         <th>{% anchor name _('Name') %}</th>
+        <th>{% trans 'Code' %}</th>
+        <th>{% trans 'Enable' %}</th>
+        <th>{% trans 'GON Funded' %}</th>
+        <th>{% trans 'Order' %}</th>
         </thead>
         <tbody>
         {% for expense_category in paginated_objects %}
@@ -27,6 +31,22 @@
                 <td class="link">
                     <a href="{% url 'expense_category_edit' project.id expense_category.id %}">{{ expense_category }}</a>
                 </td>
+                <td>{{ expense_category.code |default:"" }}</td>
+                <td>
+                    <div class="checkbox no-margin">
+                        <label>
+                            <input type="checkbox" {% if expense_category.enabled %}checked{% endif %} disabled>
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <div class="checkbox no-margin">
+                        <label>
+                            <input type="checkbox" {% if expense_category.gon_funded %}checked{% endif %} disabled>
+                        </label>
+                    </div>
+                </td>
+                <td>{{ expense_category.order }}</td>
             </tr>
         {% endfor %}
         </tbody>
