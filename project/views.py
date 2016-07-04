@@ -725,5 +725,37 @@ class NPRExchangeDelete(NPRExchangeView, DeleteView):
     pass
 
 
-def statement(request):
+def statement(request, project_fy_id):
+    project_fy = ProjectFy.objects.get(pk=project_fy_id)
+    fy_end = FiscalYear.end(project_fy.fy.year)
+    calendar = get_calendar()
+    if calendar == 'ad':
+        fy_end = date(*fy_end)
+
+    categories = ExpenseCategory.objects.filter(project_id=project_fy.project_id)
+    return render(request, 'project/statement.html', context={
+        # 'data': data,
+        'project_fy': project_fy,
+        'categories': ExpenseCategorySerializer(categories, many=True).data,
+        'fy_end': fy_end,
+    })
     return render(request, 'project/statement.html')
+
+
+class BudgetBalance(ProjectFYView, ListView):
+    model = BudgetReleaseItem
+    fy = None
+    template_name = 'project/budgetbalance_list.html'
+
+    def get_context_data(self, **kwargs):
+        context_data = super(BudgetBalance, self).get_context_data(**kwargs)
+        budget_heads = BudgetHead.objects.all()
+        expenditure = Expenditure.objects.filter(project_fy=context_data['project_fy'])
+        aids = Aid.objects.filter(active=True, project=self.project)
+        context_data['data'] = {
+            'budget_heads': BudgetSerializer(budget_heads, many=True).data,
+            'aids': AidSerializer(aids, many=True).data,
+            'budget_release': BaseStatementSerializer(context_data['object_list'], many=True).data,
+            'expenditure': BaseStatementSerializer(expenditure, many=True).data,
+        }
+        return context_data

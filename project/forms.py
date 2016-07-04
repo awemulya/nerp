@@ -1,3 +1,4 @@
+from core.models import Currency
 from django.core.urlresolvers import reverse_lazy
 from django import forms
 
@@ -61,6 +62,11 @@ class DisbursementDetailForm(HTML5BootstrapModelForm):
         }
 
 class NPRExchangeForm(HTML5BootstrapModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(NPRExchangeForm, self).__init__(*args, **kwargs)
+        self.fields['currency'].queryset = Currency.objects.all().exclude(code="NPR")
+
     class Meta:
         model = NPRExchange
         fields = '__all__'

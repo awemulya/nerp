@@ -522,7 +522,7 @@ tr.total, tr.category, tr.subtotal {
     border: 1px solid #ff2d4d;
 }
 
-.dashboard-block div.item {
+.dashboard-block div.item{
     padding: 0.2em;
     font-size: 1.2em;
 }
@@ -547,4 +547,8 @@ tr.total, tr.category, tr.subtotal {
 span.helptext {
     color: #BDBDBD;
     font-size: 90%;
+}
+
+tr.bold td {
+    font-weight: bold;
 }
