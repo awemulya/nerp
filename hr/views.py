@@ -1,30 +1,37 @@
 from __future__ import division
+
+import json
+
 from core.models import FiscalYear
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, get_deduction_names, get_incentive_names, get_allowance_names,  EmployeeIncentiveFormSet, EmployeeForm, IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet
-from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, MaritalStatus
+from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, \
+    get_deduction_names, get_incentive_names, get_allowance_names, EmployeeIncentiveFormSet, EmployeeForm, \
+    IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, \
+    TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet
+from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
+    DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
+    MaritalStatus
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
 from njango.nepdate import bs
 from .models import get_y_m_tuple_list
 from .bsdate import BSDate
-from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, emp_salary_eligibility, month_cnt_inrange, fiscal_year_data
+from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
+    emp_salary_eligibility, month_cnt_inrange, fiscal_year_data
 from account.models import set_transactions
 from hr.filters import EmployeeFilter
 import pdb
 
-from hr.models import ACC_CAT_BASIC_SALARY_ID,\
-    ACC_CAT_SALARY_GIVING_ID,\
-    ACC_CAT_PRO_TEMPORE_ID,\
+from hr.models import ACC_CAT_BASIC_SALARY_ID, \
+    ACC_CAT_SALARY_GIVING_ID, \
+    ACC_CAT_PRO_TEMPORE_ID, \
     ACC_CAT_TAX_ID
 
-
 CALENDAR = 'BS'
-
 
 # Taxation singleton setting dbsettings
 F_TAX_DISCOUNT_LIMIT = 300000
@@ -99,7 +106,7 @@ def verify_request_date(request):
                     to_month_days = bs[
                         paid_to_date.year][
                         paid_to_date.month - 1
-                    ]
+                        ]
                     paid_from_date = BSDate(
                         paid_from_date.year,
                         paid_from_date.month,
@@ -188,8 +195,6 @@ def salary_taxation_unit(employee, f_y_item):
                 # Does this mean percentage in daily wages
                 allowance += obj.amount_rate / 100.0 * scale_salary
 
-
-
     # now calculate incentive if it has but not to add to salary just to
     # transact seperately
     incentive = 0
@@ -256,7 +261,7 @@ def salary_taxation_unit(employee, f_y_item):
         # if obj.end_to:
 
         if (taxable_amount >= obj.start_from and
-            taxable_amount <= obj.end_to if obj.end_to else True):
+                    taxable_amount <= obj.end_to if obj.end_to else True):
             tax_calc_scheme = sorted(
                 obj.tax_calc_scheme.all(),
                 key=lambda x: x.priority
@@ -536,12 +541,12 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                     # Does this mean percentage in daily wages
                     employee_response['allowance_%d' % (_name.id)] = obj.amount_rate / 100.0 * scale_salary
                     allowance += obj.amount_rate / 100.0 * scale_salary
-            # else:
-            #     # This is hourly case(Dont think we have it)
-            #     pass
-            # else:
-            #     # Here also same as below
-            #     employee_response['allowance_%d' % (_name.id)] = 0
+                    # else:
+                    #     # This is hourly case(Dont think we have it)
+                    #     pass
+                    # else:
+                    #     # Here also same as below
+                    #     employee_response['allowance_%d' % (_name.id)] = 0
         else:
             # give the parameters with empty value
             employee_response['allowance_%d' % (_name.id)] = 0
@@ -560,8 +565,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                 obj = _name.incentives.all().filter(employee=employee)[0]
             except IndexError:
                 raise IndexError('%s not defined for grade %s' % (_name.name, employee.full_name))
-            # if obj:
-            #     obj = obj[0]
+                # if obj:
+                #     obj = obj[0]
                 # pdb.set_trace()
             if obj.payment_cycle == 'Y':
                 # check obj.year_payment_cycle_month to add to salary
@@ -599,8 +604,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                 # This is hourly case(Dont think we have it)
                 employee_response['incentive_%d' % (_name.id)] = 0
                 pass
-            # else:
-            #     employee_response['incentive_%d' % (_name.id)] = 0
+                # else:
+                #     employee_response['incentive_%d' % (_name.id)] = 0
         else:
             employee_response['incentive_%d' % (_name.id)] = 0
 
@@ -624,7 +629,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             else:
                 employee_response['deduction_%d' % (obj.id)] += obj.amount_rate / 100.0 * salary
             if employee.is_permanent:
-                employee_response['deduction_%d' % (obj.id)] *= obj.permanent_multiply_rate                 
+                employee_response['deduction_%d' % (obj.id)] *= obj.permanent_multiply_rate
             deduction += employee_response['deduction_%d' % (obj.id)]
         else:
             employee_response['deduction_%d' % (obj.id)] = 0
@@ -674,8 +679,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     # employee_response['employee_bank_account_id'] = get_account_id(
     #     employee, 'bank_account')
 
-    employee_response['paid_amount'] = salary - deduction - income_tax +\
-        p_t_amount + incentive + allowance
+    employee_response['paid_amount'] = salary - deduction - income_tax + \
+                                       p_t_amount + incentive + allowance
 
     if row_errors:
         for item in employee_response:
@@ -750,9 +755,9 @@ def payroll_entry(request):
         request,
         'payroll_entry.html',
         {
-          'r_form': row_form,
-          'm_form': main_form,
-          'ko_data': ko_data
+            'r_form': row_form,
+            'm_form': main_form,
+            'ko_data': ko_data
         })
 
 
@@ -844,85 +849,77 @@ def test(request):
 
 def save_payroll_entry(request):
     if request.POST:
-        pdb.set_trace()
-        # return None
+        params = json.loads(request.body)
         save_response = {}
-        # pdb.set_trace()
-        # pass
-        row_count = request.POST.get('row_count', None)
-        from_date = request.POST.get('paid_from_date', None)
-        to_date = request.POST.get('paid_to_date', None)
-        is_monthly_payroll = True if request.POST.get('monthly_payroll', None) == 'true' else False
-        request_branch = request.POST.get('branch', None)
-        branch = None if request_branch == 'ALL' else int(request_branch)
+
+        is_monthly_payroll = True if params.get('monthly_payroll', None) else False
+        request_branch = params.get('branch', None)
+        branch = None if not request_branch else int(request_branch)
 
         payment_records = []
-        if row_count:
-            for i in range(0, int(row_count)):
 
-                # Similar if we need all details of incentive and allowence
-                deductions = []
-                for ded in Deduction.objects.all():
-                    amount = float(request.POST.get('form-%d-deduction_%d' % (i, ded.id), None))
-                    if amount:
-                        deductions.append(DeductionDetail.objects.create(deduction_id=ded.id, amount=amount))
-                allowances = []
-                for allowance_name in AllowanceName.objects.all():
-                    amount = float(request.POST.get('form-%d-allowance_%d' % (i, allowance_name.id), None))
-                    if amount:
-                        allowances.append(AllowanceDetail.objects.create(allowance_id=allowance_name.id, amount=amount))
+        for row in params.get('rows'):
 
-                incentives = []
-                for incentive_name in IncentiveName.objects.all():
-                    amount = float(request.POST.get('form-%d-incentive_%d' % (i, incentive_name.id), None))
-                    if amount:
-                        incentives.append(IncentiveDetail.objects.create(incentive_id=incentive_name.id, amount=amount))
+            # Similar if we need all details of incentive and allowence
+            deductions = []
+            for ded in Deduction.objects.all():
+                amount = float(row.get('deduction_%d' % (ded.id), None))
+                if amount:
+                    deductions.append(DeductionDetail.objects.create(deduction_id=ded.id, amount=amount))
+            allowances = []
+            for allowance_name in AllowanceName.objects.all():
+                amount = float(row.get('allowance_%d' % (allowance_name.id), None))
+                if amount:
+                    allowances.append(AllowanceDetail.objects.create(allowance_id=allowance_name.id, amount=amount))
 
-                p_r = PaymentRecord()
-                p_r.paid_employee_id = int(request.POST.get('form-%d-paid_employee' % (i), None))
+            incentives = []
+            for incentive_name in IncentiveName.objects.all():
+                amount = float(row.get('incentive_%d' % (incentive_name.id), None))
+                if amount:
+                    incentives.append(IncentiveDetail.objects.create(incentive_id=incentive_name.id, amount=amount))
 
-                # Save according to calender settin`g
-                # from_date = request.POST.get('form-%d-paid_from_date' % (i), None)
-                # to_date = request.POST.get('form-%d-paid_to_date' % (i), None)
+            p_r = PaymentRecord()
+            p_r.paid_employee_id = int(row.get('paid_employee', None))
 
-                if(CALENDAR == 'AD'):
-                    p_r.paid_from_date = datetime.strptime(from_date, '%Y-%m-%d')
-                    p_r.paid_to_date = datetime.strptime(from_date, '%Y-%m-%d')
-                else:
-                    p_r.paid_from_date = from_date
-                    p_r.paid_to_date = to_date
+            # Save according to calender settin`g
+            # from_date = request.POST.get('form-%d-paid_from_date' % (i), None)
+            # to_date = request.POST.get('form-%d-paid_to_date' % (i), None)
 
-                p_r.absent_days = 0
-                p_r.deduced_amount = float(request.POST.get('form-%d-deduced_amount' % (i), None))
-                
-                p_r.allowance = float(request.POST.get('form-%d-allowance' % (i), None))
-                p_r.incentive = float(request.POST.get('form-%d-incentive' % (i), None))
-                p_r.income_tax = float(request.POST.get('form-%d-income_tax' % (i), None))
-                p_r.pro_tempore_amount = float(request.POST.get('form-%d-pro_tempore_amount' % (i), None))
-                p_r.salary = float(request.POST.get('form-%d-salary' % (i), None))
-                p_r.paid_amount = float(request.POST.get('form-%d-paid_amount' % (i), None))
-                p_r.save()
-                p_r.deduction_details.add(*deductions)
-                p_r.incentive_details.add(*incentives)
-                p_r.allowance_details.add(*allowances)
+            if (CALENDAR == 'AD'):
+                p_r.paid_from_date = datetime.strptime(row.get('paid_from_date'), '%Y-%m-%d')
+                p_r.paid_to_date = datetime.strptime(row.get('paid_from_date'), '%Y-%m-%d')
+            else:
+                p_r.paid_from_date = row.get('paid_from_date')
+                p_r.paid_to_date = row.get('paid_to_date')
 
-                payment_records.append(p_r.id)
-            p_e = PayrollEntry()
-            p_e.branch_id = branch
-            p_e.is_monthly_payroll = is_monthly_payroll
-            p_e.save()
-            p_e.entry_rows.add(*payment_records)
-            # PayrollEntry.objects.create(
-            #     entry_row=payment_records,
-            # )
-            save_response['entry_id'] = p_e.id
-            save_response['entry_saved'] = True
-            save_response['entry_approved'] = False
-            save_response['entry_transacted'] = False
-            return JsonResponse(save_response)
+            p_r.absent_days = row.get('absent_days')
+            p_r.deduced_amount = float(row.get('deduced_amount', None))
 
+            p_r.allowance = float(row.get('allowance', None))
+            p_r.incentive = float(row.get('incentive', None))
+            p_r.income_tax = float(row.get('income_tax', None))
+            p_r.pro_tempore_amount = float(row.get('pro_tempore_amount', None))
+            p_r.salary = float(row.get('salary', None))
+            p_r.paid_amount = float(row.get('paid_amount', None))
+            p_r.save()
+            p_r.deduction_details.add(*deductions)
+            p_r.incentive_details.add(*incentives)
+            p_r.allowance_details.add(*allowances)
 
-# Should have permissions
+            payment_records.append(p_r.id)
+        p_e = PayrollEntry()
+        p_e.branch_id = branch
+        p_e.is_monthly_payroll = is_monthly_payroll
+        p_e.save()
+        p_e.entry_rows.add(*payment_records)
+        # PayrollEntry.objects.create(
+        #     entry_row=payment_records,
+        # )
+        save_response['entry_id'] = p_e.id
+        save_response['entry_saved'] = True
+        save_response['entry_approved'] = False
+        save_response['entry_transacted'] = False
+        return JsonResponse(save_response)  # Should have permissions
 def approve_entry(request, pk=None):
     payroll_entry = PayrollEntry.objects.get(pk=pk)
     payroll_entry.approved = True
@@ -1056,7 +1053,6 @@ def entry_detail(request, pk=None):
             entry_row_data['deduction_data'] = deduction_amounts
             entry_row_data['deduced_amount'] = row.deduced_amount
 
-            
             entry_row_data['income_tax'] = (row.income_tax)
             entry_row_data['pro_tempore_amount'] = (row.pro_tempore_amount)
             entry_row_data['salary'] = (row.salary)

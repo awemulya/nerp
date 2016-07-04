@@ -124,7 +124,7 @@ function PaymentEntryRow() {
 
     self.paid_from_date = ko.observable();
     self.paid_to_date = ko.observable();
-    self.absent_days = ko.observable();
+    self.absent_days = ko.observable(0);
     self.allowance = ko.observable(0);
     self.incentive = ko.observable(0);
     self.deduced_amount = ko.observable(0);
