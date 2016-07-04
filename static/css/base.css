@@ -552,3 +552,7 @@ span.helptext {
 tr.bold td {
     font-weight: bold;
 }
+
+.no-margin {
+    margin: 0px !important;
+}
