@@ -1,21 +1,23 @@
 {% extends "_project_base.html" %}
 {% load i18n filters staticfiles %}
 
-{% block title %}{% trans 'Aid' %}{% endblock %}
+{% block title %}{% trans 'Statement' %}{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
+    <li>Statement</li>
 {% endblock %}
 
 {% block head_end %}
     <script src="{% static 'js/project/statement.js' %}"></script>
     <script>
-        var categories = {{ categories |jsonify }}
+        var ko_data = {{ data |jsonify }}
     </script>
 {% endblock %}
 
 {% block content %}
-    <table class="table table-striped">
+    <div class="well">
+    <table class="table">
         <thead>
         <tr>
             <th></th>
@@ -26,7 +28,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
+        <tr class="total">
             <td colspan="5" class="text-center">{% trans "Sources" %}</td>
         </tr>
         <tr>
@@ -86,7 +88,7 @@
             <td></td>
         </tr>
 
-        <tr>
+        <tr class="total">
             <td colspan="5" class="text-center">{% trans "Application" %}</td>
         </tr>
         <!-- ko foreach: categories -->
@@ -98,7 +100,7 @@
             <td></td>
         </tr>
         <!--/ko -->
-        <tr class="bold" data-bind="visible: categories.length > 0">
+        <tr class="total" data-bind="visible: categories.length > 0">
             <td>{% trans "Sub total (A)" %}</td>
             <td></td>
             <td></td>
@@ -135,6 +137,7 @@
         </tr>
         </tbody>
     </table>
+    </div>
     </div>
 
 

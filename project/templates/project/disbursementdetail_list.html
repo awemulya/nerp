@@ -19,14 +19,35 @@
     <div class="well">
     <table class="table table-striped">
         <thead>
+        <th>{% trans "WA No." %}</th>
         <th>{% anchor name _('Name') %}</th>
+        <th>{% trans "Aid" %}</th>
+        <th>{% trans "Disbursement Method" %}</th>
+        <th>{% trans "Party" %}</th>
+        <th>{% trans "Category" %}</th>
+        <th>{% trans "Request Date" %}</th>
+        <th>{% trans "Value Date" %}</th>
+        <th>{% trans "Response NRS" %}</th>
+        <th>{% trans "Response USD" %}</th>
+        <th>{% trans "Response SDR" %}</th>
+
         </thead>
         <tbody>
         {% for disbursement_detail in paginated_objects %}
             <tr>
+                <td>{{ disbursement_detail.wa_no }}</td>
                 <td class="link">
                     <a href="{% url 'disbursement_detail_edit' project_fy.id disbursement_detail.id %}">{{ disbursement_detail }}</a>
                 </td>
+                <td>{{ disbursement_detail.aid }}</td>
+                <td>{{ disbursement_detail.disbursement_method }}</td>
+                <td>{{ disbursement_detail.party |default:'' }}</td>
+                <td>{{ disbursement_detail.category }}</td>
+                <td>{{ disbursement_detail.requested_date }}</td>
+                <td>{{ disbursement_detail.value_date }}</td>
+                <td>{{ disbursement_detail.response_nrs |default:'' }}</td>
+                <td>{{ disbursement_detail.response_usd |default:'' }}</td>
+                <td>{{ disbursement_detail.response_sdr |default:'' }}</td>
             </tr>
         {% endfor %}
         </tbody>

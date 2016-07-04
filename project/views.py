@@ -2,7 +2,6 @@ import json
 from datetime import date, datetime
 
 from django.db.models import Q
-from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView as BaseCreateView
 from django.http.response import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -12,7 +11,9 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from django.utils.translation import ugettext_lazy as _
 from njango.middleware import get_calendar
+
 from njango.nepdate import bs2ad
+
 
 from account.models import Account
 from core.serializers import BudgetSerializer
@@ -28,6 +29,7 @@ from models import ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ExpenseRowSerializer, ExpenseCategorySerializer, \
     ExpenseSerializer, AidSerializer, BaseStatementSerializer, ImprestJVSerializer, DisbursementDetailSerializer, \
     NPRExchangeSerializer
+
 from app.utils.mixins import AjaxableResponseMixin, UpdateView, DeleteView, json_from_object, CreateView
 
 
@@ -736,7 +738,9 @@ def statement(request, project_fy_id):
     return render(request, 'project/statement.html', context={
         # 'data': data,
         'project_fy': project_fy,
-        'categories': ExpenseCategorySerializer(categories, many=True).data,
+        'data': {
+            'categories': ExpenseCategorySerializer(categories, many=True).data,
+        },
         'fy_end': fy_end,
     })
     return render(request, 'project/statement.html')

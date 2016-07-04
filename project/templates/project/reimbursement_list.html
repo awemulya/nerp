@@ -41,7 +41,7 @@
                                 {{ reimbursement.wa_no|default:'' }}
                             </td>
                             <td>
-                                {{ reimbursement.amount }}
+                                {{ reimbursement.amount |default:'' }}
                             </td>
                         </tr>
                     {% else %}
