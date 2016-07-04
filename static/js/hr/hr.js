@@ -51,34 +51,34 @@ function PaymentRowWitDeduction(pwd_data){
     var extract_obsevable_name = function(ko_obj, dict_output){
         var observabe_names = {};
         var observable_list = [];
-        for (var obj of ko_obj){
-            observabe_names[obj] = '';
-            observable_list.push(obj);
-        }
+        ko_obj.forEach(function(obj){
+            observabe_names[obj.observable_name] = 0;
+            observable_list.push(obj.observable_name);
+        });
         if (dict_output){
             return observabe_names;
         }else{
-            return observabe_list;
+            return observable_list;
         }
     };
     var PER = new PaymentEntryRow();
     if(pwd_data.deduction_data){
         // var PER = new PaymentEntryRow();
-        // var DeductionPER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.deduction_data, true));
-        var DeductionPER = ko.mapping.fromJS({});
+        var DeductionPER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.deduction_data, true));
         $.extend(PER, DeductionPER);
+        // var DeductionPER = ko.mapping.fromJS({});
     }
 
     if(pwd_data.incentive_data){
         // var PER = new PaymentEntryRow();
-        // var IncentivePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.incentive_data, true));
-        var IncentivePER = ko.mapping.fromJS({});
+        var IncentivePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.incentive_data, true));
+        // var IncentivePER = ko.mapping.fromJS({});
         $.extend(PER, IncentivePER);
     }
     if(pwd_data.allowance_data){
         // var PER = new PaymentEntryRow();
-        // var AllowancePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.allowance_data, true));
-        var AllowancePER = ko.mapping.fromJS({});
+        var AllowancePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.allowance_data, true));
+        // var AllowancePER = ko.mapping.fromJS({});
         $.extend(PER, AllowancePER);
     }
     
@@ -86,15 +86,16 @@ function PaymentRowWitDeduction(pwd_data){
         var total_deduction = 0;
         var total_incentive = 0;
 
-        var extracted_deduction_obs_names = extract_obsevable_name(pwd_data.deduction_data, true);
-        for(var obs in extracted_deduction_obs_names){
-            total_deduction += PER[extracted_deduction_obs_names[obs]]();
-        };
+        var extracted_deduction_obs_names = extract_obsevable_name(pwd_data.deduction_data, false);
+        extracted_deduction_obs_names.forEach(function(obj){
+           total_deduction += parseInt(PER[obj]());
+        });
 
-        var extracted_incentive_obs_names = extract_obsevable_name(pwd_data.incentive_data, true);
-        for(var obs in extracted_incentive_obs_names){
-            total_incentive += PER[extracted_incentive_obs_names[obs]]();
-        };
+        var extracted_incentive_obs_names = extract_obsevable_name(pwd_data.incentive_data, false);
+
+        extracted_incentive_obs_names.forEach(function(obj){
+            total_incentive += parseInt(PER[obj]());
+        });
         PER.deduced_amount(total_deduction);
         PER.incentive(total_incentive);
         var total_paid_amount = PER.salary() - PER.deduced_amount() - PER.income_tax() + PER.pro_tempore_amount() + PER.incentive() + PER.allowance();
@@ -125,12 +126,12 @@ function PaymentEntryRow() {
     self.paid_to_date = ko.observable();
     self.absent_days = ko.observable();
     self.allowance = ko.observable(0);
-    self.incentive = ko.observable();
-    self.deduced_amount = ko.observable();
-    self.income_tax = ko.observable();
-    self.pro_tempore_amount = ko.observable();
-    self.salary = ko.observable();
-    self.paid_amount = ko.observable();
+    self.incentive = ko.observable(0);
+    self.deduced_amount = ko.observable(0);
+    self.income_tax = ko.observable(0);
+    self.pro_tempore_amount = ko.observable(0);
+    self.salary = ko.observable(0);
+    self.paid_amount = ko.observable(0);
     self.request_flag = ko.observable(true);
     self.row_errors = ko.observableArray();
     self.disable_input = ko.observable(false);
