@@ -37,13 +37,11 @@ function BudgetBalance(data) {
     }
 
 
-
-
     self.budget_release_recurrent_values = [];
     self.budget_release_capital_expenditure_values = [];
     self.budget_release_value_count = [];
 
-    for (var i=0; i< data.budget_release.length; i++) {
+    for (var i = 0; i < data.budget_release.length; i++) {
         var val = data.budget_release[i].budget_head_id;
         if (data.budget_release[i].recurrent) {
             self.values = self.budget_release_recurrent_values;
@@ -77,7 +75,7 @@ function BudgetBalance(data) {
     self.expenditure_capital_expenditure_values = [];
     self.expenditure_value_count = [];
 
-    for (var i=0; i< data.expenditure.length; i++) {
+    for (var i = 0; i < data.expenditure.length; i++) {
         var val = data.expenditure[i].budget_head_id;
         if (data.expenditure[i].recurrent) {
             self.values = self.expenditure_recurrent_values;
@@ -107,9 +105,10 @@ function BudgetBalance(data) {
         }
     }
 
-    self.budget_balance_recurrent_values = []
-    self.budget_balance_expenditure_values = []
+    self.budget_balance_recurrent_values = [];
+    self.budget_balance_expenditure_values = [];
     for (var i = 0; i < self.budget_heads().length; i++) {
+
         var budget_release_obj = $.grep(self.budget_release_recurrent_values, function (e) {
             return e.budget_head_id == self.budget_heads()[i].id;
         })[0];
@@ -117,12 +116,13 @@ function BudgetBalance(data) {
             return e.budget_head_id == self.budget_heads()[i].id;
         })[0];
 
-        if (budget_release_obj && expenditure_obj) {
-            obj = {}
+        if (budget_release_obj) {
+            var obj = {};
             obj['budget_head_id'] = self.budget_heads()[i].id;
-            obj['budget_release'] = budget_release_obj
-            obj['expenditure'] = expenditure_obj
-            self.budget_balance_recurrent_values.push(obj)
+            obj['budget_release'] = budget_release_obj;
+            if (expenditure_obj)
+                obj['expenditure'] = expenditure_obj;
+            self.budget_balance_recurrent_values.push(obj);
         }
     }
 
@@ -133,21 +133,24 @@ function BudgetBalance(data) {
         var expenditure_obj = $.grep(self.expenditure_capital_expenditure_values, function (e) {
             return e.budget_head_id == self.capital_expenditure()[i].id;
         })[0];
-
-        if (budget_release_obj && expenditure_obj) {
-            obj = {}
+        if (budget_release_obj) {
+            var obj = {};
             obj['budget_head_id'] = self.capital_expenditure()[i].id;
-            obj['budget_release'] = budget_release_obj
-            obj['expenditure'] = expenditure_obj
-            self.budget_balance_expenditure_values.push(obj)
+            obj['budget_release'] = budget_release_obj;
+            if (expenditure_obj)
+                obj['expenditure'] = expenditure_obj;
+            self.budget_balance_expenditure_values.push(obj);
         }
     }
     //console.log(self.expenditure_capital_expenditure_values);
 
     self.budget_head_view = new TableViewModel({rows: self.budget_balance_recurrent_values, argument: self}, RowVM);
-    self.capital_expenditure_view = new TableViewModel({rows: self.budget_balance_expenditure_values, argument: self}, RowVM);
+    self.capital_expenditure_view = new TableViewModel({
+        rows: self.budget_balance_expenditure_values,
+        argument: self
+    }, RowVM);
 
-    self.budget_head_goa_sub_total = function() {
+    self.budget_head_goa_sub_total = function () {
         var sum = 0;
         self.budget_head_view.rows().forEach(function (budget_head) {
             if (budget_head.goa_amount()) {
@@ -157,7 +160,7 @@ function BudgetBalance(data) {
         return round2(sum);
     };
 
-    self.budget_head_sub_total = function() {
+    self.budget_head_sub_total = function () {
         var sum = 0;
         self.budget_head_view.rows().forEach(function (budget_head) {
             if (budget_head.total()) {
@@ -167,9 +170,9 @@ function BudgetBalance(data) {
         return round2(sum);
     };
 
-    for (var index=0; index < self.count.length; index++){
+    for (var index = 0; index < self.count.length; index++) {
         var name = self.count[index];
-        self['budget-head-' + self.count[index] +'-sub-total'] = function(name) {
+        self['budget-head-' + self.count[index] + '-sub-total'] = function (name) {
             var sum = 0;
             self.budget_head_view.rows().forEach(function (budget_head) {
                 if (budget_head[name]()) {
@@ -180,7 +183,7 @@ function BudgetBalance(data) {
         };
     }
 
-    self.capital_expenditure_sub_total = function() {
+    self.capital_expenditure_sub_total = function () {
         var sum = 0;
         self.capital_expenditure_view.rows().forEach(function (capital_expenditure) {
             if (capital_expenditure.total()) {
@@ -190,9 +193,9 @@ function BudgetBalance(data) {
         return round2(sum);
     };
 
-    for (var index=0; index < self.count.length; index++){
+    for (var index = 0; index < self.count.length; index++) {
         var name = self.count[index];
-        self['capital-expenditure-' + self.count[index] +'-sub-total'] = function(name) {
+        self['capital-expenditure-' + self.count[index] + '-sub-total'] = function (name) {
             var sum = 0;
             self.capital_expenditure_view.rows().forEach(function (capital_expenditure) {
                 if (capital_expenditure[name]()) {
@@ -203,7 +206,7 @@ function BudgetBalance(data) {
         };
     }
 
-    self.capital_expenditure_goa_sub_total = function() {
+    self.capital_expenditure_goa_sub_total = function () {
         var sum = 0;
         self.capital_expenditure_view.rows().forEach(function (capital_expenditure) {
             if (capital_expenditure.goa_amount()) {
@@ -281,14 +284,21 @@ function RowVM(row, vm) {
         self[vm.count[i] + "-id"] = ko.observable();
     }
 
-    if (row.budget_release) {
+
+    if (row) {
         for (i in row.budget_release.aid_amount) {
-            var expenditure_obj = $.grep(row.expenditure.aid_amount, function (e) {
-                        return e.aid_name == row.budget_release.aid_amount[i].aid_name;
-                    })[0];
-            if (row.budget_release.aid_amount[i].aid_name == null) {
+            var expenditure_amount = 0;
+            if ('expenditure' in row) {
+                var expenditure_obj = $.grep(row.expenditure.aid_amount, function (e) {
+                    return e.aid_name == row.budget_release.aid_amount[i].aid_name;
+                })[0];
+
+                if (expenditure_obj)
+                    expenditure_amount = expenditure_obj.amount;
+            }
+            if (row.budget_release.aid_amount[i].aid_name === null) {
                 if (self.goa_amount() == undefined) {
-                    self.goa_amount(row.budget_release.aid_amount[i].amount - expenditure_obj.amount);
+                    self.goa_amount(row.budget_release.aid_amount[i].amount - expenditure_amount);
                     self.goa_id(row.budget_release.aid_amount[i].id);
                 }
                 //else {
@@ -296,17 +306,18 @@ function RowVM(row, vm) {
                 //}
             }
             if (self[row.budget_release.aid_amount[i].aid_name] != undefined) {
-                self[row.budget_release.aid_amount[i].aid_name](row.budget_release.aid_amount[i].amount - expenditure_obj.amount);
+                self[row.budget_release.aid_amount[i].aid_name](row.budget_release.aid_amount[i].amount - expenditure_amount);
                 self[row.budget_release.aid_amount[i].aid_name + "-id"](row.budget_release.aid_amount[i].id);
 
             }
         }
     }
     //debugger;
-    for (var k in row.budget_release) {
-        self[k] = ko.observable(row.budget_release[k]);
+    if (row) {
+        for (var k in row.budget_release) {
+            self[k] = ko.observable(row.budget_release[k]);
+        }
     }
-
 
 
     self.total = function () {
