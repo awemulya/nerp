@@ -242,11 +242,16 @@ def salary_taxation_unit(employee, f_y_item):
                 deduction *= obj.permanent_multiply_rate
 
     taxable_amount = (salary + allowance + incentive - deduction)
+    import ipdb
+    ipdb.set_trace()
 
     if employee.sex == 'F':
         taxable_amount -= F_TAX_DISCOUNT_LIMIT
     else:
         taxable_amount -= M_TAX_DISCOUNT_LIMIT
+
+    if taxable_amount < 0:
+        taxable_amount = 0
 
     social_security_tax = SOCIAL_SECURITY_TAX_RATE / 100 * taxable_amount
 
