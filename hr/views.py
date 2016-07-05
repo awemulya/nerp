@@ -561,7 +561,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                 # else:
                 #     # Here also same as below
                 #     employee_response['allowance_%d' % (_name.id)] = 0
-        allowance_details[-1]['id'] = _name.id
+        allowance_details[-1]['allowance'] = _name.id
         allowance_details[-1]['name'] = _name.name
         allowance += allowance_details[-1]['amount']
 
@@ -637,7 +637,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             # scale = none
             # employee_response['incentive_%d' % (_name.id)] = scale / 100 * employee_response['incentive_%d' % (_name.id)]
             pass
-        incentive_details[-1]['id'] = _name.id
+        incentive_details[-1]['incentive'] = _name.id
         incentive_details[-1]['name'] = _name.name
         incentive_details[-1]['editable'] = True if _name.amount_editable else False
         incentive += incentive_details[-1]['amount']
@@ -661,7 +661,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             deduction_details.append({
                 'amount': obj.permanent_multiply_rate
             })
-        deduction_details[-1]['id'] = obj.id
+        deduction_details[-1]['deduction'] = obj.id
         deduction_details[-1]['name'] = obj.name
         deduction_details[-1]['editable'] = True if obj.amount_editable else False
 
@@ -737,59 +737,23 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
 
 
 # Create your views here.
-def payroll_entry(request):
-    ko_data = {}
-    ko_data['deduction_data'] = {}
-    ko_data['incentive_data'] = {}
-    ko_data['allowance_data'] = {}
-    ko_data['calendar'] = CALENDAR
+def payroll_entry(request, pk=None):
+    if pk:
+        entry = PayrollEntry.objects.get(pk=pk)
+        serializer = PayrollEntrySerializer(entry)
+        ctx_data = dict(serializer.data)
+    else:
 
-    ko_data['deduction_data'] = []
-
-    for name, id, editable in get_deduction_names():
-        ko_data['deduction_data'].append(
-            {
-                'observable_name': 'deduction_%d' % (id),
-                'id': id,
-                'field_name': ' '.join(name.split('_')).title(),
-                'editable': True if editable else False,
-            }
-        )
-        # ['deduction_%d' % (id)] = ''
-
-    ko_data['incentive_data'] = []
-    for name, id, editable in get_incentive_names():
-        ko_data['incentive_data'].append(
-            {
-                'observable_name': 'incentive_%d' % (id),
-                'id': id,
-                'field_name': ' '.join(name.split('_')).title(),
-                'editable': True if editable else False,
-            }
-        )
-
-    ko_data['allowance_data'] = []
-    for name, id in get_allowance_names():
-        ko_data['allowance_data'].append(
-            {
-                'observable_name': 'allowance_%d' % (id),
-                'id': id,
-                'field_name': ' '.join(name.split('_')).title()
-            }
-        )
-
-    main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
-    row_form = PaymentRowFormSet()[0]
-    # deduction_form = DeductionFormSet()[0]
-    # incentive_form = IncentiveFormSet()[0]
-    # allowance_form = AllowanceFormSet()[0]
-    # underscore_row_form = get_underscore_formset(str(row_form))
+        main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
+        row_form = PaymentRowFormSet()[0]
+        ctx_data = None
     return render(
         request,
         'payroll_entry.html',
         {
             'm_form': main_form,
-            'r_form': row_form
+            'r_form': row_form,
+            'ctx_data': ctx_data
         })
 
 
@@ -866,15 +830,6 @@ def get_employees_account(request):
         return JsonResponse(response)
 
 
-def payroll_entry_edit(request, pk=None):
-    entry = PayrollEntry.objects.get(pk=pk)
-    serializer = PayrollEntrySerializer(entry)
-
-    return HttpResponse('This is edit page')
-
-
-
-
 def save_payroll_entry(request):
     if request.POST:
         params = json.loads(request.body)
@@ -894,18 +849,18 @@ def save_payroll_entry(request):
                 for ded in row.get('deduction_details', []):
                     amount = float(ded['amount'])
                     if amount:
-                        deductions.append(DeductionDetail.objects.create(deduction_id=ded['id'], amount=amount))
+                        deductions.append(DeductionDetail.objects.create(deduction_id=ded['deduction'], amount=amount))
                 allowances = []
                 for allowance_name in row.get('allowance_details', []):
                     amount = float(allowance_name['amount'])
                     if amount:
-                        allowances.append(AllowanceDetail.objects.create(allowance_id=allowance_name['id'], amount=amount))
+                        allowances.append(AllowanceDetail.objects.create(allowance_id=allowance_name['allowance'], amount=amount))
 
                 incentives = []
                 for incentive_name in row.get('incentive_details', []):
                     amount = float(incentive_name['amount'])
                     if amount:
-                        incentives.append(IncentiveDetail.objects.create(incentive_id=incentive_name['id'], amount=amount))
+                        incentives.append(IncentiveDetail.objects.create(incentive_id=incentive_name['incentive'], amount=amount))
 
                 p_r = PaymentRecord()
                 p_r.paid_employee_id = int(row.get('paid_employee', None))

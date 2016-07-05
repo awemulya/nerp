@@ -4,21 +4,24 @@ from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDet
 
 
 class DeductionDetailSerializer(serializers.ModelSerializer):
+    name = serializers.ReadOnlyField(source='deduction.name')
     class Meta:
         model = DeductionDetail
-        fields = '__all__'
+        fields = ('deduction', 'name', 'amount')
 
 
 class AllowanceDetailSerializer(serializers.ModelSerializer):
+    name = serializers.ReadOnlyField(source='allowance.name')
     class Meta:
         model = AllowanceDetail
-        fields = '__all__'
+        fields = ('allowance', 'name', 'amount')
 
 
 class IncentiveDetailSerializer(serializers.ModelSerializer):
+    name = serializers.ReadOnlyField(source='incentive.name')
     class Meta:
         model = IncentiveDetail
-        fields = '__all__'
+        fields = ('incentive', 'name', 'amount')
 
 
 class PaymentRecordSerializer(serializers.ModelSerializer):

@@ -349,45 +349,9 @@ function PayrollEntry(pr_data) {
                     o.paid_to_date(self.paid_to_date());
                     // console.log('value set')
                 }
-                ;
             }
-            ;
         }
-        ;
     });
-
-    // self.group_date_update = ko.computed(function(){
-
-    //     if(self.payroll_type() == 'GROUP'){
-    //         var has_error = false;
-    //         for(ro of self.rows()){
-    //             if(self.paid_from_date() != ro.paid_from_date() || self.paid_to_date() != ro.paid_to_date()){
-    //                 has_error = true;
-    //                 self.getGroupSalary();
-    //                 break;
-    //             };
-    //         };
-    //         if(!has_error){
-    //             self.messages([]);
-    //         };
-    //     };
-    // });
-
-    // self.group_changed = function(){
-    //     if(self.payroll_type() == 'GROUP'){
-    //         self.getGroupSalary()
-    //     }else{
-    //         // Update employee options
-    //     };
-    // };
-
-    // self.disable_input = ko.computed(function(){
-    //     if(self.payroll_type() == 'GROUP'){
-    //         return true;
-    //     }else{
-    //         return false;
-    //     };
-    // });
 
     self.getGroupSalary = function () {
         console.log('This is get group salary');
@@ -467,25 +431,13 @@ function PayrollEntry(pr_data) {
                 dataType: 'json',
                 data: {
                     branch: self.branch() ? self.branch() : 'ALL'
-                    // paid_from_date: self.paid_from_date(),
-                    // paid_to_date: self.paid_to_date(),
-                    // monthly_payroll: self.monthly_payroll()
                 },
-                // async: true,
                 success: function (response) {
-                    // for(row of self.rows()){
-                    //     row.emp_options(response.opt_data);
-                    // };
-                    // debugger;
-                    //     for(emp of response.opt_data){
-                    //         emp.disable = ko.observable(false);
-                    //     };
                     self.employee_options(response.opt_data);
                 },
                 error: function (errorThrown) {
                     console.log(errorThrown);
                 },
-                //            self.budget_heads = ko.observableArray(data);
             });
         }
         ;
@@ -557,7 +509,6 @@ function PayrollEntry(pr_data) {
         ;
     });
     self.remove_alert = function (alert_msg) {
-        console.log(alert_msg);
         self.messages.remove(alert_msg);
     };
 
