@@ -454,7 +454,7 @@ function PayrollEntry(pr_data) {
                     ;
                 },
                 error: function (errorThrown) {
-                    console.log(errorThrown);
+                    self.messages.push(errorThrown);
                 },
             });
     };

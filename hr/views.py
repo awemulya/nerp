@@ -2,6 +2,8 @@ from __future__ import division
 
 import json
 
+from django.db import transaction
+
 from core.models import FiscalYear
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
@@ -884,68 +886,69 @@ def save_payroll_entry(request):
 
         payment_records = []
 
-        for row in params.get('rows'):
+        with transaction.atomic():
+            for row in params.get('rows'):
 
-            # Similar if we need all details of incentive and allowence
-            deductions = []
-            for ded in Deduction.objects.all():
-                amount = float(row.get('deduction_%d' % (ded.id), None))
-                if amount:
-                    deductions.append(DeductionDetail.objects.create(deduction_id=ded.id, amount=amount))
-            allowances = []
-            for allowance_name in AllowanceName.objects.all():
-                amount = float(row.get('allowance_%d' % (allowance_name.id), None))
-                if amount:
-                    allowances.append(AllowanceDetail.objects.create(allowance_id=allowance_name.id, amount=amount))
+                # Similar if we need all details of incentive and allowence
+                deductions = []
+                for ded in row.get('deduction_details', []):
+                    amount = float(ded['amount'])
+                    if amount:
+                        deductions.append(DeductionDetail.objects.create(deduction_id=ded['id'], amount=amount))
+                allowances = []
+                for allowance_name in row.get('allowance_details', []):
+                    amount = float(allowance_name['amount'])
+                    if amount:
+                        allowances.append(AllowanceDetail.objects.create(allowance_id=allowance_name['id'], amount=amount))
 
-            incentives = []
-            for incentive_name in IncentiveName.objects.all():
-                amount = float(row.get('incentive_%d' % (incentive_name.id), None))
-                if amount:
-                    incentives.append(IncentiveDetail.objects.create(incentive_id=incentive_name.id, amount=amount))
+                incentives = []
+                for incentive_name in row.get('incentive_details', []):
+                    amount = float(incentive_name['amount'])
+                    if amount:
+                        incentives.append(IncentiveDetail.objects.create(incentive_id=incentive_name['id'], amount=amount))
 
-            p_r = PaymentRecord()
-            p_r.paid_employee_id = int(row.get('paid_employee', None))
+                p_r = PaymentRecord()
+                p_r.paid_employee_id = int(row.get('paid_employee', None))
 
-            # Save according to calender settin`g
-            # from_date = request.POST.get('form-%d-paid_from_date' % (i), None)
-            # to_date = request.POST.get('form-%d-paid_to_date' % (i), None)
+                # Save according to calender settin`g
+                # from_date = request.POST.get('form-%d-paid_from_date' % (i), None)
+                # to_date = request.POST.get('form-%d-paid_to_date' % (i), None)
 
-            if (CALENDAR == 'AD'):
-                p_r.paid_from_date = datetime.strptime(row.get('paid_from_date'), '%Y-%m-%d')
-                p_r.paid_to_date = datetime.strptime(row.get('paid_from_date'), '%Y-%m-%d')
-            else:
-                p_r.paid_from_date = row.get('paid_from_date')
-                p_r.paid_to_date = row.get('paid_to_date')
+                if (CALENDAR == 'AD'):
+                    p_r.paid_from_date = datetime.strptime(row.get('paid_from_date'), '%Y-%m-%d')
+                    p_r.paid_to_date = datetime.strptime(row.get('paid_from_date'), '%Y-%m-%d')
+                else:
+                    p_r.paid_from_date = row.get('paid_from_date')
+                    p_r.paid_to_date = row.get('paid_to_date')
 
-            p_r.absent_days = row.get('absent_days', 0)
-            p_r.deduced_amount = float(row.get('deduced_amount', None))
+                p_r.absent_days = row.get('absent_days', 0)
+                p_r.deduced_amount = float(row.get('deduced_amount', None))
 
-            p_r.allowance = float(row.get('allowance', None))
-            p_r.incentive = float(row.get('incentive', None))
-            p_r.income_tax = float(row.get('income_tax', None))
-            p_r.pro_tempore_amount = float(row.get('pro_tempore_amount', None))
-            p_r.salary = float(row.get('salary', None))
-            p_r.paid_amount = float(row.get('paid_amount', None))
-            p_r.save()
-            p_r.deduction_details.add(*deductions)
-            p_r.incentive_details.add(*incentives)
-            p_r.allowance_details.add(*allowances)
+                p_r.allowance = float(row.get('allowance', None))
+                p_r.incentive = float(row.get('incentive', None))
+                p_r.income_tax = float(row.get('income_tax', None))
+                p_r.pro_tempore_amount = float(row.get('pro_tempore_amount', None))
+                p_r.salary = float(row.get('salary', None))
+                p_r.paid_amount = float(row.get('paid_amount', None))
+                p_r.save()
+                p_r.deduction_details.add(*deductions)
+                p_r.incentive_details.add(*incentives)
+                p_r.allowance_details.add(*allowances)
 
-            payment_records.append(p_r.id)
-        p_e = PayrollEntry()
-        p_e.branch_id = branch
-        p_e.is_monthly_payroll = is_monthly_payroll
-        p_e.save()
-        p_e.entry_rows.add(*payment_records)
-        # PayrollEntry.objects.create(
-        #     entry_row=payment_records,
-        # )
-        save_response['entry_id'] = p_e.id
-        save_response['entry_saved'] = True
-        save_response['entry_approved'] = False
-        save_response['entry_transacted'] = False
-        return JsonResponse(save_response)  # Should have permissions
+                payment_records.append(p_r.id)
+            p_e = PayrollEntry()
+            p_e.branch_id = branch
+            p_e.is_monthly_payroll = is_monthly_payroll
+            p_e.save()
+            p_e.entry_rows.add(*payment_records)
+            # PayrollEntry.objects.create(
+            #     entry_row=payment_records,
+            # )
+            save_response['entry_id'] = p_e.id
+            save_response['entry_saved'] = True
+            save_response['entry_approved'] = False
+            save_response['entry_transacted'] = False
+            return JsonResponse(save_response)  # Should have permissions
 
 
 def approve_entry(request, pk=None):
