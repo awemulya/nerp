@@ -523,47 +523,33 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             if cnt:
                 if obj.sum_type == 'AMOUNT':
                     allowance_details.append({
-                        'id': _name.id,
-                        'name':_name.name,
                         'amount': obj.amount * cnt
                     })
                 else:
                     allowance_details.append({
-                        'id': _name.id,
-                        'name': _name.name,
                         'amount': obj.amount_rate / 100.0 * scale_salary
                     })
             else:
                 allowance_details.append({
-                    'id': _name.id,
-                    'name': _name.name,
                     'amount': 0
                 })
 
         elif obj.payment_cycle == 'M':
             if obj.sum_type == 'AMOUNT':
                 allowance_details.append({
-                    'id': _name.id,
-                    'name': _name.name,
                     'amount': obj.amount * total_month
                 })
             else:
                 allowance_details.append({
-                    'id': _name.id,
-                    'name': _name.name,
                     'amount': obj.amount_rate / 100.0 * scale_salary
                 })
         elif obj.payment_cycle == 'D':
             if obj.sum_type == 'AMOUNT':
                 allowance_details.append({
-                    'id': _name.id,
-                    'name': _name.name,
                     'amount': obj.amount * total_work_day
                 })
             else:
                 allowance_details.append({
-                    'id': _name.id,
-                    'name': _name.name,
                     'amount':obj.amount_rate / 100.0 * scale_salary
                 })
                 # Does this mean percentage in daily wages
@@ -573,6 +559,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
                 # else:
                 #     # Here also same as below
                 #     employee_response['allowance_%d' % (_name.id)] = 0
+        allowance_details[-1]['id'] = _name.id
+        allowance_details[-1]['name'] = _name.name
         allowance += allowance_details[-1]['amount']
 
     employee_response['allowance'] = allowance
@@ -604,55 +592,39 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             if cnt:
                 if obj.sum_type == 'AMOUNT':
                     incentive_details.append({
-                        'id': _name.id,
-                        'name': _name.name,
                         'amount': obj.amount * cnt
                     })
                 else:
                     incentive_details.append({
-                        'id': _name.id,
-                        'name': _name.name,
                         'amount': obj.amount_rate / 100.0 * scale_salary
                     })
             else:
                 incentive_details.append({
-                    'id': _name.id,
-                    'name': _name.name,
                     'amount': 0
                 })
 
         elif obj.payment_cycle == 'M':
             if obj.sum_type == 'AMOUNT':
                 incentive_details.append({
-                    'id': _name.id,
-                    'name': _name.name,
                     'amount': obj.amount * total_month
                 })
             else:
                 incentive_details.append({
-                    'id': _name.id,
-                    'name': _name.name,
                     'amount': obj.amount_rate / 100.0 * scale_salary
                 })
         elif obj.payment_cycle == 'D':
             if obj.sum_type == 'AMOUNT':
                 incentive_details.append({
-                    'id': _name.id,
-                    'name': _name.name,
                     'amount': obj.amount * total_work_day
                 })
             else:
                 # Does this mean percentage in daily wages
                 incentive_details.append({
-                    'id': _name.id,
-                    'name': _name.name,
                     'amount': obj.amount_rate / 100.0 * scale_salary
                 })
         else:
             # This is hourly case(Dont think we have it)
             incentive_details.append({
-                'id': _name.id,
-                'name': _name.name,
                 'amount': 0
             })
             # else:
@@ -663,6 +635,9 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
             # scale = none
             # employee_response['incentive_%d' % (_name.id)] = scale / 100 * employee_response['incentive_%d' % (_name.id)]
             pass
+        incentive_details[-1]['id'] = _name.id
+        incentive_details[-1]['name'] = _name.name
+        incentive_details[-1]['editable'] = True if _name.amount_editable else False
         incentive += incentive_details[-1]['amount']
     employee_response['incentive'] = incentive
     # salary += incentive
@@ -671,26 +646,25 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     deduction = 0
     employee_response['deduction_details'] = []
     deduction_details = employee_response['deduction_details']
-    for obj in deductions.filter(is_optional=False) + obj in employee.optional_deductions.all():
+    for obj in list(deductions.filter(is_optional=False)) + list(employee.optional_deductions.all()):
         if obj.deduct_type == 'AMOUNT':
             deduction_details.append({
-                'id': obj.id,
-                'name': obj.name,
                 'amount': obj.amount * total_month
             })
         else:
             deduction_details.append({
-                'id': obj.id,
-                'name': obj.name,
                 'amount': obj.amount_rate / 100.0 * salary
             })
         if employee.is_permanent:
             deduction_details.append({
-                'id': obj.id,
-                'name': obj.name,
                 'amount': obj.permanent_multiply_rate
             })
+        deduction_details[-1]['id'] = obj.id
+        deduction_details[-1]['name'] = obj.name
+        deduction_details[-1]['editable'] = True if obj.amount_editable else False
+
         deduction += deduction_details[-1]['amount']
+    employee_response['deduced_amount'] = deduction
 
     # PF deduction amount in case of loan from PF
 
@@ -704,7 +678,6 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
         )
 
     employee_response['income_tax'] = income_tax
-    employee_response['deduced_amount'] = deduction
     # employee_response['deduction_detail'] = deduction_detail
     # employee_response['other_deduction'] = other_deduction
 
@@ -813,9 +786,8 @@ def payroll_entry(request):
         request,
         'payroll_entry.html',
         {
-            'r_form': row_form,
             'm_form': main_form,
-            'ko_data': ko_data
+            'r_form': row_form
         })
 
 

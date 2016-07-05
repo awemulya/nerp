@@ -97,11 +97,11 @@
                 </thead>
                 <tbody>
                 <!-- ko foreach: rows -->
-                <!-- ko foreach: row_errors -->
-                <tr data-bind="css: {warning: true}">
-                    <td colspan="100%" data-bind="text: $data"></td>
-                </tr>
-                <!-- /ko -->
+                    <!-- ko foreach: row_errors -->
+                        <tr data-bind="css: {warning: true}">
+                            <td colspan="100%" data-bind="text: $data"></td>
+                        </tr>
+                    <!-- /ko -->
                 <tr data-bind="css: {warning: row_errors().length > 0}">
                     <td>{{ r_form.paid_employee }}</td>
 
@@ -124,10 +124,12 @@
                                 </thead>
 
                                 <tbody>
+                                    <!-- ko foreach: allowance_details -->
                                     <tr>
-                                        <td>{% trans 'Allowance Name' %}</td>
-                                        <td>{% trans 'Amount' %}</td>
+                                        <td data-bind="text: name"></td>
+                                        <td data-bind="text: amount"></td>
                                     </tr>
+                                    <!-- /ko -->
                                 </tbody>
                             </table>
                         </div>
@@ -138,7 +140,7 @@
                         <div class="dropdown">
                             <button class="btn btn-default dropdown-toggle" type="button" id="incentive-details"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                <span data-bind="text: allowance"></span>
+                                <span data-bind="text: incentive"></span>
                             </button>
                             <table class="dropdown-menu table table-bordered table-striped" aria-labelledby="incentive-details">
                                 <thead>
@@ -149,10 +151,12 @@
                                 </thead>
 
                                 <tbody>
+                                    <!-- ko foreach: incentive_details -->
                                     <tr>
-                                        <td>{% trans 'Incentive Name' %}</td>
-                                        <td>{% trans 'Amount' %}</td>
+                                        <td data-bind="text: name"></td>
+                                        <td data-bind="editableText: amount, disable_content_editable: editable, numeric: true"></td>
                                     </tr>
+                                    <!-- /ko -->
                                 </tbody>
                             </table>
                         </div>
@@ -163,7 +167,7 @@
                         <div class="dropdown">
                             <button class="btn btn-default dropdown-toggle" type="button" id="deduction-details"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                <span data-bind="text: allowance"></span>
+                                <span data-bind="text: deduced_amount"></span>
                             </button>
                             <table class="dropdown-menu table table-bordered table-striped" aria-labelledby="deduction-details">
                                 <thead>
@@ -174,10 +178,12 @@
                                 </thead>
 
                                 <tbody>
+                                    <!-- ko foreach: deduction_details -->
                                     <tr>
-                                        <td>{% trans 'Deduction Name' %}</td>
-                                        <td>{% trans 'Amount' %}</td>
+                                        <td data-bind="text: name"></td>
+                                        <td data-bind="editableText: amount, disable_content_editable: editable, numeric: true"></td>
                                     </tr>
+                                    <!-- /ko -->
                                 </tbody>
                             </table>
                         </div>

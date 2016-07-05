@@ -114,7 +114,7 @@ function PaymentEntryRow() {
                 if(response.errors){
                     // vm.paid_from_date_error(response.errors.paid_from_date)
                     // vm.paid_to_date_error(response.errors.paid_to_date)
-                    vm.rows([PaymentRowWitDeduction(ko_data),]);
+                    vm.rows([PaymentEntryRow(),]);
                     // vm.selected_employees([]);
                     // vm.rows([]);
                     if(response.errors.paid_from_date){
@@ -502,7 +502,7 @@ function PayrollEntry(pr_data) {
     // self.selected_employees = ko.observableArray();
     self.selected_employees = ko.computed(function(){
         var sel_e = [];
-        debugger;
+        debugger;   
         for(var row of self.rows()){
             if(typeof(row.paid_employee()) != 'undefined'){
                 sel_e.push(row.paid_employee());
