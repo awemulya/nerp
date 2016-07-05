@@ -12,7 +12,7 @@
     <script src="{% static 'js/bootstrap/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'js/hr/hr.js' %}"></script>
     <script>
-        ko_data = {{ko_data|jsonify}};
+
     </script>
 {% endblock %}
 {% block breadcrumbs %}
@@ -76,19 +76,12 @@
                     <th>{% trans 'Grade' %}</th>
                     <th>{% trans 'Designation' %}</th>
 
-                    {% for field in ko_data.allowance_data %}
-                        <th>{% trans field.field_name %}</th>
-                    {% endfor %}
+
                     <th>{% trans 'Total Allowance' %}</th>
 
-                    {% for field in ko_data.incentive_data %}
-                        <th>{% trans field.field_name %}</th>
-                    {% endfor %}
+
                     <th>{% trans 'Total Incentive' %}</th>
 
-                    {% for field in ko_data.deduction_data %}
-                        <th>{% trans field.field_name %}</th>
-                    {% endfor %}
 
                     <th>{% trans 'Total Deduced Amount' %}</th>
 
@@ -115,28 +108,80 @@
                     <td><b data-bind="text: employee_grade"></b></td>
                     <td><b data-bind="text: employee_designation"></b></td>
 
-                    {% for field in ko_data.allowance_data %}
-                        <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
-                    {% endfor %}
-                    <td data-bind="editableText: allowance, disable_content_editable: disable_input, numeric: true"></td>
 
-                    {% for field in ko_data.incentive_data %}
-                        {% if field.editable %}
-                            <td data-bind="editableText: {{ field.observable_name }}, numeric: true"></td>
-                        {% else %}
-                            <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
-                        {% endif %}
-                    {% endfor %}
-                    <td data-bind="editableText: incentive, disable_content_editable: disable_input, numeric: true"></td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="allowance-details"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                <span data-bind="text: allowance"></span>
+                            </button>
+                            <table class="dropdown-menu table table-bordered table-striped" aria-labelledby="allowance-details">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans 'Allowance Name' %}</th>
+                                        <th>{% trans 'Amount' %}</th>
+                                    </tr>
+                                </thead>
 
-                    {% for field in ko_data.deduction_data %}
-                        {% if field.editable %}
-                            <td data-bind="editableText: {{ field.observable_name }}, numeric: true"></td>
-                        {% else %}
-                            <td data-bind="editableText: {{ field.observable_name }}, disable_content_editable: disable_input, numeric: true"></td>
-                        {% endif %}
-                    {% endfor %}
-                    <td data-bind="editableText: deduced_amount, disable_content_editable: disable_input, numeric: true"></td>
+                                <tbody>
+                                    <tr>
+                                        <td>{% trans 'Allowance Name' %}</td>
+                                        <td>{% trans 'Amount' %}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+
+
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="incentive-details"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                <span data-bind="text: allowance"></span>
+                            </button>
+                            <table class="dropdown-menu table table-bordered table-striped" aria-labelledby="incentive-details">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans 'Incentive Name' %}</th>
+                                        <th>{% trans 'Amount' %}</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td>{% trans 'Incentive Name' %}</td>
+                                        <td>{% trans 'Amount' %}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+
+
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="deduction-details"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                <span data-bind="text: allowance"></span>
+                            </button>
+                            <table class="dropdown-menu table table-bordered table-striped" aria-labelledby="deduction-details">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans 'Deduction Name' %}</th>
+                                        <th>{% trans 'Amount' %}</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td>{% trans 'Deduction Name' %}</td>
+                                        <td>{% trans 'Amount' %}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
 
                     <td data-bind="editableText: income_tax, disable_content_editable: disable_input, numeric: true"></td>
                     <td data-bind="editableText: pro_tempore_amount, disable_content_editable: disable_input, numeric: true"></td>
@@ -144,8 +189,7 @@
                     <td data-bind="editableText: paid_amount, disable_content_editable: disable_input, numeric: true"></td>
                     <td><input class="btn btn-raised btn-danger" type="button" value="Remove"
                                data-bind="click: $parent.removeRow, visible: !$parent.entry_saved()"></td>
-                    <!-- <td>{{ r_form.paid_from_date }}</td>
-                            <td>{{ r_form.paid_to_date }}</td> -->
+
                 </tr>
                 <!-- /ko -->
                 </tbody>

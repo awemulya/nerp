@@ -1,60 +1,60 @@
 $(document).ready(function () {
 
-    vm = new PayrollEntry(ko_data);
+    vm = new PayrollEntry();
     ko.applyBindings(vm);
 });
 
-function PaymentRowWitDeduction(pwd_data){
-    var extract_obsevable_name = function(ko_obj, dict_output){
-        var observabe_names = {};
-        var observable_list = [];
-        ko_obj.forEach(function(obj){
-            observabe_names[obj.observable_name] = 0;
-            observable_list.push(obj.observable_name);
-        });
-        if (dict_output){
-            return observabe_names;
-        }else{
-            return observable_list;
-        }
-    };
-    var PER = new PaymentEntryRow();
-    if(pwd_data.deduction_data){
-        var DeductionPER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.deduction_data, true));
-        $.extend(PER, DeductionPER);
-    }
-
-    if(pwd_data.incentive_data){
-        var IncentivePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.incentive_data, true));
-        $.extend(PER, IncentivePER);
-    }
-    if(pwd_data.allowance_data){
-        var AllowancePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.allowance_data, true));
-        $.extend(PER, AllowancePER);
-    }
-    
-    PER.compute_editable_totals = ko.computed(function(){
-        var total_deduction = 0;
-        var total_incentive = 0;
-
-        var extracted_deduction_obs_names = extract_obsevable_name(pwd_data.deduction_data, false);
-        extracted_deduction_obs_names.forEach(function(obj){
-           total_deduction += parseInt(PER[obj]());
-        });
-
-        var extracted_incentive_obs_names = extract_obsevable_name(pwd_data.incentive_data, false);
-
-        extracted_incentive_obs_names.forEach(function(obj){
-            total_incentive += parseInt(PER[obj]());
-        });
-        PER.deduced_amount(total_deduction);
-        PER.incentive(total_incentive);
-        var total_paid_amount = PER.salary() - PER.deduced_amount() - PER.income_tax() + PER.pro_tempore_amount() + PER.incentive() + PER.allowance();
-        PER.paid_amount(total_paid_amount);
-    });
-    
-    return PER;
-};
+// function PaymentRowWitDeduction(pwd_data){
+//     var extract_obsevable_name = function(ko_obj, dict_output){
+//         var observabe_names = {};
+//         var observable_list = [];
+//         ko_obj.forEach(function(obj){
+//             observabe_names[obj.observable_name] = 0;
+//             observable_list.push(obj.observable_name);
+//         });
+//         if (dict_output){
+//             return observabe_names;
+//         }else{
+//             return observable_list;
+//         }
+//     };
+//     var PER = new PaymentEntryRow();
+//     if(pwd_data.deduction_data){
+//         var DeductionPER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.deduction_data, true));
+//         $.extend(PER, DeductionPER);
+//     }
+//
+//     if(pwd_data.incentive_data){
+//         var IncentivePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.incentive_data, true));
+//         $.extend(PER, IncentivePER);
+//     }
+//     if(pwd_data.allowance_data){
+//         var AllowancePER = ko.mapping.fromJS(extract_obsevable_name(pwd_data.allowance_data, true));
+//         $.extend(PER, AllowancePER);
+//     }
+//
+//     PER.compute_editable_totals = ko.computed(function(){
+//         var total_deduction = 0;
+//         var total_incentive = 0;
+//
+//         var extracted_deduction_obs_names = extract_obsevable_name(pwd_data.deduction_data, false);
+//         extracted_deduction_obs_names.forEach(function(obj){
+//            total_deduction += parseInt(PER[obj]());
+//         });
+//
+//         var extracted_incentive_obs_names = extract_obsevable_name(pwd_data.incentive_data, false);
+//
+//         extracted_incentive_obs_names.forEach(function(obj){
+//             total_incentive += parseInt(PER[obj]());
+//         });
+//         PER.deduced_amount(total_deduction);
+//         PER.incentive(total_incentive);
+//         var total_paid_amount = PER.salary() - PER.deduced_amount() - PER.income_tax() + PER.pro_tempore_amount() + PER.incentive() + PER.allowance();
+//         PER.paid_amount(total_paid_amount);
+//     });
+//
+//     return PER;
+// };
 
 
 function PaymentEntryRow() {
@@ -80,6 +80,10 @@ function PaymentEntryRow() {
     self.disable_input = ko.observable(false);
 
     self.emp_options = ko.observableArray();
+
+    self.incentive_details = ko.observableArray();
+    self.allowance_details = ko.observableArray();
+    self.deduction_details = ko.observableArray();
 
     self.employee_changed = function () {
         // console.log('We entered here successfully');
@@ -269,7 +273,7 @@ function PayrollEntry(pr_data) {
         // self.monthly_payroll();
         if(self.payroll_type() == 'INDIVIDUAL'){
             self.rows([]);
-            self.rows.push(PaymentRowWitDeduction(pr_data));
+            self.rows.push(new PaymentEntryRow());
         }else{
             self.rows([]);
         };
@@ -318,7 +322,7 @@ function PayrollEntry(pr_data) {
     };
 
     self.addRow = function(event){
-        self.rows.push(new PaymentRowWitDeduction(pr_data));
+        self.rows.push(new PaymentEntryRow());
     };
     self.removeRow = function(row){
         self.rows.remove(row);
@@ -498,7 +502,8 @@ function PayrollEntry(pr_data) {
     // self.selected_employees = ko.observableArray();
     self.selected_employees = ko.computed(function(){
         var sel_e = [];
-        for(row of self.rows()){
+        debugger;
+        for(var row of self.rows()){
             if(typeof(row.paid_employee()) != 'undefined'){
                 sel_e.push(row.paid_employee());
             };
@@ -535,7 +540,7 @@ function PayrollEntry(pr_data) {
                 };
             };
             if(self.rows().length == 0){
-                self.rows.push(new PaymentRowWitDeduction(pr_data));
+                self.rows.push(new PaymentEntryRow());
             };
         };
     });
