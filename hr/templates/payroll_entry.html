@@ -12,7 +12,9 @@
     <script src="{% static 'js/bootstrap/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'js/hr/hr.js' %}"></script>
     <script>
-
+        $(document).on('click', '.dropdown-menu', function (e) {
+            e.stopPropagation();
+        });
     </script>
 {% endblock %}
 {% block breadcrumbs %}
@@ -97,11 +99,11 @@
                 </thead>
                 <tbody>
                 <!-- ko foreach: rows -->
-                    <!-- ko foreach: row_errors -->
-                        <tr data-bind="css: {warning: true}">
-                            <td colspan="100%" data-bind="text: $data"></td>
-                        </tr>
-                    <!-- /ko -->
+                <!-- ko foreach: row_errors -->
+                <tr data-bind="css: {warning: true}">
+                    <td colspan="100%" data-bind="text: $data"></td>
+                </tr>
+                <!-- /ko -->
                 <tr data-bind="css: {warning: row_errors().length > 0}">
                     <td>{{ r_form.paid_employee }}</td>
 
@@ -115,21 +117,22 @@
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                 <span data-bind="text: allowance"></span>
                             </button>
-                            <table class="dropdown-menu table table-bordered table-striped" aria-labelledby="allowance-details">
+                            <table class="dropdown-menu table table-bordered table-striped"
+                                   aria-labelledby="allowance-details">
                                 <thead>
-                                    <tr>
-                                        <th>{% trans 'Allowance Name' %}</th>
-                                        <th>{% trans 'Amount' %}</th>
-                                    </tr>
+                                <tr>
+                                    <th>{% trans 'Allowance Name' %}</th>
+                                    <th>{% trans 'Amount' %}</th>
+                                </tr>
                                 </thead>
 
                                 <tbody>
-                                    <!-- ko foreach: allowance_details -->
-                                    <tr>
-                                        <td data-bind="text: name"></td>
-                                        <td data-bind="text: amount"></td>
-                                    </tr>
-                                    <!-- /ko -->
+                                <!-- ko foreach: allowance_details -->
+                                <tr>
+                                    <td data-bind="text: name"></td>
+                                    <td data-bind="text: amount"></td>
+                                </tr>
+                                <!-- /ko -->
                                 </tbody>
                             </table>
                         </div>
@@ -142,21 +145,22 @@
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                 <span data-bind="text: incentive"></span>
                             </button>
-                            <table class="dropdown-menu table table-bordered table-striped" aria-labelledby="incentive-details">
+                            <table class="dropdown-menu table table-bordered table-striped"
+                                   aria-labelledby="incentive-details">
                                 <thead>
-                                    <tr>
-                                        <th>{% trans 'Incentive Name' %}</th>
-                                        <th>{% trans 'Amount' %}</th>
-                                    </tr>
+                                <tr>
+                                    <th>{% trans 'Incentive Name' %}</th>
+                                    <th>{% trans 'Amount' %}</th>
+                                </tr>
                                 </thead>
 
                                 <tbody>
-                                    <!-- ko foreach: incentive_details -->
-                                    <tr>
-                                        <td data-bind="text: name"></td>
-                                        <td data-bind="editableText: amount, disable_content_editable: editable, numeric: true"></td>
-                                    </tr>
-                                    <!-- /ko -->
+                                <!-- ko foreach: incentive_details -->
+                                <tr>
+                                    <td data-bind="text: name"></td>
+                                    <td data-bind="editableText: amount, disable_content_editable: !editable(), numeric: true"></td>
+                                </tr>
+                                <!-- /ko -->
                                 </tbody>
                             </table>
                         </div>
@@ -169,21 +173,22 @@
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                 <span data-bind="text: deduced_amount"></span>
                             </button>
-                            <table class="dropdown-menu table table-bordered table-striped" aria-labelledby="deduction-details">
+                            <table class="dropdown-menu table table-bordered table-striped"
+                                   aria-labelledby="deduction-details">
                                 <thead>
-                                    <tr>
-                                        <th>{% trans 'Deduction Name' %}</th>
-                                        <th>{% trans 'Amount' %}</th>
-                                    </tr>
+                                <tr>
+                                    <th>{% trans 'Deduction Name' %}</th>
+                                    <th>{% trans 'Amount' %}</th>
+                                </tr>
                                 </thead>
 
                                 <tbody>
-                                    <!-- ko foreach: deduction_details -->
-                                    <tr>
-                                        <td data-bind="text: name"></td>
-                                        <td data-bind="editableText: amount, disable_content_editable: editable, numeric: true"></td>
-                                    </tr>
-                                    <!-- /ko -->
+                                <!-- ko foreach: deduction_details -->
+                                <tr>
+                                    <td data-bind="text: name"></td>
+                                    <td data-bind="editableText: amount, disable_content_editable: !editable(), numeric: true"></td>
+                                </tr>
+                                <!-- /ko -->
                                 </tbody>
                             </table>
                         </div>
