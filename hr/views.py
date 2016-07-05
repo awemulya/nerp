@@ -7,6 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
+
+from hr.serializers import PayrollEntrySerializer
 from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, \
     get_deduction_names, get_incentive_names, get_allowance_names, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, \
@@ -24,7 +26,7 @@ from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data
 from account.models import set_transactions
 from hr.filters import EmployeeFilter
-import pdb
+from django.core import serializers
 
 from hr.models import ACC_CAT_BASIC_SALARY_ID, \
     ACC_CAT_SALARY_GIVING_ID, \
@@ -837,16 +839,13 @@ def get_employees_account(request):
         return JsonResponse(response)
 
 
-def test(request):
-    emp = Employee.objects.get(id=1)
-    x = BSDate(2072, 3, 1)
-    y = BSDate(2072, 4, 32)
+def payroll_entry_edit(request, pk=None):
+    entry = PayrollEntry.objects.get(pk=pk)
+    serializer = PayrollEntrySerializer(entry)
 
-    salary = emp.current_salary_by_day(x, y)
-    salary1 = emp.current_salary_by_month(x, y)
-    pdb.set_trace()
+    return HttpResponse('This is edit page')
 
-    return HttpResponse(salary)
+
 
 
 def save_payroll_entry(request):
