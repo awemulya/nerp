@@ -12,6 +12,7 @@
     <script src="{% static 'js/bootstrap/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'js/hr/hr.js' %}"></script>
     <script>
+        ctx_data = {{ctx_data|jsonify}}
         $(document).on('click', '.dropdown-menu', function (e) {
             e.stopPropagation();
         });
@@ -39,40 +40,44 @@
 {% endblock %}
 
 {% block  content %}
-    <div>
+    <div class="well">
         <label>Monthly Payroll </label>
-        <input type="checkbox" data-bind="checked: monthly_payroll">
+        <input type="checkbox" data-bind="checked: is_monthly_payroll">
     </div>
-    <div id="main" class="row">
-        <div class="col-lg-2">
-            {{ m_form.payroll_type.label }}
-            {{ m_form.payroll_type }}
-        </div>
-        <div class="col-lg-2">
+    <div class="well">
 
-            {{ m_form.branch.label }}
-            {{ m_form.branch }}
-        </div>
-        <div class="col-lg-3" data-bind="css:{'bg-warning': paid_from_date_error() != null}">
-            {{ m_form.from_date.label }}
-            {{ m_form.from_date }}
-            <p data-bind="text: paid_from_date_error"></p>
-        </div>
-        <div class="col-lg-3" data-bind="css:{'bg-warning': paid_from_date_error() != null}">
-            {{ m_form.to_date.label }}
-            {{ m_form.to_date }}
-            <p data-bind="text: paid_to_date_error"></p>
-        </div>
-        <div class="col-lg-2">
-            <input type="button" class="btn btn-raised btn-primary"
-                   data-bind="click: getGroupSalary, visible: !switch_p_type()" value="Get">
+
+        <div id="main" class="row">
+            <div class="col-lg-2">
+                {{ m_form.payroll_type.label }}
+                {{ m_form.payroll_type }}
+            </div>
+            <div class="col-lg-2">
+
+                {{ m_form.branch.label }}
+                {{ m_form.branch }}
+            </div>
+            <div class="col-lg-3" data-bind="css:{'bg-warning': paid_from_date_error() != null}">
+                {{ m_form.from_date.label }}
+                {{ m_form.from_date }}
+                <p data-bind="text: paid_from_date_error"></p>
+            </div>
+            <div class="col-lg-3" data-bind="css:{'bg-warning': paid_from_date_error() != null}">
+                {{ m_form.to_date.label }}
+                {{ m_form.to_date }}
+                <p data-bind="text: paid_to_date_error"></p>
+            </div>
+            <div class="col-lg-2">
+                <input type="button" class="btn btn-raised btn-primary"
+                       data-bind="click: getGroupSalary, visible: !switch_p_type()" value="Get">
+            </div>
         </div>
     </div>
-    <div>
+    <div class="well">
         <form data-bind="submit: saveAndAdd">
             <table class="table table-striped table-bordered table-responsive payment-row-table">
                 <thead>
-                <tr data-bind="visible:rows().length>0">
+                <tr data-bind="visible:entry_rows().length>0">
                     <th>{% trans 'Employee' %}</th>
 
                     <th>{% trans 'Grade' %}</th>
@@ -98,7 +103,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <!-- ko foreach: rows -->
+                <!-- ko foreach: entry_rows -->
                 <!-- ko foreach: row_errors -->
                 <tr data-bind="css: {warning: true}">
                     <td colspan="100%" data-bind="text: $data"></td>
@@ -208,16 +213,16 @@
             <input type="button" class="btn btn-raised btn-primary" value="Add Another"
                    data-bind="visible: switch_p_type, click: addRow">
             <input type="submit" class="btn btn-raised btn-primary" value="Save"
-                   data-bind="visible: rows().length>0 && !entry_saved()">
+                   data-bind="visible: entry_rows().length>0 && !entry_saved()">
         </form>
         <input type="button" class="btn btn-raised btn-primary" value="Approve"
-               data-bind="visible: rows().length > 0 && !entry_approved() && entry_saved(), click: approve_entry">
+               data-bind="visible: entry_rows().length > 0 && !approved() && entry_saved(), click: approve_entry">
         <input type="button" class="btn btn-raised btn-primary" value="Approved"
-               data-bind="visible: rows().length > 0 && entry_approved()">
+               data-bind="visible: entry_rows().length > 0 && approved()">
         <input type="button" class="btn btn-raised btn-primary" value="Transact"
-               data-bind="visible: rows().length > 0 && entry_approved() && !entry_transacted(), click: transact">
+               data-bind="visible: entry_rows().length > 0 && approved() && !transacted(), click: transact">
         <input type="button" class="btn btn-raised btn-primary" value="Transacted"
-               data-bind="visible: rows().length > 0 && entry_approved() && entry_transacted()">
+               data-bind="visible: entry_rows().length > 0 && approved() && transacted()">
         <!-- <input type="button" class="#" value="Delete Entry" data-bind="click: entry_delete, visible: entry_saved()"> -->
     </div>
 

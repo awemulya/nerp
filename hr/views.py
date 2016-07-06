@@ -743,10 +743,9 @@ def payroll_entry(request, pk=None):
         serializer = PayrollEntrySerializer(entry)
         ctx_data = dict(serializer.data)
     else:
-
-        main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
-        row_form = PaymentRowFormSet()[0]
         ctx_data = None
+    main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
+    row_form = PaymentRowFormSet()[0]
     return render(
         request,
         'payroll_entry.html',

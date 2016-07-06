@@ -3,7 +3,7 @@ import views
 
 urlpatterns = patterns('',
                        url(r'^$', views.payroll_entry, name='payroll_entry'),
-                       url(r'^/(?P<pk>[0-9]+)/$', views.payroll_entry, name='payroll_entry'),
+                       url(r'^(?P<pk>[0-9]+)/$', views.payroll_entry, name='payroll_entry'),
                        url(r'^get_employee_account/$', views.get_employee_account, name='get_employee_account'),
                        url(r'^get_employees_account/$', views.get_employees_account, name='get_employees_account'),
                        url(r'^save_payroll_entry/$', views.save_payroll_entry, name='save_payroll_entry'),
