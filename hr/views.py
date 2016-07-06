@@ -1088,7 +1088,6 @@ def get_employee_options(request):
         else:
             return HttpResponse('No branch')
     else:
-        pdb.set_trace()
         return HttpResponse('No POST')
 
 
