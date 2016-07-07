@@ -7,8 +7,7 @@ $(document).ready(function () {
             'entry_rows': {
                 create: function (options) {
                     // console.log(options.data)
-                    var entry_row = ko.mapping.fromJS(options.data, {}, new PaymentEntryRow(vm.employee_options()));
-                    debugger;
+                    var entry_row = ko.mapping.fromJS(options.data, {}, new PaymentEntryRow());
                     return entry_row
                 }
             }
@@ -18,16 +17,18 @@ $(document).ready(function () {
     }
 });
 
-function PaymentEntryRow(emp_options) {
+function PaymentEntryRow() {
     var self = this;
     self.id = ko.observable();
     // if(emp_options){
-        self.emp_options = ko.observableArray(emp_options);
+    self.emp_options = ko.observableArray();
     // }else{
     //     self.emp_options = ko.observableArray();
     // }
     self.emp_options = ko.observableArray();
+    self.emp_options.extend({ notify: 'always' });
     self.paid_employee = ko.observable();
+    self.employee_id = null;
 
     self.employee_grade = ko.observable();
     self.employee_designation = ko.observable();
@@ -47,7 +48,6 @@ function PaymentEntryRow(emp_options) {
     self.disable_input = ko.observable(false);
 
 
-
     self.incentive_details = ko.observableArray();
     self.allowance_details = ko.observableArray();
     self.deduction_details = ko.observableArray();
@@ -63,10 +63,16 @@ function PaymentEntryRow(emp_options) {
     //     console.log(self.paid_employee());
     //     self.request_flag(true);
     // };
-    self.paid_employee.subscribe(function(){
+    self.paid_employee.subscribe(function () {
         console.log('This is paid employee')
-        console.log(self.paid_employee())
+        console.log(self.paid_employee());
+        if (self.paid_employee()){
+            self.employee_id = parseInt(self.paid_employee());
+        }
         self.request_flag(true);
+    });
+    self.emp_options.subscribe(function(){
+        self.paid_employee(self.employee_id);
     });
 
     // Make here a observable function dat will set other parameters with employee id and date range
@@ -384,12 +390,12 @@ function PayrollEntry() {
     };
 
     // Set employee options
-    // self.update_employee_options = function () {
+    self.update_employee_options = function () {
         $.ajax({
             url: '/payroll/get_employee_options/',
             method: 'POST',
             dataType: 'json',
-            async: false,
+            // async: true,
             data: {
                 branch: self.branch() ? self.branch() : 'ALL'
             },
@@ -401,22 +407,22 @@ function PayrollEntry() {
                 console.log(errorThrown);
             }
         });
-    // };
-    // self.update_employee_options();
+    };
+    self.update_employee_options();
+    self.branch.subscribe(function () {
+        console.log('employee options updated');
+        self.update_employee_options();
+        var branch_emp_ids = ko.utils.arrayMap(self.employee_options(), function(obj){
+            return parseInt(obj.id)
+        });
+        for (var roo of self.entry_rows()) {
+            if($.inArray(roo.employee_id, branch_emp_ids) == -1){
+                console.log('just removed one row');
+                self.entry_rows.remove(roo);
+            }
+        }
+    });
 
-    // self.update_row_function = ko.computed(function(){
-    //     if(self.entry_rows()){
-    //         for(row of self.entry_rows()){
-    //             row.emp_options(self.employee_options());
-    //         };
-    //     }
-    // });
-    // self.set_option_disable = function(option, item){
-    //     if(typeof(item) != 'undefined'){
-    //         ko.applyBindingsToNode(option, {disable: item.disable}, item);
-    //     };
-    // };
-    // self.selected_employees = ko.observableArray();
     self.selected_employees = ko.computed(function () {
         var sel_e = [];
         for (var row of self.entry_rows()) {
@@ -439,28 +445,14 @@ function PayrollEntry() {
             }
             var diff = $(roow.emp_options()).not(to_remove).get();
             // if(diff.length == 0){roow.emp_options([{'id': 0 , 'name': 'wrufesh'},]);}else{roow.emp_options(diff);}
-                roow.emp_options(diff);
+            roow.emp_options(diff);
             // console.log(roow.emp_options())
         }
     });
-    // Removes row with designation and grade and no employee selected
-    // self.del_row_ind_gc = ko.computed(function () {
-    //     // if (self.branch()) {
-    //         for (var roo of self.entry_rows()) {
-    //             if (!(roo.paid_employee() && roo.employee_designation && roo.employee_grade())) {
-    //                 self.entry_rows.remove(roo);
-    //
-    //             }
-    //         }
-    //         if (self.entry_rows().length == 0) {
-    //             self.entry_rows.push(new PaymentEntryRow());
-    //         }
-    //     // }
-    // });
+
     self.remove_alert = function (alert_msg) {
         self.messages.remove(alert_msg);
     };
-
 
 
 }
