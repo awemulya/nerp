@@ -804,7 +804,7 @@ def get_employees_account(request):
             return JsonResponse(response)
 
         branch = request.POST.get('branch', None)
-        if branch == '':
+        if branch == 'ALL':
             employees = Employee.objects.all()
         else:
             employees = Employee.objects.filter(

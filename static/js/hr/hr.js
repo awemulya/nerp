@@ -6,7 +6,7 @@ $(document).ready(function () {
         var mapping = {
             'entry_rows': {
                 create: function (options) {
-                    var entry_row = ko.mapping.fromJS(options.data, {}, new PaymentEntryRow());
+                    var entry_row = ko.mapping.fromJS(options.data, {copy: ['explicitly_added_row']}, new PaymentEntryRow());
                     if (typeof(options.parent.paid_from_date()) == 'undefined') {
                         options.parent.paid_from_date(options.data.paid_from_date);
                         options.parent.paid_to_date(options.data.paid_to_date);
@@ -75,7 +75,7 @@ function PaymentEntryRow() {
         self.incentive(total);
     });
 
-    self.is_explicitly_added_row = ko.observable();
+    self.is_explicitly_added_row = true;
 
     self.paid_employee.subscribe(function () {
         console.log('This is paid employee')
@@ -90,8 +90,9 @@ function PaymentEntryRow() {
     // });
 
     // Make here a observable function dat will set other parameters with employee id and date range
-    self.is_explicitly_added_row.subscribe(function () {
-        if (self.paid_from_date() && self.paid_to_date() && self.request_flag && is_explicitly_added_row() && self.paid_employee()) {
+    self.get_emp_data = ko.computed(function () {
+        debugger;
+        if (self.paid_from_date() && self.paid_to_date() && self.request_flag() && is_explicitly_added_row && self.paid_employee()) {
             $.ajax({
                 url: 'get_employee_account/',
                 method: 'POST',
@@ -106,7 +107,7 @@ function PaymentEntryRow() {
                 success: function (response) {
                     console.log(response);
                     if (response.errors) {
-                        vm.entry_rows([PaymentEntryRow()]);
+                        vm.entry_rows([new PaymentEntryRow()]);
                         if (response.errors.paid_from_date) {
                             vm.paid_from_date_error(response.errors.paid_from_date);
                         } else {
@@ -338,7 +339,7 @@ function PayrollEntry() {
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    branch: self.branch(),
+                    branch: self.branch() ? self.branch() : 'ALL',
                     paid_from_date: self.paid_from_date(),
                     paid_to_date: self.paid_to_date(),
                     is_monthly_payroll: self.is_monthly_payroll()
@@ -375,8 +376,9 @@ function PayrollEntry() {
 
                             c += 1;
 
-                            var row = ko.mapping.fromJS(data, {}, PaymentEntryRow());
+                            var row = ko.mapping.fromJS(data, {},new PaymentEntryRow());
                             row.employee_id = row.paid_employee();
+                            row.is_explicitly_added_row = false;
                             if (typeof(row.row_errors) == 'undefined') {
                                 row.row_errors = ko.observableArray([]);
                             }

@@ -168,7 +168,7 @@ class PayrollEntryForm(HTML5BootstrapModelForm):
 
 class GroupPayrollForm(forms.Form):
     branch_choices = [(o.id, o.name) for o in BranchOffice.objects.all()]
-    branch_choices.insert(0, ("ALL", 'All'))
+    branch_choices.insert(0, ("ALL", _('All Branch')))
     payroll_type = forms.ChoiceField(
         choices=[
                  ('INDIVIDUAL', _('Individual')),
