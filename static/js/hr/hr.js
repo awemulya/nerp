@@ -7,8 +7,7 @@ $(document).ready(function () {
             'entry_rows': {
                 create: function (options) {
                     var entry_row = ko.mapping.fromJS(options.data, {}, new PaymentEntryRow());
-                    if (typeof(options.parent.paid_from_date()) == 'undefined'){
-                        debugger;
+                    if (typeof(options.parent.paid_from_date()) == 'undefined') {
                         options.parent.paid_from_date(options.data.paid_from_date);
                         options.parent.paid_to_date(options.data.paid_to_date);
                     }
@@ -21,6 +20,12 @@ $(document).ready(function () {
     }
 });
 
+// function rowManyToMany(){
+//     self.amount.subscribe(function(){
+//
+//     })
+// }
+
 function PaymentEntryRow() {
     var self = this;
     self.id = ko.observable();
@@ -30,7 +35,7 @@ function PaymentEntryRow() {
     //     self.emp_options = ko.observableArray();
     // }
     self.emp_options = ko.observableArray();
-    self.emp_options.extend({ notify: 'always' });
+    self.emp_options.extend({notify: 'always'});
     self.paid_employee = ko.observable();
     self.employee_id = null;
 
@@ -56,6 +61,35 @@ function PaymentEntryRow() {
     self.allowance_details = ko.observableArray();
     self.deduction_details = ko.observableArray();
 
+    self.deduction_details_total = ko.computed(function(){
+        var total = 0;
+        ko.utils.arrayForEach(self.deduction_details(), function(obj){
+            total += parseInt(obj.amount());
+        });
+        self.deduced_amount(total);
+    });
+
+    self.allowance_details_total = ko.computed(function(){
+        var total = 0;
+        ko.utils.arrayForEach(self.allowance_details(), function(obj){
+            total += parseInt(obj.amount());
+        });
+        self.allowance(total);
+    });
+
+    self.incentive_details_total = ko.computed(function(){
+        var total = 0;
+        ko.utils.arrayForEach(self.incentive_details(), function(obj){
+            total += parseInt(obj.amount());
+        });
+        self.incentive(total);
+    });
+
+
+    // self.deduction_details.subscribe(function(){
+    //     console.log('inside deduction detail subscribe function');
+    // });
+
     self.is_explicitly_added_row = ko.observable();
 
     // if (row_ctx_data) {
@@ -70,12 +104,12 @@ function PaymentEntryRow() {
     self.paid_employee.subscribe(function () {
         console.log('This is paid employee')
         console.log(self.paid_employee());
-        if (self.paid_employee()){
+        if (self.paid_employee()) {
             self.employee_id = parseInt(self.paid_employee());
         }
         self.request_flag(true);
     });
-    self.emp_options.subscribe(function(){
+    self.emp_options.subscribe(function () {
         self.paid_employee(self.employee_id);
     });
 
@@ -418,13 +452,13 @@ function PayrollEntry() {
         self.update_employee_options();
     });
 
-    self.employee_options.subscribe(function(){
-        var branch_emp_ids = ko.utils.arrayMap(self.employee_options(), function(obj){
+    self.employee_options.subscribe(function () {
+        var branch_emp_ids = ko.utils.arrayMap(self.employee_options(), function (obj) {
             return parseInt(obj.id)
         });
         var rows_to_remove = []
         for (var roo of self.entry_rows()) {
-            if($.inArray(roo.employee_id, branch_emp_ids) == -1){
+            if ($.inArray(roo.employee_id, branch_emp_ids) == -1) {
                 console.log('just removed one row');
                 rows_to_remove.push(roo);
             }
