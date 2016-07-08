@@ -412,15 +412,20 @@ function PayrollEntry() {
     self.branch.subscribe(function () {
         console.log('employee options updated');
         self.update_employee_options();
+    });
+
+    self.employee_options.subscribe(function(){
         var branch_emp_ids = ko.utils.arrayMap(self.employee_options(), function(obj){
             return parseInt(obj.id)
         });
+        var rows_to_remove = []
         for (var roo of self.entry_rows()) {
             if($.inArray(roo.employee_id, branch_emp_ids) == -1){
                 console.log('just removed one row');
-                self.entry_rows.remove(roo);
+                rows_to_remove.push(roo);
             }
         }
+        self.entry_rows.removeAll(rows_to_remove);
     });
 
     self.selected_employees = ko.computed(function () {
