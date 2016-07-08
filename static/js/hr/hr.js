@@ -6,8 +6,12 @@ $(document).ready(function () {
         var mapping = {
             'entry_rows': {
                 create: function (options) {
-                    // console.log(options.data)
                     var entry_row = ko.mapping.fromJS(options.data, {}, new PaymentEntryRow());
+                    if (typeof(options.parent.paid_from_date()) == 'undefined'){
+                        debugger;
+                        options.parent.paid_from_date(options.data.paid_from_date);
+                        options.parent.paid_to_date(options.data.paid_to_date);
+                    }
                     return entry_row
                 }
             }
@@ -454,6 +458,8 @@ function PayrollEntry() {
             // console.log(roow.emp_options())
         }
     });
+
+    // self.entry_rows.subscribe();
 
     self.remove_alert = function (alert_msg) {
         self.messages.remove(alert_msg);
