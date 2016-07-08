@@ -11,8 +11,7 @@ from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 
 from hr.serializers import PayrollEntrySerializer
-from .forms import GroupPayrollForm, PaymentRowFormSet, DeductionFormSet, IncentiveFormSet, AllowanceFormSet, \
-    get_deduction_names, get_incentive_names, get_allowance_names, EmployeeIncentiveFormSet, EmployeeForm, \
+from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, \
     TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
@@ -745,13 +744,11 @@ def payroll_entry(request, pk=None):
     else:
         ctx_data = None
     main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
-    row_form = PaymentRowFormSet()[0]
     return render(
         request,
         'payroll_entry.html',
         {
             'm_form': main_form,
-            'r_form': row_form,
             'ctx_data': ctx_data
         })
 

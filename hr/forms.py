@@ -47,112 +47,112 @@ from app.utils.forms import HTML5BootstrapModelForm
 #             return str(D)
 
 
-def get_deduction_names():
-    deductions = Deduction.objects.all()
-    names = []
-    for obj in deductions:
-        # if obj.deduction_for == 'EMPLOYEE ACC':
-        #     name = '_'.join(obj.in_acc_type.name.split(' ')).lower()
-        # else:
-        name = '_'.join(obj.name.split(' ')).lower()
-        names.append((name, obj.id, obj.amount_editable))
-    return names
+# def get_deduction_names():
+#     deductions = Deduction.objects.all()
+#     names = []
+#     for obj in deductions:
+#         # if obj.deduction_for == 'EMPLOYEE ACC':
+#         #     name = '_'.join(obj.in_acc_type.name.split(' ')).lower()
+#         # else:
+#         name = '_'.join(obj.name.split(' ')).lower()
+#         names.append((name, obj.id, obj.amount_editable))
+#     return names
+#
+#
+# def get_incentive_names():
+#     incentives = IncentiveName.objects.all()
+#     names = []
+#     for obj in incentives:
+#         # if obj.deduction_for == 'EMPLOYEE ACC':
+#         #     name = obj.in_acc_type.name
+#         # else:
+#         #     name = '_'.join(obj.name.split(' ')).lower()
+#         name = '_'.join(obj.name.split(' ')).lower()
+#         names.append((name, obj.id, obj.amount_editable))
+#     return names
+#
+#
+# def get_allowance_names():
+#     allowances = AllowanceName.objects.all()
+#     names = []
+#     for obj in allowances:
+#         # if obj.deduction_for == 'EMPLOYEE ACC':
+#         #     name = obj.in_acc_type.name
+#         # else:
+#         #     name = '_'.join(obj.name.split(' ')).lower()
+#         name = '_'.join(obj.name.split(' ')).lower()
+#         names.append((name, obj.id))
+#     return names
 
 
-def get_incentive_names():
-    incentives = IncentiveName.objects.all()
-    names = []
-    for obj in incentives:
-        # if obj.deduction_for == 'EMPLOYEE ACC':
-        #     name = obj.in_acc_type.name
-        # else:
-        #     name = '_'.join(obj.name.split(' ')).lower()
-        name = '_'.join(obj.name.split(' ')).lower()
-        names.append((name, obj.id, obj.amount_editable))
-    return names
+# class DeductionDataForm(forms.Form):
+#
+#     def __init__(self, *args, **kwargs):
+#         # extra = kwargs.pop('extra')
+#         super(DeductionDataForm, self).__init__(*args, **kwargs)
+#
+#         for name, id in get_deduction_names():
+#             self.fields['deduction_%d' % id] = forms.FloatField(
+#                 label=' '.join(name.split('_')).title(),
+#                 widget=NumberInput(attrs={'data-bind': "value: deduction_%s, readOnly: disable_input" % (id)}),
+#             )
+#
+#
+# class IncentiveDataForm(forms.Form):
+#
+#     def __init__(self, *args, **kwargs):
+#         # extra = kwargs.pop('extra')
+#         super(IncentiveDataForm, self).__init__(*args, **kwargs)
+#
+#         for name, id in get_incentive_names():
+#             self.fields['incentive_%d' % id] = forms.FloatField(
+#                 label=' '.join(name.split('_')).title(),
+#                 widget=NumberInput(attrs={'data-bind': "value: incentive_%s, readOnly: disable_input" % (id)}),
+#             )
+#
+#
+# class AllowanceDataForm(forms.Form):
+#
+#     def __init__(self, *args, **kwargs):
+#         # extra = kwargs.pop('extra')
+#         super(AllowanceDataForm, self).__init__(*args, **kwargs)
+#
+#         for name, id in get_allowance_names():
+#             self.fields['allowance_%d' % id] = forms.FloatField(
+#                 label=' '.join(name.split('_')).title(),
+#                 widget=NumberInput(attrs={'data-bind': "value: allowance_%s, readOnly: disable_input" % (id)}),
+#             )
 
 
-def get_allowance_names():
-    allowances = AllowanceName.objects.all()
-    names = []
-    for obj in allowances:
-        # if obj.deduction_for == 'EMPLOYEE ACC':
-        #     name = obj.in_acc_type.name
-        # else:
-        #     name = '_'.join(obj.name.split(' ')).lower()
-        name = '_'.join(obj.name.split(' ')).lower()
-        names.append((name, obj.id))
-    return names
-
-
-class DeductionDataForm(forms.Form):
-
-    def __init__(self, *args, **kwargs):
-        # extra = kwargs.pop('extra')
-        super(DeductionDataForm, self).__init__(*args, **kwargs)
-
-        for name, id in get_deduction_names():
-            self.fields['deduction_%d' % id] = forms.FloatField(
-                label=' '.join(name.split('_')).title(),
-                widget=NumberInput(attrs={'data-bind': "value: deduction_%s, readOnly: disable_input" % (id)}),
-            )
-
-
-class IncentiveDataForm(forms.Form):
-
-    def __init__(self, *args, **kwargs):
-        # extra = kwargs.pop('extra')
-        super(IncentiveDataForm, self).__init__(*args, **kwargs)
-
-        for name, id in get_incentive_names():
-            self.fields['incentive_%d' % id] = forms.FloatField(
-                label=' '.join(name.split('_')).title(),
-                widget=NumberInput(attrs={'data-bind': "value: incentive_%s, readOnly: disable_input" % (id)}),
-            )
-
-
-class AllowanceDataForm(forms.Form):
-
-    def __init__(self, *args, **kwargs):
-        # extra = kwargs.pop('extra')
-        super(AllowanceDataForm, self).__init__(*args, **kwargs)
-
-        for name, id in get_allowance_names():
-            self.fields['allowance_%d' % id] = forms.FloatField(
-                label=' '.join(name.split('_')).title(),
-                widget=NumberInput(attrs={'data-bind': "value: allowance_%s, readOnly: disable_input" % (id)}),
-            )
-
-
-class PaymentRowForm(HTML5BootstrapModelForm):
-    # deduced_amount = forms.FloatField(
-    #     widget=NumberInput(attrs={'data-bind': "value: deduced_amount, disable: disable_input"})
-    # )
-
-    class Meta:
-        model = PaymentRecord
-        # exclude = ('deduction_detail',)
-        fields = ('paid_employee',)
-
-        # fields = ('name', 'title', 'birth_date')
-        widgets = {
-            'paid_employee': Select(attrs={'data-bind': "event:{ change: employee_changed}, readOnly: disable_input, selectize: emp_options, value: paid_employee"}),
-            # 'paid_from_date': DateInput(attrs={'data-bind': "value:$parent.paid_from_date, disable: disable_input"}),
-            # 'paid_to_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date, disable: disable_input"}),
-            # 'absent_days': NumberInput(attrs={'data-bind': "visible: false, readOnly: disable_input"}),
-            # 'allowance': NumberInput(attrs={'data-bind': "value: allowance, readOnly: disable_input"}),
-            # 'incentive': NumberInput(attrs={'data-bind': "value: incentive, readOnly: disable_input"}),
-            # 'pf_deduction_amount': NumberInput(attrs={'data-bind': "value: pf_deduction_amount", "step": "any"}),
-            # 'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount, readOnly: disable_input"}),
-            # 'income_tax': NumberInput(attrs={'data-bind': "value: income_tax, readOnly: disable_input"}),
-            # 'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount, readOnly: disable_input"}),
-            # 'salary': NumberInput(attrs={'data-bind': "value: salary, readOnly: disable_input"}),
-            # 'paid_amount': NumberInput(attrs={'data-bind': "value: paid_amount, readOnly: disable_input"}),
-        }
-
-    # def __init__(self, *args, **kwargs):
-    #     super(PaymentRowForm, self).__init__(*args, **kwargs)
-    #     self.fields["paid_employee"].choices = [("", _("Select Employee")),] + list(self.fields["paid_employee"].choices)[1:]
+# class PaymentRowForm(HTML5BootstrapModelForm):
+#     # deduced_amount = forms.FloatField(
+#     #     widget=NumberInput(attrs={'data-bind': "value: deduced_amount, disable: disable_input"})
+#     # )
+#
+#     class Meta:
+#         model = PaymentRecord
+#         # exclude = ('deduction_detail',)
+#         fields = ('paid_employee',)
+#
+#         # fields = ('name', 'title', 'birth_date')
+#         widgets = {
+#             'paid_employee': Select(attrs={'data-bind': "event:{ change: employee_changed}, readOnly: disable_input, selectize: emp_options, value: paid_employee"}),
+#             # 'paid_from_date': DateInput(attrs={'data-bind': "value:$parent.paid_from_date, disable: disable_input"}),
+#             # 'paid_to_date': DateInput(attrs={'data-bind': "value:$parent.paid_to_date, disable: disable_input"}),
+#             # 'absent_days': NumberInput(attrs={'data-bind': "visible: false, readOnly: disable_input"}),
+#             # 'allowance': NumberInput(attrs={'data-bind': "value: allowance, readOnly: disable_input"}),
+#             # 'incentive': NumberInput(attrs={'data-bind': "value: incentive, readOnly: disable_input"}),
+#             # 'pf_deduction_amount': NumberInput(attrs={'data-bind': "value: pf_deduction_amount", "step": "any"}),
+#             # 'deduced_amount': NumberInput(attrs={'data-bind': "value: deduced_amount, readOnly: disable_input"}),
+#             # 'income_tax': NumberInput(attrs={'data-bind': "value: income_tax, readOnly: disable_input"}),
+#             # 'pro_tempore_amount': NumberInput(attrs={'data-bind': "value: pro_tempore_amount, readOnly: disable_input"}),
+#             # 'salary': NumberInput(attrs={'data-bind': "value: salary, readOnly: disable_input"}),
+#             # 'paid_amount': NumberInput(attrs={'data-bind': "value: paid_amount, readOnly: disable_input"}),
+#         }
+#
+#     # def __init__(self, *args, **kwargs):
+#     #     super(PaymentRowForm, self).__init__(*args, **kwargs)
+#     #     self.fields["paid_employee"].choices = [("", _("Select Employee")),] + list(self.fields["paid_employee"].choices)[1:]
 
 
 class PayrollEntryForm(HTML5BootstrapModelForm):
@@ -167,18 +167,18 @@ class PayrollEntryForm(HTML5BootstrapModelForm):
 
 
 class GroupPayrollForm(forms.Form):
-    # branch_choices = [(o.id, o.name) for o in BranchOffice.objects.all()]
-    # branch_choices.insert(0, ('ALL', 'All'))
+    branch_choices = [(o.id, o.name) for o in BranchOffice.objects.all()]
+    branch_choices.insert(0, ("ALL", 'All'))
     payroll_type = forms.ChoiceField(
         choices=[
                  ('INDIVIDUAL', _('Individual')),
                  ('GROUP', _('Group'))],
-        widget=Select(attrs={'data-bind': 'value: payroll_type'})
+        widget=Select(attrs={'data-bind': 'value: payroll_type, selectize:{}'})
                  )
-    branch = forms.ModelChoiceField(
-        queryset=BranchOffice.objects.all(),
-        empty_label="All",
-        widget=Select(attrs={'data-bind': 'value: branch'})
+    branch = forms.ChoiceField(
+        choices=branch_choices,
+        # empty_label="All",
+        widget=Select(attrs={'data-bind': 'value: branch, selectize:{}'})
         )
     from_date = forms.DateField(
         widget=DateInput(attrs={
@@ -780,10 +780,10 @@ class TaxSchemeForm(HTML5BootstrapModelForm):
 
 
 # These are forms for payroll entry
-PaymentRowFormSet = forms.formset_factory(PaymentRowForm)
-DeductionFormSet = forms.formset_factory(DeductionDataForm)
-IncentiveFormSet = forms.formset_factory(IncentiveDataForm)
-AllowanceFormSet = forms.formset_factory(AllowanceDataForm)
+# PaymentRowFormSet = forms.formset_factory(PaymentRowForm)
+# DeductionFormSet = forms.formset_factory(DeductionDataForm)
+# IncentiveFormSet = forms.formset_factory(IncentiveDataForm)
+# AllowanceFormSet = forms.formset_factory(AllowanceDataForm)
 
 
 # These are crud formset
