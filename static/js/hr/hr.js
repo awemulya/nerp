@@ -20,8 +20,8 @@ $(document).ready(function () {
     }
 });
 
-function diffByID(list1, list2) {
-    if (list1.length > list2.length) {
+function diffByID(list1, list2, pdb) {
+    if (list1.length >= list2.length) {
         var list1_ids = ko.utils.arrayMap(list1, function (obj) {
             return obj.id
         });
@@ -36,6 +36,11 @@ function diffByID(list1, list2) {
                 return obj
             }
         });
+
+        console.log(diff, diff_obj_array);
+        if(pdb){
+            debugger;
+        }
         return diff_obj_array;
     }
 
@@ -432,22 +437,22 @@ function PayrollEntry(employee_options) {
             url: '/payroll/get_employee_options/',
             method: 'POST',
             dataType: 'json',
-            // async: true,
+            // async: false,
             data: {
                 branch: self.branch() ? self.branch() : 'ALL'
             },
             success: function (response) {
                 // self.employee_options(response.opt_data);
 
+
                 // dont delete just trim emp_options (ie either push or pop)
                 if (self.employee_options().length > response.opt_data.length) {
-                    debugger;
+                    // debugger;
                     self.employee_options.removeAll(diffByID(self.employee_options(), response.opt_data));
                 } else if (self.employee_options().length < response.opt_data.length) {
                     ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()))
-                } else {
-
                 }
+                // self.employee_options(response.opt_data);
 
                 console.log('emplotee options loading success');
             },
@@ -492,14 +497,15 @@ function PayrollEntry(employee_options) {
         for (var roow of self.entry_rows()) {
 
             // dont delete just trim emp_options (ie either push or pop)
-            if (self.employee_options().length > roow.emp_options().length) {
-                // roow.emp_options.removeAll($(self.employee_options()).not(roow.emp_options()).get());
-                ko.utils.arrayPushAll(roow.emp_options, diffByID(self.employee_options(), roow.emp_options()))
-            } else if (self.employee_options().length < roow.emp_options().length) {
-                roow.emp_options.removeAll(diffByID(roow.emp_options(), self.employee_options()));
-            } else {
-
-            }
+            // if (self.employee_options().length > roow.emp_options().length) {
+            //     // roow.emp_options.removeAll($(self.employee_options()).not(roow.emp_options()).get());
+            //     ko.utils.arrayPushAll(roow.emp_options, diffByID(self.employee_options(), roow.emp_options()))
+            // } else if (self.employee_options().length < roow.emp_options().length) {
+            //     roow.emp_options.removeAll(diffByID(roow.emp_options(), self.employee_options()));
+            // } else {
+            //     roow.emp_options(self.employee_options().slice())
+            // }
+            roow.emp_options(self.employee_options().slice());
 
             var to_remove = [];
             for (var opt of roow.emp_options()) {
@@ -508,8 +514,16 @@ function PayrollEntry(employee_options) {
                     to_remove.push(opt);
                 }
             }
-            var diff = $(roow.emp_options()).not(to_remove).get();
-            roow.emp_options(diff);
+
+            // console.log('to remove diff')
+            // console.log(roow.emp_options(), to_remove);
+            // console.log(diffByID(roow.emp_options(), to_remove, true));
+
+            // var diff = $(roow.emp_options()).not(to_remove).get();
+            console.log(roow.emp_options(), to_remove)
+            roow.emp_options(diffByID(roow.emp_options(), to_remove));
+
+            // console.log(diff);
             // roow.emp_options.removeAll(diffByID(roow.emp_options(), to_remove));
 
             //  // dont delete just trim emp_options (ie either push or pop)
