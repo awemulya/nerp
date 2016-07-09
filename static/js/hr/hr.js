@@ -114,6 +114,7 @@ function PaymentEntryRow(emp_options) {
         // }
         self.request_flag(true);
     });
+
     // self.employee_changed = function () {
     //     // console.log('We entered here successfully');
     //     console.log(self.paid_employee());
@@ -125,67 +126,67 @@ function PaymentEntryRow(emp_options) {
     // };
 
     // Make here a observable function dat will set other parameters with employee id and date range
-    // self.get_emp_data = ko.computed(function () {
-    //     debugger;
-    //     if (self.paid_from_date() && self.paid_to_date() && self.request_flag() && self.is_explicitly_added_row) {
-    //         $.ajax({
-    //             url: 'get_employee_account/',
-    //             method: 'POST',
-    //             dataType: 'json',
-    //             data: {
-    //                 paid_employee: self.employee_id,
-    //                 paid_from_date: self.paid_from_date(),
-    //                 paid_to_date: self.paid_to_date(),
-    //                 is_monthly_payroll: vm.is_monthly_payroll()
-    //             },
-    //             // async: true,
-    //             success: function (response) {
-    //                 console.log(response);
-    //                 if (response.errors) {
-    //                     vm.entry_rows([new PaymentEntryRow()]);
-    //                     if (response.errors.paid_from_date) {
-    //                         vm.paid_from_date_error(response.errors.paid_from_date);
-    //                     } else {
-    //                         vm.paid_from_date_error(null);
-    //                     }
-    //
-    //                     if (response.errors.paid_to_date) {
-    //                         vm.paid_to_date_error(response.errors.paid_to_date);
-    //                     } else {
-    //                         vm.paid_to_date_error(null);
-    //                     }
-    //                     if (response.errors.invalid_date_range) {
-    //                         vm.messages.push(response.errors.invalid_date_range);
-    //                     }
-    //                 } else {
-    //                     vm.paid_from_date_error(null);
-    //                     vm.paid_to_date_error(null);
-    //                     // vm.invalid_date_range(null);
-    //                     var mapping = {
-    //                         'ignore': ["paid_employee", "emp_options"]
-    //                     };
-    //                     self.request_flag(false);
-    //
-    //                     ko.mapping.fromJS(response.data, mapping, self);
-    //                     if (typeof(response.data.row_errors) == 'undefined') {
-    //                         self.row_errors([]);
-    //                     }
-    //
-    //                     // if(vm.entry_rows.length == 1){
-    //                     vm.paid_from_date(response.data.paid_from_date);
-    //                     vm.paid_to_date(response.data.paid_to_date);
-    //                     // };
-    //                 }
-    //
-    //             },
-    //             error: function (errorThrown) {
-    //                 console.log(errorThrown);
-    //             }
-    //         });
-    //     } else {
-    //     }
-    //     self.request_flag(false);
-    // });
+    self.get_emp_data = ko.computed(function () {
+        // debugger;
+        if (self.paid_from_date() && self.paid_to_date() && self.request_flag() && self.is_explicitly_added_row) {
+            $.ajax({
+                url: '/payroll/get_employee_account/',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    paid_employee: self.paid_employee(),
+                    paid_from_date: self.paid_from_date(),
+                    paid_to_date: self.paid_to_date(),
+                    is_monthly_payroll: vm.is_monthly_payroll()
+                },
+                // async: true,
+                success: function (response) {
+                    console.log(response);
+                    if (response.errors) {
+                        vm.entry_rows([new PaymentEntryRow()]);
+                        if (response.errors.paid_from_date) {
+                            vm.paid_from_date_error(response.errors.paid_from_date);
+                        } else {
+                            vm.paid_from_date_error(null);
+                        }
+
+                        if (response.errors.paid_to_date) {
+                            vm.paid_to_date_error(response.errors.paid_to_date);
+                        } else {
+                            vm.paid_to_date_error(null);
+                        }
+                        if (response.errors.invalid_date_range) {
+                            vm.messages.push(response.errors.invalid_date_range);
+                        }
+                    } else {
+                        vm.paid_from_date_error(null);
+                        vm.paid_to_date_error(null);
+                        // vm.invalid_date_range(null);
+                        var mapping = {
+                            'ignore': ["paid_employee", "emp_options"]
+                        };
+                        self.request_flag(false);
+
+                        ko.mapping.fromJS(response.data, mapping, self);
+                        if (typeof(response.data.row_errors) == 'undefined') {
+                            self.row_errors([]);
+                        }
+
+                        // if(vm.entry_rows.length == 1){
+                        vm.paid_from_date(response.data.paid_from_date);
+                        vm.paid_to_date(response.data.paid_to_date);
+                        // };
+                    }
+
+                },
+                error: function (errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
+        } else {
+        }
+        self.request_flag(false);
+    });
 }
 
 function PayrollEntry(employee_options) {
