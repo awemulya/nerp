@@ -469,7 +469,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
     if not eligible:
         row_errors.append(error)
     employee_response = {}
-    employee_response['paid_employee'] = employee.id
+    employee_response['paid_employee'] = str(employee.id)
     employee_response['employee_grade'] = employee.designation.grade.grade_name
     employee_response['employee_designation'] = employee.designation.designation_name
 
@@ -744,12 +744,22 @@ def payroll_entry(request, pk=None):
     else:
         ctx_data = None
     main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
+
+    # Inititial employee options
+    employees = Employee.objects.all()
+    emp_opt_list = [{'name': e.employee.full_name, 'id': str(e.id)} for e in employees]
+
+    ko_data = {
+        'ctx_data': ctx_data,
+        'emp_options': emp_opt_list
+    }
+
     return render(
         request,
         'payroll_entry.html',
         {
             'm_form': main_form,
-            'ctx_data': ctx_data
+            'ko_data': ko_data
         })
 
 

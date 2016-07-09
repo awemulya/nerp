@@ -1,12 +1,12 @@
 $(document).ready(function () {
     // ko.options.deferUpdates = true;
-    vm = new PayrollEntry();
+    vm = new PayrollEntry(ko_data.emp_options);
     ko.applyBindings(vm);
-    if (ctx_data) {
+    if (ko_data.ctx_data) {
         var mapping = {
             'entry_rows': {
                 create: function (options) {
-                    var entry_row = ko.mapping.fromJS(options.data, {copy: ['is_explicitly_added_row']}, new PaymentEntryRow());
+                    var entry_row = ko.mapping.fromJS(options.data, {copy: ['is_explicitly_added_row']}, new PaymentEntryRow(ko_data.emp_options.slice(0)));
                     if (typeof(options.parent.paid_from_date()) == 'undefined') {
                         options.parent.paid_from_date(options.data.paid_from_date);
                         options.parent.paid_to_date(options.data.paid_to_date);
@@ -16,18 +16,38 @@ $(document).ready(function () {
             }
         };
         console.log('about to map on edit');
-        ko.mapping.fromJS(ctx_data, mapping, vm);
+        ko.mapping.fromJS(ko_data.ctx_data, mapping, vm);
     }
 });
 
-function PaymentEntryRow() {
+function diffByID(list1, list2) {
+    if (list1.length > list2.length) {
+        var list1_ids = ko.utils.arrayMap(list1, function (obj) {
+            return obj.id
+        });
+        var list2_ids = ko.utils.arrayMap(list2, function (obj) {
+            return obj.id
+        });
+        var diff = $(list1_ids).not(list2_ids).get();
+
+        var diff_obj_array = ko.utils.arrayFilter(list1, function(obj){
+
+            if ($.inArray(obj.id, diff) != -1){
+                return obj
+            }
+        });
+        return diff_obj_array;
+    }
+
+}
+
+function PaymentEntryRow(emp_options) {
     var self = this;
     self.id = ko.observable();
-    self.emp_options = ko.observableArray();
-    self.emp_options = ko.observableArray();
-    self.emp_options.extend({notify: 'always'});
+    self.emp_options = ko.observableArray(emp_options);
+    // self.emp_options.extend({notify: 'always'});
     self.paid_employee = ko.observable();
-    self.employee_id = null;
+    // self.employee_id = null;
 
     self.employee_grade = ko.observable();
     self.employee_designation = ko.observable();
@@ -78,15 +98,15 @@ function PaymentEntryRow() {
     self.is_explicitly_added_row = true;
 
 
-    self.emp_options.subscribe(function () {
-        self.paid_employee(self.employee_id);
-    });
+    // self.emp_options.subscribe(function () {
+    //     self.paid_employee(self.employee_id);
+    // });
     self.paid_employee.subscribe(function () {
         console.log('This is paid employee')
         console.log(self.paid_employee());
-        if (self.paid_employee()) {
-            self.employee_id = parseInt(self.paid_employee());
-        }
+        // if (self.paid_employee()) {
+        //     self.employee_id = parseInt(self.paid_employee());
+        // }
         self.request_flag(true);
     });
     // self.employee_changed = function () {
@@ -100,70 +120,70 @@ function PaymentEntryRow() {
     // };
 
     // Make here a observable function dat will set other parameters with employee id and date range
-    self.get_emp_data = ko.computed(function () {
-        debugger;
-        if (self.paid_from_date() && self.paid_to_date() && self.request_flag() && self.is_explicitly_added_row) {
-            $.ajax({
-                url: 'get_employee_account/',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    paid_employee: self.employee_id,
-                    paid_from_date: self.paid_from_date(),
-                    paid_to_date: self.paid_to_date(),
-                    is_monthly_payroll: vm.is_monthly_payroll()
-                },
-                // async: true,
-                success: function (response) {
-                    console.log(response);
-                    if (response.errors) {
-                        vm.entry_rows([new PaymentEntryRow()]);
-                        if (response.errors.paid_from_date) {
-                            vm.paid_from_date_error(response.errors.paid_from_date);
-                        } else {
-                            vm.paid_from_date_error(null);
-                        }
-
-                        if (response.errors.paid_to_date) {
-                            vm.paid_to_date_error(response.errors.paid_to_date);
-                        } else {
-                            vm.paid_to_date_error(null);
-                        }
-                        if (response.errors.invalid_date_range) {
-                            vm.messages.push(response.errors.invalid_date_range);
-                        }
-                    } else {
-                        vm.paid_from_date_error(null);
-                        vm.paid_to_date_error(null);
-                        // vm.invalid_date_range(null);
-                        var mapping = {
-                            'ignore': ["paid_employee", "emp_options"]
-                        };
-                        self.request_flag(false);
-
-                        ko.mapping.fromJS(response.data, mapping, self);
-                        if (typeof(response.data.row_errors) == 'undefined') {
-                            self.row_errors([]);
-                        }
-
-                        // if(vm.entry_rows.length == 1){
-                        vm.paid_from_date(response.data.paid_from_date);
-                        vm.paid_to_date(response.data.paid_to_date);
-                        // };
-                    }
-
-                },
-                error: function (errorThrown) {
-                    console.log(errorThrown);
-                }
-            });
-        } else {
-        }
-        self.request_flag(false);
-    });
+    // self.get_emp_data = ko.computed(function () {
+    //     debugger;
+    //     if (self.paid_from_date() && self.paid_to_date() && self.request_flag() && self.is_explicitly_added_row) {
+    //         $.ajax({
+    //             url: 'get_employee_account/',
+    //             method: 'POST',
+    //             dataType: 'json',
+    //             data: {
+    //                 paid_employee: self.employee_id,
+    //                 paid_from_date: self.paid_from_date(),
+    //                 paid_to_date: self.paid_to_date(),
+    //                 is_monthly_payroll: vm.is_monthly_payroll()
+    //             },
+    //             // async: true,
+    //             success: function (response) {
+    //                 console.log(response);
+    //                 if (response.errors) {
+    //                     vm.entry_rows([new PaymentEntryRow()]);
+    //                     if (response.errors.paid_from_date) {
+    //                         vm.paid_from_date_error(response.errors.paid_from_date);
+    //                     } else {
+    //                         vm.paid_from_date_error(null);
+    //                     }
+    //
+    //                     if (response.errors.paid_to_date) {
+    //                         vm.paid_to_date_error(response.errors.paid_to_date);
+    //                     } else {
+    //                         vm.paid_to_date_error(null);
+    //                     }
+    //                     if (response.errors.invalid_date_range) {
+    //                         vm.messages.push(response.errors.invalid_date_range);
+    //                     }
+    //                 } else {
+    //                     vm.paid_from_date_error(null);
+    //                     vm.paid_to_date_error(null);
+    //                     // vm.invalid_date_range(null);
+    //                     var mapping = {
+    //                         'ignore': ["paid_employee", "emp_options"]
+    //                     };
+    //                     self.request_flag(false);
+    //
+    //                     ko.mapping.fromJS(response.data, mapping, self);
+    //                     if (typeof(response.data.row_errors) == 'undefined') {
+    //                         self.row_errors([]);
+    //                     }
+    //
+    //                     // if(vm.entry_rows.length == 1){
+    //                     vm.paid_from_date(response.data.paid_from_date);
+    //                     vm.paid_to_date(response.data.paid_to_date);
+    //                     // };
+    //                 }
+    //
+    //             },
+    //             error: function (errorThrown) {
+    //                 console.log(errorThrown);
+    //             }
+    //         });
+    //     } else {
+    //     }
+    //     self.request_flag(false);
+    // });
 }
 
-function PayrollEntry() {
+function PayrollEntry(employee_options) {
     var self = this;
 
     self.id = ko.observable();
@@ -186,7 +206,7 @@ function PayrollEntry() {
 
     self.messages = ko.observableArray();
 
-    self.employee_options = ko.observableArray();
+    self.employee_options = ko.observableArray(employee_options);
 
     // self.id.subscribe(function(){
     //     if(self.id()){
@@ -272,7 +292,7 @@ function PayrollEntry() {
         if (!self.id()) {
             if (self.payroll_type() == 'INDIVIDUAL') {
                 self.entry_rows([]);
-                self.entry_rows.push(new PaymentEntryRow());
+                self.entry_rows.push(new PaymentEntryRow(employee_options.slice(0)));
             } else {
                 self.entry_rows([]);
             }
@@ -323,7 +343,7 @@ function PayrollEntry() {
     };
 
     self.addRow = function (event) {
-        self.entry_rows.push(new PaymentEntryRow());
+        self.entry_rows.push(new PaymentEntryRow(employee_options.slice(0)));
     };
     self.removeRow = function (row) {
         self.entry_rows.remove(row);
@@ -386,8 +406,8 @@ function PayrollEntry() {
 
                             c += 1;
 
-                            var row = ko.mapping.fromJS(data, {}, new PaymentEntryRow());
-                            row.employee_id = row.paid_employee();
+                            var row = ko.mapping.fromJS(data, {}, new PaymentEntryRow(employee_options.slice(0)));
+                            // row.employee_id = row.paid_employee();
                             row.is_explicitly_added_row = false;
                             if (typeof(row.row_errors) == 'undefined') {
                                 row.row_errors = ko.observableArray([]);
@@ -417,7 +437,18 @@ function PayrollEntry() {
                 branch: self.branch() ? self.branch() : 'ALL'
             },
             success: function (response) {
-                self.employee_options(response.opt_data);
+                // self.employee_options(response.opt_data);
+
+                // dont delete just trim emp_options (ie either push or pop)
+                if (self.employee_options().length > response.opt_data.length) {
+                    debugger;
+                    self.employee_options.removeAll(diffByID(self.employee_options(), response.opt_data));
+                } else if (self.employee_options().length < response.opt_data.length) {
+                    ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()))
+                } else {
+
+                }
+
                 console.log('emplotee options loading success');
             },
             error: function (errorThrown) {
@@ -425,25 +456,25 @@ function PayrollEntry() {
             }
         });
     };
-    self.update_employee_options();
+    // self.update_employee_options();
     self.branch.subscribe(function () {
         console.log('employee options updated');
         self.update_employee_options();
     });
 
-    self.employee_options.subscribe(function () {
-        var branch_emp_ids = ko.utils.arrayMap(self.employee_options(), function (obj) {
-            return parseInt(obj.id)
-        });
-        var rows_to_remove = [];
-        for (var roo of self.entry_rows()) {
-            if ($.inArray(roo.employee_id, branch_emp_ids) == -1) {
-                console.log('just removed one row');
-                rows_to_remove.push(roo);
-            }
-        }
-        self.entry_rows.removeAll(rows_to_remove);
-    });
+    // self.employee_options.subscribe(function () {
+    //     var branch_emp_ids = ko.utils.arrayMap(self.employee_options(), function (obj) {
+    //         return parseInt(obj.id)
+    //     });
+    //     var rows_to_remove = [];
+    //     for (var roo of self.entry_rows()) {
+    //         if ($.inArray(roo.paid_employee(), branch_emp_ids) == -1) {
+    //             console.log('just removed one row');
+    //             rows_to_remove.push(roo);
+    //         }
+    //     }
+    //     self.entry_rows.removeAll(rows_to_remove);
+    // });
 
     self.selected_employees = ko.computed(function () {
         var sel_e = [];
@@ -456,18 +487,37 @@ function PayrollEntry() {
     });
 
     self.update_employees_options = ko.computed(function () {
+        console.log(self.selected_employees());
+        // debugger;
         for (var roow of self.entry_rows()) {
-            roow.emp_options(self.employee_options().slice());
+
+            // dont delete just trim emp_options (ie either push or pop)
+            if (self.employee_options().length > roow.emp_options().length) {
+                // roow.emp_options.removeAll($(self.employee_options()).not(roow.emp_options()).get());
+                ko.utils.arrayPushAll(roow.emp_options, diffByID(self.employee_options(), roow.emp_options()))
+            } else if (self.employee_options().length < roow.emp_options().length) {
+                roow.emp_options.removeAll(diffByID(roow.emp_options(), self.employee_options()));
+            } else {
+
+            }
+
             var to_remove = [];
             for (var opt of roow.emp_options()) {
 
-                if ($.inArray(String(opt.id), self.selected_employees()) != -1 && String(opt.id) != roow.employee_id) {
+                if ($.inArray(opt.id, self.selected_employees()) != -1 && opt.id != roow.paid_employee()) {
                     to_remove.push(opt);
                 }
             }
             var diff = $(roow.emp_options()).not(to_remove).get();
             roow.emp_options(diff);
-            // roow.paid_employee(roow.employee_id);
+            // roow.emp_options.removeAll(diffByID(roow.emp_options(), to_remove));
+
+            //  // dont delete just trim emp_options (ie either push or pop)
+            // if(roow.emp_options().length > to_remove.length ){
+            //    roow.emp_options.removeAll(to_remove);
+            // }
+
+            // // roow.paid_employee(roow.employee_id);
         }
     });
 
