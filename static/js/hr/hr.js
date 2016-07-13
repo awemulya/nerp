@@ -452,6 +452,10 @@ function PayrollEntry(employee_options) {
                     self.employee_options.removeAll(diffByID(self.employee_options(), response.opt_data));
                 } else if (self.employee_options().length < response.opt_data.length) {
                     ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()))
+                }else{
+                    // self.employee_options(response.opt_data);
+                    self.employee_options.removeAll(diffByID(self.employee_options(), response.opt_data));
+                    ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()))
                 }
                 // self.employee_options(response.opt_data);
 
