@@ -24,7 +24,8 @@ from njango.nepdate import bs
 from .models import get_y_m_tuple_list
 from .bsdate import BSDate
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
-    emp_salary_eligibility, month_cnt_inrange, fiscal_year_data
+    emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
+    emp_salary_eligibility_on_edit
 from account.models import set_transactions
 from hr.filters import EmployeeFilter
 from django.core import serializers
@@ -459,15 +460,25 @@ def salary_taxation_unit(employee, f_y_item):
 #     return employee_response
 
 
-def get_employee_salary_detail(employee, paid_from_date, paid_to_date):
+def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibility_check_on_edit, edit_row):
     row_errors = []
-    eligible, error = emp_salary_eligibility(
-        employee,
-        paid_from_date,
-        paid_to_date
-    )
+    if not eligibility_check_on_edit:
+        eligible, error = emp_salary_eligibility(
+            employee,
+            paid_from_date,
+            paid_to_date,
+        )
+
+    else:
+        eligible, error = emp_salary_eligibility_on_edit(
+            paid_from_date,
+            paid_from_date,
+            employee,
+            edit_row
+        )
     if not eligible:
         row_errors.append(error)
+
     employee_response = {}
     employee_response['paid_employee'] = str(employee.id)
     employee_response['employee_grade'] = employee.designation.grade.grade_name
@@ -773,6 +784,7 @@ def get_employee_account(request):
         else:
             error['employee'] = 'No such employee'
 
+        edit = request.POST.get('edit')
         dates = verify_request_date(request)
 
         if isinstance(dates, tuple):
@@ -786,10 +798,24 @@ def get_employee_account(request):
 
         # Now calculate all the values and give a good meaningful response
         # total_work_day = paid_to_date - paid_from_date
+
+        # Check for eligibility check
+        eligibility_check_on_edit = False
+        if edit:
+            p_e = PayrollEntry.objects.get(id=edit)
+            emp_entry_rows = p_e.entry_rows.all().filter(paid_employee=employee)
+            if not emp_entry_rows:
+                eligibility_check_on_edit = False
+            else:
+                eligibility_check_on_edit = True
+
+
         response['data'] = get_employee_salary_detail(
             employee,
             paid_from_date,
-            paid_to_date
+            paid_to_date,
+            eligibility_check_on_edit,
+            emp_entry_rows[0]
         )
 
         # response.update(resp)
@@ -814,6 +840,7 @@ def get_employees_account(request):
             return JsonResponse(response)
 
         branch = request.POST.get('branch', None)
+        edit = request.POST.get('edit')
         if branch == 'ALL':
             employees = Employee.objects.all()
         else:
@@ -823,10 +850,20 @@ def get_employees_account(request):
 
         for employee in employees:
             # data_dict = {'employee_id': employee.id}
+            eligibility_check_on_edit = False
+            if edit:
+                p_e = PayrollEntry.objects.get(id=edit)
+                emp_entry_rows = p_e.entry_rows.all().filter(paid_employee=employee)
+                if not emp_entry_rows:
+                    eligibility_check_on_edit = False
+                else:
+                    eligibility_check_on_edit = True
             employee_salary_detail = get_employee_salary_detail(
                 employee,
                 paid_from_date,
-                paid_to_date
+                paid_to_date,
+                eligibility_check_on_edit,
+                emp_entry_rows[0]
             )
 
             # data_dict.update(employee_salary_detail)

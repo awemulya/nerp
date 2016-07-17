@@ -233,12 +233,9 @@ def drc_date_by_days(in_date, drc):
         r_date = drc_1_day(in_date)
     return r_date
 
-
-def emp_salary_eligibility(emp, p_from, p_to):
+def employee_last_payment_record(employee):
     from hr.models import PaymentRecord
-    error_msg = None
-    never_paid = None
-    emp_record = PaymentRecord.objects.filter(paid_employee=emp)
+    emp_record = PaymentRecord.objects.filter(paid_employee=employee)
     if emp_record:
         if isinstance(emp_record[0].paid_to_date, date):
             emp_record = sorted(
@@ -252,11 +249,21 @@ def emp_salary_eligibility(emp, p_from, p_to):
                 key=lambda pr: BSDate(*(bs_str2tuple(pr.paid_to_date))),
                 reverse=True
             )
-    if emp_record:
-        if isinstance(emp_record[0].paid_to_date, date):
-            last_paid = emp_record[0].paid_to_date
+        return emp_record[0]
+    else:
+        return None
+
+
+def emp_salary_eligibility(emp, p_from, p_to):
+    error_msg = None
+    never_paid = None
+    emp_last_record = employee_last_payment_record(emp)
+
+    if emp_last_record:
+        if isinstance(emp_last_record.paid_to_date, date):
+            last_paid = emp_last_record.paid_to_date
         else:
-            last_paid = BSDate(*(bs_str2tuple(emp_record[0].paid_to_date)))
+            last_paid = BSDate(*(bs_str2tuple(emp_last_record.paid_to_date)))
     else:
         if isinstance(emp.appoint_date, date):
             last_paid = drc_1_day(emp.appoint_date)
@@ -287,6 +294,37 @@ def emp_salary_eligibility(emp, p_from, p_to):
     else:
         return True, None
 
+
+def emp_salary_eligibility_on_edit(fromdate_request, todate_request, employee, edit_row):
+    error_msg = None
+    fromdate_saved = edit_row.paid_from_date
+    if not isinstance(fromdate_saved, date):
+        fromdate_saved = BSDate(*(bs_str2tuple(fromdate_saved)))
+    todate_saved = edit_row.paid_to_date
+    if not isinstance(todate_saved, date):
+        todate_saved = BSDate(*(bs_str2tuple(todate_saved)))
+
+
+    # find this employee last record
+    last_payment_record = employee_last_payment_record(employee)
+    fromdate_last = last_payment_record.paid_from_date
+    if not isinstance(fromdate_last, date):
+        fromdate_last = BSDate(*(bs_str2tuple(fromdate_last)))
+    todate_last = last_payment_record.paid_to_date
+    if not isinstance(todate_last, date):
+        todate_last = BSDate(*(bs_str2tuple(todate_last)))
+
+    # Calculate errors from logical operations
+    if fromdate_request < fromdate_saved:
+        error_msg = 'Overlapped with previous entries'
+    elif last_payment_record != edit_row:
+        if todate_request > todate_saved:
+            error_msg = 'Overlapped with next entry'
+
+    if error_msg:
+        return False, error_msg
+    else:
+        return True, None
 
 def fiscal_year_by_date(f_date):
     fiscal_year_range = None

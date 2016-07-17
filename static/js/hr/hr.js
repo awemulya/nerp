@@ -137,7 +137,8 @@ function PaymentEntryRow(emp_options) {
                     paid_employee: self.paid_employee(),
                     paid_from_date: self.paid_from_date(),
                     paid_to_date: self.paid_to_date(),
-                    is_monthly_payroll: vm.is_monthly_payroll()
+                    is_monthly_payroll: vm.is_monthly_payroll(),
+                    edit: vm.id(),
                 },
                 // async: true,
                 success: function (response) {
@@ -378,7 +379,8 @@ function PayrollEntry(employee_options) {
                     branch: self.branch() ? self.branch() : 'ALL',
                     paid_from_date: self.paid_from_date(),
                     paid_to_date: self.paid_to_date(),
-                    is_monthly_payroll: self.is_monthly_payroll()
+                    is_monthly_payroll: self.is_monthly_payroll(),
+                    edit: self.id(),
                 },
                 // async: true,
                 success: function (response) {

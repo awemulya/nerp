@@ -770,6 +770,14 @@ class PayrollEntry(models.Model):
             str(self.entry_datetime),
         )
 
+    def get_date_range_in_tuple(self):
+        rows = self.entry_rows.all()
+        if rows:
+            return (rows[0].paid_from_date, rows[0].paid_to_date)
+        else:
+            return None
+
+
 
 def employee_account_validator(acc_id):
     category = Account.objects.get(id=acc_id).category
