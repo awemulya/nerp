@@ -86,7 +86,7 @@ def verify_request_date(request):
             return error
         else:
             monthly_payroll = request.POST.get(
-                'monthly_payroll',
+                'is_monthly_payroll',
                 None
             )
             if monthly_payroll == u'true':

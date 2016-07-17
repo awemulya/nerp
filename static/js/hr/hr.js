@@ -106,14 +106,14 @@ function PaymentEntryRow(emp_options) {
     // self.emp_options.subscribe(function () {
     //     self.paid_employee(self.employee_id);
     // });
-    self.paid_employee.subscribe(function () {
-        console.log('This is paid employee')
-        console.log(self.paid_employee());
-        // if (self.paid_employee()) {
-        //     self.employee_id = parseInt(self.paid_employee());
-        // }
-        self.request_flag(true);
-    });
+    // self.paid_employee.subscribe(function () {
+    //     console.log('This is paid employee')
+    //     console.log(self.paid_employee());
+    //     // if (self.paid_employee()) {
+    //     //     self.employee_id = parseInt(self.paid_employee());
+    //     // }
+    //     self.request_flag(true);
+    // });
 
     // self.employee_changed = function () {
     //     // console.log('We entered here successfully');
@@ -127,8 +127,8 @@ function PaymentEntryRow(emp_options) {
 
     // Make here a observable function dat will set other parameters with employee id and date range
     self.get_emp_data = ko.computed(function () {
-        // debugger;
-        if (self.paid_from_date() && self.paid_to_date() && self.request_flag() && self.is_explicitly_added_row) {
+        if (self.paid_employee() && self.paid_from_date() && self.paid_to_date() && self.request_flag() && self.is_explicitly_added_row) {
+            console.log('explicitly added row got');
             $.ajax({
                 url: '/payroll/get_employee_account/',
                 method: 'POST',
@@ -166,7 +166,7 @@ function PaymentEntryRow(emp_options) {
                         var mapping = {
                             'ignore': ["paid_employee", "emp_options"]
                         };
-                        self.request_flag(false);
+                        // self.request_flag(false);
 
                         ko.mapping.fromJS(response.data, mapping, self);
                         if (typeof(response.data.row_errors) == 'undefined') {
@@ -186,7 +186,7 @@ function PaymentEntryRow(emp_options) {
             });
         } else {
         }
-        self.request_flag(false);
+        // self.request_flag(false);
     });
 }
 
@@ -295,16 +295,12 @@ function PayrollEntry(employee_options) {
     // });
 
     self.payroll_type.subscribe(function () {
-        // self.is_monthly_payroll();
-        if (!self.id()) {
-            if (self.payroll_type() == 'INDIVIDUAL') {
-                self.entry_rows([]);
+        if (self.payroll_type() == 'INDIVIDUAL') {
+            // debugger;
+            if(!self.entry_rows().length){
                 self.entry_rows.push(new PaymentEntryRow(employee_options.slice(0)));
-            } else {
-                self.entry_rows([]);
             }
         }
-
     });
 
 
