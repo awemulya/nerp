@@ -127,7 +127,7 @@ function PaymentEntryRow(emp_options) {
 
     // Make here a observable function dat will set other parameters with employee id and date range
     self.get_emp_data = ko.computed(function () {
-        if (self.paid_employee() && self.paid_from_date() && self.paid_to_date() && self.request_flag() && self.is_explicitly_added_row) {
+        if (self.paid_employee() && self.paid_from_date() && self.paid_to_date() && self.request_flag() && self.is_explicitly_added_row && vm.payroll_type()=="INDIVIDUAL") {
             console.log('explicitly added row got');
             $.ajax({
                 url: '/payroll/get_employee_account/',
@@ -364,7 +364,7 @@ function PayrollEntry(employee_options) {
         }
     });
 
-    self.getGroupSalary = function () {
+    self.getGroupSalary = ko.computed(function () {
         console.log('This is get group salary');
         if (self.payroll_type() == 'GROUP')
             $.ajax({
@@ -412,7 +412,7 @@ function PayrollEntry(employee_options) {
 
                             var row = ko.mapping.fromJS(data, {}, new PaymentEntryRow(employee_options.slice(0)));
                             // row.employee_id = row.paid_employee();
-                            row.is_explicitly_added_row = false;
+                            // row.is_explicitly_added_row = false;
                             if (typeof(row.row_errors) == 'undefined') {
                                 row.row_errors = ko.observableArray([]);
                             }
@@ -428,7 +428,7 @@ function PayrollEntry(employee_options) {
                     self.messages.push(errorThrown);
                 }
             });
-    };
+    });
 
     // Set employee options
     self.update_employee_options = function () {
