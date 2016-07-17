@@ -52,9 +52,14 @@ class PaymentRecordSerializer(serializers.ModelSerializer):
 
 class PayrollEntrySerializer(serializers.ModelSerializer):
     entry_rows = PaymentRecordSerializer(many=True)
+    edit = serializers.SerializerMethodField('get_scenario')
 
     class Meta:
 
         model = PayrollEntry
         fields = '__all__'
         include = ('entry_saved',)
+
+    # either edit True or False
+    def get_scenario(self, instance):
+        return True
