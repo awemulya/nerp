@@ -801,6 +801,7 @@ def get_employee_account(request):
 
         # Check for eligibility check
         eligibility_check_on_edit = False
+        edit_row = None
         if edit:
             p_e = PayrollEntry.objects.get(id=edit)
             emp_entry_rows = p_e.entry_rows.all().filter(paid_employee=employee)
@@ -808,14 +809,14 @@ def get_employee_account(request):
                 eligibility_check_on_edit = False
             else:
                 eligibility_check_on_edit = True
-
+                edit_row = emp_entry_rows[0]
 
         response['data'] = get_employee_salary_detail(
             employee,
             paid_from_date,
             paid_to_date,
             eligibility_check_on_edit,
-            emp_entry_rows[0]
+            edit_row
         )
 
         # response.update(resp)
@@ -851,6 +852,7 @@ def get_employees_account(request):
         for employee in employees:
             # data_dict = {'employee_id': employee.id}
             eligibility_check_on_edit = False
+            edit_row = None
             if edit:
                 p_e = PayrollEntry.objects.get(id=edit)
                 emp_entry_rows = p_e.entry_rows.all().filter(paid_employee=employee)
@@ -858,12 +860,13 @@ def get_employees_account(request):
                     eligibility_check_on_edit = False
                 else:
                     eligibility_check_on_edit = True
+                    edit_row = emp_entry_rows[0]
             employee_salary_detail = get_employee_salary_detail(
                 employee,
                 paid_from_date,
                 paid_to_date,
                 eligibility_check_on_edit,
-                emp_entry_rows[0]
+                edit_row
             )
 
             # data_dict.update(employee_salary_detail)
