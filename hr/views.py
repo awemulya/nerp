@@ -472,7 +472,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     else:
         eligible, error = emp_salary_eligibility_on_edit(
             paid_from_date,
-            paid_from_date,
+            paid_to_date,
             employee,
             edit_row
         )
