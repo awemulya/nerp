@@ -53,7 +53,6 @@
                 {% for field in m_form.visible_fields %}
                     <th>{{ field.label|capfirst }}</th>
                 {% endfor %}
-                <th>{% trans "Control" %}</th>
             </tr>
             </thead>
             <tbody>
@@ -64,10 +63,6 @@
                         {{ field }}
                     </td>
                 {% endfor %}
-                <td>
-                    <input type="button" class="btn btn-raised btn-primary"
-                           data-bind="click: getGroupSalary, disable: switch_p_type()" value="Get">
-                </td>
             </tr>
             </tbody>
 
