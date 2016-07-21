@@ -876,19 +876,33 @@ def get_employees_account(request):
         return JsonResponse(response)
 
 
-def save_payroll_entry(request):
+def save_payroll_entry(request, pk=None):
+    if pk:
+        p_e = PayrollEntry.objects.get(id=pk)
+    else:
+        p_e = PayrollEntry()
     if request.POST:
         params = json.loads(request.body)
         save_response = {}
 
-        is_monthly_payroll = True if params.get('monthly_payroll', None) else False
+        is_monthly_payroll = True if params.get('is_monthly_payroll', None) else False
+        # if branch is ALL then save it as None
         request_branch = params.get('branch', None)
-        branch = None if not request_branch else int(request_branch)
+        branch = None if request_branch == 'ALL' else int(request_branch)
 
         payment_records = []
 
         with transaction.atomic():
-            for row in params.get('rows'):
+
+            for row in params.get('entry_rows'):
+
+                if row.get('id'):
+                    p_r = PaymentRecord.objects.get(id=row.get('id'))
+                    p_r.deduction_details.all().delete()
+                    p_r.incentive_details.all().delete()
+                    p_r.allowance_details.all().delete()
+                else:
+                    p_r = PaymentRecord
 
                 # Similar if we need all details of incentive and allowence
                 deductions = []
@@ -908,7 +922,7 @@ def save_payroll_entry(request):
                     if amount:
                         incentives.append(IncentiveDetail.objects.create(incentive_id=incentive_name['incentive'], amount=amount))
 
-                p_r = PaymentRecord()
+                # p_r = PaymentRecord()
                 p_r.paid_employee_id = int(row.get('paid_employee', None))
 
                 # Save according to calender settin`g
@@ -937,7 +951,7 @@ def save_payroll_entry(request):
                 p_r.allowance_details.add(*allowances)
 
                 payment_records.append(p_r.id)
-            p_e = PayrollEntry()
+            # p_e = PayrollEntry()
             p_e.branch_id = branch
             p_e.is_monthly_payroll = is_monthly_payroll
             p_e.save()

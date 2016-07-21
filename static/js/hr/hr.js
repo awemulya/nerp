@@ -330,6 +330,11 @@ function PayrollEntry(employee_options, group_load) {
 
 
     self.saveAndAdd = function (formElement) {
+        if(typeof(ko_data.ctx_data.id) != 'undefined'){
+            var save_url = '/payroll/save_payroll_entry/' + String(ko_data.ctx_data.id) + '/';
+        }else{
+            var save_url = '/payroll/save_payroll_entry/'
+        }
         var has_error = false;
         for (var row of self.entry_rows()) {
             if (row.row_errors().length > 0) {
@@ -340,7 +345,7 @@ function PayrollEntry(employee_options, group_load) {
         }
         if (!has_error) {
             $.ajax({
-                url: 'save_payroll_entry/',
+                url: save_url,
                 method: 'POST',
                 dataType: 'json',
                 data: ko.toJSON(self),
