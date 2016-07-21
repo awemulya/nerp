@@ -2,7 +2,7 @@ $(document).ready(function () {
     // ko.options.deferUpdates = true;
     // var main = this;
     group_load = true;
-    if (typeof(ko_data.ctx_data.id) != 'undefined'){
+    if (typeof(ko_data.ctx_data.id) != 'undefined') {
         group_load = false
     }
 
@@ -396,71 +396,75 @@ function PayrollEntry(employee_options, group_load) {
         console.log(group_load);
         if (self.payroll_type() == 'GROUP' && self.paid_from_date() && self.paid_to_date()) {
             console.log(self.id());
-            if(group_load){
-                $.ajax({
-                    url: '/payroll/get_employees_account/',
-                    method: 'POST',
-                    dataType: 'json',
-                    data: {
-                        branch: self.branch() ? self.branch() : 'ALL',
-                        paid_from_date: self.paid_from_date(),
-                        paid_to_date: self.paid_to_date(),
-                        is_monthly_payroll: self.is_monthly_payroll(),
-                        edit: ko_data.ctx_data.id
-                    },
-                    // async: true,
-                    success: function (response) {
-                        if (response.errors) {
-                            self.entry_rows([]);
-                            if (response.errors.paid_from_date) {
-                                self.paid_from_date_error(response.errors.paid_from_date);
+            if (group_load) {
+                console.log(self.entry_rows());
+                // if (self.paid_from_date() != self.entry_rows()[0].paid_from_date() || self.paid_to_date() != self.entry_rows()[0].paid_to_date()) {
+
+                    $.ajax({
+                        url: '/payroll/get_employees_account/',
+                        method: 'POST',
+                        dataType: 'json',
+                        data: {
+                            branch: self.branch() ? self.branch() : 'ALL',
+                            paid_from_date: self.paid_from_date(),
+                            paid_to_date: self.paid_to_date(),
+                            is_monthly_payroll: self.is_monthly_payroll(),
+                            edit: ko_data.ctx_data.id
+                        },
+                        // async: true,
+                        success: function (response) {
+                            if (response.errors) {
+                                self.entry_rows([]);
+                                if (response.errors.paid_from_date) {
+                                    self.paid_from_date_error(response.errors.paid_from_date);
+                                } else {
+                                    self.paid_from_date_error(null);
+                                }
+
+                                if (response.errors.paid_to_date) {
+                                    self.paid_to_date_error(response.errors.paid_to_date);
+                                } else {
+                                    self.paid_to_date_error(null);
+                                }
+
+                                if (response.errors.invalid_date_range) {
+                                    self.messages.push(response.errors.invalid_date_range);
+                                }
+
+
                             } else {
                                 self.paid_from_date_error(null);
-                            }
-
-                            if (response.errors.paid_to_date) {
-                                self.paid_to_date_error(response.errors.paid_to_date);
-                            } else {
                                 self.paid_to_date_error(null);
+
+                                self.entry_rows([]);
+
+                                var c = 0;
+                                self.entry_rows(ko.utils.arrayMap(response.data, function (data) {
+
+                                    c += 1;
+                                    var mapping = {
+                                        'ignore': ["emp_options"]
+                                    };
+                                    var row = ko.mapping.fromJS(data, mapping, new PaymentEntryRow(employee_options.slice(0)));
+                                    // row.is_explicitly_added_row = false;
+                                    row.request_flag(false);
+                                    if (typeof(row.row_errors) == 'undefined') {
+                                        row.row_errors = ko.observableArray([]);
+                                    }
+                                    if (c == 1) {
+                                        self.paid_from_date(row.paid_from_date());
+                                        self.paid_to_date(row.paid_to_date());
+                                    }
+                                    return row;
+                                }));
                             }
-
-                            if (response.errors.invalid_date_range) {
-                                self.messages.push(response.errors.invalid_date_range);
-                            }
-
-
-                        } else {
-                            self.paid_from_date_error(null);
-                            self.paid_to_date_error(null);
-
-                            self.entry_rows([]);
-
-                            var c = 0;
-                            self.entry_rows(ko.utils.arrayMap(response.data, function (data) {
-
-                                c += 1;
-                                var mapping = {
-                                    'ignore': ["emp_options"]
-                                };
-                                var row = ko.mapping.fromJS(data, mapping, new PaymentEntryRow(employee_options.slice(0)));
-                                // row.is_explicitly_added_row = false;
-                                row.request_flag(false);
-                                if (typeof(row.row_errors) == 'undefined') {
-                                    row.row_errors = ko.observableArray([]);
-                                }
-                                if (c == 1) {
-                                    self.paid_from_date(row.paid_from_date());
-                                    self.paid_to_date(row.paid_to_date());
-                                }
-                                return row;
-                            }));
+                        },
+                        error: function (errorThrown) {
+                            self.messages.push(errorThrown);
                         }
-                    },
-                    error: function (errorThrown) {
-                        self.messages.push(errorThrown);
-                    }
-                });
-            }else{
+                    });
+                // }
+            } else {
                 group_load = true;
             }
         }
