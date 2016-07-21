@@ -29,10 +29,10 @@ class BSDate(object):
         return (self._year, self._month, self._day)
 
     def as_string(self):
-        return '%d-%d-%d' % (
-            self._year,
-            self._month,
-            self._day
+        return '%s-%s-%s' % (
+            str(self._year),
+            str(self._month).zfill(2),
+            str(self._day).zfill(2)
         )
 
     @property

@@ -53,6 +53,7 @@ class PaymentRecordSerializer(serializers.ModelSerializer):
 class PayrollEntrySerializer(serializers.ModelSerializer):
     entry_rows = PaymentRecordSerializer(many=True)
     edit = serializers.SerializerMethodField('get_scenario')
+    branch = serializers.SerializerMethodField('get_branch_value')
 
     class Meta:
 
@@ -63,3 +64,9 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
     # either edit True or False
     def get_scenario(self, instance):
         return True
+
+    def get_branch_value(self, instance):
+        if not instance.branch:
+            return 'ALL'
+        else:
+            return instance.branch
