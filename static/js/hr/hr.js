@@ -114,6 +114,11 @@ function PaymentEntryRow(emp_options) {
         self.incentive(total);
     });
 
+    self.compute_paid_amount = ko.computed(function(){
+        // console.log(self.salary() - self.deduced_amount() - self.income_tax() + self.incentive() + self.allowance());
+        self.paid_amount(self.salary() - self.deduced_amount() - self.income_tax() + self.incentive() + self.allowance());
+    });
+
     self.is_explicitly_added_row = true;
 
     self.process_request_flag = ko.computed(function () {

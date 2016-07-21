@@ -722,8 +722,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     # employee_response['employee_bank_account_id'] = get_account_id(
     #     employee, 'bank_account')
 
-    employee_response['paid_amount'] = salary - deduction - income_tax + \
-                                       p_t_amount + incentive + allowance
+    # employee_response['paid_amount'] = salary - deduction - income_tax + \
+    #                                    p_t_amount + incentive + allowance
 
     if row_errors:
         for item in employee_response:
