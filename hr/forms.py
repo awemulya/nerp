@@ -1,12 +1,15 @@
 from django import forms
 # from datetime import date
-from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee
-from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput#, MultiWidget
+from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR
+from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
-from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, TaxScheme, TaxCalcScheme, MaritalStatus
+from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, TaxScheme, \
+    TaxCalcScheme, MaritalStatus
 from account.models import Account
 from app.utils.forms import HTML5BootstrapModelForm
+
+
 # import pdb
 
 # class DateSelectorWidget(MultiWidget):
@@ -171,29 +174,45 @@ class GroupPayrollForm(forms.Form):
     branch_choices.insert(0, ("ALL", _('All Branch')))
     payroll_type = forms.ChoiceField(
         choices=[
-                 ('INDIVIDUAL', _('Individual')),
-                 ('GROUP', _('Group'))],
+            ('INDIVIDUAL', _('Individual')),
+            ('GROUP', _('Group'))],
         widget=Select(attrs={'data-bind': 'value: payroll_type, selectize:{}'})
-                 )
+    )
     branch = forms.ChoiceField(
         choices=branch_choices,
         # empty_label="All",
         widget=Select(attrs={'data-bind': 'value: branch, selectize:{}'})
-        )
+    )
     from_date = forms.DateField(
         widget=DateInput(attrs={
             'data-bind': 'value: paid_from_date',
             'placeholder': 'YYYY-MM-DD',
             'is_required': True
-            }),
-        )
+        }),
+    )
     to_date = forms.DateField(
         widget=DateInput(attrs={
             'data-bind': 'value: paid_to_date',
             'placeholder': 'YYYY-MM-DD',
             'is_required': True
-            }),
-        )
+        }),
+    )
+
+
+class GetReportForm(forms.Form):
+    report = forms.ModelChoiceField(queryset=ReportHR.objects.all())
+    from_date = forms.DateField(
+        widget=DateInput(attrs={
+            'placeholder': 'YYYY-MM-DD',
+            'is_required': True
+        }),
+    )
+    to_date = forms.DateField(
+        widget=DateInput(attrs={
+            'placeholder': 'YYYY-MM-DD',
+            'is_required': True
+        }),
+    )
 
 
 # class EmployeeForm(forms.ModelForm):
@@ -263,40 +282,40 @@ class EmployeeAccountInlineFormset(forms.BaseInlineFormSet):
                     account_category
                 )
 
-        #         is_salary_account = form.cleaned_data['is_salary_account']
-        #         account_meta_type = form.cleaned_data['account_meta_type']
+                #         is_salary_account = form.cleaned_data['is_salary_account']
+                #         account_meta_type = form.cleaned_data['account_meta_type']
 
-        #         if account_meta_type == 'BANK_ACCOUNT':
-        #             if other_account_type:
-        #                 form.add_error(
-        #                     'other_account_type',
-        #                     _('Employee Bank account cant have account type %s. Should be None type' % other_account_type)
-        #                 )
-        #             if is_salary_account:
-        #                 cntr += 1
-        #             bank_account_count += 1
-        #         else:
-        #             if not other_account_type:
-        #                 form.add_error(
-        #                     'other_account_type',
-        #                     _('Employee Other account on account meta type need other account type')
-        #                 )
-        #             if is_salary_account:
-        #                 form.add_error(
-        #                     'is_salary_account',
-        #                     _('Only Employee bank account be a salary account')
-        #                 )
-        #             if other_account_type in account_types:
-        #                 acc_type_name = _(other_account_type.name)
-        #                 raise forms.ValidationError(
-        #                     _('Cannot have more than one type of %s' % acc_type_name))
-        #             account_types.append(other_account_type)
-        #         if cntr > 1:
-        #             raise forms.ValidationError(
-        #                     _('Cannot have more than one salary account'))
-        # if bank_account_count == 0:
-        #     raise forms.ValidationError(
-        #         _('Employee Needs at least one bank account'))
+                #         if account_meta_type == 'BANK_ACCOUNT':
+                #             if other_account_type:
+                #                 form.add_error(
+                #                     'other_account_type',
+                #                     _('Employee Bank account cant have account type %s. Should be None type' % other_account_type)
+                #                 )
+                #             if is_salary_account:
+                #                 cntr += 1
+                #             bank_account_count += 1
+                #         else:
+                #             if not other_account_type:
+                #                 form.add_error(
+                #                     'other_account_type',
+                #                     _('Employee Other account on account meta type need other account type')
+                #                 )
+                #             if is_salary_account:
+                #                 form.add_error(
+                #                     'is_salary_account',
+                #                     _('Only Employee bank account be a salary account')
+                #                 )
+                #             if other_account_type in account_types:
+                #                 acc_type_name = _(other_account_type.name)
+                #                 raise forms.ValidationError(
+                #                     _('Cannot have more than one type of %s' % acc_type_name))
+                #             account_types.append(other_account_type)
+                #         if cntr > 1:
+                #             raise forms.ValidationError(
+                #                     _('Cannot have more than one salary account'))
+                # if bank_account_count == 0:
+                #     raise forms.ValidationError(
+                #         _('Employee Needs at least one bank account'))
 
 
 class IncentiveInlineFormset(forms.BaseInlineFormSet):
@@ -546,7 +565,6 @@ class TaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
 
 
 class AllowanceForm(HTML5BootstrapModelForm):
-
     class Meta:
         model = Allowance
         fields = '__all__'
@@ -577,7 +595,6 @@ class AllowanceForm(HTML5BootstrapModelForm):
 
 
 class IncentiveForm(forms.ModelForm):
-
     class Meta:
         model = Incentive
         fields = '__all__'
@@ -608,7 +625,6 @@ class IncentiveForm(forms.ModelForm):
 
 
 class DeductionForm(forms.ModelForm):
-
     class Meta:
         model = Deduction
         fields = '__all__'
@@ -646,7 +662,6 @@ class DeductionForm(forms.ModelForm):
 
 
 class EmployeeForm(HTML5BootstrapModelForm):
-
     def __init__(self, *args, **kwargs):
         # extra = kwargs.pop('extra')
         super(EmployeeForm, self).__init__(*args, **kwargs)
@@ -659,21 +674,18 @@ class EmployeeForm(HTML5BootstrapModelForm):
 
 
 class IncentiveNameForm(HTML5BootstrapModelForm):
-
     class Meta:
         model = IncentiveName
         fields = '__all__'
 
 
 class AllowanceNameForm(HTML5BootstrapModelForm):
-
     class Meta:
         model = AllowanceName
         exclude = ('account_category',)
 
 
 class MaritalStatusForm(HTML5BootstrapModelForm):
-
     class Meta:
         model = MaritalStatus
         fields = '__all__'
@@ -681,7 +693,6 @@ class MaritalStatusForm(HTML5BootstrapModelForm):
 
 
 class TaxSchemeForm(HTML5BootstrapModelForm):
-
     class Meta:
         model = TaxScheme
         fields = '__all__'
@@ -694,38 +705,38 @@ class TaxSchemeForm(HTML5BootstrapModelForm):
         }
         # exclude = ('accounts',)
 
-    # def clean(self):
-    #     cleaned_data = super(TaxSchemeForm, self).clean()
+        # def clean(self):
+        #     cleaned_data = super(TaxSchemeForm, self).clean()
 
-    #     marital_status = cleaned_data.get("marital_status")
-    #     start_from = cleaned_data.get("start_from")
-    #     end_to = cleaned_data.get("end_to")
-    #     priority = cleaned_data.get("priority")
+        #     marital_status = cleaned_data.get("marital_status")
+        #     start_from = cleaned_data.get("start_from")
+        #     end_to = cleaned_data.get("end_to")
+        #     priority = cleaned_data.get("priority")
 
-    #     tax_schemes = sorted(
-    #         TaxScheme.objects.filter(marital_status=marital_status),
-    #         key=lambda x: x.priority,
-    #     )
+        #     tax_schemes = sorted(
+        #         TaxScheme.objects.filter(marital_status=marital_status),
+        #         key=lambda x: x.priority,
+        #     )
 
-    #     none_cntr = 0
-    #     for scheme in tax_schemes:
+        #     none_cntr = 0
+        #     for scheme in tax_schemes:
 
-    #         if scheme.end_to:
-    #             if scheme.start_from <= start_from <= scheme.end_to:
-    #                 raise forms.ValidationError(
-    #                     _('The range is overlapping with another scheme'))
-    #         else:
-    #             none_cntr += 1
+        #         if scheme.end_to:
+        #             if scheme.start_from <= start_from <= scheme.end_to:
+        #                 raise forms.ValidationError(
+        #                     _('The range is overlapping with another scheme'))
+        #         else:
+        #             none_cntr += 1
 
-    #     if end_to:
-    #         if start_from > end_to:
-    #             raise forms.ValidationError(
-    #                 _('End to must be greater than start from'))
-    #     else:
-    #         if none_cntr != 0:
-    #             raise forms.ValidationError(
-    #                 _('Scheme with end_to None already exist'))
-    #     # if not tax_schemes:
+        #     if end_to:
+        #         if start_from > end_to:
+        #             raise forms.ValidationError(
+        #                 _('End to must be greater than start from'))
+        #     else:
+        #         if none_cntr != 0:
+        #             raise forms.ValidationError(
+        #                 _('Scheme with end_to None already exist'))
+        #     # if not tax_schemes:
         #     if start_from:
         #         self.add_error(
         #             'start_from',
@@ -747,12 +758,12 @@ class TaxSchemeForm(HTML5BootstrapModelForm):
         #         raise forms.ValidationError(
         #              _('Change previous scheme end_to to not none of %s' % 'MARRIED' if marital_status == 'M' else 'UNMARRIED'))
 
-# class EmployeeAccountForm(forms.ModelForm):
+    # class EmployeeAccountForm(forms.ModelForm):
 
-#     class Meta:
-#         model = EmployeeAccount
-#         exclude = ('employee',)
-#         # fields = '__all__'
+    #     class Meta:
+    #         model = EmployeeAccount
+    #         exclude = ('employee',)
+    #         # fields = '__all__'
 
     # def clean(self):
     #     cleaned_data = super(EmployeeAccountForm, self).clean()
@@ -834,7 +845,6 @@ TaxSchemeFormSet = forms.inlineformset_factory(
     fields='__all__',
     formset=TaxSchemeInlineFormSet
 )
-
 
 TaxCalcSchemeFormSet = forms.inlineformset_factory(
     TaxScheme,

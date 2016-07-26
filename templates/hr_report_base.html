@@ -1,0 +1,65 @@
+{% load i18n %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width"/>
+
+    <link rel="icon" type="image/png" href="{% block favicon_url %}{% static 'favicon.ico' %}{% endblock %}"/>
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendors/selectize.bootstrap3.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/print.css' %}" media="print">
+{#    <link rel="stylesheet" href="{% static 'css/print.debug.css' %}" media="screen">#}
+    <link rel="stylesheet" href="{% static 'css/bootstrap/bootstrap-material-design.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap/ripples.min.css' %}">
+
+    <script src="{% static 'js/vendors/jquery.js' %}"></script>
+
+
+    {% block head_end %}{% endblock %}
+
+    <script src="{% static 'js/vendors/custom.modernizr.js' %}"></script>
+    <script src="{% static 'js/vendors/jquery.autosize.input.js' %}"></script>
+    {% get_current_language as LANGUAGE_CODE %}
+    <script>
+        window.lang = '{{ LANGUAGE_CODE }}';
+    </script>
+
+    {% load filters %}
+
+</head>
+<body>
+
+<h3>Company title here</h3>
+
+{% block report_header %}{% endblock %}
+{% block report_header_table %}{% endblock %}
+
+{% block report_content %}{% endblock %}
+
+
+<script src="{% static 'js/bootstrap/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/vendors/bootstrap-notify.min.js' %}"></script>
+<script src="{% static 'js/bootstrap/material/material.min.js' %}"></script>
+
+<script src="{% static 'js/bootstrap/material/ripples.min.js' %}"></script>
+<script>
+    $.material.init()
+</script>
+<!--script src="{% static 'js/foundation/foundation.dropdown.js' %}"></script>
+<script>
+    $(document).foundation();
+</script-->
+{% block report_footer %}{% endblock %}
+</body>
+</html>

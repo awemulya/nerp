@@ -2,6 +2,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+
+from app.settings import BASE_DIR
 from users.models import User
 # from core.models import validate_in_fy
 from njango.fields import BSDateField, today
@@ -18,6 +20,9 @@ from django.dispatch.dispatcher import receiver
 
 from account.models import Account, Category
 from django.db.models.signals import post_save
+
+from django.contrib.postgres.fields import ArrayField
+
 import copy
 
 
@@ -838,3 +843,19 @@ class EmployeeAccount(models.Model):
 
 #  When does increse in scale get active?
 #  The day from which the goverment announces it or the day from which the employeer is apponted
+
+
+class ReportHR(models.Model):
+    hr_report_template_folder = BASE_DIR + '/hr/templates/report_templates'
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=100)
+    template = models.FilePathField(path=hr_report_template_folder, match=".*\.html$")
+
+    def __unicode__(self):
+        return self.name
+
+
+class ReportTable(models.Model):
+    title = models.CharField(max_length=100)
+    table_fields = ArrayField(ArrayField(models.CharField(max_length=100)))
+    report = models.ForeignKey(ReportHR, related_name='hr_report')

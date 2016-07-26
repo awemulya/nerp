@@ -13,10 +13,10 @@ from django.contrib.contenttypes.models import ContentType
 from hr.serializers import PayrollEntrySerializer
 from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, \
-    TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet
+    TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
-    MaritalStatus
+    MaritalStatus, ReportHR
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -1611,3 +1611,18 @@ def incentivename_curd(request):
         {
             'incentivename_formset': incentivename_formset,
         })
+
+
+def get_report(request):
+    get_report_form = GetReportForm()
+    return render(request, 'get_report.html', {'get_report_form': get_report_form})
+
+
+def generate_report(request):
+    if request.method == "POST":
+        report_id = request.POST.get('report')
+        from_date = request.POST.get('from_date')
+        to_date = request.POST.get('to_date')
+        report = ReportHR.objects.get(id=report_id)
+        template_path = '/'.join(report.template.split('/')[-2:])
+        return render(request, template_path, {})

@@ -7,7 +7,8 @@ urlpatterns = patterns('',
                        url(r'^get_employee_account/$', views.get_employee_account, name='get_employee_account'),
                        url(r'^get_employees_account/$', views.get_employees_account, name='get_employees_account'),
                        url(r'^save_payroll_entry/$', views.save_payroll_entry, name='save_payroll_entry'),
-                       url(r'^save_payroll_entry/(?P<pk>[0-9]+)/$', views.save_payroll_entry, name='save_payroll_entry_edit'),
+                       url(r'^save_payroll_entry/(?P<pk>[0-9]+)/$', views.save_payroll_entry,
+                           name='save_payroll_entry_edit'),
                        url(r'^entry_detail/(?P<pk>[0-9]+)/$', views.entry_detail, name='entry_detail'),
                        url(r'^entry_list/$', views.entry_list, name='entry_list'),
                        url(r'^get_employee_options/$', views.get_employee_options, name='get_employee_options'),
@@ -18,7 +19,8 @@ urlpatterns = patterns('',
                        # employee crud
                        url(r'^employee/add/$', views.employee, name='add_employee'),
                        url(r'^employee/edit/(?P<pk>[0-9]+)/$', views.employee, name='edit_employee'),
-                       url(r'^employee/toggle_activeness/(?P<pk>[0-9]+)/$', views.toggle_employee_activeness, name='toggle_employee_activeness'),
+                       url(r'^employee/toggle_activeness/(?P<pk>[0-9]+)/$', views.toggle_employee_activeness,
+                           name='toggle_employee_activeness'),
                        url(r'^employee/list/$', views.list_employee, name='list_employee'),
 
                        # # incentive crud
@@ -48,11 +50,14 @@ urlpatterns = patterns('',
                        # url(r'^taxschemedetail/delete/(?P<pk>[0-9]+)/$', views.delete_tax_scheme, name='delete_tax_scheme'),
                        url(r'^taxscheme/list/$', views.list_tax_scheme, name='list_tax_scheme'),
 
-                        # tax_scheme crud
+                       # tax_scheme crud
                        url(r'^taxscheme/add/$', views.tax_scheme, name='add_taxscheme'),
                        url(r'^taxscheme/edit/(?P<pk>[0-9]+)/$', views.tax_scheme, name='edit_taxscheme'),
                        url(r'^taxscheme/delete/(?P<pk>[0-9]+)/$', views.delete_taxscheme, name='delete_taxscheme'),
+
                        # url(r'^taxscheme/list/$', views.list_tax_scheme, name='list_tax_scheme'),
                        # url(r'^allowance/edit/(?P<pk>[0-9]+)/$', views.allowance, name='edit_allowance'),
                        # url(r'^by_branch/$', views.group_payroll_branch, name='group_payroll_branch'),
+                       url(r'^report/$', views.get_report, name='get_report'),
+                       url(r'^generate_report/$', views.generate_report, name='generate_report'),
                        )
