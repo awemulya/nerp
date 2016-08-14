@@ -16,7 +16,7 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
-    MaritalStatus, ReportHR
+    MaritalStatus, ReportHR, BranchOffice
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -1614,15 +1614,61 @@ def incentivename_curd(request):
 
 
 def get_report(request):
-    get_report_form = GetReportForm()
-    return render(request, 'get_report.html', {'get_report_form': get_report_form})
-
-
-def generate_report(request):
     if request.method == "POST":
-        report_id = request.POST.get('report')
-        from_date = request.POST.get('from_date')
-        to_date = request.POST.get('to_date')
-        report = ReportHR.objects.get(id=report_id)
-        template_path = '/'.join(report.template.split('/')[-2:])
-        return render(request, template_path, {})
+        report_request_query = GetReportForm(request.POST, calendar=CALENDAR)
+        if report_request_query.is_valid():
+            report = report_request_query.cleaned_data.get('report')
+            branch = report_request_query.cleaned_data.get('branch')
+            from_date = report_request_query.cleaned_data.get('from_date')
+            to_date = report_request_query.cleaned_data.get('to_date')
+
+            if branch:
+                branch_qry = {'paid_employee__working_branch': branch}
+            else:
+                branch_qry = {}
+            payment_records = PaymentRecord.objects.filter(
+                paid_from_date__gte=from_date,
+                paid_to_date__lte=to_date,
+                **branch_qry)
+            template_path = '/'.join(report.template.split('/')[-2:])
+
+            # create table data here
+            report_tables = report.report_tables.all()
+            for table in report_tables:
+                fields = table.table_fields
+                import ipdb
+                ipdb.set_trace()
+
+            return render(request, template_path, {})
+
+        else:
+            return render(request, 'get_report.html', {'get_report_form': report_request_query})
+    else:
+        get_report_form = GetReportForm()
+        return render(request, 'get_report.html', {'get_report_form': get_report_form})
+
+
+# def generate_report(request):
+#     if request.method == "POST":
+#         report_request_query = GetReportForm(request.POST, calendar=CALENDAR)
+#         if report_request_query.is_valid():
+#             report = report_request_query.cleaned_data.get('report')
+#             branch = report_request_query.cleaned_data.get('branch')
+#             from_date = report_request_query.cleaned_data.get('from_date')
+#             to_date = report_request_query.cleaned_data.get('to_date')
+#
+#             if branch:
+#                 branch_qry = {'paid_employee__working_branch': branch}
+#             else:
+#                 branch_qry = {}
+#             payment_records = PaymentRecord.objects.filter(
+#                 paid_from_date__gte=from_date,
+#                 paid_to_date__lte=to_date,
+#                 **branch_qry)
+#             import ipdb
+#             ipdb.set_trace()
+#             template_path = '/'.join(report.template.split('/')[-2:])
+#             return render(request, template_path, {})
+#
+#         else:
+#             return render(request, 'get_report.html', {'get_report_form': report_request_query})

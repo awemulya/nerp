@@ -1,14 +1,18 @@
 from django import forms
 # from datetime import date
+from njango.nepdate import bs2ad
+
+from hr.bsdate import BSDate
+from hr.helpers import bs_str2tuple
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR
-from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput  # , MultiWidget
+from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
 from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, TaxScheme, \
     TaxCalcScheme, MaritalStatus
 from account.models import Account
 from app.utils.forms import HTML5BootstrapModelForm
-
+import datetime
 
 # import pdb
 
@@ -170,7 +174,10 @@ class PayrollEntryForm(HTML5BootstrapModelForm):
 
 
 class GroupPayrollForm(forms.Form):
-    branch_choices = [(o.id, o.name) for o in BranchOffice.objects.all()]
+    try:
+        branch_choices = [(o.id, o.name) for o in BranchOffice.objects.all()]
+    except:
+        branch_choices = [(None, 'None')]
     branch_choices.insert(0, ("ALL", _('All Branch')))
     payroll_type = forms.ChoiceField(
         choices=[
@@ -201,18 +208,62 @@ class GroupPayrollForm(forms.Form):
 
 class GetReportForm(forms.Form):
     report = forms.ModelChoiceField(queryset=ReportHR.objects.all())
-    from_date = forms.DateField(
-        widget=DateInput(attrs={
+    from_date = forms.CharField(
+        widget=TextInput(attrs={
             'placeholder': 'YYYY-MM-DD',
-            'is_required': True
         }),
     )
-    to_date = forms.DateField(
-        widget=DateInput(attrs={
+    to_date = forms.CharField(
+        widget=TextInput(attrs={
             'placeholder': 'YYYY-MM-DD',
-            'is_required': True
         }),
     )
+    branch = forms.ModelChoiceField(
+        queryset=BranchOffice.objects.all(),
+        required=False
+    )
+
+    def clean(self):
+        cleaned_data = super(GetReportForm, self).clean()
+        from_date = cleaned_data.get('from_date')
+        to_date = cleaned_data.get('to_date')
+
+        if self.calendar == 'AD':
+            try:
+                # Validate it for bsdate
+                cleaned_data['from_date'] = datetime.datetime.strptime(
+                    from_date, '%Y-%m-%d').date()
+            except:
+                self.add_error('from_date', _('AD- Incorrect From Date'))
+            try:
+                cleaned_data['to_date'] = datetime.datetime.strptime(
+                    to_date, '%Y-%m-%d').date()
+            except:
+                self.add_error('to_date', _('AD- Incorrect To Date'))
+
+        else:
+            try:
+
+                from_bs_date_as_tuple = BSDate(*bs_str2tuple(
+                    from_date
+                )).date_tuple()
+                cleaned_data['from_date'] = datetime.date(*bs2ad(from_bs_date_as_tuple))
+
+            except:
+                # error['paid_from_date'] = 'Incorrect BS Date'
+                self.add_error('from_date', _('BS- Incorrect From Date'))
+            try:
+                to_bs_date_as_tuple = BSDate(*bs_str2tuple(
+                    to_date
+                )).date_tuple()
+                cleaned_data['to_date'] = datetime.date(*bs2ad(to_bs_date_as_tuple))
+            except:
+                self.add_error('to_date', _('BS- Incorrect To date'))
+
+    def __init__(self, *args, **kwargs):
+        if 'calendar' in kwargs.keys():
+            self.calendar=kwargs.pop('calendar')
+        super(GetReportForm, self).__init__(*args, **kwargs)
 
 
 # class EmployeeForm(forms.ModelForm):
@@ -343,13 +394,13 @@ class IncentiveInlineFormset(forms.BaseInlineFormSet):
                 elif sum_type == 'RATE' and not amount_rate:
                     form.add_error(
                         'amount_rate',
-                        'Need amount rate field to be \
-                        filled up when Sum Type is Rate'
+                        _('Need amount rate field to be \
+                        filled up when Sum Type is Rate')
                     )
                 if payment_cycle == 'Y' and not year_payment_cycle_month:
                     form.add_error(
                         'year_payment_cycle_month',
-                        'This field is needed if it is a yearly allowance'
+                        _('This field is needed if it is a yearly allowance')
                     )
 
 

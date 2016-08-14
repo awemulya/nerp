@@ -21,7 +21,7 @@ from django.dispatch.dispatcher import receiver
 from account.models import Account, Category
 from django.db.models.signals import post_save
 
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import JSONField, ArrayField
 
 import copy
 
@@ -857,5 +857,7 @@ class ReportHR(models.Model):
 
 class ReportTable(models.Model):
     title = models.CharField(max_length=100)
-    table_fields = ArrayField(ArrayField(models.CharField(max_length=100)))
-    report = models.ForeignKey(ReportHR, related_name='hr_report')
+    # field_tiltle and field loopup sored as Json
+    table_fields = JSONField()
+    report = models.ForeignKey(ReportHR, related_name='report_tables')
+

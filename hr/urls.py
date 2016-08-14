@@ -59,5 +59,5 @@ urlpatterns = patterns('',
                        # url(r'^allowance/edit/(?P<pk>[0-9]+)/$', views.allowance, name='edit_allowance'),
                        # url(r'^by_branch/$', views.group_payroll_branch, name='group_payroll_branch'),
                        url(r'^report/$', views.get_report, name='get_report'),
-                       url(r'^generate_report/$', views.generate_report, name='generate_report'),
+                       # url(r'^generate_report/$', views.generate_report, name='generate_report'),
                        )
