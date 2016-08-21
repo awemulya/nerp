@@ -4,7 +4,8 @@ from njango.nepdate import bs2ad
 
 from hr.bsdate import BSDate
 from hr.helpers import bs_str2tuple
-from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR
+from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
+    Designation
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -878,6 +879,33 @@ DeductionDetailFormSet = forms.modelformset_factory(
     exclude=('deduct_in_category',),
     # fields='__all__',
     formset=DeductionModelFormSet
+)
+
+EmployeeGradeFormSet = forms.modelformset_factory(
+    EmployeeGrade,
+    extra=1,
+    can_delete=True,
+    # exclude=('deduct_in_category',),
+    fields='__all__',
+    # formset=DeductionModelFormSet
+)
+
+EmployeeGradeGroupFormSet = forms.modelformset_factory(
+    EmployeeGradeGroup,
+    extra=1,
+    can_delete=True,
+    # exclude=('deduct_in_category',),
+    fields='__all__',
+    # formset=DeductionModelFormSet
+)
+
+DesignationFormSet = forms.modelformset_factory(
+    Designation,
+    extra=1,
+    can_delete=True,
+    # exclude=('deduct_in_category',),
+    fields='__all__',
+    # formset=DeductionModelFormSet
 )
 
 IncentiveNameDetailFormSet = forms.modelformset_factory(

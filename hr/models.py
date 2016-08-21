@@ -21,7 +21,7 @@ from django.dispatch.dispatcher import receiver
 from account.models import Account, Category
 from django.db.models.signals import post_save
 
-from django.contrib.postgres.fields import JSONField, ArrayField
+from jsonfield import JSONField
 
 import copy
 
@@ -54,6 +54,12 @@ ACC_CAT_TAX_ID = 7
 ACC_CAT_SALARY_GIVING_ID = 2
 ACC_CAT_PRO_TEMPORE_ID = 8
 
+class EmployeeGradeGroup(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.name
+
 
 class EmployeeGrade(models.Model):
     grade_name = models.CharField(max_length=100)
@@ -61,15 +67,15 @@ class EmployeeGrade(models.Model):
     # rate increases yearly with grade rate. Also shold mention when in setting? How much times
     grade_number = models.PositiveIntegerField()
     grade_rate = models.FloatField()
-    parent_grade = models.ForeignKey('self', null=True, blank=True)
+    grade_group = models.ForeignKey(EmployeeGradeGroup, null=True, blank=True)
     # When employee is tecnician it should have no siblings
     is_technical = models.BooleanField(default=False)
 
     def __unicode__(self):
         if self.is_technical:
-            return self.grade_name + '( Is Tecnician)'
+            return  '%s-%s-%s' % (self.grade_group.name, self.grade_name, 'Technical')
         else:
-            return self.grade_name
+            return '%s-%s' % (self.grade_group.name, self.grade_name)
 
 
 class Designation(models.Model):

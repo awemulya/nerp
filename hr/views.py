@@ -13,10 +13,11 @@ from django.contrib.contenttypes.models import ContentType
 from hr.serializers import PayrollEntrySerializer
 from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, \
-    TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm
+    TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
+    EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
-    MaritalStatus, ReportHR, BranchOffice
+    MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -1486,6 +1487,73 @@ def deduction(request):
         'deduction_cu.html',
         {
             'deduction_formset': deduction_formset,
+        })
+
+
+def employee_grade(request):
+    if request.method == "POST":
+
+        employee_grade_formset = EmployeeGradeFormSet(
+            request.POST,
+            queryset=EmployeeGrade.objects.all(),
+        )
+        if employee_grade_formset.is_valid():
+            employee_grade_formset.save()
+            return redirect(reverse('employee_grade'))
+    else:
+        employee_grade_formset = EmployeeGradeFormSet(
+            queryset=EmployeeGrade.objects.all(),
+        )
+
+    return render(
+        request,
+        'employee_grade_cu.html',
+        {
+            'employee_grade_formset': employee_grade_formset,
+        })
+
+def employee_grade_group(request):
+    if request.method == "POST":
+
+        employee_grade_group_formset = EmployeeGradeGroupFormSet(
+            request.POST,
+            queryset=EmployeeGradeGroup.objects.all(),
+        )
+        if employee_grade_group_formset.is_valid():
+            employee_grade_group_formset.save()
+            return redirect(reverse('employee_grade_group'))
+    else:
+        employee_grade_group_formset = EmployeeGradeGroupFormSet(
+            queryset=EmployeeGradeGroup.objects.all(),
+        )
+
+    return render(
+        request,
+        'employee_grade_group_cu.html',
+        {
+            'employee_grade_group_formset': employee_grade_group_formset,
+        })
+
+def employee_designation(request):
+    if request.method == "POST":
+
+        designation_formset = DesignationFormSet(
+            request.POST,
+            queryset=Designation.objects.all(),
+        )
+        if designation_formset.is_valid():
+            designation_formset.save()
+            return redirect(reverse('employee_designation'))
+    else:
+        designation_formset = DesignationFormSet(
+            queryset=Designation.objects.all(),
+        )
+
+    return render(
+        request,
+        'employee_designation_cu.html',
+        {
+            'designation_formset': designation_formset,
         })
 
 

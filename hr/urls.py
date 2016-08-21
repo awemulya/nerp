@@ -38,6 +38,13 @@ urlpatterns = patterns('',
                        # deductions crud
                        url(r'^deduction/$', views.deduction, name='deduction'),
 
+                       # Employee Grade
+                       url(r'^employee-grade-group/$', views.employee_grade_group, name='employee_grade_group'),
+                       url(r'^employee-grade/$', views.employee_grade, name='employee_grade'),
+
+                       # Employee Designation
+                       url(r'^designations/$', views.employee_designation, name='employee_designation'),
+
                        # incentivenames crud
                        url(r'^incentives/$', views.incentivename_curd, name='incentivename_curd'),
 
