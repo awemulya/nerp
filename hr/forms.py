@@ -899,13 +899,24 @@ EmployeeGradeGroupFormSet = forms.modelformset_factory(
     # formset=DeductionModelFormSet
 )
 
+
+class DesignationForm(forms.ModelForm):
+
+    class Meta:
+        model = Designation
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(DesignationForm, self).__init__(*args, **kwargs)
+        choices = [(obj.id, obj.__unicode__())  for obj in sorted(EmployeeGrade.objects.all(),  key=lambda m: m.__unicode__())]
+        self.fields['grade'].widget = Select(choices=choices)
+
 DesignationFormSet = forms.modelformset_factory(
     Designation,
+    form=DesignationForm,
     extra=1,
     can_delete=True,
-    # exclude=('deduct_in_category',),
     fields='__all__',
-    # formset=DeductionModelFormSet
 )
 
 IncentiveNameDetailFormSet = forms.modelformset_factory(

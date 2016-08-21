@@ -54,6 +54,7 @@ ACC_CAT_TAX_ID = 7
 ACC_CAT_SALARY_GIVING_ID = 2
 ACC_CAT_PRO_TEMPORE_ID = 8
 
+
 class EmployeeGradeGroup(models.Model):
     name = models.CharField(max_length=100)
 
@@ -77,6 +78,9 @@ class EmployeeGrade(models.Model):
         else:
             return '%s-%s' % (self.grade_group.name, self.grade_name)
 
+    @property
+    def name_unicode(self):
+        return self.__unicode__()
 
 class Designation(models.Model):
     designation_name = models.CharField(max_length=100)
