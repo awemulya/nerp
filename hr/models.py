@@ -119,8 +119,9 @@ class Allowance(models.Model):
     )
     employee_grade = models.ForeignKey(EmployeeGrade)
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
-    amount = models.FloatField(null=True, blank=True)
-    amount_rate = models.FloatField(null=True, blank=True)
+     # Below is deduct type value
+    value = models.FloatField(null=True, blank=True)
+    # amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? ==> May be it should be in settingShould be in setting
     payment_cycle = models.CharField(max_length=50, choices=payment_cycle)
     year_payment_cycle_month = models.PositiveIntegerField(
@@ -187,8 +188,9 @@ class Deduction(models.Model):
     name = models.CharField(max_length=150)
     deduct_type = models.CharField(max_length=50, choices=deduct_choice)
     deduct_in_category = models.ForeignKey(Category, null=True, blank=True)
-    amount = models.FloatField(null=True, blank=True)
-    amount_rate = models.FloatField(null=True, blank=True)
+    # Below is deduct type value
+    value = models.FloatField(null=True, blank=True)
+    # amount_rate = models.FloatField(null=True, blank=True)
     description = models.CharField(max_length=150)
     priority = models.IntegerField(unique=True)
 
@@ -205,9 +207,9 @@ class Deduction(models.Model):
 
     def __unicode__(self):
         if self.deduct_type == 'AMOUNT':
-            return '%s, %f' % (self.name, self.amount)
+            return '%s[Amount] %f' % (self.name, self.value)
         else:
-            return '%s, %f' % (self.name, self.amount_rate)
+            return '%s[Rate] %f' % (self.name, self.value)
 
 
 @receiver(post_save, sender=Deduction)
@@ -589,8 +591,9 @@ class Incentive(models.Model):
     employee = models.ForeignKey(Employee)
     # Any one of the two should be filled
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
-    amount = models.FloatField(null=True, blank=True)
-    amount_rate = models.FloatField(null=True, blank=True)
+    # Below is deduct type value
+    value = models.FloatField(null=True, blank=True)
+    # amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? == May be we should keep it in setting
     # payment_cycle = [('M', _('Monthly')), ('Y', _('Yearly')), ('D', _('Daily')),  ('H', _('Hourly'))]
     payment_cycle = models.CharField(max_length=50, choices=payment_cycle)
@@ -605,17 +608,17 @@ class Incentive(models.Model):
 
     def __unicode__(self):
         if self.sum_type == 'AMOUNT':
-            return '%s, %f' % (self.name, self.amount)
+            return '%s[Amount] %f' % (self.name, self.value)
         elif self.sum_type == 'RATE':
-            return '%s, %f' % (self.name, self.rate)
+            return '%s[Amount] %f' % (self.name, self.value)
         else:
             return '%s-NOTFIXED' % (self.name)
 
     def save(self, *args, **kwargs):
-        if self.sum_type == 'AMOUNT':
-            self.amount_rate = None
-        elif self.sum_type == 'RATE':
-            self.amount = None
+        # if self.sum_type == 'AMOUNT':
+        #     self.amount_rate = None
+        # elif self.sum_type == 'RATE':
+        #     self.amount = None
         if self.payment_cycle != 'Y':
             self.year_payment_cycle_month = None
         super(Incentive, self).save(*args, **kwargs)
