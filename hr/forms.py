@@ -209,11 +209,11 @@ class TaxSchemeInlineFormSet(forms.BaseInlineFormSet):
                         'end_to': end_to,
                         'priority': priority,
                         'form': form})
-        sorted_dict_list = sorted(
-            e_p_dict_list,
-            key=lambda item: item['priority'],
-            reverse=True
-        )
+        # sorted_dict_list = sorted(
+        #     e_p_dict_list,
+        #     key=lambda item: item['priority'],
+        #     reverse=True
+        # )
         sorted_dict_list = sorted(
             e_p_dict_list,
             key=lambda item: item['priority'],
@@ -333,7 +333,7 @@ class TaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
                         pass
 
 
-class AllowanceForm(HTML5BootstrapModelForm):
+class AllowanceForm(forms.ModelForm):
     class Meta:
         model = Allowance
         fields = '__all__'
