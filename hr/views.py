@@ -1750,6 +1750,26 @@ def report_setting(request, pk=None):
         })
 
 
+def list_report_setting(request):
+    objects = ReportHR.objects.all()
+    return render(
+        request,
+        'hr_report_list.html',
+        {
+            'objects': objects,
+        }
+    )
+
+
+def delete_report_setting(request, pk=None):
+    obj = ReportHR.objects.get(id=pk)
+    # alw_details = Allowance.objects.filter(name=obj)
+    obj.delete()
+    # for alw in alw_details():
+    #     alw.delete()
+    return redirect(reverse('list_allowance'))
+
+
 # def generate_report(request):
 #     if request.method == "POST":
 #         report_request_query = GetReportForm(request.POST, calendar=CALENDAR)
