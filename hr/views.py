@@ -14,7 +14,7 @@ from hr.serializers import PayrollEntrySerializer
 from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, \
     TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
-    EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet
+    EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation
@@ -1714,6 +1714,40 @@ def get_report(request):
     else:
         get_report_form = GetReportForm()
         return render(request, 'get_report.html', {'get_report_form': get_report_form})
+
+
+def report_setting(request, pk=None):
+    ko_data = {}
+
+    if pk:
+        obj_id = pk
+        hr_report = ReportHR.objects.get(id=pk)
+    else:
+        obj_id = None
+        hr_report = ReportHR()
+
+    if request.method == "POST":
+        hr_report_form = ReportHrForm(request.POST, instance=hr_report)
+        hr_report_table_formset = ReportHrTableFormSet(request.POST, instance=hr_report)
+        if hr_report_form.is_valid() and hr_report_table_formset.is_valid():
+            hr_report_form.save()
+            hr_report_table_formset.save()
+            return redirect(reverse('list_report_setting'))
+    else:
+        hr_report_form = ReportHrForm(instance=hr_report)
+        hr_report_table_formset = ReportHrTableFormSet(instance=hr_report)
+    # import ipdb
+    # ipdb.set_trace()
+
+    return render(
+        request,
+        'hr_report_cu.html',
+        {
+            'hr_report_form': hr_report_form,
+            'hr_report_table_formset': hr_report_table_formset,
+            'ko_data': ko_data,
+            'obj_id': obj_id,
+        })
 
 
 # def generate_report(request):

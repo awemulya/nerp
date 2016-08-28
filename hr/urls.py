@@ -67,4 +67,10 @@ urlpatterns = patterns('',
                        # url(r'^by_branch/$', views.group_payroll_branch, name='group_payroll_branch'),
                        url(r'^report/$', views.get_report, name='get_report'),
                        # url(r'^generate_report/$', views.generate_report, name='generate_report'),
+
+                       # report setting crud
+                       url(r'^report-setting/add/$', views.report_setting, name='add_report_setting'),
+                       url(r'^report-setting/edit/(?P<pk>[0-9]+)/$', views.report_setting, name='edit_report_setting'),
+                       url(r'^report-setting/delete/(?P<pk>[0-9]+)/$', views.delete_allowance, name='delete_report_setting'),
+                       url(r'^report-seting/list/$', views.list_allowance, name='list_report_setting'),
                        )

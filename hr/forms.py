@@ -5,7 +5,7 @@ from njango.nepdate import bs2ad
 from hr.bsdate import BSDate
 from hr.helpers import bs_str2tuple
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
-    Designation
+    Designation, ReportTable
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -118,7 +118,6 @@ class GetReportForm(forms.Form):
         if 'calendar' in kwargs.keys():
             self.calendar=kwargs.pop('calendar')
         super(GetReportForm, self).__init__(*args, **kwargs)
-
 
 
 class EmployeeAccountInlineFormset(forms.BaseInlineFormSet):
@@ -441,6 +440,12 @@ class TaxSchemeForm(HTML5BootstrapModelForm):
         }
 
 
+class ReportHrForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = ReportHR
+        fields = '__all__'
+
+
 
 # These are crud formset
 EmployeeIncentiveFormSet = forms.inlineformset_factory(
@@ -528,4 +533,12 @@ TaxCalcSchemeFormSet = forms.inlineformset_factory(
     extra=1,
     fields='__all__',
     formset=TaxCalcSchemeInlineFormSet
+)
+
+ReportHrTableFormSet = forms.inlineformset_factory(
+    ReportHR,
+    ReportTable,
+    extra=1,
+    exclude=('account',),
+    # formset=AllowanceInlineFormset
 )
