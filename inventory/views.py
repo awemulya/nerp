@@ -30,13 +30,16 @@ from inventory.forms import ItemForm, CategoryForm, DemandForm, PurchaseOrderFor
     ItemLocationForm, DepreciationForm, ItemInstanceForm, ItemInstanceEditForm, InstanceHistoryForm, ExpenseForm, \
     StockEntryForm
 
-from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Depreciation, Demand, ItemInstance, \
+from inventory.models import PartyQuotation, QuotationComparison, QuotationComparisonRow, Depreciation, Demand, \
+    ItemInstance, \
     DemandRow, delete_rows, Item, Category, PurchaseOrder, PurchaseOrderRow, InstanceHistory, \
     InventoryAccount, Handover, HandoverRow, EntryReport, EntryReportRow, set_transactions, JournalEntry, \
-    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release, Expense, \
+    InventoryAccountRow, Transaction, Inspection, InspectionRow, YearlyReport, YearlyReportRow, ItemLocation, Release, \
+    Expense, \
     StockEntry, StockEntryRow
 
-from inventory.serializers import QuotationComparisonSerializer, DepreciationSerializer, DemandSerializer, ItemSerializer, \
+from inventory.serializers import QuotationComparisonSerializer, DepreciationSerializer, DemandSerializer, \
+    ItemSerializer, \
     PurchaseOrderSerializer, \
     HandoverSerializer, EntryReportSerializer, EntryReportRowSerializer, InventoryAccountRowSerializer, \
     TransactionSerializer, ItemLocationSerializer, YearlyReportSerializer, StockEntrySerializer
@@ -710,7 +713,8 @@ def item_form(request, id=None):
                       opening_rate=opening_rate, opening_rate_vattable=opening_rate_vattable)
 
             if int(opening_balance) > 0:
-                entry_report_row = EntryReportRow(sn=1, item=item, quantity=opening_balance, unit=item.unit, rate=opening_rate,
+                entry_report_row = EntryReportRow(sn=1, item=item, quantity=opening_balance, unit=item.unit,
+                                                  rate=opening_rate,
                                                   vattable=opening_rate_vattable, remarks="Opening Balance")
                 date = datetime.date.today()
                 entry_report_row.save()
@@ -885,6 +889,7 @@ def create_item_location(request, id=None):
         'base_template': base_template,
     })
 
+
 def delete_item_location(request, id):
     obj = get_object_or_404(ItemLocation, id=id)
     obj.delete()
@@ -969,7 +974,8 @@ def save_demand(request):
     dct = {'rows': {}}
     if params.get('release_no') == '':
         params['release_no'] = None
-    object_values = {'release_no': params.get('release_no'), 'demandee_id': params.get('demandee'), 'date': params.get('date'),
+    object_values = {'release_no': params.get('release_no'), 'demandee_id': params.get('demandee'),
+                     'date': params.get('date'),
                      'purpose': params.get('purpose'), }
     if params.get('id'):
         obj = Demand.objects.get(id=params.get('id'))
@@ -1004,7 +1010,8 @@ def save_demand_row(row_data, demand, ind):
     else:
         values = {'sn': ind + 1, 'item_id': row_data.get('item_id'),
                   'specification': row_data.get('specification'),
-                  'quantity': row_data.get('quantity'), 'unit': row_data.get('unit'), 'remarks': row_data.get('remarks'),
+                  'quantity': row_data.get('quantity'), 'unit': row_data.get('unit'),
+                  'remarks': row_data.get('remarks'),
                   'purpose': row_data.get('purpose'), 'demand': demand}
 
         submodel, created = DemandRow.objects.get_or_create(id=row_data.get('id'), defaults=values)
@@ -1269,7 +1276,8 @@ def save_handover(request):
                 continue
             values = {'sn': index + 1, 'item_id': row.get('item_id'),
                       'specification': row.get('specification'),
-                      'quantity': row.get('quantity'), 'unit': row.get('unit'), 'received_date': row.get('received_date'),
+                      'quantity': row.get('quantity'), 'unit': row.get('unit'),
+                      'received_date': row.get('received_date'),
                       'total_amount': row.get('total_amount'), 'condition': row.get('condition'),
                       'handover': obj}
             submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
@@ -1513,7 +1521,8 @@ class LocationDetail(DetailView):
             total_count=Count('item')).annotate(total_value=Sum('item_rate')).order_by('total_value')
         non_consumable_grand_total = sum(item['total_value'] for item in non_consumable_instances)
         consumable_all_instances = ItemInstance.objects.filter(location=self.object, item__type='consumable')
-        consumable_instances = consumable_all_instances.values('item', 'item__name').annotate(total_count=Count('item')).annotate(
+        consumable_instances = consumable_all_instances.values('item', 'item__name').annotate(
+            total_count=Count('item')).annotate(
             total_value=Sum('item_rate')).order_by('total_value')
         consumable_grand_total = sum(item['total_value'] for item in consumable_instances)
 
@@ -1628,7 +1637,8 @@ def view_inventory_account(request, id, year=None):
     obj = get_object_or_404(InventoryAccount, id=id)
     le_data = {}
     if obj.item.type == 'consumable' and not year == '0000':
-        last_entry = JournalEntry.objects.filter(transactions__account_id=obj.id, date__lt=FiscalYear.start(year)).order_by(
+        last_entry = JournalEntry.objects.filter(transactions__account_id=obj.id,
+                                                 date__lt=FiscalYear.start(year)).order_by(
             'date', 'id').last()
         if last_entry:
             le_data = InventoryAccountRowSerializer(last_entry).data
@@ -1739,7 +1749,8 @@ def save_stock_entry(request):
     dct = {'rows': {}}
     if params.get('voucher_no') == '':
         params['voucher_no'] = None
-    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'), 'description': params.get('description')}
+    object_values = {'voucher_no': params.get('voucher_no'), 'date': params.get('date'),
+                     'description': params.get('description')}
     if params.get('id'):
         obj = StockEntry.objects.get(id=params.get('id'))
     else:
@@ -1753,8 +1764,10 @@ def save_stock_entry(request):
                 continue
             values = {'sn': index + 1, 'name': row.get('name'),
                       'description': row.get('description'),
-                      'unit': row.get('unit'), 'account_no': row.get('account_no'), 'opening_stock': row.get('opening_stock'),
-                      'opening_rate': row.get('opening_rate'), 'opening_rate_vattable': row.get('opening_rate_vattable'),
+                      'unit': row.get('unit'), 'account_no': row.get('account_no'),
+                      'opening_stock': row.get('opening_stock'),
+                      'opening_rate': row.get('opening_rate'),
+                      'opening_rate_vattable': row.get('opening_rate_vattable'),
                       'stock_entry': obj}
 
             submodel, created = model.objects.get_or_create(id=row.get('id'), defaults=values)
@@ -1777,11 +1790,13 @@ def save_stock_entry(request):
                 if submodel.entry_report_row:
                     entry_report_row = submodel.entry_report_row
                     entry_report_row.quantity = row.get('opening_stock')
-                    entry_report_row.rate= row.get('opening_rate')
-                    entry_report_row.vattable= row.get('opening_rate_vattable')
+                    entry_report_row.rate = row.get('opening_rate')
+                    entry_report_row.vattable = row.get('opening_rate_vattable')
                 else:
-                    entry_report_row = EntryReportRow(sn=1, item=item, quantity=row.get('opening_stock'), unit=item.unit, rate=row.get('opening_rate'),
-                                                      vattable=row.get('opening_rate_vattable'), remarks="Opening Balance")
+                    entry_report_row = EntryReportRow(sn=1, item=item, quantity=row.get('opening_stock'),
+                                                      unit=item.unit, rate=row.get('opening_rate'),
+                                                      vattable=row.get('opening_rate_vattable'),
+                                                      remarks="Opening Balance")
                 date = datetime.date.today()
                 entry_report_row.save()
                 submodel.entry_report_row = entry_report_row
