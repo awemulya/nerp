@@ -254,7 +254,13 @@ class Employee(models.Model):
     accounts = models.ManyToManyField(Account, through="EmployeeAccount")
     pf_monthly_deduction_amount = models.FloatField(default=0)
     payment_halt = models.BooleanField(default=False)
-    appoint_date = BSDateField(default=today)
+
+    appoint_date = BSDateField(default=today, null=True, blank=True)
+    # On newly apponted employee appoint date and scale start date will be same
+    # On previous employee(employee working before this software arrival appoint date be null and salary scale date be calculated)
+    # Scale start date can also be added manually
+    scale_start_date = BSDateField(null=True, blank=True)
+
     dismiss_date = BSDateField(null=True, blank=True)
     # allowance will be added to salary
     allowances = models.ManyToManyField(AllowanceName, blank=True)
@@ -277,15 +283,16 @@ class Employee(models.Model):
             if type(from_date) == type(to_date):
                 if isinstance(from_date, date):
                     try:
-                        days_worked = date(year, month, 1) - self.appoint_date
+                        days_worked = date(year, month, 1) - self.scale_start_date
                     except:
                         raise TypeError('Internal and external setting mismatch')
                 else:
-                    if isinstance(self.appoint_date, date):
+                    if isinstance(self.scale_start_date, date):
                         raise TypeError('Internal and external setting mismatch')
                     else:
-                        days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.appoint_date)))
-
+                        days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.scale_start_date)))
+            # TODO when to round off to upper value(think about employee added in the middle of the fiscal year)
+            # TODO always round off to upper value except for newly apponnted
             years_worked = days_worked.days / 365
             if kwargs.get('apply_grade_rate'):
                 if years_worked <= grade_number:
