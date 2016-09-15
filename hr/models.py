@@ -197,8 +197,7 @@ class Deduction(models.Model):
     # Whether to include this deduction with temporary employee
     # with_temporary_employee = models.BooleanField(default=False)
     # For permanent
-    add2_init_salary = models.BooleanField(default=False)
-    permanent_multiply_rate = models.PositiveIntegerField(default=1)
+    is_refundable_deduction = models.BooleanField(default=False)
     # If true we can deduct while calculating taxable amount
     is_tax_free = models.BooleanField(default=False)
 

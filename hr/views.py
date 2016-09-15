@@ -158,13 +158,14 @@ def salary_taxation_unit(employee, f_y_item):
         deductions, key=lambda obj: obj.priority)
 
     # Addition of PF and bima to salary if employee is permanent
-    for item in sorted_deductions:
-        if employee.is_permanent:
-            if item.add2_init_salary:
-                if item.deduct_type == 'AMOUNT':
-                    salary += item.amount * total_month
-                else:
-                    salary += item.amount_rate / 100.0 * salary
+    # TODO in sanchayakosh sample thap and aniwarya kosh katti is same but with current implementation it gets slight different
+    # for item in sorted_deductions:
+    #     if employee.is_permanent:
+    #         if item.add2_init_salary:
+    #             if item.deduct_type == 'AMOUNT':
+    #                 salary += item.amount * total_month
+    #             else:
+    #                 salary += item.amount_rate / 100.0 * salary
 
     # scale_salary = employee.designation.grade.salary_scale
     allowance = 0
@@ -234,19 +235,23 @@ def salary_taxation_unit(employee, f_y_item):
                 # Does this mean percentage in daily wages
                 incentive += obj.value / 100.0 * scale_salary
 
+    total_deduction = 0
     deduction = 0
     for obj in deductions.filter(is_tax_free=True):
         if obj in deductions.filter(is_optional=False) or obj in employee.optional_deductions.all():
 
             if obj.deduct_type == 'AMOUNT':
-                deduction += obj.value * total_month
+                deduction = obj.value * total_month
+                total_deduction += deduction
             else:
-                deduction += obj.value / 100.0 * salary
+                deduction = obj.value / 100.0 * salary
+                total_deduction += deduction
 
-            if employee.is_permanent:
-                deduction *= obj.permanent_multiply_rate
+            if employee.is_permanent and obj.is_refundable_deduction:
+                # This is for addition of refundable deduction
+                total_deduction += deduction
 
-    taxable_amount = (salary + allowance + incentive - deduction)
+    taxable_amount = (salary + allowance + incentive - total_deduction)
 
     if employee.sex == 'F':
         taxable_amount -= F_TAX_DISCOUNT_LIMIT
@@ -502,16 +507,16 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     )
     deductions = Deduction.objects.all()
 
-    # Addition of PF and bima to salary if employee is permanent
-    addition_pf = 0
-    for item in deductions:
-        if employee.is_permanent:
-            if item.add2_init_salary:
-                if item.deduct_type == 'AMOUNT':
-                    addition_pf += item.value * total_month
-                else:
-                    # Rate
-                    addition_pf += item.value / 100.0 * salary
+    # # Addition of PF and bima to salary if employee is permanent
+    # addition_pf = 0
+    # for item in deductions:
+    #     if employee.is_permanent:
+    #         if item.add2_init_salary:
+    #             if item.deduct_type == 'AMOUNT':
+    #                 addition_pf += item.value * total_month
+    #             else:
+    #                 # Rate
+    #                 addition_pf += item.value / 100.0 * salary
 
     # Now add allowance to the salary(salary = salary + allowance)
     # Question here is do we need to deduct from incentove(I gues not)
@@ -668,9 +673,10 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
             deduction_details.append({
                 'amount': obj.value / 100.0 * salary
             })
-        if employee.is_permanent:
+        if employee.is_permanent and obj.is_refundable_deduction:
+            salary += deduction_details[-1]['amount']
             deduction_details.append({
-                'amount': obj.permanent_multiply_rate
+                'amount': deduction_details[-1]['amount'] * 2
             })
         deduction_details[-1]['deduction'] = obj.id
         deduction_details[-1]['name'] = obj.name
