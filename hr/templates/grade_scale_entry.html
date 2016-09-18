@@ -13,14 +13,15 @@
     <script src="{% static 'js/hr/grade_scale_entry.js' %}"></script>
 
 
-    <script src="{% static 'js/vendors/jquery-formset.js' %}"></script>
-    <script type="text/javascript">
-        $(function () {
-            $('.allowance-form').formset({
-                prefix: '{{ allowance_formset.prefix }}'
-            });
-        });
-    </script>
+{#    <script src="{% static 'js/vendors/jquery-formset.js' %}"></script>#}
+{#    <script type="text/javascript">#}
+{#        $(function () {#}
+{#            $('.allowance-form').formset({#}
+{#                prefix: '{{ allowance_formset.prefix }}'#}
+{#            });#}
+{#        });#}
+{#    </script>#}
+
 {% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
@@ -44,5 +45,7 @@
 {% endblock %}
 
 {% block content %}
+
+
 
 {% endblock %}
