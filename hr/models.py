@@ -62,6 +62,11 @@ class EmployeeGradeGroup(models.Model):
         return self.name
 
 
+class EmployeeGradeValidity(models.Model):
+    valid_from = BSDateField()
+    note  = models.CharField(max_length=150)
+
+
 class EmployeeGrade(models.Model):
     grade_name = models.CharField(max_length=100)
     salary_scale = models.FloatField()
@@ -71,6 +76,7 @@ class EmployeeGrade(models.Model):
     grade_group = models.ForeignKey(EmployeeGradeGroup, null=True, blank=True)
     # When employee is tecnician it should have no siblings
     is_technical = models.BooleanField(default=False)
+    validity = models.ForeignKey(EmployeeGradeValidity, null=True, blank=True)
 
     def __unicode__(self):
         if self.is_technical:
@@ -81,6 +87,7 @@ class EmployeeGrade(models.Model):
     @property
     def name_unicode(self):
         return self.__unicode__()
+
 
 class Designation(models.Model):
     designation_name = models.CharField(max_length=100)
@@ -182,6 +189,11 @@ class BranchOffice(models.Model):
         return self.name
 
 
+class DeductionValidity(models.Model):
+    valid_from = BSDateField()
+    note = models.CharField(max_length=150)
+
+
 # These two below should be in setting as many to many
 # Imp: Deductin cant be in BAnk Account type and should be one to one with account type
 class Deduction(models.Model):
@@ -203,6 +215,7 @@ class Deduction(models.Model):
 
     is_optional = models.BooleanField(default=False)
     amount_editable = models.BooleanField(default=False)
+    validity = models.ForeignKey(DeductionValidity, blank=True, null=True)
 
     def __unicode__(self):
         if self.deduct_type == 'AMOUNT':
@@ -293,7 +306,11 @@ class Employee(models.Model):
                         days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.scale_start_date)))
             # TODO when to round off to upper value(think about employee added in the middle of the fiscal year)
             # TODO always round off to upper value except for newly apponnted
+            # TODO just changed scemas present/past rate rounding
+            # TODO above things are confusing see hard note(its about not rounding off)
             years_worked = days_worked.days / 365
+            # the above will work for both appointed and old employee with no change in salary scale
+            # Everything gets diffent when salary scale sheet is ammended
             if kwargs.get('apply_grade_rate'):
                 if years_worked <= grade_number:
                     salary += grade_salary + int(years_worked) * grade_rate
