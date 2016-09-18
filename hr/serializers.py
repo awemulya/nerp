@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
-    EmployeeGradeScaleValidity
+    EmployeeGradeScaleValidity, EmployeeGrade, EmployeeGradeScale
 
 
 class DeductionDetailSerializer(serializers.ModelSerializer):
@@ -73,7 +73,24 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
             return instance.branch
 
 
+
+# TODO NEst them all
 class EmployeeGradeScaleValiditySerializer(serializers.ModelSerializer):
 
     class Meta:
-        models = EmployeeGradeScaleValidity
+        model = EmployeeGradeScaleValidity
+        fields = '__all__'
+
+
+class EmployeeGradeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EmployeeGrade
+        fields = '__all__'
+
+
+class EmployeeGradeScaleSerrializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EmployeeGradeScale
+        fileds = '__all__'
