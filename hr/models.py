@@ -61,7 +61,7 @@ class EmployeeGradeGroup(models.Model):
     def __unicode__(self):
         return self.name
 
-
+# FIXME valid from from be greter than previous and less than now date
 class EmployeeGradeValidity(models.Model):
     valid_from = BSDateField()
     note  = models.CharField(max_length=150)
@@ -69,14 +69,9 @@ class EmployeeGradeValidity(models.Model):
 
 class EmployeeGrade(models.Model):
     grade_name = models.CharField(max_length=100)
-    salary_scale = models.FloatField()
-    # rate increases yearly with grade rate. Also shold mention when in setting? How much times
-    grade_number = models.PositiveIntegerField()
-    grade_rate = models.FloatField()
     grade_group = models.ForeignKey(EmployeeGradeGroup, null=True, blank=True)
     # When employee is tecnician it should have no siblings
     is_technical = models.BooleanField(default=False)
-    validity = models.ForeignKey(EmployeeGradeValidity, null=True, blank=True)
 
     def __unicode__(self):
         if self.is_technical:
@@ -87,6 +82,15 @@ class EmployeeGrade(models.Model):
     @property
     def name_unicode(self):
         return self.__unicode__()
+
+
+class EmployeeGradeScale(models.Model):
+    grade = models.ForeignKey(EmployeeGrade)
+    salary_scale = models.FloatField()
+    # rate increases yearly with grade rate. Also shold mention when in setting? How much times
+    grade_number = models.PositiveIntegerField()
+    grade_rate = models.FloatField()
+    validity = models.ForeignKey(EmployeeGradeValidity, null=True, blank=True)
 
 
 class Designation(models.Model):
