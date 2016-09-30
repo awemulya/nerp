@@ -55,6 +55,10 @@ ACC_CAT_SALARY_GIVING_ID = 2
 ACC_CAT_PRO_TEMPORE_ID = 8
 
 
+# TODO Make hr home screen options
+# TODO Make hr home screen options
+
+
 class EmployeeGradeGroup(models.Model):
     name = models.CharField(max_length=100)
 
@@ -66,6 +70,7 @@ class EmployeeGradeGroup(models.Model):
 class EmployeeGradeScaleValidity(models.Model):
     valid_from = BSDateField()
     note = models.CharField(max_length=150)
+    is_active = models.BooleanField(default=False)
 
 
 class EmployeeGrade(models.Model):
@@ -132,6 +137,7 @@ def allowance_account_category_add(sender, instance, created, **kwargs):
         instance.save()
 
 
+# TODO allowance validity
 # This is bhatta
 class Allowance(models.Model):
     name = models.ForeignKey(
