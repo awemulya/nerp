@@ -1,0 +1,65 @@
+{% extends "training_base.html" %}
+{% load i18n %}
+{% load filters %}
+{% load staticfiles %}
+
+{% block title %} {% trans 'Training' %}{% endblock %}
+
+
+{% block head_end %}
+    {#    <script src="{% static 'js/ils/outgoing.js' %}"></script>#}
+
+{% endblock %}
+
+{% block content %}
+    <div class="well"> 
+    <div class="row">
+        <div class="col-sm-12">
+    <div class="dashboard">
+{#        {% ifusergroup 'Trainer' %}#}
+{#        {% endifusergroup %}#}
+            <div>
+                <a href="{% url 'payroll_entry' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Generate Payroll" %}</b></a>
+            </div>
+            <div>
+                <a href="{% url 'list_employee' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Employees" %}</b></a>
+            </div>
+            <div>
+                <a href="{% url 'deduction' %}">
+                      <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Deduction" %}</b></a>
+            </div>
+            <div>
+                <a href="#">
+                      <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Allowance" %}</b></a>
+            </div>
+            <div>
+                <a href="#">
+                      <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Incentive" %}</b></a>
+            </div>
+            <div>
+                <a href="#">
+                      <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Grade Scale" %}</b></a>
+            </div>
+            <div>
+                <a href="#">
+                      <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Taxation" %}</b></a>
+            </div>
+
+
+    </div>
+            
+        </div>
+    </div>   
+
+</div>
+
+{% endblock %}

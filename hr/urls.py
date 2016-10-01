@@ -2,7 +2,8 @@ from django.conf.urls import patterns, url
 import views
 
 urlpatterns = patterns('',
-                       url(r'^$', views.payroll_entry, name='payroll_entry'),
+                       url(r'^$', views.payroll_index, name='payroll_index'),
+                       url(r'^entry/$', views.payroll_entry, name='payroll_entry'),
                        url(r'^(?P<pk>[0-9]+)/$', views.payroll_entry, name='payroll_entry'),
                        url(r'^get_employee_account/$', views.get_employee_account, name='get_employee_account'),
                        url(r'^get_employees_account/$', views.get_employees_account, name='get_employees_account'),
@@ -71,6 +72,7 @@ urlpatterns = patterns('',
                        # report setting crud
                        url(r'^report-setting/add/$', views.report_setting, name='add_report_setting'),
                        url(r'^report-setting/edit/(?P<pk>[0-9]+)/$', views.report_setting, name='edit_report_setting'),
-                       url(r'^report-setting/delete/(?P<pk>[0-9]+)/$', views.delete_report_setting, name='delete_report_setting'),
+                       url(r'^report-setting/delete/(?P<pk>[0-9]+)/$', views.delete_report_setting,
+                           name='delete_report_setting'),
                        url(r'^report-seting/list/$', views.list_report_setting, name='list_report_setting'),
                        )

@@ -67,7 +67,7 @@ class EmployeeGradeGroup(models.Model):
 
 
 # FIXME valid from from be greter than previous and less than now date
-class EmployeeGradeScaleValidity(models.Model):
+class GradeScaleValidity(models.Model):
     valid_from = BSDateField()
     note = models.CharField(max_length=150)
     is_active = models.BooleanField(default=False)
@@ -87,7 +87,7 @@ class EmployeeGrade(models.Model):
 
     def __unicode__(self):
         if self.is_technical:
-            return  '%s-%s-%s' % (self.grade_group.name, self.grade_name, 'Technical')
+            return '%s-%s-%s' % (self.grade_group.name, self.grade_name, 'Technical')
         else:
             return '%s-%s' % (self.grade_group.name, self.grade_name)
 
@@ -103,7 +103,7 @@ class EmployeeGradeScale(models.Model):
     grade_number = models.PositiveIntegerField()
     grade_rate = models.FloatField()
     validity = models.ForeignKey(
-        EmployeeGradeScaleValidity,
+        GradeScaleValidity,
         null=True,
         blank=True,
         related_name='grade_scales'
@@ -137,6 +137,12 @@ def allowance_account_category_add(sender, instance, created, **kwargs):
         instance.save()
 
 
+class AllowanceValidity(models.Model):
+    valid_from = BSDateField()
+    note = models.CharField(max_length=150)
+    is_active = models.BooleanField(default=False)
+
+
 # TODO allowance validity
 # This is bhatta
 class Allowance(models.Model):
@@ -160,6 +166,12 @@ class Allowance(models.Model):
             MaxValueValidator(12),
             MinValueValidator(1)
         ],
+    )
+    validity = models.ForeignKey(
+        AllowanceValidity,
+        null=True,
+        blank=True,
+        related_name='allowances'
     )
 
     def __unicode__(self):

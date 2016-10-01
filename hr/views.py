@@ -1803,3 +1803,6 @@ def grade_scale_entry(request):
 #
 #         else:
 #             return render(request, 'get_report.html', {'get_report_form': report_request_query})
+
+def payroll_index(request):
+    return render(request, 'hr_index.html', {})

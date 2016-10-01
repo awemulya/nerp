@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
-    EmployeeGradeScaleValidity, EmployeeGrade, EmployeeGradeScale
+    GradeScaleValidity, EmployeeGrade, EmployeeGradeScale
 
 
 class DeductionDetailSerializer(serializers.ModelSerializer):
@@ -78,7 +78,7 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
 class EmployeeGradeScaleValiditySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = EmployeeGradeScaleValidity
+        model = GradeScaleValidity
         fields = '__all__'
 
 

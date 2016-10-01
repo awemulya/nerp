@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url 'training_index' %}">{% trans 'Human Resource' %}</a>
+{% endblock %}
