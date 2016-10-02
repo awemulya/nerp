@@ -89,7 +89,7 @@ class EmployeeGradeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class EmployeeGradeScaleSerrializer(serializers.ModelSerializer):
+class EmployeeGradeScaleSerializer(serializers.ModelSerializer):
 
     grade_name = serializers.ReadOnlyField(source="grade.name")
     parent_grade_id = serializers.ReadOnlyField(source="grade.group.id")

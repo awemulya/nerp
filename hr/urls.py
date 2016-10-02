@@ -1,7 +1,17 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, url, include
+from rest_framework.routers import DefaultRouter
+
 import views
+from hr import api
+
+# Create a router and register our viewsets with it.
+router = DefaultRouter()
+router.register(r'grade-scale', api.EmployeeGradeScaleViewSet)
+# router.register(r'users', views.UserViewSet)
 
 urlpatterns = patterns('',
+                       url(r'^api/', include(router.urls)),
+                       # url(r'^api/', include('rest_framework.urls', namespace='hr-api')),
                        url(r'^$', views.payroll_index, name='payroll_index'),
                        url(r'^entry/$', views.payroll_entry, name='payroll_entry'),
                        url(r'^(?P<pk>[0-9]+)/$', views.payroll_entry, name='payroll_entry'),
