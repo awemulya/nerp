@@ -109,6 +109,9 @@ class EmployeeGradeScale(models.Model):
         related_name='grade_scales'
     )
 
+    class Meta:
+        unique_together = ('validity', 'grade')
+
 
 class Designation(models.Model):
     designation_name = models.CharField(max_length=100)

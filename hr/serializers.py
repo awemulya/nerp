@@ -91,6 +91,21 @@ class EmployeeGradeSerializer(serializers.ModelSerializer):
 
 class EmployeeGradeScaleSerrializer(serializers.ModelSerializer):
 
+    grade_name = serializers.ReadOnlyField(source="grade.name")
+    parent_grade_id = serializers.ReadOnlyField(source="grade.group.id")
+    parent_grade_name = serializers.ReadOnlyField(source="grade.group.name")
+
     class Meta:
         model = EmployeeGradeScale
-        fileds = '__all__'
+        fields = (
+            'grade',
+            'salary_scale',
+            'grade_number',
+            'grade_rate',
+            'validity',
+
+            # Non model fields
+            'grade_name',
+            'parent_grade_id',
+            'parent_grade_name'
+        )
