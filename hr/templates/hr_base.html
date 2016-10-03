@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load staticfiles %}
 
-{% block breadcrumbs %}
-    {{ block.super }}
-    <a href="{% url 'training_index' %}">{% trans 'Human Resource' %}</a>
+{#{% block breadcrumbs %}#}
+{#    {{ block.super }}#}
+{#    <a href="{% url 'training_index' %}">{% trans 'Human Resource' %}</a>#}
+{#{% endblock %}#}
+
+{% block head_end %}
+    <script src="{% static 'js/App.js' %}"></script>
 {% endblock %}

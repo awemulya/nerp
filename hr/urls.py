@@ -7,7 +7,9 @@ from hr import api
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
 router.register(r'grade-scale', api.EmployeeGradeScaleViewSet)
-# router.register(r'users', views.UserViewSet)
+router.register(r'grade-group', api.EmployeeGradeGroupViewSet)
+router.register(r'grade-scale-validity', api.GradeScaleValidityViewSet)
+router.register(r'employee-grade', api.EmployeeGradeViewSet)
 
 urlpatterns = patterns('',
                        url(r'^api/', include(router.urls)),
@@ -85,4 +87,9 @@ urlpatterns = patterns('',
                        url(r'^report-setting/delete/(?P<pk>[0-9]+)/$', views.delete_report_setting,
                            name='delete_report_setting'),
                        url(r'^report-seting/list/$', views.list_report_setting, name='list_report_setting'),
+
+                       # GradeScale
+                       url(r'^grades-scale-entry/$', views.grades_scale, name='grade-scale-entry'),
+                       # EndGradeScale
+
                        )

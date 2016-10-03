@@ -1776,8 +1776,8 @@ def delete_report_setting(request, pk=None):
     return redirect(reverse('list_allowance'))
 
 
-def grade_scale_entry(request):
-    return render(request, 'grade_scale_entry.html')
+def grades_scale(request):
+    return render(request, 'grades_scale.html')
 
 # def generate_report(request):
 #     if request.method == "POST":

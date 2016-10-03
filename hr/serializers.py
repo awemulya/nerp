@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
-    GradeScaleValidity, EmployeeGrade, EmployeeGradeScale
+    GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup
 
 
 class DeductionDetailSerializer(serializers.ModelSerializer):
@@ -75,15 +75,21 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
 
 
 # TODO NEst them all
-class EmployeeGradeScaleValiditySerializer(serializers.ModelSerializer):
+class GradeScaleValiditySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GradeScaleValidity
         fields = '__all__'
 
 
-class EmployeeGradeSerializer(serializers.ModelSerializer):
+class EmployeeGradeGroupSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = EmployeeGradeGroup
+        fields = '__all__'
+
+
+class EmployeeGradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeGrade
         fields = '__all__'
@@ -93,16 +99,16 @@ class EmployeeGradeScaleSerializer(serializers.ModelSerializer):
 
     grade_name = serializers.ReadOnlyField(source="grade.name")
     parent_grade_id = serializers.ReadOnlyField(source="grade.group.id")
-    parent_grade_name = serializers.ReadOnlyField(source="grade.group.name")
+    # parent_grade_name = serializers.ReadOnlyField(source="grade.group.name")
 
     class Meta:
         model = EmployeeGradeScale
         fields = (
-            'grade',
+            'grade_id',
             'salary_scale',
             'grade_number',
             'grade_rate',
-            'validity',
+            'validity_id',
 
             # Non model fields
             'grade_name',
