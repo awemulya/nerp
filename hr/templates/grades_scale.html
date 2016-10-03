@@ -11,15 +11,32 @@
     <script src="{% static 'js/vendors/knockout-mapping-plugin.js' %}"></script>
     <script src="{% static 'js/vendors/nepali.datepicker.v2.1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap/bootstrap-datepicker.js' %}"></script>
-    <script src="{% static 'js/hr/grade_scale_entry.js' %}"></script>
+    <script src="{% static 'js/hr/grades_scale.js' %}"></script>
+
+    <script>
+        $(document).ready(function () {
+            vm = new gradeScale.vm();
+            console.log(vm);
+            ko.applyBindings(vm);
+        });
+
+    </script>
 {% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
-        <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
-        <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
+    <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
+    <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
 
 {% endblock %}
 {% block breadcrumbs_before_print %}
+    <li>
+
+{#        TODO apply selectize and add validity via modal#}
+        <select data-bind="
+        options: available_scale_validites,
+        value: selected_validity,
+        optionsCaption: 'Select Grade Scale Validity...'"></select>
+    </li>
 {% endblock %}
 
 {% block alert %}

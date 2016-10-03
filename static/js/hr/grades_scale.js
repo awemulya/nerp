@@ -21,7 +21,7 @@ var gradeScale = {
 
     },
 
-    gradeScaleVm : function () {
+    gradeScaleVm: function () {
         var self = this;
         self.grade_id = ko.observable();
         self.grade_name = ko.observable();
@@ -31,5 +31,12 @@ var gradeScale = {
         self.grade_number = ko.observable();
         self.grade_rate = ko.observable();
         self.validity_id = ko.observable();
-    }
-};
+    },
+
+    vm : function () {
+        var self = this;
+        self.available_scale_validites = ko.observableArray();
+        self.selected_validity = ko.observable();
+    },
+}
+;
