@@ -35,7 +35,7 @@ var gradeScale = {
 
     vm : function () {
         var self = this;
-        self.available_scale_validites = ko.observableArray();
+        self.available_scale_validites = ko.observableArray(['hello', 'hi']);
         self.selected_validity = ko.observable();
     },
 }

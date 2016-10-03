@@ -1775,6 +1775,10 @@ def delete_report_setting(request, pk=None):
     #     alw.delete()
     return redirect(reverse('list_allowance'))
 
+# GradeScale Validity Crud
+
+# End GradeScale Validity Crud
+
 
 def grades_scale(request):
     return render(request, 'grades_scale.html')

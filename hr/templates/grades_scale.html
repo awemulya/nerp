@@ -29,14 +29,8 @@
 
 {% endblock %}
 {% block breadcrumbs_before_print %}
-    <li>
-
-{#        TODO apply selectize and add validity via modal#}
-        <select data-bind="
-        options: available_scale_validites,
-        value: selected_validity,
-        optionsCaption: 'Select Grade Scale Validity...'"></select>
-    </li>
+    {#    <li>#}
+    {#    </li>#}
 {% endblock %}
 
 {% block alert %}
@@ -52,6 +46,25 @@
 
 {% block content %}
 
-
+    <div class="col-lg-12 well">
+        <div class="col-lg-8">
+            <legend>{% trans "Employee Grade Scales" %}</legend>
+        </div>
+        <div class="input-group col-lg-4">
+            <select class="form-control" aria-describedby="basic-addon2" data-bind="
+                options : available_scale_validites,
+                value: selected_validity,
+                optionsCaption: 'Select Grade Scale Validity...'">
+            </select>
+        <span class="input-group-btn">
+            <button type="button" class="btn btn-raised btn-primary" aria-label="Add Validity">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="btn btn-raised btn-danger" aria-label="Remove Validity">
+                <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+            </button>
+        </span>
+        </div>
+    </div>
 
 {% endblock %}
