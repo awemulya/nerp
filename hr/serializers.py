@@ -76,11 +76,19 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
 
 # TODO NEst them all
 class GradeScaleValiditySerializer(serializers.ModelSerializer):
-
+    # TODO entry validation
     class Meta:
         model = GradeScaleValidity
         fields = '__all__'
 
+    # def validate(self, attrs):
+    #     import ipdb
+    #     ipdb.set_trace()
+    #     return super(GradeScaleValiditySerializer, self).validate(attrs)
+
+    def create(self, validated_data):
+        import ipdb
+        ipdb.set_trace()
 
 class EmployeeGradeGroupSerializer(serializers.ModelSerializer):
 

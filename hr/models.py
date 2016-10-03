@@ -66,12 +66,17 @@ class EmployeeGradeGroup(models.Model):
         return self.name
 
 
+
+
 # FIXME valid from from be greter than previous and less than now date
 class GradeScaleValidity(models.Model):
     valid_from = BSDateField()
     note = models.CharField(max_length=150)
     # is_active = models.BooleanField(default=False)
 
+    # def save(self):
+    #     import ipdb
+    #     ipdb.set_trace()
 
 class EmployeeGrade(models.Model):
     grade_name = models.CharField(max_length=100)
