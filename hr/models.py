@@ -70,7 +70,7 @@ class EmployeeGradeGroup(models.Model):
 class GradeScaleValidity(models.Model):
     valid_from = BSDateField()
     note = models.CharField(max_length=150)
-    is_active = models.BooleanField(default=False)
+    # is_active = models.BooleanField(default=False)
 
 
 class EmployeeGrade(models.Model):

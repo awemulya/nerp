@@ -12,6 +12,7 @@
     <script src="{% static 'js/vendors/nepali.datepicker.v2.1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap/bootstrap-datepicker.js' %}"></script>
     <script src="{% static 'js/hr/grades_scale.js' %}"></script>
+    <script src="{% static 'js/hr/validity_modal.js' %}"></script>
 
     <script>
         $(document).ready(function () {
@@ -52,19 +53,29 @@
         </div>
         <div class="input-group col-lg-4">
             <select class="form-control" aria-describedby="basic-addon2" data-bind="
-                options : available_scale_validites,
+                options : available_scale_validities,
                 value: selected_validity,
                 optionsCaption: 'Select Grade Scale Validity...'">
             </select>
         <span class="input-group-btn">
-            <button type="button" class="btn btn-raised btn-primary" aria-label="Add Validity">
+            <button type="button" data-bind="click: validity_add" class="btn btn-raised btn-primary" aria-label="Add Validity">
                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
             </button>
-            <button type="button" class="btn btn-raised btn-danger" aria-label="Remove Validity">
-                <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+            <button type="button" data-bind="click: validity_update" class="btn btn-raised btn-primary" aria-label="Remove Validity">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
             </button>
         </span>
         </div>
     </div>
+
+{#    This is validity Modal#}
+    <validity-modal params="{
+        show_modal: show_validity_modal,
+        form_vm: validity_modal_form
+    }">
+
+    </validity-modal>
+{#    End This is validity Modal#}
+
 
 {% endblock %}
