@@ -2,9 +2,6 @@
  * Created by wrufesh on 9/18/16.
  */
 var gradeScale = {
-        // TODO get gradeScaleValidity
-        // TODO get employeeGrades
-        // TODO get employeeGradeScales
         getGradeScaleValidities: function (success_callback) {
             App.showProcessing();
             App.remoteGet(
@@ -34,15 +31,15 @@ var gradeScale = {
 
         },
 
-        validityVm: function (observableArray, data) {
+        validityVm: function (observableArray, modal_visibility, data) {
             var self = this;
             self.id = ko.observable();
 
             self.valid_from = ko.observable();
             self.note = ko.observable();
 
-            if(data){
-                for(k in self){
+            if (data) {
+                for (k in self) {
                     self[k](data[k])
                 }
             }
@@ -52,12 +49,22 @@ var gradeScale = {
 
             self.save = function () {
                 App.showProcessing();
+                // debugger;
                 App.remotePost(
                     self.api_url,
-                    JSON.parse(ko.toJSON(self)),
+                    JSON.parse(ko.toJSON({
+                        id: self.id,
+                        valid_from: self.valid_from,
+                        note: self.note
+                    })),
                     function (res) {
-                        console.log(res);
-                        console.log('successfully saved');
+                        self.list.push(new gradeScale.validityVm(self.list, modal_visibility, res));
+                        App.hideProcessing();
+                        modal_visibility(false);
+                        App.notifyUser(
+                            'New validity added successfully',
+                            'success'
+                        );
                     },
                     function (err) {
                         var err_message = err.responseJSON.detail;
@@ -69,10 +76,61 @@ var gradeScale = {
                     }
                 )
 
-            }
+            };
             self.update = function () {
-                
-            }
+                App.showProcessing();
+                // debugger;
+                App.remotePut(
+                    self.api_url + "/" + self.id() + "/",
+                    JSON.parse(ko.toJSON({
+                        id: self.id,
+                        valid_from: self.valid_from,
+                        note: self.note
+                    })),
+                    function (res) {
+                        self.valid_from(res.valid_from);
+                        self.note(res.note);
+                        App.hideProcessing();
+                        modal_visibility(false);
+                        App.notifyUser(
+                            'Validity updated successfully',
+                            'success'
+                        );
+                    },
+                    function (err) {
+                        var err_message = err.responseJSON.detail;
+                        var error = App.notifyUser(
+                            err_message,
+                            'error'
+                        );
+                        App.hideProcessing();
+                    }
+                )
+            };
+            self.delete = function () {
+                App.showProcessing();
+                App.remoteDelete(
+                    self.api_url + "/" + self.id() + "/",
+                    {},
+                    function (res) {
+                        self.list.remove(self);
+                        App.hideProcessing();
+                        modal_visibility(false);
+                        App.notifyUser(
+                            'Validity deleted successfully',
+                            'success'
+                        );
+                    },
+                    function (err) {
+                        var err_message = err.responseJSON.detail;
+                        var error = App.notifyUser(
+                            err_message,
+                            'error'
+                        );
+                        App.hideProcessing();
+                    }
+                )
+            };
 
         },
 
@@ -94,10 +152,10 @@ var gradeScale = {
             self.available_scale_validities = ko.observableArray();
             self.selected_validity = ko.observable();
             self.show_validity_modal = ko.observable(false);
-            self.validity_modal_form = ko.observable(new gradeScale.validityVm(self.available_scale_validities));
+            self.validity_modal_form = ko.observable(new gradeScale.validityVm(self.available_scale_validities, self.show_validity_modal));
             self.validity_add = function () {
                 self.show_validity_modal(true);
-                self.validity_modal_form(new gradeScale.validityVm(self.available_scale_validities));
+                self.validity_modal_form(new gradeScale.validityVm(self.available_scale_validities, self.show_validity_modal));
 
             };
             self.validity_update = function () {
@@ -106,9 +164,9 @@ var gradeScale = {
             }
 
             // Load grade scale
-            gradeScale.getGradeScaleValidities(function(res) {
+            gradeScale.getGradeScaleValidities(function (res) {
                 var validities = ko.utils.arrayMap(res, function (item) {
-                    return new gradeScale.validityVm(self.available_scale_validities, item);
+                    return new gradeScale.validityVm(self.available_scale_validities, self.show_validity_modal, item);
                 });
                 self.available_scale_validities([]);
                 self.available_scale_validities(validities);

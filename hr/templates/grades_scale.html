@@ -64,9 +64,11 @@
             <button type="button" data-bind="click: validity_add" class="btn btn-raised btn-primary" aria-label="Add Validity">
                 <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
             </button>
-            <button type="button" data-bind="click: validity_update" class="btn btn-raised btn-primary" aria-label="Remove Validity">
+            <!-- ko if: selected_validity() -->
+            <button type="button" data-bind="click: validity_update" class="btn btn-raised btn-primary" aria-label="Update Validity">
                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
             </button>
+            <!-- /ko -->
         </span>
         </div>
     </div>
@@ -77,15 +79,22 @@
         form_vm: validity_modal_form
     }">
     <form>
+{#        {% csrf_token %}#}
         <div class="input-group">
-            <label class="form-control">Valid From: </label>
-            <input class="form-control" type="text">
+            <label class="form-control" >Valid From: </label>
+            <input class="form-control" data-bind="value: valid_from" type="text">
             <label class="form-control">Note: </label>
-            <input class="form-control" type="text">
+            <input class="form-control" data-bind="value: note" type="text">
+            <!-- ko if: typeof(id()) == 'undefined' -->
+            <input type="button" class="btn btn-raised btn-primary" value="Save" data-bind="click: save">
+            <!-- /ko -->
+            <!-- ko if: typeof(id()) != 'undefined' -->
+            <input type="button" class="btn btn-raised btn-primary" value="Update" data-bind="click: update">
+            <!-- /ko -->
+            <!-- ko if: typeof(id()) != 'undefined' -->
+            <input type="button" class="btn btn-raised btn-danger" value="Delete" data-bind="click: delete">
+            <!-- /ko -->
 
-            <input type="button" class="btn btn-raised btn-primary" value="Save">
-            <input type="button" class="btn btn-raised btn-primary" value="Update">
-            <input type="button" class="btn btn-raised btn-danger" value="Delete">
 
 
         </div>
