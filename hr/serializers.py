@@ -86,9 +86,9 @@ class GradeScaleValiditySerializer(serializers.ModelSerializer):
     #     ipdb.set_trace()
     #     return super(GradeScaleValiditySerializer, self).validate(attrs)
 
-    def create(self, validated_data):
-        import ipdb
-        ipdb.set_trace()
+    # def create(self, validated_data):
+    #     import ipdb
+    #     ipdb.set_trace()
 
 class EmployeeGradeGroupSerializer(serializers.ModelSerializer):
 

@@ -54,6 +54,9 @@
         <div class="input-group col-lg-4">
             <select class="form-control" aria-describedby="basic-addon2" data-bind="
                 options : available_scale_validities,
+                optionsText: function(item){
+                    return 'Valid From: ' + item.valid_from()
+                },
                 value: selected_validity,
                 optionsCaption: 'Select Grade Scale Validity...'">
             </select>
@@ -73,6 +76,20 @@
         show_modal: show_validity_modal,
         form_vm: validity_modal_form
     }">
+    <form>
+        <div class="input-group">
+            <label class="form-control">Valid From: </label>
+            <input class="form-control" type="text">
+            <label class="form-control">Note: </label>
+            <input class="form-control" type="text">
+
+            <input type="button" class="btn btn-raised btn-primary" value="Save">
+            <input type="button" class="btn btn-raised btn-primary" value="Update">
+            <input type="button" class="btn btn-raised btn-danger" value="Delete">
+
+
+        </div>
+    </form>
 
     </validity-modal>
 {#    End This is validity Modal#}
