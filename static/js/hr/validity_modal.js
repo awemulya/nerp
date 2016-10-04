@@ -10,7 +10,7 @@ var validityModalVM  = function(params) {
         if(self.form_vm().id()){
             self.modal_name('Edit ' + params.modal_name);
         }else{
-            self.modal_name('Add ' + params.modal_name);
+            self.modal_name('Add New ' + params.modal_name);
         }
     });
 };
