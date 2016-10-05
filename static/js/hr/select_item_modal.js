@@ -1,6 +1,8 @@
 // Dependencies
 // App.js and its dependencies and knockout js
+// Requires modal custom binding
 // End Dependencies
+
 var loadList =  function (url, success_callback) {
             App.showProcessing();
             App.remoteGet(
