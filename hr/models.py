@@ -78,6 +78,7 @@ class GradeScaleValidity(models.Model):
     #     import ipdb
     #     ipdb.set_trace()
 
+
 class EmployeeGrade(models.Model):
     grade_name = models.CharField(max_length=100)
     grade_group = models.ForeignKey(
@@ -102,7 +103,7 @@ class EmployeeGrade(models.Model):
 
 
 class EmployeeGradeScale(models.Model):
-    grade = models.ForeignKey(EmployeeGrade)
+    grade = models.ForeignKey(EmployeeGrade, related_name='grade_scales')
     salary_scale = models.FloatField()
     # rate increases yearly with grade rate. Also shold mention when in setting? How much times
     grade_number = models.PositiveIntegerField()

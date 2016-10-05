@@ -17,10 +17,19 @@ class EmployeeGradeScaleViewSet(viewsets.ModelViewSet):
 class EmployeeGradeGroupViewSet(viewsets.ModelViewSet):
     queryset = EmployeeGradeGroup.objects.all()
     serializer_class = EmployeeGradeGroupSerializer
+
     # permission_classes = (permissions.IsAuthenticatedOrReadOnly,
     #                       IsOwnerOrReadOnly,)
     # filter_backends = (filters.DjangoFilterBackend,)
     # filter_fields = ('category', 'in_stock')
+
+    # def get_queryset(self):
+    #     if self.request.GET.get('validity_id'):
+    #         return self.queryset.filter(employee_grades__grade_scales__validity_id=self.request.GET.get('validity_id'))
+    #     return self.queryset
+
+    # def list(self, request, *args, **kwargs):
+    #     super(EmployeeGradeGroupViewSet, self).list(request, *args, **kwargs)
 
 
 class GradeScaleValidityViewSet(viewsets.ModelViewSet):

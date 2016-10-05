@@ -95,7 +95,17 @@
         </select-crud-modal>
         {#    End This is validity Modal#}
 
+        <div>
+            <div data-bind="foreach: available_grade_groups">
+
+                <h3 data-bind="text: $data.name" class="bg-info"></h3>
+
+            </div>
+        </div>
+
     </div>
+
+
 
     {#    This is validity Modal#}
     {#    <validity-modal params="{#}
