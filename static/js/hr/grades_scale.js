@@ -81,8 +81,11 @@ var gradeScale = {
             // End Load grade scale
             
             // Grade scale Vality main observables
+
+
             
+
             
-        },
+        }
     }
     ;
