@@ -110,7 +110,7 @@ var gradeScale = {
 
             self.selected_validity.subscribe(function () {
                 gradeScale.getList(
-                    '/payroll/api/grade-scale/?validity_id=' + String(self.selected_validity()),
+                    '/payroll/api/grade-scale/?validity_id=' + String(self.selected_validity().id()),
                     function (res) {
                         // Here res is all entered grade scale
                         ko.utils.arrayForEach(self.available_grade_groups(), function (grade_group) {
@@ -121,9 +121,9 @@ var gradeScale = {
                                     }
                                 });
                                 if (grade_scale) {
-                                    grade['scale'] = new gradeScale.gradeScaleVm(data, self.selected_validity());
+                                    grade['scale'] = new gradeScale.gradeScaleVm(data, self.selected_validity().id());
                                 } else {
-                                    grade['scale'] = new gradeScale.gradeScaleVm({}, self.selected_validity());
+                                    grade['scale'] = new gradeScale.gradeScaleVm({}, self.selected_validity().id());
                                 }
                             });
                         });
