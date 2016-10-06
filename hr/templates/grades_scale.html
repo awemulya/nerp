@@ -98,10 +98,27 @@
                     </thead>
                     <tbody data-bind="foreach: available_grade_groups">
                     <tr>
-                        <td colspan="4" style="background: lightgray"><b data-bind="text: $data.name"></b></td>
+                        <td colspan="4" style="background: lightgray">
+                            <strong data-bind="text: $data.name"></strong>
+                            <!-- ko if:!visibility() -->
+                            <button data-bind="click: $data.toggle_visibility" class="pull-right btn btn-raised btn-primary">
+                            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                            </button>
+                            <!-- /ko -->
+                            <!-- ko if:visibility() -->
+                            <button data-bind="click: $data.toggle_visibility" class="pull-right btn btn-raised btn-warning">
+                            <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
+                            </button>
+                            <button  class="pull-right btn btn-raised btn-primary">
+                            <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                            </button>
+                            <!-- /ko -->
+
+
+                        </td>
                     </tr>
                     <!-- ko foreach: $data.employee_grades -->
-                    <tr data-bind="with: scale">
+                    <tr data-bind="with: scale, visible: $parent.visibility">
                         <td data-bind="text: $parent.grade_name"></td>
                         <td data-bind="editableText: grade_number, numeric:true"></td>
                         <td data-bind="editableText: grade_rate, numeric:true"></td>
