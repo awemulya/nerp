@@ -91,14 +91,29 @@
             <div data-bind="foreach: available_grade_groups">
 
                 <h3 data-bind="text: $data.name" class="bg-primary"></h3>
-                <div data-bind="foreach: employee_grades">
-
-                    <h3 data-bind="text: $data.grade_name" class="bg-info"></h3>
-
-                </div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Grade Number</th>
+                        <th>Grade Rate</th>
+                        <th>Salary Scale</th>
+                    </tr>
+                    </thead>
+                    <tbody data-bind="foreach: $data.employee_grades">
+                        <tr data-bind="with: scale">
+                            <td data-bind="text: $parent.grade_name"></td>
+                            <td data-bind="editableText: grade_number, numeric:true"></td>
+                            <td data-bind="editableText: grade_rate, numeric:true"></td>
+                            <td data-bind="editableText: salary_scale, numeric:true"></td>
+                        </tr>
+                    </tbody>
+                </table>
 
             </div>
+
         </div>
+    </div>
 
     </div>
 
