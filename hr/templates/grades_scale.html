@@ -101,16 +101,13 @@
                         <td colspan="4" style="background: lightgray">
                             <strong data-bind="text: $data.name"></strong>
                             <!-- ko if:!visibility() -->
-                            <button data-bind="click: $data.toggle_visibility" class="pull-right btn btn-raised btn-primary">
+                            <button data-bind="click: $data.toggle_visibility" class="pull-right btn btn-primary">
                             <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
                             </button>
                             <!-- /ko -->
                             <!-- ko if:visibility() -->
-                            <button data-bind="click: $data.toggle_visibility" class="pull-right btn btn-raised btn-warning">
+                            <button data-bind="click: $data.toggle_visibility" class="pull-right btn btn-primary">
                             <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
-                            </button>
-                            <button  class="pull-right btn btn-raised btn-primary">
-                            <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                             </button>
                             <!-- /ko -->
 
@@ -127,7 +124,7 @@
                     <!-- /ko -->
                     </tbody>
             </table>
-
+            <button class="btn btn-raised btn-primary">Save Update</button>
 
         </div>
     </div>

@@ -100,14 +100,21 @@ var gradeScale = {
                         ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
                             grade['scale'] = new gradeScale.gradeScaleVm();
                         });
-                    grade_group['visibility'] = ko.observable(false);
-                    grade_group['toggle_visibility'] = function(){
-                        if(grade_group['visibility']() == false){
-                            grade_group['visibility'](true);
-                        }else{
-                            grade_group['visibility'](false);
-                        }
-                    };
+                        grade_group['visibility'] = ko.observable(false);
+
+                        grade_group['toggle_visibility'] = function(){
+                            if(grade_group['visibility']() == false){
+                                grade_group['visibility'](true);
+                            }else{
+                                grade_group['visibility'](false);
+                            }
+                        };
+
+                        grade_group['save'] = function(){
+                            console.log('Saving updated Value');
+                            // TODO check whether the validity is selected or not(it needs to be selected)
+                        };
+
                     }
 
                     );
