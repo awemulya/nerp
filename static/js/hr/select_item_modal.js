@@ -3,29 +3,29 @@
 // Requires modal custom binding
 // End Dependencies
 
-var loadList =  function (url, success_callback) {
-            App.showProcessing();
-            App.remoteGet(
-                url,
-                {},
-                success_callback,
-                function (err) {
-                    var err_message = err.responseJSON.detail;
-                    var error = App.notifyUser(
-                        err_message,
-                        'error'
-                    );
-                    App.hideProcessing();
-                }
+var loadList = function (url, success_callback) {
+    App.showProcessing();
+    App.remoteGet(
+        url,
+        {},
+        success_callback,
+        function (err) {
+            var err_message = err.responseJSON.detail;
+            var error = App.notifyUser(
+                err_message,
+                'error'
             );
-        };
+            App.hideProcessing();
+        }
+    );
+};
 
 var modalFormVm = function (form_observables, observableArray, modal_visibility, api_url, data) {
     var self = this;
 
     self.form_observables = new form_observables();
     // self.serialized_obs = {};
-    for(var item in self.form_observables){
+    for (var item in self.form_observables) {
         self[item] = self.form_observables[item];
         // self.serialized_obs[item] = self[item];
     }
@@ -74,7 +74,7 @@ var modalFormVm = function (form_observables, observableArray, modal_visibility,
             self.api_url + self.id() + "/",
             JSON.parse(ko.toJSON(self.form_observables)),
             function (res) {
-                for(var item in self.form_observables){
+                for (var item in self.form_observables) {
                     self[item](res[item])
                 }
                 // self.valid_from(res.valid_from);
@@ -198,9 +198,18 @@ ko.components.register('select-crud-modal', {
 
     + '<div class="modal-body">'
     + '<!-- ko template: { nodes: $componentTemplateNodes, data: form_vm() } --><!-- /ko -->'
-    + '</div>'
 
+    + '<!-- ko if: typeof(form_vm().id()) == "undefined" -->'
+    + '<input type="button" class="btn btn-raised btn-primary" value="Save" data-bind="click: form_vm().save">'
+    + '<!-- /ko -->'
+    + '<!-- ko if: typeof(form_vm().id()) != "undefined" -->'
+    + '<input type="button" class="btn btn-raised btn-primary" value="Update" data-bind="click: form_vm().update">'
+    + '<input type="button" class="btn btn-raised btn-danger" value="Delete" data-bind="click: form_vm()._delete">'
+    + '<!-- /ko -->'
+
+    + '</div>'
     + '<div class="modal-footer">'
+
     + '</div>'
     + '</div>'
     + '</div>'

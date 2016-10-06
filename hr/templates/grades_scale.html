@@ -82,13 +82,7 @@
                     </div>
                 </div>
 
-                <!-- ko if: typeof(id()) == 'undefined' -->
-                <input type="button" class="btn btn-raised btn-primary" value="Save" data-bind="click: save">
-                <!-- /ko -->
-                <!-- ko if: typeof(id()) != 'undefined' -->
-                <input type="button" class="btn btn-raised btn-primary" value="Update" data-bind="click: update">
-                <input type="button" class="btn btn-raised btn-danger" value="Delete" data-bind="click: _delete">
-                <!-- /ko -->
+
 
             </form>
 
@@ -98,7 +92,12 @@
         <div>
             <div data-bind="foreach: available_grade_groups">
 
-                <h3 data-bind="text: $data.name" class="bg-info"></h3>
+                <h3 data-bind="text: $data.name" class="bg-primary"></h3>
+                <div data-bind="foreach: employee_grades">
+
+                    <h3 data-bind="text: $data.grade_name" class="bg-info"></h3>
+
+                </div>
 
             </div>
         </div>
