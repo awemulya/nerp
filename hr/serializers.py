@@ -98,11 +98,12 @@ class EmployeeGradeScaleSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeGradeScale
         fields = (
-            'grade_id',
+            'id',
+            'grade',
             'salary_scale',
             'grade_number',
             'grade_rate',
-            'validity_id',
+            'validity',
 
             # # Non model fields
             # 'grade_name',
@@ -112,11 +113,11 @@ class EmployeeGradeScaleSerializer(serializers.ModelSerializer):
 
 
 class EmployeeGradeSerializer(serializers.ModelSerializer):
-    grade_scales = EmployeeGradeScaleSerializer(many=True)
-    grade_group_id = serializers.ReadOnlyField(source="grade_group.id")
+    # grade_scales = EmployeeGradeScaleSerializer(many=True)
+    # grade_group_id = serializers.ReadOnlyField(source="grade_group.id")
     class Meta:
         model = EmployeeGrade
-        fields = ('grade_name', 'grade_group_id', 'grade_scales')
+        fields = ('id', 'grade_name', 'grade_group')
 
 
 class EmployeeGradeGroupSerializer(serializers.ModelSerializer):
@@ -124,4 +125,4 @@ class EmployeeGradeGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EmployeeGradeGroup
-        fields = ('name', 'employee_grades')
+        fields = ('id', 'name', 'employee_grades')

@@ -58,6 +58,7 @@
             select_list_obs: available_scale_validities,
             selected_item_obs: selected_validity,
             optionsText : function(item){return 'Valid From: ' + item.valid_from()},
+            optionsValue: function(item){return item.id()},
             optionsCaption: 'Select Grade Scale Validity..',
 
             form_observables: function(){
@@ -81,9 +82,6 @@
                         <input class="form-control" data-bind="value: note" type="text">
                     </div>
                 </div>
-
-
-
             </form>
 
         </select-crud-modal>

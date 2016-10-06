@@ -133,6 +133,7 @@ var mainVM = function (params) {
     self.selected_item = params.selected_item_obs;
     self.optionsCaption = params.optionsCaption;
     self.optionsText = params.optionsText;
+    self.optionsValue = params.optionsValue;
     self.form_observables = params.form_observables;
     var api_url = params.api_url;
 
@@ -173,7 +174,7 @@ var mainVM = function (params) {
 ko.components.register('select-crud-modal', {
     viewModel: mainVM,
     template: '<div class="input-group col-lg-4">'
-    + '<select class="form-control" aria-describedby="basic-addon2" data-bind="options : select_list, value: selected_item, optionsCaption: optionsCaption, optionsText: optionsText"> </select>'
+    + '<select class="form-control" aria-describedby="basic-addon2" data-bind="options : select_list, value: selected_item, optionsCaption: optionsCaption, optionsText: optionsText, optionsValue: optionsValue"> </select>'
     + '<span class="input-group-btn">'
     + '<button type="button" data-bind="click: _add" class="btn btn-raised btn-primary"aria-label="Add Validity">'
     + '<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>'

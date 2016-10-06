@@ -13,6 +13,11 @@ class EmployeeGradeScaleViewSet(viewsets.ModelViewSet):
     # filter_backends = (filters.DjangoFilterBackend,)
     # filter_fields = ('category', 'in_stock')
 
+    def get_queryset(self):
+        if self.request.GET.get('validity_id'):
+            return self.queryset.filter(validity_id=self.request.GET.get('validity_id'))
+        return self.queryset
+
 
 class EmployeeGradeGroupViewSet(viewsets.ModelViewSet):
     queryset = EmployeeGradeGroup.objects.all()

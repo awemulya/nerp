@@ -51,7 +51,7 @@ var gradeScale = {
             var self = this;
             self.id = ko.observable();
             self.grade_name = ko.observable();
-            self.grade_group_id = ko.observable();
+            self.grade_group = ko.observable();
             self.grade_scale = ko.observable();
             // if (data) {
             //     for (var k in data) {
@@ -63,19 +63,19 @@ var gradeScale = {
         gradeScaleVm: function (data) {
             var self = this;
             self.id = ko.observable();
-            self.grade_id = ko.observable();
+            self.grade = ko.observable();
             // self.grade_name = ko.observable();
             // self.parent_grade_id = ko.observable();
             // self.parent_grade_name = ko.observable();
             self.salary_scale = ko.observable();
             self.grade_number = ko.observable();
             self.grade_rate = ko.observable();
-            self.validity_id = ko.observable();
-            // if (data) {
-            //     for (var k in data) {
-            //         self[k](data[k])
-            //     }
-            // }
+            self.validity = ko.observable();
+            if (data) {
+                for (var k in data) {
+                    self[k](data[k])
+                }
+            }
         }
         ,
 
@@ -92,9 +92,34 @@ var gradeScale = {
             gradeScale.getList(
                 '/payroll/api/grade-group/',
                 function (res) {
-                    self.available_grade_groups(res)
+                    self.available_grade_groups(res);
+                    App.hideProcessing();
                 }
             );
+
+            self.selected_validity.subscribe(function(){
+                gradeScale.getList(
+                '/payroll/api/grade-scale/?validity_id='+ String(self.selected_validity()),
+                function (res) {
+                    // Here res is all entered grade scale
+                    ko.utils.arrayForEach(self.available_grade_groups(), function(grade_group){
+                        ko.utils.arrayForEach(grade_group.employee_grades, function(grade){
+                            var grade_scale = ko.utils.arrayFirst(res, function(scale){
+                                if(scale.grade == grade.id){
+                                    return item
+                                }
+                            });
+                            if (grade_scale){
+                                grade['scale'] = new gradeScale.gradeScaleVm(data);
+                            }else{
+                                grade['scale'] = new gradeScale.gradeScaleVm();
+                            }
+                        });
+                    });
+                    App.hideProcessing();
+                }
+            );
+            });
 
             // self.grade_scales = ko.observableArray();
             // gradeScale.getList(
