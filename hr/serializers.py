@@ -91,7 +91,8 @@ class GradeScaleValiditySerializer(serializers.ModelSerializer):
 
 class EmployeeGradeScaleSerializer(serializers.ModelSerializer):
 
-    # grade_name = serializers.ReadOnlyField(source="grade.name")
+    grade_id = serializers.ReadOnlyField(source="grade.id")
+    validity_id = serializers.ReadOnlyField(source="validity.id")
     # parent_grade_id = serializers.ReadOnlyField(source="grade.group.id")
     # # parent_grade_name = serializers.ReadOnlyField(source="grade.group.name")
 
@@ -99,11 +100,11 @@ class EmployeeGradeScaleSerializer(serializers.ModelSerializer):
         model = EmployeeGradeScale
         fields = (
             'id',
-            'grade',
+            'grade_id',
             'salary_scale',
             'grade_number',
             'grade_rate',
-            'validity',
+            'validity_id',
 
             # # Non model fields
             # 'grade_name',

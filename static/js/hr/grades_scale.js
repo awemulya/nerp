@@ -39,7 +39,7 @@ var gradeScale = {
             App.remotePost(
                 url,
                 payload,
-                callback ,
+                callback,
                 function (err) {
                     var err_message = err.responseJSON.detail;
                     var error = App.notifyUser(
@@ -77,10 +77,14 @@ var gradeScale = {
             // }
         },
 
-        gradeScaleVm: function (data, validity_id) {
+        gradeScaleVm: function (grade_id, data, validity_id) {
             var self = this;
             self.id = ko.observable();
-            self.grade = ko.observable();
+            if(grade_id){
+                self.grade_id = ko.observable(grade_id);
+            }else{
+                self.grade_id = ko.observable();
+            }
             // self.grade_name = ko.observable();
             // self.parent_grade_id = ko.observable();
             // self.parent_grade_name = ko.observable();
@@ -115,7 +119,7 @@ var gradeScale = {
                 function (res) {
                     ko.utils.arrayForEach(res, function (grade_group) {
                             ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
-                                grade['scale'] = ko.observable(new gradeScale.gradeScaleVm());
+                                grade['scale'] = ko.observable(new gradeScale.gradeScaleVm(grade.id));
                             });
                             grade_group['visibility'] = ko.observable(false);
 
@@ -140,41 +144,45 @@ var gradeScale = {
 
 
             var manage_list_response = function (res) {
-                        // Here res is all entered grade scale
-                        console.log(res);
-                        ko.utils.arrayForEach(self.available_grade_groups(), function (grade_group) {
-                            ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
-                                // console.log(grade['scale']().grade_rate(), grade['scale']().grade_number(), grade['scale']().salary_scale());
-                                var grade_scale = ko.utils.arrayFirst(res, function (scale) {
-                                    if (scale.grade == grade.id) {
-                                        return scale
-                                    }
-                                });
-                                if (grade_scale) {
-                                    grade['scale'](new gradeScale.gradeScaleVm(grade_scale, self.selected_validity().id()));
-                                } else {
-                                    grade['scale'](new gradeScale.gradeScaleVm(null, self.selected_validity().id()));
-                                }
-                            });
+                console.log(res);
+                // Here res is all entered grade scale
+                ko.utils.arrayForEach(self.available_grade_groups(), function (grade_group) {
+                    ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
+                        // console.log(grade['scale']().grade_rate(), grade['scale']().grade_number(), grade['scale']().salary_scale());
+                        var grade_scale = ko.utils.arrayFirst(res, function (scale) {
+                            if (scale.grade_id == grade.id) {
+                                console.log(scale);
+                                return scale
+                            }
                         });
-                        App.hideProcessing();
-                    };
+                        if (grade_scale) {
+                            grade['scale'](new gradeScale.gradeScaleVm(grade.id, grade_scale, self.selected_validity().id()));
+                        } else {
+                            grade['scale'](new gradeScale.gradeScaleVm(grade.id, null, self.selected_validity().id()));
+                        }
+                    });
+                });
+                App.hideProcessing();
+            };
 
             self.selected_validity.subscribe(function () {
-                gradeScale.getList(
-                    '/payroll/api/grade-scale/?validity_id=' + String(self.selected_validity().id()),
-                    manage_list_response
-                );
+                if(self.selected_validity()){
+                    gradeScale.getList(
+                        '/payroll/api/grade-scale/?validity_id=' + String(self.selected_validity().id()),
+                        manage_list_response
+                    );
+                }
             });
 
             self.save_update = function () {
-                var payload = JSON.parse(ko.toJSON(self.available_grade_groups()));
-                console.log(payload);
-                gradeScale.postData(
-                    '/payroll/api/grade-scale/?validity_id=' + String(self.selected_validity().id()),
-                    payload,
-                    manage_list_response
-                )
+                if(self.selected_validity()){
+                    var payload = JSON.parse(ko.toJSON(self.available_grade_groups()));
+                    gradeScale.postData(
+                        '/payroll/api/grade-scale/?validity_id=' + String(self.selected_validity().id()),
+                        payload,
+                        manage_list_response
+                    )
+                }
             };
 
             // self.grade_scales = ko.observableArray();

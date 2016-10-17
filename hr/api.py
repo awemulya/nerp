@@ -1,4 +1,6 @@
+from django.db import IntegrityError
 from rest_framework import viewsets
+from rest_framework.response import Response
 
 from hr.models import EmployeeGradeScale, EmployeeGradeGroup, GradeScaleValidity, EmployeeGrade
 from hr.serializers import EmployeeGradeScaleSerializer, EmployeeGradeGroupSerializer, GradeScaleValiditySerializer, \
@@ -20,13 +22,24 @@ class EmployeeGradeScaleViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         rows = request.data
-        for row in rows:
-            for roow in row['employee_grades']:
-                import ipdb
-                ipdb.set_trace()
-                # obj, created = EmployeeGradeScale.objects.update_or_create(**roow['scale'])
-                # print obj, created
+        if rows:
+            validity_id = rows[0]['employee_grades'][0]['scale']['validity_id']
+            for row in rows:
+                for roow in row['employee_grades']:
 
+                    try:
+                        obj, created = EmployeeGradeScale.objects.update_or_create(**roow['scale'])
+                    except (ValueError, IntegrityError):
+                        pass
+            saved_data = EmployeeGradeScaleSerializer(
+                EmployeeGradeScale.objects.filter(validity_id=validity_id),
+                many=True
+            )
+            import ipdb
+            ipdb.set_trace()
+            return Response(saved_data.data)
+        else:
+            return Response([])
 
 
 class EmployeeGradeGroupViewSet(viewsets.ModelViewSet):
