@@ -98,17 +98,13 @@
                     </thead>
                     <tbody data-bind="foreach: available_grade_groups">
                     <tr>
-                        <td colspan="4" style="background: lightgray">
+                        <td colspan="4" style="background: lightgray;" data-bind="click: $data.toggle_visibility">
                             <strong data-bind="text: $data.name"></strong>
                             <!-- ko if:!visibility() -->
-                            <button data-bind="click: $data.toggle_visibility" class="pull-right btn btn-primary">
-                            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
-                            </button>
+                            <span class="glyphicon glyphicon-menu-down pull-right" aria-hidden="true"></span>
                             <!-- /ko -->
                             <!-- ko if:visibility() -->
-                            <button data-bind="click: $data.toggle_visibility" class="pull-right btn btn-primary">
-                            <span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
-                            </button>
+                            <span class="glyphicon glyphicon-menu-up pull-right" aria-hidden="true"></span>
                             <!-- /ko -->
 
 
@@ -124,7 +120,7 @@
                     <!-- /ko -->
                     </tbody>
             </table>
-            <button class="btn btn-raised btn-primary">Save Update</button>
+            <button class="btn btn-raised btn-primary" data-bind="click: save_update" >Save Update</button>
 
         </div>
     </div>

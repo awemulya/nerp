@@ -18,6 +18,16 @@ class EmployeeGradeScaleViewSet(viewsets.ModelViewSet):
             return self.queryset.filter(validity_id=self.request.GET.get('validity_id'))
         return self.queryset
 
+    def create(self, request, *args, **kwargs):
+        rows = request.data
+        for row in rows:
+            for roow in row['employee_grades']:
+                import ipdb
+                ipdb.set_trace()
+                # obj, created = EmployeeGradeScale.objects.update_or_create(**roow['scale'])
+                # print obj, created
+
+
 
 class EmployeeGradeGroupViewSet(viewsets.ModelViewSet):
     queryset = EmployeeGradeGroup.objects.all()
