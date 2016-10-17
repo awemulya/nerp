@@ -80,9 +80,9 @@ var gradeScale = {
         gradeScaleVm: function (grade_id, data, validity_id) {
             var self = this;
             self.id = ko.observable();
-            if(grade_id){
+            if (grade_id) {
                 self.grade_id = ko.observable(grade_id);
-            }else{
+            } else {
                 self.grade_id = ko.observable();
             }
             // self.grade_name = ko.observable();
@@ -130,11 +130,11 @@ var gradeScale = {
                                     grade_group['visibility'](false);
                                 }
                             };
-
-                            grade_group['save'] = function () {
-                                console.log('Saving updated Value');
-                                // TODO check whether the validity is selected or not(it needs to be selected)
-                            };
+                            //
+                            // grade_group['save'] = function () {
+                            //     console.log('Saving updated Value');
+                            //     // TODO check whether the validity is selected or not(it needs to be selected)
+                            // };
 
                         }
                     );
@@ -144,14 +144,12 @@ var gradeScale = {
 
 
             var manage_list_response = function (res) {
-                console.log(res);
                 // Here res is all entered grade scale
                 ko.utils.arrayForEach(self.available_grade_groups(), function (grade_group) {
                     ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
                         // console.log(grade['scale']().grade_rate(), grade['scale']().grade_number(), grade['scale']().salary_scale());
                         var grade_scale = ko.utils.arrayFirst(res, function (scale) {
                             if (scale.grade_id == grade.id) {
-                                console.log(scale);
                                 return scale
                             }
                         });
@@ -163,19 +161,27 @@ var gradeScale = {
                     });
                 });
                 App.hideProcessing();
+                App.notifyUser('Success', 'success');
             };
 
             self.selected_validity.subscribe(function () {
-                if(self.selected_validity()){
+                if (self.selected_validity()) {
                     gradeScale.getList(
                         '/payroll/api/grade-scale/?validity_id=' + String(self.selected_validity().id()),
                         manage_list_response
                     );
+                } else {
+                    ko.utils.arrayForEach(self.available_grade_groups(), function (grade_group) {
+                        ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
+                            grade['scale'](new gradeScale.gradeScaleVm(grade.id));
+                        });
+
+                    });
                 }
             });
 
             self.save_update = function () {
-                if(self.selected_validity()){
+                if (self.selected_validity()) {
                     var payload = JSON.parse(ko.toJSON(self.available_grade_groups()));
                     gradeScale.postData(
                         '/payroll/api/grade-scale/?validity_id=' + String(self.selected_validity().id()),

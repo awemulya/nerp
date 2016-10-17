@@ -208,7 +208,11 @@ var App = (function () {
                 toastr.warning(message, 'Warning');
             }
         },
-        confirmAlert: function (message, okCallback) {
+        confirmAlert: function (message, okCallback, cancelCalback) {
+            var r = confirm(message);
+            if(r==true){
+                okCallback()
+            }
 
         },
         redirectTo: function (path, timeout) {

@@ -35,8 +35,6 @@ class EmployeeGradeScaleViewSet(viewsets.ModelViewSet):
                 EmployeeGradeScale.objects.filter(validity_id=validity_id),
                 many=True
             )
-            import ipdb
-            ipdb.set_trace()
             return Response(saved_data.data)
         else:
             return Response([])

@@ -97,28 +97,34 @@ var modalFormVm = function (form_observables, observableArray, modal_visibility,
         )
     };
     self._delete = function () {
-        App.showProcessing();
-        App.remoteDelete(
-            self.api_url + self.id() + "/",
-            {},
-            function (res) {
-                self.list.remove(self);
-                App.hideProcessing();
-                modal_visibility(false);
-                App.notifyUser(
-                    'Deleted successfully',
-                    'success'
-                );
-            },
-            function (err) {
-                var err_message = err.responseJSON.detail;
-                var error = App.notifyUser(
-                    err_message,
-                    'error'
-                );
-                App.hideProcessing();
+        App.confirmAlert(
+            'Are you sure you want to delete this item?',
+            function () {
+                App.showProcessing();
+                App.remoteDelete(
+                    self.api_url + self.id() + "/",
+                    {},
+                    function (res) {
+                        self.list.remove(self);
+                        App.hideProcessing();
+                        modal_visibility(false);
+                        App.notifyUser(
+                            'Deleted successfully',
+                            'success'
+                        );
+                    },
+                    function (err) {
+                        var err_message = err.responseJSON.detail;
+                        var error = App.notifyUser(
+                            err_message,
+                            'error'
+                        );
+                        App.hideProcessing();
+                    }
+                )
             }
-        )
+        );
+
     };
 
 };
