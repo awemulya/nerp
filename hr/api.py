@@ -2,9 +2,10 @@ from django.db import IntegrityError
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from hr.models import EmployeeGradeScale, EmployeeGradeGroup, GradeScaleValidity, EmployeeGrade
+from hr.models import EmployeeGradeScale, EmployeeGradeGroup, GradeScaleValidity, EmployeeGrade, AllowanceValidity, \
+    AllowanceName
 from hr.serializers import EmployeeGradeScaleSerializer, EmployeeGradeGroupSerializer, GradeScaleValiditySerializer, \
-    EmployeeGradeSerializer
+    EmployeeGradeSerializer, AllowanceValiditySerializer, AllowanceNameSerializer
 
 
 class EmployeeGradeScaleViewSet(viewsets.ModelViewSet):
@@ -63,8 +64,6 @@ class GradeScaleValidityViewSet(viewsets.ModelViewSet):
     serializer_class = GradeScaleValiditySerializer
     # permission_classes = (permissions.IsAuthenticatedOrReadOnly,
     #                       IsOwnerOrReadOnly,)
-    # filter_backends = (filters.DjangoFilterBackend,)
-    # filter_fields = ('category', 'in_stock')
 
 
 class EmployeeGradeViewSet(viewsets.ModelViewSet):
@@ -74,3 +73,19 @@ class EmployeeGradeViewSet(viewsets.ModelViewSet):
     #                       IsOwnerOrReadOnly,)
     # filter_backends = (filters.DjangoFilterBackend,)
     # filter_fields = ('category', 'in_stock')
+
+
+# Allowance Viewset
+
+class AllowanceValidityViewSet(viewsets.ModelViewSet):
+    queryset = AllowanceValidity.objects.all()
+    serializer_class = AllowanceValiditySerializer
+    # permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+    #                       IsOwnerOrReadOnly,)
+
+
+class AllowanceNameViewSet(viewsets.ModelViewSet):
+    queryset = AllowanceName.objects.all()
+    serializer_class = AllowanceNameSerializer
+
+# End Allowance Viewset

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
-    GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup
+    GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup, AllowanceValidity, AllowanceName
 
 
 class DeductionDetailSerializer(serializers.ModelSerializer):
@@ -127,3 +127,30 @@ class EmployeeGradeGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeGradeGroup
         fields = ('id', 'name', 'employee_grades')
+
+
+# Allowance
+
+class AllowanceValiditySerializer(serializers.ModelSerializer):
+    # TODO entry validation
+    class Meta:
+        model = AllowanceValidity
+        fields = '__all__'
+
+    # def validate(self, attrs):
+    #     import ipdb
+    #     ipdb.set_trace()
+    #     return super(GradeScaleValiditySerializer, self).validate(attrs)
+
+    # def create(self, validated_data):
+    #     import ipdb
+    #     ipdb.set_trace()
+
+
+class AllowanceNameSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AllowanceName
+        fields = '__all__'
+
+# End Allowance

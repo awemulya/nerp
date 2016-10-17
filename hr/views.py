@@ -1422,55 +1422,10 @@ def toggle_employee_activeness(request, pk=None):
 
 
 def allowance(request, pk=None):
-    ko_data = {}
-
-    if pk:
-        obj_id = pk
-        allowance_name = AllowanceName.objects.get(id=pk)
-    else:
-        obj_id = None
-        allowance_name = AllowanceName()
-
-    if request.method == "POST":
-        allowance_name_form = AllowanceNameForm(request.POST, instance=allowance_name)
-        allowance_formset = AllowanceNameFormSet(request.POST, instance=allowance_name)
-        if allowance_name_form.is_valid() and allowance_formset.is_valid():
-            allowance_name_form.save()
-            allowance_formset.save()
-            return redirect(reverse('list_allowance'))
-    else:
-        allowance_name_form = AllowanceNameForm(instance=allowance_name)
-        allowance_formset = AllowanceNameFormSet(instance=allowance_name)
-
     return render(
         request,
-        'allowance_cu.html',
-        {
-            'allowance_name_form': allowance_name_form,
-            'allowance_formset': allowance_formset,
-            'ko_data': ko_data,
-            'obj_id': obj_id,
-        })
-
-
-def list_allowance(request):
-    objects = AllowanceName.objects.all()
-    return render(
-        request,
-        'allowance_list.html',
-        {
-            'objects': objects,
-        }
-    )
-
-
-def delete_allowance(request, pk=None):
-    obj = AllowanceName.objects.get(id=pk)
-    # alw_details = Allowance.objects.filter(name=obj)
-    obj.delete()
-    # for alw in alw_details():
-    #     alw.delete()
-    return redirect(reverse('list_allowance'))
+        'allowance.html',
+        )
 
 
 def deduction(request):

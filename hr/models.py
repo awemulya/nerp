@@ -131,6 +131,8 @@ class AllowanceName(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=250)
     account_category = models.ForeignKey(Category, null=True, blank=True)
+    # FIXME accout cat deleted when removed
+    # TODO add parent category
 
     def __unicode__(self):
         return self.name

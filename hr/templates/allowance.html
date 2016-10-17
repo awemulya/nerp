@@ -12,12 +12,12 @@
     <script src="{% static 'js/vendors/nepali.datepicker.v2.1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap/bootstrap-datepicker.js' %}"></script>
 
-    <script src="{% static 'js/hr/grades_scale.js' %}"></script>
+    <script src="{% static 'js/hr/allowance.js' %}"></script>
     <script src="{% static 'js/hr/select_item_modal.js' %}"></script>
 
     <script>
         $(document).ready(function () {
-            vm = new gradeScale.vm();
+            vm = new allowance.vm();
             ko.applyBindings(vm);
         });
 
@@ -25,13 +25,11 @@
 {% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a></li>
-    <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a></li>
+        <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
+        <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
 
 {% endblock %}
 {% block breadcrumbs_before_print %}
-    {#    <li>#}
-    {#    </li>#}
 {% endblock %}
 
 {% block alert %}
@@ -46,19 +44,18 @@
 {% endblock %}
 
 {% block content %}
-
     <div class="col-lg-12 well">
         <div class="col-lg-8">
-            <h3>{% trans "Employee Grade Scales" %}</h3>
+            <h3>{% trans "Available Allowances" %}</h3>
         </div>
         {#    This is validity Modal#}
         <select-crud-modal params="{
             api_url: validity_api_url,
-            modal_name: 'Grade Scale Validity',
-            select_list_obs: available_scale_validities,
+            modal_name: 'Allowance Validity',
+            select_list_obs: available_allowance_validities,
             selected_item_obs: selected_validity,
             optionsText : function(item){return 'Valid From: ' + item.valid_from()},
-            optionsCaption: 'Select Grade Scale Validity..',
+            optionsCaption: 'Select Allowance Validity..',
 
             form_observables: function(){
                 var self = this;
@@ -86,6 +83,41 @@
         </select-crud-modal>
         {#    End This is validity Modal#}
 
+        {#    This is allowance name Modal#}
+        <select-crud-modal params="{
+            api_url: allowance_name_api_url,
+            modal_name: 'Allowance Name',
+            select_list_obs: available_allowance_names,
+            selected_item_obs: selected_allowance,
+            optionsText : function(item){return 'Valid From: ' + item.name()},
+            optionsCaption: 'Select Allowance Name..',
+
+            form_observables: function(){
+                var self = this;
+                self.id = ko.observable();
+                self.name = ko.observable();
+                self.description = ko.observable();
+            }
+        }">
+            <form>
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label class="form-control">Allowance Name </label>
+                        <input class="form-control" data-bind="value: name" type="text">
+                    </div>
+                </div>
+
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label class="form-control">Description: </label>
+                        <input class="form-control" data-bind="value: description" type="text">
+                    </div>
+                </div>
+            </form>
+
+        </select-crud-modal>
+        {#    End This is validity Modal#}
+
         <div>
             <table class="table table-striped">
                     <thead>
@@ -96,31 +128,9 @@
                         <th>Salary Scale</th>
                     </tr>
                     </thead>
-                    <tbody data-bind="foreach: available_grade_groups">
-                    <tr>
-                        <td colspan="4" style="background: lightgray;" data-bind="click: $data.toggle_visibility">
-                            <strong data-bind="text: $data.name"></strong>
-                            <!-- ko if:!visibility() -->
-                            <span class="glyphicon glyphicon-menu-down pull-right" aria-hidden="true"></span>
-                            <!-- /ko -->
-                            <!-- ko if:visibility() -->
-                            <span class="glyphicon glyphicon-menu-up pull-right" aria-hidden="true"></span>
-                            <!-- /ko -->
 
-
-                        </td>
-                    </tr>
-                    <!-- ko foreach: $data.employee_grades -->
-                    <tr data-bind="with: scale, visible: $parent.visibility">
-                        <td data-bind="text: $parent.grade_name"></td>
-                        <td data-bind="editableText: grade_number, numeric:true"></td>
-                        <td data-bind="editableText: grade_rate, numeric:true"></td>
-                        <td data-bind="editableText: salary_scale, numeric:true"></td>
-                    </tr>
-                    <!-- /ko -->
-                    </tbody>
             </table>
-            <button class="btn btn-raised btn-primary" data-bind="click: save_update" >Save Update</button>
+            <button class="btn btn-raised btn-primary">Save Update</button>
 
         </div>
     </div>

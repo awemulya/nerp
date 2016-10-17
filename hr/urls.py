@@ -11,6 +11,11 @@ router.register(r'grade-group', api.EmployeeGradeGroupViewSet)
 router.register(r'grade-scale-validity', api.GradeScaleValidityViewSet)
 router.register(r'employee-grade', api.EmployeeGradeViewSet)
 
+# Allowance Routers
+router.register(r'allowance-validity', api.AllowanceValidityViewSet)
+router.register(r'allowance-name', api.AllowanceNameViewSet)
+# End Allowance Routers
+
 urlpatterns = patterns('',
                        url(r'^api/', include(router.urls)),
                        # url(r'^api/', include('rest_framework.urls', namespace='hr-api')),
@@ -43,10 +48,7 @@ urlpatterns = patterns('',
                        # url(r'^incentive/list/$', views.list_incentive, name='list_incentive'),
 
                        # allowance crud
-                       url(r'^allowance/add/$', views.allowance, name='add_allowance'),
-                       url(r'^allowance/edit/(?P<pk>[0-9]+)/$', views.allowance, name='edit_allowance'),
-                       url(r'^allowance/delete/(?P<pk>[0-9]+)/$', views.delete_allowance, name='delete_allowance'),
-                       url(r'^allowance/list/$', views.list_allowance, name='list_allowance'),
+                       url(r'^allowance-entry/$', views.allowance, name='add_allowance'),
 
                        # deductions crud
                        url(r'^deduction/$', views.deduction, name='deduction'),
