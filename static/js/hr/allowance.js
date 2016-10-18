@@ -41,20 +41,22 @@ var allowance = {
             );
 
         },
-        gradeScaleVm: function (grade_id, data, validity_id) {
+        allowanceVm: function (employee_grade_id, data, validity_id) {
             var self = this;
             self.id = ko.observable();
-            if (grade_id) {
-                self.grade_id = ko.observable(grade_id);
+            if (employee_grade_id) {
+                self.employee_grade_id = ko.observable(employee_grade_id);
             } else {
-                self.grade_id = ko.observable();
+                self.employee_grade_id = ko.observable();
             }
             // self.grade_name = ko.observable();
             // self.parent_grade_id = ko.observable();
             // self.parent_grade_name = ko.observable();
-            self.salary_scale = ko.observable();
-            self.grade_number = ko.observable();
-            self.grade_rate = ko.observable();
+            self.name = ko.observable();
+            self.sum_type = ko.observable();
+            self.value = ko.observable();
+            self.payment_cycle = ko.observable();
+            self.year_payment_cycle_month = ko.observable();
             if (validity_id) {
                 self.validity_id = ko.observable(validity_id);
             } else {
@@ -83,35 +85,35 @@ var allowance = {
             self.selected_allowance = ko.observable();
             // End Grade scale Vality main observables
 
-            // self.available_grade_groups = ko.observableArray();
-            // gradeScale.getList(
-            //     '/payroll/api/grade-group/',
-            //     function (res) {
-            //         ko.utils.arrayForEach(res, function (grade_group) {
-            //                 ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
-            //                     grade['scale'] = ko.observable(new gradeScale.gradeScaleVm(grade.id));
-            //                 });
-            //                 grade_group['visibility'] = ko.observable(false);
-            //
-            //                 grade_group['toggle_visibility'] = function () {
-            //                     if (grade_group['visibility']() == false) {
-            //                         grade_group['visibility'](true);
-            //                     } else {
-            //                         grade_group['visibility'](false);
-            //                     }
-            //                 };
-            //                 //
-            //                 // grade_group['save'] = function () {
-            //                 //     console.log('Saving updated Value');
-            //                 //     // TODO check whether the validity is selected or not(it needs to be selected)
-            //                 // };
-            //
-            //             }
-            //         );
-            //         self.available_grade_groups(res);
-            //         App.hideProcessing();
-            //     });
-            //
+            self.available_grade_groups = ko.observableArray();
+            allowance.getList(
+                '/payroll/api/grade-group/',
+                function (res) {
+                    ko.utils.arrayForEach(res, function (grade_group) {
+                            ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
+                                grade['allowance'] = ko.observable(new allowance.allowanceVm(grade.id));
+                            });
+                            grade_group['visibility'] = ko.observable(false);
+
+                            grade_group['toggle_visibility'] = function () {
+                                if (grade_group['visibility']() == false) {
+                                    grade_group['visibility'](true);
+                                } else {
+                                    grade_group['visibility'](false);
+                                }
+                            };
+                            //
+                            // grade_group['save'] = function () {
+                            //     console.log('Saving updated Value');
+                            //     // TODO check whether the validity is selected or not(it needs to be selected)
+                            // };
+
+                        }
+                    );
+                    self.available_grade_groups(res);
+                    App.hideProcessing();
+                });
+
             //
             // var manage_list_response = function (res) {
             //     // Here res is all entered grade scale
@@ -150,16 +152,16 @@ var allowance = {
                 // }
             });
 
-            // self.save_update = function () {
-            //     if (self.selected_validity()) {
-            //         var payload = JSON.parse(ko.toJSON(self.available_grade_groups()));
-            //         gradeScale.postData(
-            //             '/payroll/api/grade-scale/?validity_id=' + String(self.selected_validity().id()),
-            //             payload,
-            //             manage_list_response
-            //         )
-            //     }
-            // };
+            self.save_update = function () {
+                if (self.selected_validity()) {
+                    var payload = JSON.parse(ko.toJSON(self.available_grade_groups()));
+                    gradeScale.postData(
+                        '/payroll/api/grade-scale/?validity_id=' + String(self.selected_validity().id()),
+                        payload,
+                        manage_list_response
+                    )
+                }
+            };
 
             // self.grade_scales = ko.observableArray();
             // gradeScale.getList(

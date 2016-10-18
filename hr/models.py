@@ -45,9 +45,9 @@ payment_cycle = [('M', _('Monthly')),
 #    >> Pro Tempore
 #  >> Salary Giving
 
-ACC_CAT_PAY_HEAD_ID = 1
+ACC_CAT_PAY_HEAD_ID= 1
 ACC_CAT_DEDUCTION_ID = 4
-ACC_CAT_ALLOWANCE_ID = 5
+ACC_CAT_ALLOWANCE_ID = 3
 ACC_CAT_INCENTIVE_ID = 6
 ACC_CAT_BASIC_SALARY_ID = 3
 ACC_CAT_TAX_ID = 7
@@ -140,6 +140,7 @@ class AllowanceName(models.Model):
 
 @receiver(post_save, sender=AllowanceName)
 def allowance_account_category_add(sender, instance, created, **kwargs):
+
     if created:
         instance.account_category = Category.objects.create(
             name='%s-%d' % (instance.name, instance.id),
@@ -722,7 +723,7 @@ class ProTempore(models.Model):
     # Remunuration Tax (income tax)
     # Baki chai either in bank or cash
 
-    # Sabai ko account huncha 
+    # Sabai ko account huncha
 
 
 class MaritalStatus(models.Model):

@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
-    GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup, AllowanceValidity, AllowanceName
+    GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup, AllowanceValidity, AllowanceName, \
+    Allowance
 
 
 class DeductionDetailSerializer(serializers.ModelSerializer):
@@ -152,5 +153,22 @@ class AllowanceNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = AllowanceName
         fields = '__all__'
+
+
+class AllowanceSerializer(serializers.ModelSerializer):
+    employee_grade_id = serializers.ReadOnlyField(source='employee_grade.id')
+    validity_id = serializers.ReadOnlyField(source='validity.id')
+    name_id = serializers.ReadOnlyField(source='name.id')
+    class Meta:
+        model = Allowance
+        fields = (
+            'name_id',
+            'employee_grade_id',
+            'sum_type',
+            'value',
+            'payment_cycle',
+            'year_payment_cycle_month',
+            'validity_id'
+        )
 
 # End Allowance

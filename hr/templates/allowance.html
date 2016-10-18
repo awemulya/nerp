@@ -102,7 +102,7 @@
             <form>
                 <div class="form-inline">
                     <div class="form-group">
-                        <label class="form-control">Allowance Name </label>
+                        <label class="form-control">Allowance Name: </label>
                         <input class="form-control" data-bind="value: name" type="text">
                     </div>
                 </div>
@@ -122,15 +122,52 @@
             <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Grade Number</th>
-                        <th>Grade Rate</th>
-                        <th>Salary Scale</th>
+                        <th>Grade Name</th>
+                        <th>Sum Type</th>
+                        <th>Value</th>
+                        <th>Payment Cycle</th>
+                        <th>Year Payment Cycle Month</th>
                     </tr>
                     </thead>
+                    <tbody data-bind="foreach: available_grade_groups">
+                    <tr>
+                        <td colspan="5" style="background: lightgray;" data-bind="click: $data.toggle_visibility">
+                            <strong data-bind="text: $data.name"></strong>
+                            <!-- ko if:!visibility() -->
+                            <span class="glyphicon glyphicon-menu-down pull-right" aria-hidden="true"></span>
+                            <!-- /ko -->
+                            <!-- ko if:visibility() -->
+                            <span class="glyphicon glyphicon-menu-up pull-right" aria-hidden="true"></span>
+                            <!-- /ko -->
 
+
+                        </td>
+                    </tr>
+                    <!-- ko foreach: $data.employee_grades -->
+                    <tr data-bind="with: allowance, visible: $parent.visibility">
+                        <td data-bind="text: $parent.grade_name"></td>
+                        <td><select class="form-control" data-bind="options: [
+                            {name: 'Amount', value: 'AMOUNT'},
+                            {name: 'Rate', value: 'RATE'}
+                        ],
+                        value: sum_type,
+                        optionsText: 'name',
+                        optionsValue: 'value'"></select></td>
+                        <td data-bind="editableText: value, numeric:true"></td>
+                        <td><select class="form-control" data-bind="options: [
+                            {name: 'Monthly', value: 'M'},
+                            {name: 'Yearly', value: 'Y'},
+                            {name: 'Daily', value: 'D'}
+                        ],
+                        value: payment_cycle,
+                        optionsText: 'name',
+                        optionsValue: 'value'"></select></td>
+                        <td data-bind="editableText: year_payment_cycle_month, numeric:true"></td>
+                    </tr>
+                    <!-- /ko -->
+                    </tbody>
             </table>
-            <button class="btn btn-raised btn-primary">Save Update</button>
+            <button class="btn btn-raised btn-primary" data-bind="click: save_update" >Save Update</button>
 
         </div>
     </div>

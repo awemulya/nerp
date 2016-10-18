@@ -14,6 +14,7 @@ router.register(r'employee-grade', api.EmployeeGradeViewSet)
 # Allowance Routers
 router.register(r'allowance-validity', api.AllowanceValidityViewSet)
 router.register(r'allowance-name', api.AllowanceNameViewSet)
+router.register(r'allowance', api.AllowanceViewSet)
 # End Allowance Routers
 
 urlpatterns = patterns('',

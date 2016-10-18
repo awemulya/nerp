@@ -3,9 +3,9 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from hr.models import EmployeeGradeScale, EmployeeGradeGroup, GradeScaleValidity, EmployeeGrade, AllowanceValidity, \
-    AllowanceName
+    AllowanceName, Allowance
 from hr.serializers import EmployeeGradeScaleSerializer, EmployeeGradeGroupSerializer, GradeScaleValiditySerializer, \
-    EmployeeGradeSerializer, AllowanceValiditySerializer, AllowanceNameSerializer
+    EmployeeGradeSerializer, AllowanceValiditySerializer, AllowanceNameSerializer, AllowanceSerializer
 
 
 class EmployeeGradeScaleViewSet(viewsets.ModelViewSet):
@@ -87,5 +87,10 @@ class AllowanceValidityViewSet(viewsets.ModelViewSet):
 class AllowanceNameViewSet(viewsets.ModelViewSet):
     queryset = AllowanceName.objects.all()
     serializer_class = AllowanceNameSerializer
+
+
+class AllowanceViewSet(viewsets.ModelViewSet):
+    queryset = Allowance.objects.all()
+    serializer_class = AllowanceSerializer
 
 # End Allowance Viewset

@@ -16,7 +16,7 @@ from core.models import FiscalYear, Donor, Activity, BudgetHead, TaxScheme
 
 
 class Category(MPTTModel):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     description = models.CharField(max_length=254, null=True, blank=True)
     parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
     # company = models.ForeignKey(Company)
