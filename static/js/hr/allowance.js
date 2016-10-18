@@ -42,6 +42,7 @@ var allowance = {
 
         },
         allowanceVm: function (employee_grade_id, data, validity_id) {
+            // TODO add validation
             var self = this;
             self.id = ko.observable();
             if (employee_grade_id) {
@@ -52,10 +53,12 @@ var allowance = {
             // self.grade_name = ko.observable();
             // self.parent_grade_id = ko.observable();
             // self.parent_grade_name = ko.observable();
-            self.name = ko.observable();
+            self.name_id = ko.observable();
             self.sum_type = ko.observable();
             self.value = ko.observable();
             self.payment_cycle = ko.observable();
+
+
             self.year_payment_cycle_month = ko.observable();
             if (validity_id) {
                 self.validity_id = ko.observable(validity_id);
@@ -67,10 +70,19 @@ var allowance = {
                     self[k](data[k])
                 }
             }
+            self.ypcm_disable_edit = ko.observable(false);
+            self.payment_cycle.subscribe(function () {
+                // console.log(self.payment_cycle());
+                if(self.payment_cycle() != 'Y'){
+                    self.ypcm_disable_edit(true);
+                }else{
+                    self.ypcm_disable_edit(false);
+                }
+            })
         }
         ,
 
-        vm: function () {
+        vm: function (calender) {
 
             var self = this;
             // Grade scale Vality main observables
@@ -114,49 +126,51 @@ var allowance = {
                     App.hideProcessing();
                 });
 
-            //
-            // var manage_list_response = function (res) {
-            //     // Here res is all entered grade scale
-            //     ko.utils.arrayForEach(self.available_grade_groups(), function (grade_group) {
-            //         ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
-            //             // console.log(grade['scale']().grade_rate(), grade['scale']().grade_number(), grade['scale']().salary_scale());
-            //             var grade_scale = ko.utils.arrayFirst(res, function (scale) {
-            //                 if (scale.grade_id == grade.id) {
-            //                     return scale
-            //                 }
-            //             });
-            //             if (grade_scale) {
-            //                 grade['scale'](new gradeScale.gradeScaleVm(grade.id, grade_scale, self.selected_validity().id()));
-            //             } else {
-            //                 grade['scale'](new gradeScale.gradeScaleVm(grade.id, null, self.selected_validity().id()));
-            //             }
-            //         });
-            //     });
-            //     App.hideProcessing();
-            //     App.notifyUser('Success', 'success');
-            // };
 
-            self.selected_validity.subscribe(function () {
-                // if (self.selected_validity()) {
-                //     gradeScale.getList(
-                //         '/payroll/api/grade-scale/?validity_id=' + String(self.selected_validity().id()),
-                //         manage_list_response
-                //     );
-                // } else {
-                //     ko.utils.arrayForEach(self.available_grade_groups(), function (grade_group) {
-                //         ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
-                //             grade['scale'](new gradeScale.gradeScaleVm(grade.id));
-                //         });
-                //
-                //     });
-                // }
+            var manage_list_response = function (res) {
+                // Here res is all entered grade scale
+                ko.utils.arrayForEach(self.available_grade_groups(), function (grade_group) {
+                    ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
+                        // console.log(grade['scale']().grade_rate(), grade['scale']().grade_number(), grade['scale']().salary_scale());
+                        var matched_allowance = ko.utils.arrayFirst(res, function (allowance) {
+                            if (allowance.employee_grade_id == grade.id) {
+                                return allowance
+                            }
+                        });
+                        if (matched_allowance) {
+                            grade['allowance'](new allowance.allowanceVm(grade.id, matched_allowance, self.selected_validity().id()));
+                        } else {
+                            grade['allowance'](new allowance.allowanceVm(grade.id, null, self.selected_validity().id()));
+                        }
+                    });
+                });
+                App.hideProcessing();
+                App.notifyUser('Success', 'success');
+            };
+
+
+            self.filtered_list = ko.computed(function () {
+               if(self.selected_validity() && self.selected_allowance()){
+                   allowance.getList(
+                        '/payroll/api/allowance/?validity_id=' + String(self.selected_validity().id()) + '&' + 'name_id=' + String(self.selected_allowance().id()),
+                        manage_list_response
+                    );
+               }else{
+                    ko.utils.arrayForEach(self.available_grade_groups(), function (grade_group) {
+                        ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
+                            grade['allowance'](new allowance.allowanceVm(grade.id));
+                        });
+
+                    });
+               }
             });
+
 
             self.save_update = function () {
                 if (self.selected_validity()) {
                     var payload = JSON.parse(ko.toJSON(self.available_grade_groups()));
-                    gradeScale.postData(
-                        '/payroll/api/grade-scale/?validity_id=' + String(self.selected_validity().id()),
+                    allowance.postData(
+                        '/payroll/api/allowance/',
                         payload,
                         manage_list_response
                     )
@@ -185,6 +199,44 @@ var allowance = {
             //         self.grades(items);
             //     }
             // );
+            self.months_options = ko.observable();
+            self.bs_months = [
+                {name: 'Baisakh', value: 1},
+                {name: 'Jestha', value: 2},
+                {name: 'Aashar', value: 3},
+                {name: 'Shrawan', value: 4},
+                {name: 'Bhadra', value: 5},
+                {name: 'Asoj', value: 6},
+                {name: 'Katik', value: 7},
+                {name: 'Mansir', value: 8},
+                {name: 'Poush', value: 9},
+                {name: 'Magh', value: 10},
+                {name: 'Falgun', value: 11},
+                {name: 'Chaitra', value: 12},
+            ];
+            self.ad_months = [
+                {name: 'January', value: 1},
+                {name: 'February', value: 2},
+                {name: 'March', value: 3},
+                {name: 'April', value: 4},
+                {name: 'May', value: 5},
+                {name: 'June', value: 6},
+                {name: 'July', value: 7},
+                {name: 'August', value: 8},
+                {name: 'September', value: 9},
+                {name: 'October', value: 10},
+                {name: 'November', value: 11},
+                {name: 'December', value: 12}
+            ];
+
+            if(calender == 'ad'){
+                self.months_options(self.ad_months);
+            }else{
+                self.months_options(self.bs_months);
+
+            }
+
+
         }
     }
     ;

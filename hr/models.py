@@ -193,10 +193,6 @@ class Allowance(models.Model):
             return '%s, %f' % (self.name, self.amount_rate)
 
     def save(self, *args, **kwargs):
-        if self.sum_type == 'AMOUNT':
-            self.amount_rate = None
-        elif self.sum_type == 'RATE':
-            self.amount = None
         if self.payment_cycle is not 'Y':
             self.year_payment_cycle_month = None
 

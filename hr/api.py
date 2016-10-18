@@ -93,4 +93,31 @@ class AllowanceViewSet(viewsets.ModelViewSet):
     queryset = Allowance.objects.all()
     serializer_class = AllowanceSerializer
 
+    def get_queryset(self):
+        if self.request.method == 'GET':
+            validity_id = self.request.GET.get('validity_id')
+            name_id = self.request.GET.get('validity_id')
+            return self.queryset.filter(validity_id=validity_id, name_id=name_id)
+        return self.queryset
+
+    def create(self, request, *args, **kwargs):
+        rows = request.data
+        if rows:
+            validity_id = rows[0]['employee_grades'][0]['allowance']['validity_id']
+            name_id = rows[0]['employee_grades'][0]['allowance']['name_id_id']
+            for row in rows:
+                for roow in row['employee_grades']:
+
+                    try:
+                        obj, created = Allowance.objects.update_or_create(**roow['scale'])
+                    except (ValueError, IntegrityError):
+                        pass
+            saved_data = AllowanceSerializer(
+                Allowance.objects.filter(validity_id=validity_id, name_id=name_id),
+                many=True
+            )
+            return Response(saved_data.data)
+        else:
+            return Response([])
+
 # End Allowance Viewset
