@@ -25,7 +25,6 @@ from jsonfield import JSONField
 
 import copy
 
-
 deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
 
 payment_cycle = [('M', _('Monthly')),
@@ -45,7 +44,7 @@ payment_cycle = [('M', _('Monthly')),
 #    >> Pro Tempore
 #  >> Salary Giving
 
-ACC_CAT_PAY_HEAD_ID= 1
+ACC_CAT_PAY_HEAD_ID = 1
 ACC_CAT_DEDUCTION_ID = 4
 ACC_CAT_ALLOWANCE_ID = 3
 ACC_CAT_INCENTIVE_ID = 6
@@ -64,8 +63,6 @@ class EmployeeGradeGroup(models.Model):
 
     def __unicode__(self):
         return self.name
-
-
 
 
 # FIXME valid from from be greter than previous and less than now date
@@ -131,6 +128,7 @@ class AllowanceName(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=250)
     account_category = models.ForeignKey(Category, null=True, blank=True)
+
     # FIXME accout cat deleted when removed
     # TODO add parent category
 
@@ -140,7 +138,6 @@ class AllowanceName(models.Model):
 
 @receiver(post_save, sender=AllowanceName)
 def allowance_account_category_add(sender, instance, created, **kwargs):
-
     if created:
         instance.account_category = Category.objects.create(
             name='%s-%d' % (instance.name, instance.id),
@@ -166,7 +163,7 @@ class Allowance(models.Model):
     )
     employee_grade = models.ForeignKey(EmployeeGrade)
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
-     # Below is deduct type value
+    # Below is deduct type value
     value = models.FloatField(null=True, blank=True)
     # amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? ==> May be it should be in settingShould be in setting
@@ -186,11 +183,8 @@ class Allowance(models.Model):
         related_name='allowances'
     )
 
-    def __unicode__(self):
-        if self.sum_type == 'AMOUNT':
-            return '%s, %f' % (self.name, self.amount)
-        else:
-            return '%s, %f' % (self.name, self.amount_rate)
+    # def __unicode__(self):
+    #     return '%s, %f' % (self.name, self.value)
 
     def save(self, *args, **kwargs):
         if self.payment_cycle is not 'Y':
@@ -199,7 +193,7 @@ class Allowance(models.Model):
         super(Allowance, self).save(*args, **kwargs)
 
     class Meta:
-            unique_together = (("name", "employee_grade"),)
+        unique_together = (("name", "employee_grade"),)
 
 
 class IncentiveName(models.Model):
@@ -279,7 +273,7 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
         if not instance.is_optional:
             for emp in Employee.objects.all():
                 acc = Account.objects.create(
-                    name='Deduction#%d-EID%d' %(instance.id, emp.id),
+                    name='Deduction#%d-EID%d' % (instance.id, emp.id),
                     category=instance.deduct_in_category
                 )
                 EmployeeAccount.objects.create(
@@ -429,9 +423,9 @@ class Employee(models.Model):
                     else:
                         from_date_m = date(from_date.year, from_date.month + 1, 1)
                     if to_date.month == 1:
-                        to_date_m = date(to_date.year-1, 12, 1)
+                        to_date_m = date(to_date.year - 1, 12, 1)
                     else:
-                        to_date_m = date(to_date.year, to_date.month-1, 1)
+                        to_date_m = date(to_date.year, to_date.month - 1, 1)
                     lhs_month = date(from_date.year, from_date.month, 1)
                     rhs_month = date(to_date.year, to_date.month, 1)
                     lhs_days = (from_date_m - from_date).days
@@ -442,20 +436,20 @@ class Employee(models.Model):
 
                 else:
                     if from_date.month == 12:
-                        from_date_m = BSDate(from_date.year+1, 1, 1)
+                        from_date_m = BSDate(from_date.year + 1, 1, 1)
                     else:
-                        from_date_m = BSDate(from_date.year, from_date.month+1, 1)
+                        from_date_m = BSDate(from_date.year, from_date.month + 1, 1)
                     if to_date.month == 1:
-                        to_date_m = BSDate(to_date.year-1, 12, 1)
+                        to_date_m = BSDate(to_date.year - 1, 12, 1)
                     else:
-                        to_date_m = BSDate(to_date.year, to_date.month-1, 1)
+                        to_date_m = BSDate(to_date.year, to_date.month - 1, 1)
                     lhs_month = BSDate(from_date.year, from_date.month, 1)
                     rhs_month = BSDate(to_date.year, to_date.month, 1)
                     lhs_days = (from_date_m - from_date).days
                     rhs_days = (to_date - to_date_m).days + 1
 
-                    from_date_month_days = bs[lhs_month.year][lhs_month.month-1]
-                    to_date_month_days = bs[rhs_month.year][rhs_month.month-1]
+                    from_date_month_days = bs[lhs_month.year][lhs_month.month - 1]
+                    to_date_month_days = bs[rhs_month.year][rhs_month.month - 1]
 
             salary_pure_months = self.current_salary_by_month(
                 from_date_m,
@@ -689,7 +683,7 @@ class Incentive(models.Model):
         super(Incentive, self).save(*args, **kwargs)
 
     class Meta:
-            unique_together = (("name", "employee"),)
+        unique_together = (("name", "employee"),)
 
 
 class ProTempore(models.Model):
@@ -704,22 +698,22 @@ class ProTempore(models.Model):
     def __unicode__(self):
         return str(self.id)
 
-    # Employee is permanent o r temporary? 10% PF in permanent
-    # Beema(insurance) +200
-    # There is also another insurance in Nagarik Lagani kosh()
+        # Employee is permanent o r temporary? 10% PF in permanent
+        # Beema(insurance) +200
+        # There is also another insurance in Nagarik Lagani kosh()
 
-    #dEDUCTION PART(employee)
-    # In  permanent case:
-    # 10% x 2 to sanchaikosh
-    # Bima ie 200 currently x 2 nagarik lagani kosh(bima)
-    # There is also another insurance in Nagarik Lagani kosh().. Person anusar farak rate either in percentage or fixed rate
-    # Advance settlement
-    # There can also be some other deduction eg in earthquake gov cut it down
-    # Social Security tax (1%)
-    # Remunuration Tax (income tax)
-    # Baki chai either in bank or cash
+        # dEDUCTION PART(employee)
+        # In  permanent case:
+        # 10% x 2 to sanchaikosh
+        # Bima ie 200 currently x 2 nagarik lagani kosh(bima)
+        # There is also another insurance in Nagarik Lagani kosh().. Person anusar farak rate either in percentage or fixed rate
+        # Advance settlement
+        # There can also be some other deduction eg in earthquake gov cut it down
+        # Social Security tax (1%)
+        # Remunuration Tax (income tax)
+        # Baki chai either in bank or cash
 
-    # Sabai ko account huncha
+        # Sabai ko account huncha
 
 
 class MaritalStatus(models.Model):
@@ -812,6 +806,7 @@ class PaymentRecord(models.Model):
     pro_tempore_amount = models.FloatField(null=True, blank=True)
     salary = models.FloatField(null=True, blank=True)
     paid_amount = models.FloatField()
+
     # Deducted amount fields
     # How much incentive and how much allowance
 
@@ -861,7 +856,6 @@ class PayrollEntry(models.Model):
             return None
 
 
-
 def employee_account_validator(acc_id):
     category = Account.objects.get(id=acc_id).category
     if category.id == ACC_CAT_BASIC_SALARY_ID or category.parent.parent.id == ACC_CAT_PAY_HEAD_ID or category.parent_id == ACC_CAT_PAY_HEAD_ID:
@@ -891,7 +885,7 @@ class EmployeeAccount(models.Model):
         return ('%s-acc#%d' % (self.account.category.name, self.account.id))
 
 
-#  allowance in EmployeeRank
+# allowance in EmployeeRank
 #  Incentive in Employee
 
 # to do
@@ -938,4 +932,3 @@ class ReportTable(models.Model):
     # field_tiltle and field loopup sored as Json
     table_fields = JSONField()
     report = models.ForeignKey(ReportHR, related_name='report_tables')
-

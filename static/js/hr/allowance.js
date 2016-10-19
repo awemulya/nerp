@@ -41,7 +41,7 @@ var allowance = {
             );
 
         },
-        allowanceVm: function (employee_grade_id, data, validity_id) {
+        allowanceVm: function (employee_grade_id, data, validity_id, name_id) {
             var self = this;
             App.validationSettings();
             self.id = ko.observable();
@@ -53,7 +53,11 @@ var allowance = {
             // self.grade_name = ko.observable();
             // self.parent_grade_id = ko.observable();
             // self.parent_grade_name = ko.observable();
-            self.name_id = ko.observable();
+            if(name_id){
+                self.name_id = ko.observable(name_id);
+            }else{
+                self.name_id = ko.observable();
+            }
             self.sum_type = ko.observable();
             self.value = ko.observable();
             self.payment_cycle = ko.observable();
@@ -154,9 +158,9 @@ var allowance = {
                             }
                         });
                         if (matched_allowance) {
-                            grade['allowance'](new allowance.allowanceVm(grade.id, matched_allowance, self.selected_validity().id()));
+                            grade['allowance'](new allowance.allowanceVm(grade.id, matched_allowance, self.selected_validity().id(), self.selected_allowance().id()));
                         } else {
-                            grade['allowance'](new allowance.allowanceVm(grade.id, null, self.selected_validity().id()));
+                            grade['allowance'](new allowance.allowanceVm(grade.id, null, self.selected_validity().id(), self.selected_allowance().id()));
                         }
                     });
                 });

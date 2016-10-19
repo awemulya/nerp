@@ -104,12 +104,15 @@ class AllowanceViewSet(viewsets.ModelViewSet):
         rows = request.data
         if rows:
             validity_id = rows[0]['employee_grades'][0]['allowance']['validity_id']
-            name_id = rows[0]['employee_grades'][0]['allowance']['name_id_id']
+            # import ipdb
+            # ipdb.set_trace()
+            name_id = rows[0]['employee_grades'][0]['allowance']['name_id']
             for row in rows:
                 for roow in row['employee_grades']:
-
+                    # ignore_attr_list =
+                    allowance_attrs = {key: value for key, value in roow['allowance'].items() if key not in ['errors', 'ypcm_disable_edit']}
                     try:
-                        obj, created = Allowance.objects.update_or_create(**roow['scale'])
+                        obj, created = Allowance.objects.update_or_create(**allowance_attrs)
                     except (ValueError, IntegrityError):
                         pass
             saved_data = AllowanceSerializer(
