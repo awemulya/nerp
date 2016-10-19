@@ -162,6 +162,7 @@ class AllowanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Allowance
         fields = (
+            'id',
             'name_id',
             'employee_grade_id',
             'sum_type',

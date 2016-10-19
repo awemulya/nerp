@@ -27,10 +27,13 @@ class EmployeeGradeScaleViewSet(viewsets.ModelViewSet):
             validity_id = rows[0]['employee_grades'][0]['scale']['validity_id']
             for row in rows:
                 for roow in row['employee_grades']:
-
                     try:
-                        obj, created = EmployeeGradeScale.objects.update_or_create(**roow['scale'])
-                    except (ValueError, IntegrityError):
+                        id = roow['scale'].pop('id')
+                    except (KeyError):
+                        id = None
+                    try:
+                        EmployeeGradeScale.objects.update_or_create(id=id, defaults=roow['scale'])
+                    except IntegrityError:
                         pass
             saved_data = EmployeeGradeScaleSerializer(
                 EmployeeGradeScale.objects.filter(validity_id=validity_id),
@@ -104,16 +107,17 @@ class AllowanceViewSet(viewsets.ModelViewSet):
         rows = request.data
         if rows:
             validity_id = rows[0]['employee_grades'][0]['allowance']['validity_id']
-            # import ipdb
-            # ipdb.set_trace()
             name_id = rows[0]['employee_grades'][0]['allowance']['name_id']
             for row in rows:
                 for roow in row['employee_grades']:
-                    # ignore_attr_list =
-                    allowance_attrs = {key: value for key, value in roow['allowance'].items() if key not in ['errors', 'ypcm_disable_edit']}
+                    allowance_dict = {key: value for key, value in roow['allowance'].items() if key not in ['errors', 'ypcm_disable_edit']}
                     try:
-                        obj, created = Allowance.objects.update_or_create(**allowance_attrs)
-                    except (ValueError, IntegrityError):
+                        id = allowance_dict.pop('id')
+                    except (KeyError):
+                        id = None
+                    try:
+                        Allowance.objects.update_or_create(id=id, defaults=allowance_dict)
+                    except IntegrityError:
                         pass
             saved_data = AllowanceSerializer(
                 Allowance.objects.filter(validity_id=validity_id, name_id=name_id),
