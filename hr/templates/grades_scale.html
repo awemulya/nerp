@@ -48,9 +48,10 @@
 {% block content %}
 
     <div class="col-lg-12 well">
-        <div class="col-lg-8">
+        <div class="col-lg-12">
             <h3>{% trans "Employee Grade Scales" %}</h3>
         </div>
+        <div class="col-lg-4 col-lg-offset-8">
         {#    This is validity Modal#}
         <select-crud-modal params="{
             api_url: validity_api_url,
@@ -85,6 +86,7 @@
 
         </select-crud-modal>
         {#    End This is validity Modal#}
+        </div>
 
         <div>
             <table class="table table-striped">

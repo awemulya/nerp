@@ -179,7 +179,7 @@ var mainVM = function (params) {
 // TODO to change option text
 ko.components.register('select-crud-modal', {
     viewModel: mainVM,
-    template: '<div class="input-group col-lg-4">'
+    template: '<div class="input-group">'
     + '<select class="form-control" aria-describedby="basic-addon2" data-bind="options : select_list, value: selected_item, optionsCaption: optionsCaption, optionsText: optionsText"> </select>'
     + '<span class="input-group-btn">'
     + '<button type="button" data-bind="click: _add" class="btn btn-raised btn-primary"aria-label="Add Validity">'
