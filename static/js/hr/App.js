@@ -168,7 +168,7 @@ var App = (function () {
                 parseInputAttributes: true,
                 messageTemplate: null,
                 errorElementClass: 'has-error',
-                errorClass: 'error',
+                errorClass: 'errorlist',
                 decorateInputElement: true,
                 grouping: {
                     deep: true,

@@ -42,8 +42,8 @@ var allowance = {
 
         },
         allowanceVm: function (employee_grade_id, data, validity_id) {
-            // TODO add validation
             var self = this;
+            App.validationSettings();
             self.id = ko.observable();
             if (employee_grade_id) {
                 self.employee_grade_id = ko.observable(employee_grade_id);
@@ -60,6 +60,7 @@ var allowance = {
 
 
             self.year_payment_cycle_month = ko.observable();
+
             if (validity_id) {
                 self.validity_id = ko.observable(validity_id);
             } else {
@@ -73,28 +74,43 @@ var allowance = {
             self.ypcm_disable_edit = ko.observable(false);
             self.payment_cycle.subscribe(function () {
                 // console.log(self.payment_cycle());
-                if(self.payment_cycle() != 'Y'){
+                if (self.payment_cycle() != 'Y') {
                     self.ypcm_disable_edit(true);
-                }else{
+                } else {
                     self.ypcm_disable_edit(false);
                 }
+            });
+
+            self.year_payment_cycle_month.extend({
+                required: {
+                    onlyIf: function () {
+                        return typeof(self.sum_type()) != 'undefined' && typeof(self.value()) != 'undefined' && self.payment_cycle() == 'Y';
+                    }
+                }
+
+            });
+            self.errors = ko.validation.group({
+                year_payment_cycle_month: self.year_payment_cycle_month
             })
         }
         ,
 
         vm: function (calender) {
+            App.validationSettings();
 
             var self = this;
             // Grade scale Vality main observables
             self.validity_api_url = '/payroll/api/allowance-validity/';
             self.available_allowance_validities = ko.observableArray();
             self.selected_validity = ko.observable();
+            self.selected_validity.extend({required: true});
             // End Grade scale Vality main observables
 
             // Grade scale Vality main observables
             self.allowance_name_api_url = '/payroll/api/allowance-name/';
             self.available_allowance_names = ko.observableArray();
             self.selected_allowance = ko.observable();
+            self.selected_allowance.extend({required: true});
             // End Grade scale Vality main observables
 
             self.available_grade_groups = ko.observableArray();
@@ -150,24 +166,42 @@ var allowance = {
 
 
             self.filtered_list = ko.computed(function () {
-               if(self.selected_validity() && self.selected_allowance()){
-                   allowance.getList(
+                if (self.selected_validity() && self.selected_allowance()) {
+                    allowance.getList(
                         '/payroll/api/allowance/?validity_id=' + String(self.selected_validity().id()) + '&' + 'name_id=' + String(self.selected_allowance().id()),
                         manage_list_response
                     );
-               }else{
+                } else {
                     ko.utils.arrayForEach(self.available_grade_groups(), function (grade_group) {
                         ko.utils.arrayForEach(grade_group.employee_grades, function (grade) {
                             grade['allowance'](new allowance.allowanceVm(grade.id));
                         });
 
                     });
-               }
+                }
             });
 
+            self.check_form_validity = function () {
+                var is_valid = true;
+                // console.log(self.errors().length);
+                if(self.errors().length != 0){
+                    self.errors.showAllMessages();
+                    is_valid = false;
+                }
+                ko.utils.arrayForEach(self.available_grade_groups(), function (grade_groups) {
+                    ko.utils.arrayForEach(grade_groups.employee_grades, function (grade) {
+                        // console.log(grade.allowance().errors().length, grade.allowance().year_payment_cycle_month());
+                        if(grade.allowance().errors().length != 0){
+                            is_valid = false;
+                            grade.allowance().errors.showAllMessages();
+                        }
+                    })
+                });
+              return is_valid;
+            };
 
             self.save_update = function () {
-                if (self.selected_validity()) {
+                if (self.check_form_validity()) {
                     var payload = JSON.parse(ko.toJSON(self.available_grade_groups()));
                     allowance.postData(
                         '/payroll/api/allowance/',
@@ -229,12 +263,17 @@ var allowance = {
                 {name: 'December', value: 12}
             ];
 
-            if(calender == 'ad'){
+            if (calender == 'ad') {
                 self.months_options(self.ad_months);
-            }else{
+            } else {
                 self.months_options(self.bs_months);
 
             }
+
+            self.errors = ko.validation.group({
+                selected_validity: self.selected_validity,
+                selected_allowance: self.selected_allowance
+            })
 
 
         }
