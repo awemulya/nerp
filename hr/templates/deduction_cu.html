@@ -15,7 +15,7 @@
     </script>
 {% endblock %}
 {% block title %}
-    {% trans 'Add or Remove Deductions' %}
+    {% trans 'Add or Remove Deductions Name' %}
 {% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
@@ -39,7 +39,7 @@
 
 {% block  content %}
 
-<form method="POST" action="{% url 'deduction' %}">
+<form method="POST" action="{% url 'deduction_name' %}">
 
     {% csrf_token %}
 
