@@ -1443,7 +1443,12 @@ def deduction_name(request):
         deduction_formset = DeductionNameFormSet(
             queryset=DeductionName.objects.all(),
         )
-
+    return render(
+        request,
+        'deduction_cu.html',
+        {
+            'deduction_formset': deduction_formset,
+        })
 
 def deduction(request):
     return render(
