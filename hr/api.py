@@ -3,9 +3,10 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from hr.models import EmployeeGradeScale, EmployeeGradeGroup, GradeScaleValidity, EmployeeGrade, AllowanceValidity, \
-    AllowanceName, Allowance
+    AllowanceName, Allowance, DeductionValidity, Deduction
 from hr.serializers import EmployeeGradeScaleSerializer, EmployeeGradeGroupSerializer, GradeScaleValiditySerializer, \
-    EmployeeGradeSerializer, AllowanceValiditySerializer, AllowanceNameSerializer, AllowanceSerializer
+    EmployeeGradeSerializer, AllowanceValiditySerializer, AllowanceNameSerializer, AllowanceSerializer, \
+    DeductionValiditySerializer, DeductionSerializer
 
 
 class EmployeeGradeScaleViewSet(viewsets.ModelViewSet):
@@ -128,3 +129,17 @@ class AllowanceViewSet(viewsets.ModelViewSet):
             return Response([])
 
 # End Allowance Viewset
+
+# Deduction ViewSet
+
+class DeductionValidityViewSet(viewsets.ModelViewSet):
+    queryset = DeductionValidity.objects.all()
+    serializer_class = DeductionValiditySerializer
+    # permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+    #                       IsOwnerOrReadOnly,)
+
+                # End Deduction ViewSet
+
+class DeductionViewSet(viewsets.ModelViewSet):
+    queryset = Deduction.objects.all()
+    serializer_class = DeductionSerializer

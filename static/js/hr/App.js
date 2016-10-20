@@ -208,7 +208,7 @@ var App = (function () {
                 toastr.warning(message, 'Warning');
             }
         },
-        confirmAlert: function (message, okCallback, cancelCalback) {
+        confirmAlert: function (message, okCallback) {
             var r = confirm(message);
             if(r==true){
                 okCallback()

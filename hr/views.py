@@ -1429,26 +1429,10 @@ def allowance(request, pk=None):
 
 
 def deduction(request):
-    if request.method == "POST":
-
-        deduction_formset = DeductionDetailFormSet(
-            request.POST,
-            queryset=Deduction.objects.all(),
-        )
-        if deduction_formset.is_valid():
-            deduction_formset.save()
-            return redirect(reverse('deduction'))
-    else:
-        deduction_formset = DeductionDetailFormSet(
-            queryset=Deduction.objects.all(),
-        )
-
     return render(
         request,
-        'deduction_cu.html',
-        {
-            'deduction_formset': deduction_formset,
-        })
+        'deduction.html',
+        )
 
 
 def employee_grade(request):

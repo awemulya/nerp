@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
     GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup, AllowanceValidity, AllowanceName, \
-    Allowance
+    Allowance, DeductionValidity, Deduction
 
 
 class DeductionDetailSerializer(serializers.ModelSerializer):
@@ -173,3 +173,39 @@ class AllowanceSerializer(serializers.ModelSerializer):
         )
 
 # End Allowance
+
+
+# Deduction
+class DeductionValiditySerializer(serializers.ModelSerializer):
+    # TODO entry validation
+    class Meta:
+        model = DeductionValidity
+        fields = '__all__'
+
+        # def validate(self, attrs):
+        #     import ipdb
+        #     ipdb.set_trace()
+        #     return super(GradeScaleValiditySerializer, self).validate(attrs)
+
+        # def create(self, validated_data):
+        #     import ipdb
+        #     ipdb.set_trace()
+
+class DeductionSerializer(serializers.ModelSerializer):
+    validity_id = serializers.ReadOnlyField(source="validity.id")
+    class Meta:
+        model = Deduction
+        fields = (
+            'id',
+            'name',
+            'deduct_type',
+            'value',
+            'description',
+            'priority',
+            'is_refundable_deduction',
+            'is_tax_free',
+            'is_optional',
+            'amount_editable',
+            'validity_id'
+        )
+# End Deduction
