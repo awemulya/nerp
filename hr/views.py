@@ -12,12 +12,13 @@ from django.contrib.contenttypes.models import ContentType
 
 from hr.serializers import PayrollEntrySerializer
 from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
-    IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, DeductionDetailFormSet, \
+    IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, \
     TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
-    EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet
+    EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet, \
+    DeductionNameFormSet
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
-    MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation
+    MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -1425,6 +1426,22 @@ def allowance(request, pk=None):
     return render(
         request,
         'allowance.html',
+        )
+
+
+def deduction_name(request):
+    if request.method == "POST":
+
+        deduction_formset = DeductionNameFormSet(
+            request.POST,
+            queryset=DeductionName.objects.all(),
+        )
+        if deduction_formset.is_valid():
+            deduction_formset.save()
+            return redirect(reverse('deduction_name'))
+    else:
+        deduction_formset = DeductionNameFormSet(
+            queryset=DeductionName.objects.all(),
         )
 
 

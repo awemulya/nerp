@@ -230,37 +230,19 @@ class DeductionValidity(models.Model):
     note = models.CharField(max_length=150)
 
 
-# These two below should be in setting as many to many
-# Imp: Deductin cant be in BAnk Account type and should be one to one with account type
-class Deduction(models.Model):
+class DeductionName(models.Model):
     name = models.CharField(max_length=150)
-    deduct_type = models.CharField(max_length=50, choices=deduct_choice)
     deduct_in_category = models.ForeignKey(Category, null=True, blank=True)
-    # Below is deduct type value
-    value = models.FloatField(null=True, blank=True)
-    # amount_rate = models.FloatField(null=True, blank=True)
     description = models.CharField(max_length=150)
     priority = models.IntegerField(unique=True)
-
-    # Whether to include this deduction with temporary employee
-    # with_temporary_employee = models.BooleanField(default=False)
-    # For permanent
     is_refundable_deduction = models.BooleanField(default=False)
     # If true we can deduct while calculating taxable amount
     is_tax_free = models.BooleanField(default=False)
 
     is_optional = models.BooleanField(default=False)
     amount_editable = models.BooleanField(default=False)
-    validity = models.ForeignKey(DeductionValidity, blank=True, null=True)
 
-    def __unicode__(self):
-        if self.deduct_type == 'AMOUNT':
-            return '%s[Amount] %f' % (self.name, self.value)
-        else:
-            return '%s[Rate] %f' % (self.name, self.value)
-
-
-@receiver(post_save, sender=Deduction)
+@receiver(post_save, sender=DeductionName)
 def deduct_in_category_add(sender, instance, created, **kwargs):
     if created:
         instance.deduct_in_category = Category.objects.create(
@@ -280,6 +262,34 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                     account=acc,
                     employee=emp
                 )
+
+
+
+# These two below should be in setting as many to many
+# Imp: Deductin cant be in BAnk Account type and should be one to one with account type
+class Deduction(models.Model):
+    name = models.ForeignKey(DeductionName)
+    deduct_type = models.CharField(max_length=50, choices=deduct_choice)
+
+    # Below is deduct type value
+    value = models.FloatField(null=True, blank=True)
+    # amount_rate = models.FloatField(null=True, blank=True)
+
+
+
+    # Whether to include this deduction with temporary employee
+    # with_temporary_employee = models.BooleanField(default=False)
+    # For permanent
+
+    validity = models.ForeignKey(DeductionValidity, blank=True, null=True)
+
+    def __unicode__(self):
+        if self.deduct_type == 'AMOUNT':
+            return '%s[Amount] %f' % (self.name, self.value)
+        else:
+            return '%s[Rate] %f' % (self.name, self.value)
+
+
 
 
 class Employee(models.Model):

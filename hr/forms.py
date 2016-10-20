@@ -5,7 +5,7 @@ from njango.nepdate import bs2ad
 from hr.bsdate import BSDate
 from hr.helpers import bs_str2tuple
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
-    Designation, ReportTable
+    Designation, ReportTable, DeductionName
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -471,8 +471,8 @@ AllowanceNameFormSet = forms.inlineformset_factory(
     formset=AllowanceInlineFormset
 )
 
-DeductionDetailFormSet = forms.modelformset_factory(
-    Deduction,
+DeductionNameFormSet = forms.modelformset_factory(
+    DeductionName,
     extra=1,
     can_delete=True,
     exclude=('deduct_in_category',),

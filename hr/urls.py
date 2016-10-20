@@ -57,7 +57,11 @@ urlpatterns = patterns('',
                        url(r'^allowance-entry/$', views.allowance, name='add_allowance'),
 
                        # deductions crud
+
                        url(r'^deduction-entry/$', views.deduction, name='deduction'),
+
+                       url(r'^deduction-name/$', views.deduction_name, name='deduction_name'),
+
 
                        # Employee Grade
                        url(r'^employee-grade-group/$', views.employee_grade_group, name='employee_grade_group'),
