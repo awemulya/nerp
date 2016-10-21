@@ -169,7 +169,6 @@ class DeductionViewSet(viewsets.ModelViewSet):
             for row in rows:
 
                 row_data = {key: value if value else None for key, value in row['deduction'].items()}
-                print row_data
                 try:
                     id = row_data.pop('id')
                 except (KeyError):
@@ -188,11 +187,3 @@ class DeductionViewSet(viewsets.ModelViewSet):
         else:
             return Response([])
 
-
-# FIXME if integrity error delete the row
-# TODO check when some field erased Value error cannot convert to Float of string
-# FIXME if we give float field an space
-
-# TODO check null true blank true in those three entries
-# TODO make it null on required
-# TODO delete it on integrity error
