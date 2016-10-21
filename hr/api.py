@@ -29,14 +29,17 @@ class EmployeeGradeScaleViewSet(viewsets.ModelViewSet):
             validity_id = rows[0]['employee_grades'][0]['scale']['validity_id']
             for row in rows:
                 for roow in row['employee_grades']:
+                    db_row = {key: value if value else None for key, value in roow['scale'].items()}
                     try:
-                        id = roow['scale'].pop('id')
+                        id = db_row.pop('id')
                     except (KeyError):
                         id = None
                     try:
-                        EmployeeGradeScale.objects.update_or_create(id=id, defaults=roow['scale'])
+                        with transaction.atomic():
+                            EmployeeGradeScale.objects.update_or_create(id=id, defaults=db_row)
                     except IntegrityError:
-                        pass
+                        if id:
+                            EmployeeGradeScale.objects.get(id=id).delete()
             saved_data = EmployeeGradeScaleSerializer(
                 EmployeeGradeScale.objects.filter(validity_id=validity_id),
                 many=True
