@@ -91,38 +91,21 @@
                 <th>Name</th>
                 <th>Deduction Type</th>
                 <th>Value</th>
-                <th>Description</th>
-                <th>Priority</th>
-                <th>Is Refundable Deduction</th>
-                <th>Is Tax Free</th>
-                <th>Is Optonal</th>
-                <th>Amount Editable</th>
             </tr>
             </thead>
             <tbody>
             <!-- ko foreach: deductions  -->
-            <tr>
-                <td data-bind="editableText: name"></td>
+            <tr data-bind="with: deduction">
+                <td data-bind="text: $parent.name"></td>
                 <td><select class="form-control"
-                            data-bind="options: [{name: 'Amount', value: 'AMOUNT'}, {name: 'Rate', value: 'RATE'}], optionsText: 'name', optionsValue: 'value'"></select>
+                            data-bind="options: [{name: 'Amount', value: 'AMOUNT'}, {name: 'Rate', value: 'RATE'}], optionsText: 'name', optionsValue: 'value', value: deduct_type"></select>
                 </td>
                 <td data-bind="editableText: value, numeric:true"></td>
-                <td data-bind="editableText: description"></td>
-                <td data-bind="editableText: priority"></td>
-                <td><input type="checkbox" data-bind="checked: is_refundable_deduction"></td>
-                <td><input type="checkbox" data-bind="checked: is_tax_free"></td>
-                <td><input type="checkbox" data-bind="checked: is_optional"></td>
-                <td><input type="checkbox" data-bind="checked: amount_editable"></td>
-                <td>
-                    <button class="btn btn-danger btn-raised" data-bind="click: $root.delete">Delete</button>
-                </td>
+
             </tr>
             <!-- /ko -->
             </tbody>
         </table>
-        <button class="btn btn-primary btn-raised"
-                data-bind="click: add_new, visible: typeof(selected_validity()) != 'undefined'">Add New Deduction
-        </button>
 
         <button class="btn btn-primary btn-raised"
                 data-bind="click: save, visible: typeof(selected_validity()) != 'undefined'">Save

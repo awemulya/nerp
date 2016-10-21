@@ -164,7 +164,7 @@ class Allowance(models.Model):
     employee_grade = models.ForeignKey(EmployeeGrade)
     sum_type = models.CharField(max_length=50, choices=deduct_choice)
     # Below is deduct type value
-    value = models.FloatField(null=True, blank=True)
+    value = models.FloatField()
     # amount_rate = models.FloatField(null=True, blank=True)
     # When to pay? ==> May be it should be in settingShould be in setting
     payment_cycle = models.CharField(max_length=50, choices=payment_cycle)
@@ -272,7 +272,7 @@ class Deduction(models.Model):
     deduct_type = models.CharField(max_length=50, choices=deduct_choice)
 
     # Below is deduct type value
-    value = models.FloatField(null=True, blank=True)
+    value = models.FloatField()
     # amount_rate = models.FloatField(null=True, blank=True)
 
 
@@ -283,11 +283,11 @@ class Deduction(models.Model):
 
     validity = models.ForeignKey(DeductionValidity, blank=True, null=True)
 
-    def __unicode__(self):
-        if self.deduct_type == 'AMOUNT':
-            return '%s[Amount] %f' % (self.name, self.value)
-        else:
-            return '%s[Rate] %f' % (self.name, self.value)
+    # def __unicode__(self):
+    #     if self.deduct_type == 'AMOUNT':
+    #         return '%s[Amount] %f' % (self.name, self.value)
+    #     else:
+    #         return '%s[Rate] %f' % (self.name, self.value)
 
 
 

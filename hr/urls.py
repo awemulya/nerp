@@ -20,6 +20,7 @@ router.register(r'allowance', api.AllowanceViewSet)
 # Deduction Routers
 router.register(r'deduction-validity', api.DeductionValidityViewSet)
 router.register(r'deduction', api.DeductionViewSet)
+router.register(r'deduction-name', api.DeductionNameViewSet)
 # End Deduction Routers
 
 urlpatterns = patterns('',

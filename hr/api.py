@@ -1,12 +1,13 @@
 from django.db import IntegrityError
 from rest_framework import viewsets
 from rest_framework.response import Response
+from django.db import transaction
 
 from hr.models import EmployeeGradeScale, EmployeeGradeGroup, GradeScaleValidity, EmployeeGrade, AllowanceValidity, \
-    AllowanceName, Allowance, DeductionValidity, Deduction
+    AllowanceName, Allowance, DeductionValidity, Deduction, DeductionName
 from hr.serializers import EmployeeGradeScaleSerializer, EmployeeGradeGroupSerializer, GradeScaleValiditySerializer, \
     EmployeeGradeSerializer, AllowanceValiditySerializer, AllowanceNameSerializer, AllowanceSerializer, \
-    DeductionValiditySerializer, DeductionSerializer
+    DeductionValiditySerializer, DeductionSerializer, DeductionNameSerializer
 
 
 class EmployeeGradeScaleViewSet(viewsets.ModelViewSet):
@@ -100,7 +101,7 @@ class AllowanceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.request.method == 'GET':
             validity_id = self.request.GET.get('validity_id')
-            name_id = self.request.GET.get('validity_id')
+            name_id = self.request.GET.get('name_id')
             return self.queryset.filter(validity_id=validity_id, name_id=name_id)
         return self.queryset
 
@@ -111,15 +112,17 @@ class AllowanceViewSet(viewsets.ModelViewSet):
             name_id = rows[0]['employee_grades'][0]['allowance']['name_id']
             for row in rows:
                 for roow in row['employee_grades']:
-                    allowance_dict = {key: value for key, value in roow['allowance'].items() if key not in ['errors', 'ypcm_disable_edit']}
+                    allowance_dict = {key: value if value else None for key, value in roow['allowance'].items() if key not in ['errors', 'ypcm_disable_edit']}
                     try:
                         id = allowance_dict.pop('id')
                     except (KeyError):
                         id = None
                     try:
-                        Allowance.objects.update_or_create(id=id, defaults=allowance_dict)
+                        with transaction.atomic():
+                            Allowance.objects.update_or_create(id=id, defaults=allowance_dict)
                     except IntegrityError:
-                        pass
+                        if id:
+                            Allowance.objects.get(id=id).delete()
             saved_data = AllowanceSerializer(
                 Allowance.objects.filter(validity_id=validity_id, name_id=name_id),
                 many=True
@@ -140,6 +143,53 @@ class DeductionValidityViewSet(viewsets.ModelViewSet):
 
                 # End Deduction ViewSet
 
+
+class DeductionNameViewSet(viewsets.ModelViewSet):
+    queryset = DeductionName.objects.all()
+    serializer_class = DeductionNameSerializer
+
+
 class DeductionViewSet(viewsets.ModelViewSet):
     queryset = Deduction.objects.all()
     serializer_class = DeductionSerializer
+
+    def get_queryset(self):
+        if self.request.method == 'GET':
+            validity_id = self.request.GET.get('validity_id')
+            return self.queryset.filter(validity_id=validity_id)
+        return self.queryset
+
+    def create(self, request, *args, **kwargs):
+        rows = request.data
+        if rows:
+            validity_id = rows[0]['deduction']['validity_id']
+            for row in rows:
+
+                row_data = {key: value if value else None for key, value in row['deduction'].items()}
+                print row_data
+                try:
+                    id = row_data.pop('id')
+                except (KeyError):
+                    id = None
+                try:
+                    with transaction.atomic():
+                        Deduction.objects.update_or_create(id=id, defaults=row_data)
+                except IntegrityError:
+                    if id:
+                        Deduction.objects.get(id=id).delete()
+            saved_data = DeductionSerializer(
+                Deduction.objects.filter(validity_id=validity_id),
+                many=True
+            )
+            return Response(saved_data.data)
+        else:
+            return Response([])
+
+
+# FIXME if integrity error delete the row
+# TODO check when some field erased Value error cannot convert to Float of string
+# FIXME if we give float field an space
+
+# TODO check null true blank true in those three entries
+# TODO make it null on required
+# TODO delete it on integrity error

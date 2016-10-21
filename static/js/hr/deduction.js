@@ -35,18 +35,16 @@ var deduction = {
         );
 
     },
-    deductionVm: function (data, validity_id) {
+    deductionVm: function (name_id, data, validity_id) {
         var self = this;
         self.id = ko.observable();
-        self.name = ko.observable();
+        if(name_id){
+            self.name_id = ko.observable(name_id);
+        }else{
+            self.name_id = ko.observable();
+        }
         self.deduct_type = ko.observable();
         self.value = ko.observable();
-        self.description = ko.observable();
-        self.priority = ko.observable();
-        self.is_refundable_deduction = ko.observable();
-        self.is_tax_free = ko.observable();
-        self.is_optional = ko.observable();
-        self.amount_editable = ko.observable();
         if (validity_id) {
             self.validity_id = ko.observable(validity_id)
         } else {
@@ -71,64 +69,73 @@ var deduction = {
         // End Grade scale Vality main observables
 
         self.deductions = ko.observableArray();
+
+        // Load Deduction Names
+        deduction.getList('/payroll/api/deduction-name/', function (res) {
+            ko.utils.arrayForEach(res, function (deduction_name) {
+                deduction_name['deduction'] = ko.observable(new deduction.deductionVm(deduction_name.id));
+
+            });
+            self.deductions(res);
+        });
+        // End Load Deduction Names
+
         // Load deductions
         self.selected_validity.subscribe(function () {
             if (self.selected_validity()) {
-                deduction.getList('/payroll/api/deduction/?validity_id=' + String(self.selected_validity().id()) + '/', function (res) {
-                    if (res.length != 0) {
-                        var vm_list = ko.utils.arrayMap(res, function (res_deduction) {
-                                return new deduction.deductionVm(res, self.selected_validity().id())
-                            }
-                        );
-                        self.deductions([]);
-                        self.deductions(vm_list);
-                    } else {
-                        self.deductions.push(new deduction.deductionVm(null, self.selected_validity().id()))
-                    }
+                deduction.getList('/payroll/api/deduction/?validity_id=' + String(self.selected_validity().id()), function (res) {
+                    console.log(self.deductions());
+                    console.log(res);
 
-                App.hideProcessing();
+                    ko.utils.arrayForEach(self.deductions(), function (deduction_name) {
+
+                        var matched = ko.utils.arrayFirst(res, function (deduction) {
+                            if(deduction_name.id == deduction.name_id){
+                                return deduction;
+                            }
+                        });
+                        console.log(matched);
+
+                        if(matched){
+                            deduction_name['deduction'](new deduction.deductionVm(deduction_name.id, matched, self.selected_validity().id()))
+                        }else{
+                            deduction_name['deduction'](new deduction.deductionVm(deduction_name.id, {}, self.selected_validity().id(), deduction_name.id))
+                        }
+
+                    });
+                    App.hideProcessing();
                 });
+            }else{
+                ko.utils.arrayForEach(self.deductions(), function(deduction_name){
+                    deduction_name['deduction'](new deduction.deductionVm(deduction_name.id));
+                })
             }
         });
-        self.add_new = function () {
-            self.deductions.push(new deduction.deductionVm(null, self.selected_validity().id()));
-        };
-        self.delete = function (row) {
-            App.confirmAlert(
-                'Are you sure you want to delete this deduction?',
-                function () {
-                    if(row.id()){
-                        App.remoteDelete(
-                        '/payroll/api/deduction/' + String(row.id()) + '/',
-                        {},
-                        function (res) {
-                            App.notifyUser('Successfully Deleted', 'success');
-                            self.deductions.remove(row);
-                        },
-                        function (err) {
-                            var err_message = err.responseJSON.detail;
-                            var error = App.notifyUser(
-                                err_message,
-                                'error'
-                            );
-                            App.hideProcessing();
-                        }
-                    )
-                    }else{
-                        self.deductions.remove(row);
-                    }
-
-                }
-            );
-        };
 
         self.save = function () {
             var payload = JSON.parse(ko.toJSON(self.deductions()));
             deduction.postData(
                 '/payroll/api/deduction/',
                 payload,
-                function(){
-                    App.notifyUser('Successfully Saved', 'success')
+                function (res) {
+                    ko.utils.arrayForEach(self.deductions(), function (deduction_name) {
+
+                        var matched = ko.utils.arrayFirst(res, function (deduction) {
+
+                            if(deduction_name.id == deduction.name_id){
+                                return deduction;
+                            }
+                        });
+
+                        if(matched){
+                            deduction_name['deduction'](new deduction.deductionVm(deduction_name.id, matched, self.selected_validity().id()));
+                        }else{
+                            deduction_name['deduction'](new deduction.deductionVm(deduction_name.id, {}, self.selected_validity().id(), deduction_name.id))
+                        }
+
+                    });
+                    App.notifyUser('Successfully Saved', 'success');
+                    App.hideProcessing();
                 }
             )
         };
