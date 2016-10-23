@@ -1426,6 +1426,9 @@ def allowance(request, pk=None):
     return render(
         request,
         'allowance.html',
+        {
+            'calendar': CALENDAR
+        }
         )
 
 

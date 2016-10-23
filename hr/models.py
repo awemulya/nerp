@@ -290,8 +290,6 @@ class Deduction(models.Model):
     #         return '%s[Rate] %f' % (self.name, self.value)
 
 
-
-
 class Employee(models.Model):
     is_active = models.BooleanField(default=True)
     # Budget code (Functionality to change budget code for employee group)

@@ -17,7 +17,7 @@
 
     <script>
         $(document).ready(function () {
-            vm = new allowance.vm('{{ request.session.sess_cal }}');
+            vm = new allowance.vm('{{ calendar }}');
             ko.applyBindings(vm);
         });
 

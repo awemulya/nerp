@@ -1,8 +1,28 @@
+from njango.middleware import get_calendar
 from rest_framework import serializers
 
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
     GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup, AllowanceValidity, AllowanceName, \
     Allowance, DeductionValidity, Deduction, DeductionName
+
+
+class BSDateField(serializers.DateField):
+
+    def to_representation(self, value):
+        value = super(BSDateField, self).to_representation(value)
+        calendar = get_calendar()
+        if calendar == 'ad':
+            pass
+        else:
+            pass
+
+    def to_internal_value(self, value):
+        value = super(BSDateField, self).to_internal_value(value)
+        calendar = get_calendar()
+        if calendar == 'ad':
+            pass
+        else:
+            pass
 
 
 class DeductionDetailSerializer(serializers.ModelSerializer):
@@ -20,7 +40,6 @@ class AllowanceDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = AllowanceDetail
         fields = ('allowance', 'name', 'amount')
-
 
 class IncentiveDetailSerializer(serializers.ModelSerializer):
     editable = serializers.ReadOnlyField(source='incentive.amount_editable')
