@@ -49,6 +49,7 @@
         </div>
         <table class="table table-bordered">
             <thead>
+            {{ m_form.media }}
             <tr>
                 {% for field in m_form.visible_fields %}
                     <th>{{ field.label|capfirst }}</th>

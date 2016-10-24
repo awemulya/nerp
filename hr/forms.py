@@ -3,6 +3,7 @@ from django import forms
 from njango.nepdate import bs2ad
 
 from hr.bsdate import BSDate
+from hr.fields import HRBSFormField, HRBSDateFormField
 from hr.helpers import bs_str2tuple
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName
@@ -44,15 +45,15 @@ class GroupPayrollForm(forms.Form):
         # empty_label="All",
         widget=Select(attrs={'data-bind': 'value: branch, selectize:{}'})
     )
-    from_date = forms.DateField(
-        widget=DateInput(attrs={
+    from_date = HRBSDateFormField(
+        widget=HRBSFormField(attrs={
             'data-bind': 'value: paid_from_date',
             'placeholder': 'YYYY-MM-DD',
             'is_required': True
         }),
     )
-    to_date = forms.DateField(
-        widget=DateInput(attrs={
+    to_date = HRBSDateFormField(
+        widget=HRBSFormField(attrs={
             'data-bind': 'value: paid_to_date',
             'placeholder': 'YYYY-MM-DD',
             'is_required': True
