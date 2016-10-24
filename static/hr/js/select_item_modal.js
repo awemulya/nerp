@@ -207,6 +207,7 @@ ko.components.register('select-crud-modal', {
     + '<!-- ko template: { nodes: $componentTemplateNodes, data: form_vm() } --><!-- /ko -->'
 
     + '<!-- ko if: typeof(form_vm().id()) == "undefined" -->'
+    + '<br>'
     + '<input type="button" class="btn btn-raised btn-primary" value="Save" data-bind="click: form_vm().save">'
     + '<!-- /ko -->'
     + '<!-- ko if: typeof(form_vm().id()) != "undefined" -->'

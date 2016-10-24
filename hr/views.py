@@ -16,7 +16,7 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, \
     TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
     EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet, \
-    DeductionNameFormSet
+    DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName
@@ -1424,11 +1424,13 @@ def toggle_employee_activeness(request, pk=None):
 
 
 def allowance(request, pk=None):
+    allowance_validity_form = AllowanceValidityForm()
     return render(
         request,
         'allowance.html',
         {
-            'calendar': CALENDAR
+            'calendar': CALENDAR,
+            'av_form': allowance_validity_form
         }
         )
 
@@ -1455,9 +1457,13 @@ def deduction_name(request):
         })
 
 def deduction(request):
+    deduction_validity_form = DeductionValidityForm()
     return render(
         request,
         'deduction.html',
+        {
+            'dv_form': deduction_validity_form
+        }
         )
 
 
@@ -1746,7 +1752,10 @@ def delete_report_setting(request, pk=None):
 
 
 def grades_scale(request):
-    return render(request, 'grades_scale.html')
+    grade_scale_validity_form = GradeScaleValidityForm()
+    return render(request, 'grades_scale.html',{
+        'gsv_form': grade_scale_validity_form
+    })
 
 # def generate_report(request):
 #     if request.method == "POST":

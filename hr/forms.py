@@ -6,7 +6,7 @@ from hr.bsdate import BSDate
 from hr.fields import HRBSFormField, HRBSDateFormField
 from hr.helpers import bs_str2tuple
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
-    Designation, ReportTable, DeductionName
+    Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -16,6 +16,31 @@ from account.models import Account
 from app.utils.forms import HTML5BootstrapModelForm
 import datetime
 
+
+# Start Validity Forms
+class GradeScaleValidityForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = GradeScaleValidity
+        fields = '__all__'
+
+
+class AllowanceValidityForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = AllowanceValidity
+        fields = '__all__'
+        widgets = {
+            'valid_from': HRBSFormField(attrs={'data-bind': "value: valid_from"}),
+            'note': TextInput(attrs={'data-bind': "value: note", })
+        }
+
+
+class DeductionValidityForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = DeductionValidity
+        fields = '__all__'
+
+
+# End Validity Forms
 
 class PayrollEntryForm(HTML5BootstrapModelForm):
     class Meta:

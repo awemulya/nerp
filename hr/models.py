@@ -150,7 +150,7 @@ def allowance_account_category_add(sender, instance, created, **kwargs):
 class AllowanceValidity(models.Model):
     valid_from = HRBSDateField()
     note = models.CharField(max_length=150)
-    is_active = models.BooleanField(default=False)
+    # is_active = models.BooleanField(default=False)
 
 
 # TODO allowance validity

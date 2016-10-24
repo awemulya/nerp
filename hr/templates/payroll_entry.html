@@ -17,6 +17,7 @@
                     e.stopPropagation();
                 });
     </script>
+
 {% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
@@ -65,9 +66,7 @@
                     </td>
                 {% endfor %}
             </tr>
-            </tbody>
-
-        </table>
+            </table>
 
         <div>
             <form data-bind="submit: saveAndAdd">

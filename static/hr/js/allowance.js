@@ -267,7 +267,7 @@ var allowance = {
                 {name: 'December', value: 12}
             ];
 
-            if (calender == 'ad') {
+            if (calender == 'AD') {
                 self.months_options(self.ad_months);
             } else {
                 self.months_options(self.bs_months);

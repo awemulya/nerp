@@ -4,7 +4,6 @@ from django.db.models.fields import DateField
 from django.forms.fields import DateField as DateFormField
 from django.core.exceptions import ValidationError
 
-
 from django.forms import widgets, Media
 from django.utils.safestring import mark_safe
 from njango import nepdate
@@ -27,9 +26,9 @@ class HRBSFormField(widgets.TextInput):
         if CALENDAR == 'BS':
             # TODO place CSS in proper path
             css = {
-                'all': ('hr/njango/css/nepali.datepicker.v2.min.css',)
+                'all': ('hr/njango/css/nepali.datepicker.v2.1.min.css',)
             }
-            js = ('hr/njango/js/nepali.datepicker.v2.min.js',)
+            js = ('hr/njango/js/nepali.datepicker.v2.1.min.js',)
         else:
             css = {}
             js = ()
@@ -47,7 +46,14 @@ class HRBSFormField(widgets.TextInput):
             str = """
             <script>
                 $(function(){
-                    $('#%s').nepaliDatePicker();
+                    $('#%s').nepaliDatePicker({
+                    onFocus: false,
+                    npdMonth: true,
+                    npdYear: true,
+                    ndpTriggerButton: true,
+                    ndpTriggerButtonText: '<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>',
+                    ndpTriggerButtonClass: 'btn btn-primary btn-sm'
+                    });
                 });
             </script>""" % (el_id)
         else:
@@ -62,6 +68,7 @@ class HRBSFormField(widgets.TextInput):
         return str
 
     media = property(_media)
+
 
 # Widgets Ends Here
 
