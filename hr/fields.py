@@ -13,6 +13,7 @@ from app import settings
 
 CALENDAR = settings.HR_CALENDAR
 
+
 class HRBSFormField(widgets.TextInput):
     def __init__(self, attrs=None):
         # class_name = get_calendar() + '-date'
