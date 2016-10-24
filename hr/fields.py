@@ -129,6 +129,8 @@ class HRBSDateField(DateField):
             'form_class': HRBSDateFormField
         }
         defaults.update(kwargs)
+        # import ipdb
+        # ipdb.set_trace()
         return super(DateField, self).formfield(**defaults)
 
     @classmethod

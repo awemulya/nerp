@@ -16,9 +16,9 @@
 {% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
-        <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
-        <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
-        <li><a href="{% url 'list_employee' %}">{% trans 'Employee List' %}</a>
+    <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
+    <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
+    <li><a href="{% url 'list_employee' %}">{% trans 'Employee List' %}</a>
 
 {% endblock %}
 {% block breadcrumbs_before_print %}
@@ -36,51 +36,56 @@
 {% endblock %}
 
 {% block  content %}
-{% if obj_id %}
-    <form method="POST" action="{% url 'edit_employee' obj_id %}">
-{% else %}
-    <form method="POST" action="{% url 'add_employee' %}">
-{% endif %}
-    {% csrf_token %}
-    <div class="well">
-        {{ employee_form }}
-    </div>
+    {% if obj_id %}
+        <form method="POST" action="{% url 'edit_employee' obj_id %}">
+    {% else %}
+        <form method="POST" action="{% url 'add_employee' %}">
+    {% endif %}
+{% csrf_token %}
+<div class="well">
+    {% block extrahead %}
+        {{ employee_form.media }}
+    {% endblock %}
+    {{ employee_form }}
+</div>
 
 
-    <div class="well">
-        {{ employee_incentive_formset.non_form_errors.as_ul }}
-        <table id="formset" class="form table table-striped">
+<div class="well">
+    {{ employee_incentive_formset.non_form_errors.as_ul }}
+    <table id="formset" class="form table table-striped">
         {% for form in employee_incentive_formset.forms %}
-          {% if forloop.first %}
-          <thead><tr>
-            {% for field in form.visible_fields %}
-            <th>{{ field.label|capfirst }}</th>
-            {% endfor %}
-          </tr></thead>
-          {% endif %}
-          <tr class="{% cycle row1,row2 %} employee-incentive-form">
-          {% for field in form.visible_fields %}
-            <td>
-            {# Include the hidden fields in the form #}
             {% if forloop.first %}
-              {% for hidden in form.hidden_fields %}
-              {{ hidden }}
-              {% endfor %}
+                <thead>
+                <tr>
+                    {% for field in form.visible_fields %}
+                        <th>{{ field.label|capfirst }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
             {% endif %}
-              {{ field.errors.as_ul }}
-              {{ field }}
-            </td>
-          {% endfor %}
+            <tr class="{% cycle row1,row2 %} employee-incentive-form">
+                {% for field in form.visible_fields %}
+                    <td>
+                        {# Include the hidden fields in the form #}
+                        {% if forloop.first %}
+                            {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+                        {% endif %}
+                        {{ field.errors.as_ul }}
+                        {{ field }}
+                    </td>
+                {% endfor %}
 
-          </tr>
+            </tr>
         {% endfor %}
-        </table>
-    </div>
+    </table>
+</div>
 
-    {{ employee_incentive_formset.management_form }}
-    <input class="btn btn-raised btn-primary" type="submit" value="Save">
+{{ employee_incentive_formset.management_form }}
+<input class="btn btn-raised btn-primary" type="submit" value="Save">
 
 </form>
-    
-    
+
+
 {% endblock %}
