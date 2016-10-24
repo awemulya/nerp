@@ -1,10 +1,18 @@
+from datetime import datetime
 from njango.middleware import get_calendar
 from rest_framework import serializers
 
 from app import settings
+from hr.bsdate import BSDate
+from hr.helpers import bs_str2tuple
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
     GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup, AllowanceValidity, AllowanceName, \
     Allowance, DeductionValidity, Deduction, DeductionName
+
+from django.utils.translation import ugettext as _
+
+
+HR_CALENDAR = settings.HR_CALENDAR
 
 
 class DeductionDetailSerializer(serializers.ModelSerializer):
@@ -76,20 +84,43 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
 
 
 class GradeScaleValiditySerializer(serializers.ModelSerializer):
-    # TODO entry validation
     valid_from = serializers.CharField()
+
     class Meta:
         model = GradeScaleValidity
         fields = ('valid_from', 'note')
 
-    # def validate(self, attrs):
-    #     import ipdb
-    #     ipdb.set_trace()
-    #     return super(GradeScaleValiditySerializer, self).validate(attrs)
+    def validate_valid_from(self, value):
+        if HR_CALENDAR == 'AD':
+            try:
+                datetime.strptime(value, '%Y-%m-%d')
+            except:
+                raise serializers.ValidationError(_('Invalid AD date. Date format: YYYY-MM-DD '))
+        else:
+            try:
+                BSDate(*bs_str2tuple(value))
+            except:
+                raise serializers.ValidationError(_('Invalid BS date. Date format: YYYY-MM-DD '))
+        return value
 
-    # def create(self, validated_data):
-    #     import ipdb
-    #     ipdb.set_trace()
+    def validate(self, data):
+        valid_from = data['valid_from']
+
+        available_validities = GradeScaleValidity.objects.all()
+
+        if HR_CALENDAR == 'AD':
+            valid_from = datetime.strptime(valid_from, '%Y-%m-%d')
+            for validity in available_validities:
+                if valid_from < validity.valid_from:
+                    raise serializers.ValidationError(_('New validity must be greater than previous validity'))
+        else:
+            valid_from = BSDate(*bs_str2tuple(valid_from))
+            for validity in available_validities:
+                if valid_from < BSDate(*bs_str2tuple(validity.valid_from)):
+                    raise serializers.ValidationError(_('New validity must be greater than previous validity'))
+        return data
+
+
 
 
 class EmployeeGradeScaleSerializer(serializers.ModelSerializer):
@@ -135,20 +166,41 @@ class EmployeeGradeGroupSerializer(serializers.ModelSerializer):
 # Allowance
 
 class AllowanceValiditySerializer(serializers.ModelSerializer):
-    # TODO entry validation
     valid_from = serializers.CharField()
+
     class Meta:
         model = AllowanceValidity
         fields = ('valid_from', 'note')
 
-    # def validate(self, attrs):
-    #     import ipdb
-    #     ipdb.set_trace()
-    #     return super(GradeScaleValiditySerializer, self).validate(attrs)
+    def validate_valid_from(self, value):
+        if HR_CALENDAR == 'AD':
+            try:
+                datetime.strptime(value, '%Y-%m-%d')
+            except:
+                raise serializers.ValidationError(_('Invalid AD date. Date format: YYYY-MM-DD '))
+        else:
+            try:
+                BSDate(*bs_str2tuple(value))
+            except:
+                raise serializers.ValidationError(_('Invalid BS date. Date format: YYYY-MM-DD '))
+        return value
 
-    # def create(self, validated_data):
-    #     import ipdb
-    #     ipdb.set_trace()
+    def validate(self, data):
+        valid_from = data['valid_from']
+
+        available_validities = AllowanceValidity.objects.all()
+
+        if HR_CALENDAR == 'AD':
+            valid_from = datetime.strptime(valid_from, '%Y-%m-%d')
+            for validity in available_validities:
+                if valid_from < validity.valid_from:
+                    raise serializers.ValidationError(_('New validity must be greater than previous validity'))
+        else:
+            valid_from = BSDate(*bs_str2tuple(valid_from))
+            for validity in available_validities:
+                if valid_from < BSDate(*bs_str2tuple(validity.valid_from)):
+                    raise serializers.ValidationError(_('New validity must be greater than previous validity'))
+        return data
 
 
 class AllowanceNameSerializer(serializers.ModelSerializer):
@@ -180,20 +232,41 @@ class AllowanceSerializer(serializers.ModelSerializer):
 
 # Deduction
 class DeductionValiditySerializer(serializers.ModelSerializer):
-    # TODO entry validation
     valid_from = serializers.CharField()
     class Meta:
         model = DeductionValidity
         fields = ('valid_from', 'note')
 
-        # def validate(self, attrs):
-        #     import ipdb
-        #     ipdb.set_trace()
-        #     return super(GradeScaleValiditySerializer, self).validate(attrs)
+    def validate_valid_from(self, value):
+        if HR_CALENDAR == 'AD':
+            try:
+                datetime.strptime(value, '%Y-%m-%d')
+            except:
+                raise serializers.ValidationError(_('Invalid AD date. Date format: YYYY-MM-DD '))
+        else:
+            try:
+                BSDate(*bs_str2tuple(value))
+            except:
+                raise serializers.ValidationError(_('Invalid BS date. Date format: YYYY-MM-DD '))
+        return value
 
-        # def create(self, validated_data):
-        #     import ipdb
-        #     ipdb.set_trace()
+    def validate(self, data):
+        valid_from = data['valid_from']
+
+        available_validities = DeductionValidity.objects.all()
+
+        if HR_CALENDAR == 'AD':
+            valid_from = datetime.strptime(valid_from, '%Y-%m-%d')
+            for validity in available_validities:
+                if valid_from < validity.valid_from:
+                    raise serializers.ValidationError(_('New validity must be greater than previous validity'))
+        else:
+            valid_from = BSDate(*bs_str2tuple(valid_from))
+            for validity in available_validities:
+                if valid_from < BSDate(*bs_str2tuple(validity.valid_from)):
+                    raise serializers.ValidationError(_('New validity must be greater than previous validity'))
+        return data
+
 
 
 class DeductionNameSerializer(serializers.ModelSerializer):
