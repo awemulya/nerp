@@ -1,0 +1,7 @@
+.inline-calendar input {
+    display: inline-block;
+}
+
+.td-input-calendar{
+    width: 70% !important;
+}

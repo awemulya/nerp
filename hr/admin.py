@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import EmployeeAccount, EmployeeGrade, Employee, Designation, Incentive, Allowance, TaxScheme, BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry, IncentiveName, AllowanceName, DeductionDetail, IncentiveDetail, AllowanceDetail, MaritalStatus, \
-    ReportTable, ReportHR, GradeScaleValidity, EmployeeGradeScale
+    ReportTable, ReportHR, GradeScaleValidity, EmployeeGradeScale, DeductionValidity, AllowanceValidity
 from .forms import EmployeeAccountInlineFormset, AllowanceForm, IncentiveForm, DeductionForm, EmployeeForm, IncentiveInlineFormset
 
 
@@ -83,5 +83,7 @@ admin.site.register(MaritalStatus)
 admin.site.register(ReportHR)
 admin.site.register(ReportTable)
 admin.site.register(GradeScaleValidity)
+admin.site.register(DeductionValidity)
+admin.site.register(AllowanceValidity)
 admin.site.register(EmployeeGradeScale)
 # admin.site.register(SalaryAccount)

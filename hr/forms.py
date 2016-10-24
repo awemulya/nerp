@@ -23,6 +23,11 @@ class GradeScaleValidityForm(HTML5BootstrapModelForm):
         model = GradeScaleValidity
         fields = '__all__'
 
+        widgets = {
+            'valid_from': HRBSFormField(attrs={'data-bind': "value: valid_from"}),
+            'note': TextInput(attrs={'data-bind': "value: note",})
+        }
+
 
 class AllowanceValidityForm(HTML5BootstrapModelForm):
     class Meta:
@@ -38,6 +43,11 @@ class DeductionValidityForm(HTML5BootstrapModelForm):
     class Meta:
         model = DeductionValidity
         fields = '__all__'
+
+        widgets = {
+            'valid_from': HRBSFormField(attrs={'data-bind': "value: valid_from"}),
+            'note': TextInput(attrs={'data-bind': "value: note",})
+        }
 
 
 # End Validity Forms
@@ -73,6 +83,7 @@ class GroupPayrollForm(forms.Form):
     from_date = HRBSDateFormField(
         widget=HRBSFormField(attrs={
             'data-bind': 'value: paid_from_date',
+            'class': 'td-input-calendar',
             'placeholder': 'YYYY-MM-DD',
             'is_required': True
         }),
@@ -80,6 +91,7 @@ class GroupPayrollForm(forms.Form):
     to_date = HRBSDateFormField(
         widget=HRBSFormField(attrs={
             'data-bind': 'value: paid_to_date',
+            'class': 'td-input-calendar',
             'placeholder': 'YYYY-MM-DD',
             'is_required': True
         }),

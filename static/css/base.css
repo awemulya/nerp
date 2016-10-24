@@ -528,12 +528,3 @@ tr.total, tr.category, tr.subtotal {
     height: 37px;
     left: 14px;
 }
-
-.inline-calendar input {
-    width: 150px;
-    /*display: inline-block;*/
-}
-
-.td-input-calendar{
-    width: 99;
-}

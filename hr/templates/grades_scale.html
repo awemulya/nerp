@@ -52,8 +52,8 @@
             <h3>{% trans "Employee Grade Scales" %}</h3>
         </div>
         <div class="col-lg-4 col-lg-offset-8">
-        {#    This is validity Modal#}
-        <select-crud-modal params="{
+            {#    This is validity Modal#}
+            <select-crud-modal params="{
             api_url: validity_api_url,
             modal_name: 'Grade Scale Validity',
             select_list_obs: available_scale_validities,
@@ -68,61 +68,52 @@
                 self.note = ko.observable();
             }
         }">
-            <form>
-                <div class="form-inline">
-                    <div class="form-group">
-                        <label class="form-control">Valid From: </label>
-                        <input class="form-control" data-bind="value: valid_from" type="text">
+                <form>
+                    {{ gsv_form.media }}
+                    <div class="inline-calendar">
+                        {{ gsv_form }}
                     </div>
-                </div>
+                </form>
 
-                <div class="form-inline">
-                    <div class="form-group">
-                        <label class="form-control">Note: </label>
-                        <input class="form-control" data-bind="value: note" type="text">
-                    </div>
-                </div>
-            </form>
-
-        </select-crud-modal>
-        {#    End This is validity Modal#}
+            </select-crud-modal>
+            {#    End This is validity Modal#}
         </div>
 
         <div>
             <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Grade Number</th>
-                        <th>Grade Rate</th>
-                        <th>Salary Scale</th>
-                    </tr>
-                    </thead>
-                    <tbody data-bind="foreach: available_grade_groups">
-                    <tr>
-                        <td colspan="4" style="background: lightgray;" data-bind="click: $data.toggle_visibility">
-                            <strong data-bind="text: $data.name"></strong>
-                            <!-- ko if:!visibility() -->
-                            <span class="glyphicon glyphicon-menu-down pull-right" aria-hidden="true"></span>
-                            <!-- /ko -->
-                            <!-- ko if:visibility() -->
-                            <span class="glyphicon glyphicon-menu-up pull-right" aria-hidden="true"></span>
-                            <!-- /ko -->
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Grade Number</th>
+                    <th>Grade Rate</th>
+                    <th>Salary Scale</th>
+                </tr>
+                </thead>
+                <tbody data-bind="foreach: available_grade_groups">
+                <tr>
+                    <td colspan="4" style="background: lightgray;" data-bind="click: $data.toggle_visibility">
+                        <strong data-bind="text: $data.name"></strong>
+                        <!-- ko if:!visibility() -->
+                        <span class="glyphicon glyphicon-menu-down pull-right" aria-hidden="true"></span>
+                        <!-- /ko -->
+                        <!-- ko if:visibility() -->
+                        <span class="glyphicon glyphicon-menu-up pull-right" aria-hidden="true"></span>
+                        <!-- /ko -->
 
 
-                        </td>
-                    </tr>
-                    <!-- ko foreach: $data.employee_grades -->
-                    <tr data-bind="with: scale, visible: $parent.visibility">
-                        <td data-bind="text: $parent.grade_name"></td>
-                        <td data-bind="editableText: grade_number, numeric:true"></td>
-                        <td data-bind="editableText: grade_rate, numeric:true"></td>
-                        <td data-bind="editableText: salary_scale, numeric:true"></td>
-                    </tr>
-                    <!-- /ko -->
-                    </tbody>
+                    </td>
+                </tr>
+                <!-- ko foreach: $data.employee_grades -->
+                <tr data-bind="with: scale, visible: $parent.visibility">
+                    <td data-bind="text: $parent.grade_name"></td>
+                    <td data-bind="editableText: grade_number, numeric:true"></td>
+                    <td data-bind="editableText: grade_rate, numeric:true"></td>
+                    <td data-bind="editableText: salary_scale, numeric:true"></td>
+                </tr>
+                <!-- /ko -->
+                </tbody>
             </table>
-            <button class="btn btn-raised btn-primary" data-bind="click: save_update" >Save Update</button>
+            <button class="btn btn-raised btn-primary" data-bind="click: save_update">Save Update</button>
 
         </div>
     </div>
