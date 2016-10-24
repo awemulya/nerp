@@ -2,6 +2,10 @@
     display: inline-block;
 }
 
-.td-input-calendar{
+.td-input-calendar {
     width: 70% !important;
 }
+
+/*.datepicker {*/
+    /*z-index: 1151 !important;*/
+/*}*/
