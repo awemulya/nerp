@@ -4,6 +4,7 @@ import json
 
 from django.db import transaction
 
+from app import settings
 from core.models import FiscalYear
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
@@ -37,7 +38,7 @@ from hr.models import ACC_CAT_BASIC_SALARY_ID, \
     ACC_CAT_PRO_TEMPORE_ID, \
     ACC_CAT_TAX_ID
 
-CALENDAR = 'BS'
+CALENDAR = settings.HR_CALENDAR
 
 # Taxation singleton setting dbsettings
 F_TAX_DISCOUNT_LIMIT = 300000

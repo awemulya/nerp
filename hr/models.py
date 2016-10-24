@@ -4,9 +4,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
 from app.settings import BASE_DIR
+from hr.fields import HRBSDateField, today
 from users.models import User
 # from core.models import validate_in_fy
-from njango.fields import BSDateField, today
+# from .fields import HRBSDateField, today
 from njango.nepdate import bs2ad, bs
 from django.core.validators import MaxValueValidator, MinValueValidator
 from calendar import monthrange as mr
@@ -67,7 +68,7 @@ class EmployeeGradeGroup(models.Model):
 
 # FIXME valid from from be greter than previous and less than now date
 class GradeScaleValidity(models.Model):
-    valid_from = BSDateField()
+    valid_from = HRBSDateField()
     note = models.CharField(max_length=150)
     # is_active = models.BooleanField(default=False)
 
@@ -147,7 +148,7 @@ def allowance_account_category_add(sender, instance, created, **kwargs):
 
 
 class AllowanceValidity(models.Model):
-    valid_from = BSDateField()
+    valid_from = HRBSDateField()
     note = models.CharField(max_length=150)
     is_active = models.BooleanField(default=False)
 
@@ -226,7 +227,7 @@ class BranchOffice(models.Model):
 
 
 class DeductionValidity(models.Model):
-    valid_from = BSDateField()
+    valid_from = HRBSDateField()
     note = models.CharField(max_length=150)
 
 
@@ -312,13 +313,13 @@ class Employee(models.Model):
     pf_monthly_deduction_amount = models.FloatField(default=0)
     payment_halt = models.BooleanField(default=False)
 
-    appoint_date = BSDateField(default=today, null=True, blank=True)
+    appoint_date = HRBSDateField(default=today, null=True, blank=True)
     # On newly apponted employee appoint date and scale start date will be same
     # On previous employee(employee working before this software arrival appoint date be null and salary scale date be calculated)
     # Scale start date can also be added manually
-    scale_start_date = BSDateField(null=True, blank=True)
+    scale_start_date = HRBSDateField(null=True, blank=True)
 
-    dismiss_date = BSDateField(null=True, blank=True)
+    dismiss_date = HRBSDateField(null=True, blank=True)
     # allowance will be added to salary
     allowances = models.ManyToManyField(AllowanceName, blank=True)
     # incentive will have diff trancation
@@ -699,8 +700,8 @@ class ProTempore(models.Model):
                                     related_name="real_employee_post")
     pro_tempore = models.OneToOneField(Employee,
                                        related_name="virtual_employee_post")
-    appoint_date = BSDateField(default=today)
-    dismiss_date = BSDateField(null=True, blank=True)
+    appoint_date = HRBSDateField(default=today)
+    dismiss_date = HRBSDateField(null=True, blank=True)
     paid = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -801,8 +802,8 @@ class AllowanceDetail(models.Model):
 
 class PaymentRecord(models.Model):
     paid_employee = models.ForeignKey(Employee)
-    paid_from_date = BSDateField()
-    paid_to_date = BSDateField()
+    paid_from_date = HRBSDateField()
+    paid_to_date = HRBSDateField()
     absent_days = models.PositiveIntegerField()
     allowance = models.FloatField(null=True, blank=True)
     incentive = models.FloatField(null=True, blank=True)

@@ -9,8 +9,9 @@ from django.forms import widgets, Media
 from django.utils.safestring import mark_safe
 from njango import nepdate
 
-from hr.views import CALENDAR
+from app import settings
 
+CALENDAR = settings.HR_CALENDAR
 
 class HRBSFormField(widgets.TextInput):
     def __init__(self, attrs=None):
