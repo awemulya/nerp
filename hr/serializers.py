@@ -6,10 +6,10 @@ from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDet
     Allowance, DeductionValidity, Deduction, DeductionName
 
 
-class BSDateField(serializers.DateField):
+class HRBSDateField(serializers.DateField):
 
     def to_representation(self, value):
-        value = super(BSDateField, self).to_representation(value)
+        value = super(HRBSDateField, self).to_representation(value)
         calendar = get_calendar()
         if calendar == 'ad':
             pass
@@ -17,7 +17,7 @@ class BSDateField(serializers.DateField):
             pass
 
     def to_internal_value(self, value):
-        value = super(BSDateField, self).to_internal_value(value)
+        value = super(HRBSDateField, self).to_internal_value(value)
         calendar = get_calendar()
         if calendar == 'ad':
             pass

@@ -20,7 +20,7 @@ var loadList = function (url, success_callback) {
     );
 };
 
-var modalFormVm = function (form_observables, observableArray, modal_visibility, api_url, data) {
+var modalFormVm = function (form_observables, observableArray, modal_visibility, api_url, data, selected_value) {
     var self = this;
 
     self.form_observables = new form_observables();
@@ -48,7 +48,9 @@ var modalFormVm = function (form_observables, observableArray, modal_visibility,
             // TODO below also automatic
             JSON.parse(ko.toJSON(self.form_observables)),
             function (res) {
-                self.list.push(new modalFormVm(form_observables, self.list, modal_visibility, self.api_url, res));
+                var created_obj = new modalFormVm(form_observables, self.list, modal_visibility, self.api_url, res)
+                self.list.push(created_obj);
+                selected_value(created_obj);
                 App.hideProcessing();
                 modal_visibility(false);
                 App.notifyUser(
@@ -147,7 +149,7 @@ var mainVM = function (params) {
 
     self._add = function () {
         self.show_modal(true);
-        self.form_vm(new modalFormVm(self.form_observables, self.select_list, self.show_modal, api_url));
+        self.form_vm(new modalFormVm(self.form_observables, self.select_list, self.show_modal, api_url, null,  self.selected_item));
 
     };
     self._update = function () {
