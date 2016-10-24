@@ -402,7 +402,7 @@ class DeductionForm(forms.ModelForm):
 class EmployeeForm(HTML5BootstrapModelForm):
     def __init__(self, *args, **kwargs):
         super(EmployeeForm, self).__init__(*args, **kwargs)
-        self.fields['optional_deductions'].queryset = Deduction.objects.filter(is_optional=True)
+        self.fields['optional_deductions'].queryset = DeductionName.objects.filter(is_optional=True)
 
     class Meta:
         model = Employee

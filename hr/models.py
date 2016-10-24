@@ -326,7 +326,7 @@ class Employee(models.Model):
     incentives = models.ManyToManyField(IncentiveName, blank=True, through="Incentive")
 
     optional_deductions = models.ManyToManyField(
-        Deduction,
+        DeductionName,
         blank=True
     )
     # Permanent has extra functionality while deduction from salary
