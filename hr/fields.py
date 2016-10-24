@@ -111,9 +111,11 @@ class HRBSDateField(DateField):
         return value
 
     def get_db_prep_value(self, value, connection, prepared=False):
+        print 'get_db_prep_value1', value, type(value)
         if type(value) == tuple:
             value = nepdate.string_from_tuple(value)
         value = super(HRBSDateField, self).get_db_prep_value(value, connection, prepared)
+        print 'get_db_prep_value2', value, type(value)
         if isinstance(value, datetime.date):
             return value
         if not value:

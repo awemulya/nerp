@@ -1,28 +1,10 @@
 from njango.middleware import get_calendar
 from rest_framework import serializers
 
+from app import settings
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
     GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup, AllowanceValidity, AllowanceName, \
     Allowance, DeductionValidity, Deduction, DeductionName
-
-
-class HRBSDateField(serializers.DateField):
-
-    def to_representation(self, value):
-        value = super(HRBSDateField, self).to_representation(value)
-        calendar = get_calendar()
-        if calendar == 'ad':
-            pass
-        else:
-            pass
-
-    def to_internal_value(self, value):
-        value = super(HRBSDateField, self).to_internal_value(value)
-        calendar = get_calendar()
-        if calendar == 'ad':
-            pass
-        else:
-            pass
 
 
 class DeductionDetailSerializer(serializers.ModelSerializer):
@@ -95,9 +77,10 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
 
 class GradeScaleValiditySerializer(serializers.ModelSerializer):
     # TODO entry validation
+    valid_from = serializers.CharField()
     class Meta:
         model = GradeScaleValidity
-        fields = '__all__'
+        fields = ('valid_from', 'note')
 
     # def validate(self, attrs):
     #     import ipdb
@@ -153,9 +136,10 @@ class EmployeeGradeGroupSerializer(serializers.ModelSerializer):
 
 class AllowanceValiditySerializer(serializers.ModelSerializer):
     # TODO entry validation
+    valid_from = serializers.CharField()
     class Meta:
         model = AllowanceValidity
-        fields = '__all__'
+        fields = ('valid_from', 'note')
 
     # def validate(self, attrs):
     #     import ipdb
@@ -197,9 +181,10 @@ class AllowanceSerializer(serializers.ModelSerializer):
 # Deduction
 class DeductionValiditySerializer(serializers.ModelSerializer):
     # TODO entry validation
+    valid_from = serializers.CharField()
     class Meta:
         model = DeductionValidity
-        fields = '__all__'
+        fields = ('valid_from', 'note')
 
         # def validate(self, attrs):
         #     import ipdb
@@ -210,10 +195,12 @@ class DeductionValiditySerializer(serializers.ModelSerializer):
         #     import ipdb
         #     ipdb.set_trace()
 
+
 class DeductionNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeductionName
         fields = '__all__'
+
 
 class DeductionSerializer(serializers.ModelSerializer):
     validity_id = serializers.ReadOnlyField(source="validity.id")
