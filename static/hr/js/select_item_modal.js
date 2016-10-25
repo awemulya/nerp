@@ -59,11 +59,19 @@ var modalFormVm = function (form_observables, observableArray, modal_visibility,
                 );
             },
             function (err) {
-                var err_message = err.responseJSON.detail;
-                var error = App.notifyUser(
-                    err_message,
-                    'error'
-                );
+                if (err.status == 400) {
+                    for (var key in err.responseJSON) {
+                        App.notifyUser(
+                            key + ': ' + err.responseJSON[key],
+                            'error'
+                        );
+                    }
+                } else {
+                    App.notifyUser(
+                        'Error status: ' + String(err.status) + ', Message:' + err.statusText,
+                        'error'
+                    );
+                }
                 App.hideProcessing();
             }
         )
@@ -89,11 +97,19 @@ var modalFormVm = function (form_observables, observableArray, modal_visibility,
                 );
             },
             function (err) {
-                var err_message = err.responseJSON.detail;
-                var error = App.notifyUser(
-                    err_message,
-                    'error'
-                );
+                if (err.status == 400) {
+                    for (var key in err.responseJSON) {
+                        App.notifyUser(
+                            key + ': ' + err.responseJSON[key],
+                            'error'
+                        );
+                    }
+                } else {
+                    App.notifyUser(
+                        'Error status: ' + String(err.status) + ', Message: ' + err.statusText,
+                        'error'
+                    );
+                }
                 App.hideProcessing();
             }
         )
@@ -149,7 +165,7 @@ var mainVM = function (params) {
 
     self._add = function () {
         self.show_modal(true);
-        self.form_vm(new modalFormVm(self.form_observables, self.select_list, self.show_modal, api_url, null,  self.selected_item));
+        self.form_vm(new modalFormVm(self.form_observables, self.select_list, self.show_modal, api_url, null, self.selected_item));
 
     };
     self._update = function () {

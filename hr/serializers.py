@@ -98,6 +98,8 @@ class GradeScaleValiditySerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(_('Invalid AD date. Date format: YYYY-MM-DD '))
         else:
             try:
+                import ipdb
+                ipdb.set_trace()
                 BSDate(*bs_str2tuple(value))
             except:
                 raise serializers.ValidationError(_('Invalid BS date. Date format: YYYY-MM-DD '))
