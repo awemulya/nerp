@@ -88,7 +88,7 @@ class GradeScaleValiditySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GradeScaleValidity
-        fields = ('valid_from', 'note')
+        fields = ('id', 'valid_from', 'note')
 
     def validate_valid_from(self, value):
         if HR_CALENDAR == 'AD':
@@ -170,7 +170,7 @@ class AllowanceValiditySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AllowanceValidity
-        fields = ('valid_from', 'note')
+        fields = ('id', 'valid_from', 'note')
 
     def validate_valid_from(self, value):
         if HR_CALENDAR == 'AD':
@@ -235,7 +235,7 @@ class DeductionValiditySerializer(serializers.ModelSerializer):
     valid_from = serializers.CharField()
     class Meta:
         model = DeductionValidity
-        fields = ('valid_from', 'note')
+        fields = ('id', 'valid_from', 'note')
 
     def validate_valid_from(self, value):
         if HR_CALENDAR == 'AD':
