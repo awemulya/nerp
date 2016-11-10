@@ -89,6 +89,7 @@ class HRBSDateFormField(DateFormField):
 
 
 class HRBSDateField(DateField):
+
     def from_db_value(self, value, expression, connection, context):
         if CALENDAR == 'AD':
             return value

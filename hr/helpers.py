@@ -74,6 +74,11 @@ def bs_str2tuple(date_string):
     return date_tuple
 
 
+def str2BSDate(date_string):
+    date_tuple = bs_str2tuple(date_string)
+    return BSDate(*date_tuple)
+
+
 def get_account_id(employee_object, account_type):
     from hr.models import EmployeeAccount
     return EmployeeAccount.objects.get(

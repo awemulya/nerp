@@ -13,7 +13,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from calendar import monthrange as mr
 from datetime import date
 from hr.bsdate import BSDate
-from .helpers import get_y_m_tuple_list, are_side_months
+from .helpers import get_y_m_tuple_list, are_side_months, str2BSDate
 from django.core.exceptions import ValidationError
 # import pdb
 
@@ -58,6 +58,23 @@ ACC_CAT_PRO_TEMPORE_ID = 8
 # TODO Make hr home screen options
 # TODO Make hr home screen options
 
+# This function get in_date belonging validity id
+def get_validity_id(cls, in_date):
+    return_id = None
+    existing_validity = sorted(
+        cls.objects.all(), key= lambda v: v.valid_from
+    )
+    for i, validity in enumerate(existing_validity):
+        if isinstance(in_date, date):
+            if in_date >= validity.valid_from and in_date < existing_validity[i+1].valid_from:
+                return_id = validity.id
+        else:
+            # here the date will be in bs so we will not get BSDate object
+            if in_date >= str2BSDate(validity.valid_from) and in_date < str2BSDate(existing_validity[i + 1].valid_from):
+                return_id = validity.id
+    return return_id
+
+
 
 class EmployeeGradeGroup(models.Model):
     name = models.CharField(max_length=100)
@@ -66,15 +83,12 @@ class EmployeeGradeGroup(models.Model):
         return self.name
 
 
-# FIXME valid from from be greter than previous and less than now date
+# FIXME valid from from be greter than previous and less than now date(serializer level validation done)
 class GradeScaleValidity(models.Model):
     valid_from = HRBSDateField()
     note = models.CharField(max_length=150)
-    # is_active = models.BooleanField(default=False)
 
-    # def save(self):
-    #     import ipdb
-    #     ipdb.set_trace()
+
 
 
 class EmployeeGrade(models.Model):
@@ -243,6 +257,7 @@ class DeductionName(models.Model):
     is_optional = models.BooleanField(default=False)
     amount_editable = models.BooleanField(default=False)
 
+
 @receiver(post_save, sender=DeductionName)
 def deduct_in_category_add(sender, instance, created, **kwargs):
     if created:
@@ -263,7 +278,6 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                     account=acc,
                     employee=emp
                 )
-
 
 
 # These two below should be in setting as many to many
