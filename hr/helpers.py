@@ -1,9 +1,10 @@
 from __future__ import division
 from datetime import date
+
+from app.local_settings import HR_CALENDAR
 from bsdate import BSDate
 from njango.nepdate import bs, bs2ad, ad2bs
 from calendar import monthrange as mr
-
 
 def get_y_m_tuple_list(from_date, to_date):
     return_list = []
@@ -422,3 +423,74 @@ def none_for_zero(obj):
         return None
     else:
         return obj
+
+
+class ValiditySlot(object):
+
+    def __init__(self, from_date=None, to_date=None, validity_id=None):
+        if from_date:
+            self.check_for_valid_date(from_date)
+
+        if to_date:
+            self.check_for_valid_date(to_date)
+
+        self.from_date = from_date
+        self.to_date = to_date
+        self.validity_id = validity_id
+
+    def set_from_date(self, from_date):
+        self.check_for_valid_date(from_date)
+        self.from_date = from_date
+
+    def set_to_date(self, to_date):
+        self.check_for_valid_date(to_date)
+        self.to_date = to_date
+
+    def set_validity_id(self, validity_id):
+        self.validity_id = validity_id
+
+    def check_for_valid_date(self, in_date):
+        if isinstance(in_date, date) or isinstance(in_date, BSDate):
+            return True
+        else:
+            raise ValueError('Date must be either datetime.date or BSDate type')
+
+
+# This function get in_date belonging validity id
+def get_validity_id(cls, in_date):
+    return_id = None
+    existing_validity = sorted(
+        cls.objects.all(), key=lambda v: v.valid_from
+    )
+    for i, validity in enumerate(existing_validity):
+        if isinstance(in_date, date) and HR_CALENDAR == 'AD':
+            if in_date >= validity.valid_from and in_date < existing_validity[i + 1].valid_from:
+                return_id = validity.id
+        elif isinstance(in_date, BSDate) and HR_CALENDAR == 'BS':
+            # here the date will be in bs so we will not get BSDate object
+            if in_date >= str2BSDate(validity.valid_from) and in_date < str2BSDate(existing_validity[i + 1].valid_from):
+                return_id = validity.id
+        else:
+            raise TypeError(' input date must be of calendar type (datetime.date for "AD" and BSDate for "BS")')
+    return return_id
+
+
+def get_validity_slots(cls, from_date, to_date, **kwargs):
+    validity_slots = []
+
+    #FIXME it wont work when HR_CALENDAR=BS
+    in_between_validities = cls.objects.filter(valid_from__gte=from_date).filter(valid_from__lte=to_date)
+
+    if not in_between_validities:
+        validity_slots.append(
+            ValiditySlot(from_date, to_date, get_validity_id(cls, from_date))
+        )
+    else:
+        date_pointer = from_date
+        for validity in sorted(in_between_validities, key=lambda v: v.valid_from):
+            if date_pointer <= validity.valid_from:
+                ValiditySlot(date_pointer, validity.valid_from, get_validity_id(cls, date_pointer))
+                date_pointer = inc_1_day(date_pointer)
+
+        if date_pointer <= to_date:
+            ValiditySlot(date_pointer, to_date, get_validity_id(cls, date_pointer))

@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
-from app.settings import BASE_DIR
+from app.settings import BASE_DIR, HR_CALENDAR
 from hr.fields import HRBSDateField, today
 from users.models import User
 # from core.models import validate_in_fy
@@ -13,7 +13,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from calendar import monthrange as mr
 from datetime import date
 from hr.bsdate import BSDate
-from .helpers import get_y_m_tuple_list, are_side_months, str2BSDate
+from .helpers import get_y_m_tuple_list, are_side_months
 from django.core.exceptions import ValidationError
 # import pdb
 
@@ -58,24 +58,6 @@ ACC_CAT_PRO_TEMPORE_ID = 8
 # TODO Make hr home screen options
 # TODO Make hr home screen options
 
-# This function get in_date belonging validity id
-def get_validity_id(cls, in_date):
-    return_id = None
-    existing_validity = sorted(
-        cls.objects.all(), key= lambda v: v.valid_from
-    )
-    for i, validity in enumerate(existing_validity):
-        if isinstance(in_date, date):
-            if in_date >= validity.valid_from and in_date < existing_validity[i+1].valid_from:
-                return_id = validity.id
-        else:
-            # here the date will be in bs so we will not get BSDate object
-            if in_date >= str2BSDate(validity.valid_from) and in_date < str2BSDate(existing_validity[i + 1].valid_from):
-                return_id = validity.id
-    return return_id
-
-
-
 class EmployeeGradeGroup(models.Model):
     name = models.CharField(max_length=100)
 
@@ -87,8 +69,6 @@ class EmployeeGradeGroup(models.Model):
 class GradeScaleValidity(models.Model):
     valid_from = HRBSDateField()
     note = models.CharField(max_length=150)
-
-
 
 
 class EmployeeGrade(models.Model):
