@@ -35,6 +35,10 @@ class BSDate(object):
             str(self._day).zfill(2)
         )
 
+    # Returns datetime.date type
+    def as_ad(self):
+        return date(*bs2ad(self.as_string()))
+
     @property
     def year(self):
         return self._year
@@ -80,4 +84,7 @@ class BSDate(object):
         return self.__gt__(other) or self.__eq__(other)
 
     def __repr__(self):
-        return str(self.as_string())
+        return  'BSDate - ' + self.as_string()
+
+    def __str__(self):
+        return self.as_string()

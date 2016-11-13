@@ -455,6 +455,9 @@ class ValiditySlot(object):
         else:
             raise ValueError('Date must be either datetime.date or BSDate type')
 
+    def __repr__(self):
+        return 'ValiditySlot: ' + str(self.from_date) + " to " + str(self.to_date)
+
 
 # This function get in_date belonging validity id
 def get_validity_id(cls, in_date):
@@ -463,12 +466,8 @@ def get_validity_id(cls, in_date):
         cls.objects.all(), key=lambda v: v.valid_from
     )
     for i, validity in enumerate(existing_validity):
-        if isinstance(in_date, date) and HR_CALENDAR == 'AD':
+        if type(in_date) ==  type(validity.valid_from):
             if in_date >= validity.valid_from and in_date < existing_validity[i + 1].valid_from:
-                return_id = validity.id
-        elif isinstance(in_date, BSDate) and HR_CALENDAR == 'BS':
-            # here the date will be in bs so we will not get BSDate object
-            if in_date >= str2BSDate(validity.valid_from) and in_date < str2BSDate(existing_validity[i + 1].valid_from):
                 return_id = validity.id
         else:
             raise TypeError(' input date must be of calendar type (datetime.date for "AD" and BSDate for "BS")')
@@ -478,11 +477,10 @@ def get_validity_id(cls, in_date):
 def get_validity_slots(cls, from_date, to_date, **kwargs):
     validity_slots = []
 
-    #FIXME it wont work when HR_CALENDAR=BS
     if isinstance(from_date, date):
         in_between_validities = cls.objects.filter(valid_from__gte=from_date).filter(valid_from__lte=to_date)
     else:
-        in_between_validities = cls.objects.filter(valid_from__gte=from_date).filter(valid_from__lte=to_date)
+        in_between_validities = cls.objects.filter(valid_from__gte=from_date.as_ad()).filter(valid_from__lte=to_date.as_ad())
 
     if not in_between_validities:
         validity_slots.append(
@@ -492,8 +490,14 @@ def get_validity_slots(cls, from_date, to_date, **kwargs):
         date_pointer = from_date
         for validity in sorted(in_between_validities, key=lambda v: v.valid_from):
             if date_pointer <= validity.valid_from:
-                ValiditySlot(date_pointer, validity.valid_from, get_validity_id(cls, date_pointer))
-                date_pointer = inc_1_day(date_pointer)
+                validity_slots.append(
+                    ValiditySlot(date_pointer, validity.valid_from, get_validity_id(cls, date_pointer))
+                )
+                date_pointer = inc_1_day(validity.valid_from)
 
         if date_pointer <= to_date:
-            ValiditySlot(date_pointer, to_date, get_validity_id(cls, date_pointer))
+            validity_slots.append(
+                ValiditySlot(date_pointer, to_date, get_validity_id(cls, date_pointer))
+            )
+    return validity_slots
+
