@@ -479,7 +479,10 @@ def get_validity_slots(cls, from_date, to_date, **kwargs):
     validity_slots = []
 
     #FIXME it wont work when HR_CALENDAR=BS
-    in_between_validities = cls.objects.filter(valid_from__gte=from_date).filter(valid_from__lte=to_date)
+    if isinstance(from_date, date):
+        in_between_validities = cls.objects.filter(valid_from__gte=from_date).filter(valid_from__lte=to_date)
+    else:
+        in_between_validities = cls.objects.filter(valid_from__gte=from_date).filter(valid_from__lte=to_date)
 
     if not in_between_validities:
         validity_slots.append(
