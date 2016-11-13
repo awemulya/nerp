@@ -13,7 +13,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from calendar import monthrange as mr
 from datetime import date
 from hr.bsdate import BSDate
-from .helpers import get_y_m_tuple_list, are_side_months
+from .helpers import get_y_m_tuple_list, are_side_months, get_validity_slots
 from django.core.exceptions import ValidationError
 # import pdb
 
@@ -327,9 +327,14 @@ class Employee(models.Model):
     is_permanent = models.BooleanField(default=False)
 
     def current_salary_by_month(self, from_date, to_date, **kwargs):
-        grade_salary = self.designation.grade.salary_scale
-        grade_number = self.designation.grade.grade_number
-        grade_rate = self.designation.grade.grade_rate
+        rate_obj = EmployeeGradeScale.objects.filter(
+            validity_id=kwargs['validity_id'],
+            grade=self.designation.grade
+        )[0]
+
+        grade_salary = rate_obj.salary_scale
+        grade_number = rate_obj.grade_number
+        grade_rate = rate_obj.grade.grade_rate
         salary = 0
         for year, month in get_y_m_tuple_list(from_date, to_date):
             if type(from_date) == type(to_date):
@@ -357,6 +362,14 @@ class Employee(models.Model):
                     salary += grade_salary + grade_number * grade_rate
             else:
                 salary += grade_salary
+        return salary
+
+    def get_date_range_salary(self, from_date, to_date, **kwargs):
+        validity_slots = get_validity_slots(GradeScaleValidity, from_date, to_date)
+        salary = 0
+        for slot in validity_slots:
+            kwargs['validity_id'] = slot.validity_id
+            salary += self.current_salary_by_day(slot.from_date, slot.to_date, **kwargs)
         return salary
 
     def current_salary_by_day(self, from_date, to_date, **kwargs):

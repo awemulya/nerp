@@ -498,12 +498,12 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
         paid_to_date
     )
 
-    salary = employee.current_salary_by_day(
+    salary = employee.get_date_range_salary(
         paid_from_date,
         paid_to_date,
         apply_grade_rate=True
     )
-    scale_salary = employee.current_salary_by_day(
+    scale_salary = employee.get_date_range_salary(
         paid_from_date,
         paid_to_date
     )
