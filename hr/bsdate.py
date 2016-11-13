@@ -80,4 +80,4 @@ class BSDate(object):
         return self.__gt__(other) or self.__eq__(other)
 
     def __repr__(self):
-        return str(self.date_tuple())
+        return str(self.as_string())

@@ -9,6 +9,7 @@ from django.utils.safestring import mark_safe
 from njango import nepdate
 
 from app import settings
+from hr.bsdate import BSDate
 
 CALENDAR = settings.HR_CALENDAR
 
@@ -97,9 +98,11 @@ class HRBSDateField(DateField):
             return value
         if isinstance(value, datetime.datetime):
             # TODO Timezone Awareness
-            return nepdate.string_from_tuple(nepdate.ad2bs(value.date()))
+            # return nepdate.string_from_tuple(nepdate.ad2bs(value.date()))
+            return BSDate(*nepdate.ad2bs(value))
         if isinstance(value, datetime.date):
-            return nepdate.string_from_tuple(nepdate.ad2bs(value))
+            # return nepdate.string_from_tuple(nepdate.ad2bs(value))
+            return BSDate(*nepdate.ad2bs(value))
 
     def get_internal_type(self):
         return "DateField"
@@ -112,11 +115,9 @@ class HRBSDateField(DateField):
         return value
 
     def get_db_prep_value(self, value, connection, prepared=False):
-        print 'get_db_prep_value1', value, type(value)
         if type(value) == tuple:
             value = nepdate.string_from_tuple(value)
         value = super(HRBSDateField, self).get_db_prep_value(value, connection, prepared)
-        print 'get_db_prep_value2', value, type(value)
         if isinstance(value, datetime.date):
             return value
         if not value:
