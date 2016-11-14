@@ -128,8 +128,8 @@ class HRBSDateField(DateField):
                 return '-'.join([str(x).zfill(2) for x in value])
             else:
                 return value
-        # return nepdate.string_from_tuple(nepdate.bs2ad(value))
-        return value.as_string()
+        return nepdate.string_from_tuple(nepdate.bs2ad(value))
+        # return value.as_string()
 
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
