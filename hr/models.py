@@ -237,6 +237,9 @@ class DeductionName(models.Model):
     is_optional = models.BooleanField(default=False)
     amount_editable = models.BooleanField(default=False)
 
+    def __unicode__(self):
+        return self.name
+
 
 @receiver(post_save, sender=DeductionName)
 def deduct_in_category_add(sender, instance, created, **kwargs):
@@ -785,10 +788,13 @@ class TaxCalcScheme(models.Model):
 
 class DeductionDetail(models.Model):
     deduction = models.ForeignKey(
-        Deduction,
+        DeductionName,
         related_name='deduced_amount_detail'
     )
     amount = models.FloatField()
+
+    def __unicode__(self):
+        return "%s-[%s]" %(self.deduction.name, str(self.amount))
 
 
 class IncentiveDetail(models.Model):

@@ -528,3 +528,30 @@ tr.total, tr.category, tr.subtotal {
     height: 37px;
     left: 14px;
 }
+
+.link-group > div {
+    display: inline-block;
+    /*width: 200px;*/
+    border: 3px rgba(196, 199, 198, 0.73) solid;
+    padding: 5px;
+}
+
+.link-group > div > a > h5{
+    width: 100%;
+    text-align: center;
+    /*padding: 10px;*/
+}
+
+.link-group > div > a > img{
+    display: table;
+    margin: 0 auto;
+}
+
+.link-group > h3{
+    text-align: left;
+    background: rgba(0, 150, 136, 0.94);
+    color: #fff;
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}

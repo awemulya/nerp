@@ -99,7 +99,7 @@ urlpatterns = patterns('',
                        url(r'^report-setting/edit/(?P<pk>[0-9]+)/$', views.report_setting, name='edit_report_setting'),
                        url(r'^report-setting/delete/(?P<pk>[0-9]+)/$', views.delete_report_setting,
                            name='delete_report_setting'),
-                       url(r'^report-seting/list/$', views.list_report_setting, name='list_report_setting'),
+                       url(r'^report-setting/list/$', views.list_report_setting, name='list_report_setting'),
 
                        # GradeScale
                        url(r'^grades-scale-entry/$', views.grades_scale, name='grade-scale-entry'),
