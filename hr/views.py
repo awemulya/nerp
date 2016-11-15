@@ -19,7 +19,8 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
-    MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName
+    MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
+    AllowanceValidity, DeductionValidity
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -28,7 +29,7 @@ from .models import get_y_m_tuple_list
 from .bsdate import BSDate
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
-    emp_salary_eligibility_on_edit
+    emp_salary_eligibility_on_edit, get_validity_slots
 from account.models import set_transactions
 from hr.filters import EmployeeFilter
 from django.core import serializers
@@ -127,81 +128,69 @@ def verify_request_date(request):
             return paid_from_date, paid_to_date
 
 
-def salary_deduction_unit():
-    pass
-
-
 def salary_taxation_unit(employee, f_y_item):
-    if CALENDAR == 'BS':
-        CURRENT_FISCAL_YEAR = (
-            BSDate(*FiscalYear.start()),
-            BSDate(*FiscalYear.end())
-        )
-    # else:
+    # if CALENDAR == 'BS':
     #     CURRENT_FISCAL_YEAR = (
     #         BSDate(*FiscalYear.start()),
     #         BSDate(*FiscalYear.end())
     #     )
 
+
     # First calculate all the uncome of employee
     total_month, total_work_day = delta_month_date_impure(
         *f_y_item['f_y']
     )
-    salary = employee.current_salary_by_day(
+    salary = employee.get_date_range_salary(
         *f_y_item['f_y'],
         apply_grade_rate=True
     )
-    scale_salary = employee.current_salary_by_day(
+    scale_salary = employee.get_date_range_salary(
         *f_y_item['f_y']
     )
 
-    deductions = Deduction.objects.all()
-    sorted_deductions = sorted(
-        deductions, key=lambda obj: obj.priority)
+    deductions = DeductionName.objects.all()
 
-    # Addition of PF and bima to salary if employee is permanent
-    # TODO in sanchayakosh sample thap and aniwarya kosh katti is same but with current implementation it gets slight different
-    # for item in sorted_deductions:
-    #     if employee.is_permanent:
-    #         if item.add2_init_salary:
-    #             if item.deduct_type == 'AMOUNT':
-    #                 salary += item.amount * total_month
-    #             else:
-    #                 salary += item.amount_rate / 100.0 * salary
-
-    # scale_salary = employee.designation.grade.salary_scale
     allowance = 0
-
+    allowance_validity_slots = get_validity_slots(AllowanceValidity, f_y_item['f_y'][0], f_y_item['f_y'][1])
     for ob in employee.allowances.all():
-        try:
-            obj = ob.allowances.filter(
-                employee_grade=employee.designation.grade
-            )[0]
-        except IndexError:
-            raise IndexError('%s not defined for grade %s' % (ob.name, employee.designation.grade.grade_name))
-        if obj.payment_cycle == 'Y':
-            # check obj.year_payment_cycle_month to add to salary
-            cnt = month_cnt_inrange(
-                obj.year_payment_cycle_month,
-                *CURRENT_FISCAL_YEAR
+
+        for slot in allowance_validity_slots:
+            total_month, total_work_day = delta_month_date_impure(
+                slot.from_date,
+                slot.to_date
             )
-            if cnt:
+
+            try:
+                obj = ob.allowances.all().filter(
+                    employee_grade=employee.designation.grade,
+                    validity_id=slot.validity_id
+                )[0]
+            except IndexError:
+                raise IndexError('%s not defined for grade %s' % (ob.name, employee.designation.grade.grade_name))
+            if obj.payment_cycle == 'Y':
+                # check obj.year_payment_cycle_month to add to salary
+                cnt = month_cnt_inrange(
+                    obj.year_payment_cycle_month,
+                    slot.from_date,
+                    slot.to_date
+                )
+                if cnt:
+                    if obj.sum_type == 'AMOUNT':
+                        allowance += obj.value * cnt
+                    else:
+                        allowance += obj.value / 100.0 * scale_salary
+
+            elif obj.payment_cycle == 'M':
                 if obj.sum_type == 'AMOUNT':
-                    allowance += obj.value * cnt
+                    allowance += obj.value * total_month
                 else:
                     allowance += obj.value / 100.0 * scale_salary
-
-        elif obj.payment_cycle == 'M':
-            if obj.sum_type == 'AMOUNT':
-                allowance += obj.value * total_month
-            else:
-                allowance += obj.value / 100.0 * scale_salary
-        elif obj.payment_cycle == 'D':
-            if obj.sum_type == 'AMOUNT':
-                allowance += obj.value * total_work_day
-            else:
-                # Does this mean percentage in daily wages
-                allowance += obj.value / 100.0 * scale_salary
+            elif obj.payment_cycle == 'D':
+                if obj.sum_type == 'AMOUNT':
+                    allowance += obj.value * total_work_day
+                else:
+                    # Does this mean percentage in daily wages
+                    allowance += obj.value / 100.0 * scale_salary
 
     # now calculate incentive if it has but not to add to salary just to
     # transact seperately
@@ -217,7 +206,7 @@ def salary_taxation_unit(employee, f_y_item):
             # check obj.year_payment_cycle_month to add to salary
             cnt = month_cnt_inrange(
                 obj.year_payment_cycle_month,
-                *CURRENT_FISCAL_YEAR
+                **f_y_item['f_y']
             )
             if cnt:
                 if obj.sum_type == 'AMOUNT':
@@ -241,17 +230,18 @@ def salary_taxation_unit(employee, f_y_item):
     deduction = 0
     for obj in deductions.filter(is_tax_free=True):
         if obj in deductions.filter(is_optional=False) or obj in employee.optional_deductions.all():
+            for slot in get_validity_slots(DeductionValidity, f_y_item['f_y'][0], *f_y_item['f_y'][1]):
+                deduct_obj = Deduction.objects.filter(validity_id=slot.validity_id, name=obj)[0]
+                if deduct_obj.deduct_type == 'AMOUNT':
+                    deduction = obj.value * total_month
+                    total_deduction += deduction
+                else:
+                    deduction = obj.value / 100.0 * salary
+                    total_deduction += deduction
 
-            if obj.deduct_type == 'AMOUNT':
-                deduction = obj.value * total_month
-                total_deduction += deduction
-            else:
-                deduction = obj.value / 100.0 * salary
-                total_deduction += deduction
-
-            if employee.is_permanent and obj.is_refundable_deduction:
-                # This is for addition of refundable deduction
-                total_deduction += deduction
+                if employee.is_permanent and obj.is_refundable_deduction:
+                    # This is for addition of refundable deduction
+                    total_deduction += deduction
 
     taxable_amount = (salary + allowance + incentive - total_deduction)
 
@@ -295,179 +285,6 @@ def salary_taxation_unit(employee, f_y_item):
     return total_tax * (f_y_item['worked_days'] / f_y_item['year_days'])
 
 
-# def salary_detail_impure_months(employee, paid_from_date, paid_to_date):
-#     employee_response = {}
-#     employee_response['paid_employee'] = employee.id
-#     employee_response['employee_grade'] = employee.designation.grade.grade_name
-#     employee_response['employee_designation'] = employee.designation.designation_name
-#     # Watchout
-#     total_month, total_work_day = delta_month_date_impure(
-#         paid_from_date,
-#         paid_to_date
-#     )
-#     # watchout
-
-#     salary = employee.current_salary_by_day(
-#         paid_from_date,
-#         paid_to_date
-#     )
-
-#     # Now add allowance to the salary(salary = salary + allowance)
-#     # Question here is do we need to deduct from incentove(I gues not)
-#     allowance = 0
-#     for obj in employee.allowances.all():
-#         if obj.payment_cycle == 'Y':
-#             # check obj.year_payment_cycle_month to add to salary
-#             pass
-#         elif obj.payment_cycle == 'M':
-#             if obj.sum_type == 'AMOUNT':
-#                 allowance += obj.amount * total_month
-#             else:
-#                 allowance += obj.amount_rate / 100.0 * salary
-#         elif obj.payment_cycle == 'D':
-#             if obj.sum_type == 'AMOUNT':
-#                 allowance += obj.amount * total_work_day
-#             else:
-#                 # Does this mean percentage in daily wages
-#                 allowance += obj.amount_rate / 100.0 * salary
-#         else:
-#             # This is hourly case(Dont think we have it)
-#             pass
-
-#     employee_response['allowance'] = allowance
-#     salary += allowance
-
-#     # now calculate incentive if it has but not to add to salary just to
-#     # transact seperately
-#     incentive = 0
-#     for obj in employee.incentives.all():
-#         if obj.payment_cycle == 'Y':
-#             # check obj.year_payment_cycle_month to add to salary
-#             pass
-#         elif obj.payment_cycle == 'M':
-#             if obj.sum_type == 'AMOUNT':
-#                 incentive += obj.amount * total_month
-#             else:
-#                 incentive += obj.amount_rate / 100.0 * salary
-#         elif obj.payment_cycle == 'D':
-#             if obj.sum_type == 'AMOUNT':
-#                 incentive += obj.amount * total_work_day
-#             else:
-#                 # Does this mean percentage in daily wages
-#                 incentive += obj.amount_rate / 100.0 * salary
-#         else:
-#             # This is hourly case(Dont think we have it)
-#             pass
-
-#     employee_response['incentive'] = incentive
-#     # salary += incentive
-
-#     # Now the deduction part from the salary
-#     deductions = sorted(
-#         Deduction.objects.all(), key=lambda obj: obj.priority)
-
-#     # Addition of PF and bima to salary if employee is permanent
-#     for item in deductions:
-#         if employee.is_permanent:
-#             if item.add2_init_salary and item.deduction_for == 'EMPLOYEE ACC':
-#                 if item.deduct_type == 'AMOUNT':
-#                     salary += item.amount * total_month
-#                 else:
-#                     # Rate
-#                     salary += item.amount_rate / 100.0 * salary
-
-#     deduction = 0
-#     # deduction_detail = []
-#     for obj in deductions:
-#         # deduction_detail_object = {}
-#         if obj.deduction_for == 'EMPLOYEE ACC':
-#             employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] = 0
-
-#             if (employee.is_permanent or obj.with_temporary_employee) and employee.has_account(obj.in_acc_type):
-
-#                 if obj.deduct_type == 'AMOUNT':
-#                     employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] += obj.amount * total_month
-#                 else:
-#                     # Rate
-#                     # deduction_detail_object['amount'] += obj.amount_rate / 100.0 * salary
-#                     employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] += obj.amount_rate / 100.0 * salary
-
-#                 if employee.is_permanent:
-#                     if obj.in_acc_type.permanent_multiply_rate:
-#                         # deduction_detail_object['amount'] *= obj.in_acc_type.permanent_multiply_rate
-#                         employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)] *= obj.in_acc_type.permanent_multiply_rate                 
-#                 # deduction += deduction_detail_object['amount']
-#                 deduction += employee_response['%s_%s' % (obj.in_acc_type.name, obj.id)]
-
-#         else:
-#             name = '_'.join(obj.name.split(' ')).lower()
-#             employee_response['%s_%s' % (name, obj.id)] = 0
-
-#             # EXPLICIT ACC
-#             if obj.deduct_type == 'AMOUNT':
-#                 # deduction_detail_object[
-#                 #     'amount'] += obj.amount * total_month
-#                 employee_response['%s_%s' % (name, obj.id)] += obj.amount * total_month
-#             else:
-#                 employee_response['%s_%s' % (name, obj.id)] += obj.amount_rate / 100.0 * salary
-#             deduction += employee_response['%s_%s' % (name, obj.id)]
-
-#     # Income tax logic
-#     income_tax = 0
-#     for obj in IncomeTaxRate.objects.all():
-#         if obj.is_last:
-#             if salary >= obj.start_from:
-#                 income_tax = obj.tax_rate / 100 * salary
-#                 if obj.rate_over_tax_amount:
-#                     income_tax += obj.rate_over_tax_amount / 100 * income_tax
-#         else:
-#             if salary >= obj.start_from and salary <= obj.end_to:
-#                 income_tax = obj.tax_rate / 100 * salary
-#                 if obj.rate_over_tax_amount:
-#                     income_tax += obj.rate_over_tax_amount / 100 * income_tax
-#         if employee.sex == 'F':
-#             income_tax -= F_INCOME_TAX_DISCOUNT_RATE / 100 * income_tax
-
-#     employee_response['income_tax'] = income_tax
-#     employee_response['deduced_amount'] = deduction
-#     # employee_response['deduction_detail'] = deduction_detail
-#     # employee_response['other_deduction'] = other_deduction
-
-#     # Handle Pro Tempore
-#     # paid flag should be set after transaction
-#     pro_tempores = ProTempore.objects.filter(employee=employee)
-#     p_t_amount = 0
-#     to_be_paid_pt_ids = []
-#     for p_t in pro_tempores:
-#         if not p_t.paid:
-#             if isinstance(p_t.appoint_date, date):
-#                 p_t_amount += p_t.pro_tempore.current_salary_by_day(
-#                     p_t.appoint_date,
-#                     p_t.dismiss_date
-#                 )
-
-#                 to_be_paid_pt_ids.append(p_t.id)
-#             else:
-#                 p_t_amount += p_t.pro_tempore.current_salary_by_day(
-#                     BSDate(*bs_str2tuple(p_t.appoint_date)),
-#                     BSDate(*bs_str2tuple(p_t.dismiss_date))
-#                 )
-#                 to_be_paid_pt_ids.append(p_t.id)
-
-#     employee_response['pro_tempore_amount'] = p_t_amount
-#     employee_response['pro_tempore_ids'] = to_be_paid_pt_ids
-#     # First allowence added to salary for deduction and income tax.
-#     # For pure salary here added allowance should be duduced
-#     employee_response['salary'] = salary - allowance
-#     employee_response['employee_bank_account_id'] = get_account_id(
-#         employee, 'bank_account')
-
-#     employee_response['paid_amount'] = salary - deduction - income_tax +\
-#         p_t_amount + incentive
-
-#     return employee_response
-
-
 def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibility_check_on_edit, edit_row):
     row_errors = []
     if not eligibility_check_on_edit:
@@ -507,7 +324,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
         paid_from_date,
         paid_to_date
     )
-    deductions = Deduction.objects.all()
+    deductions = DeductionName.objects.all()
 
     # # Addition of PF and bima to salary if employee is permanent
     # addition_pf = 0
@@ -522,66 +339,72 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
 
     # Now add allowance to the salary(salary = salary + allowance)
     # Question here is do we need to deduct from incentove(I gues not)
+    allowance_validity_slots = get_validity_slots(AllowanceValidity, paid_from_date, paid_to_date)
     allowance = 0
     # for obj in employee.allowances.all():
-    employee_response['allowance_details'] =[]
+    employee_response['allowance_details'] = []
     allowance_details = employee_response['allowance_details']
     for _name in employee.allowances.all():
-        try:
-            obj = _name.allowances.all().filter(employee_grade=employee.designation.grade)[0]
-        except IndexError:
-            raise IndexError('%s not defined for grade %s' % (_name.name, employee.designation.grade.grade_name))
-        # if obj:
-        #     obj = obj[0]
-        if obj.payment_cycle == 'Y':
-            # check obj.year_payment_cycle_month to add to salary
-            cnt = month_cnt_inrange(
-                obj.year_payment_cycle_month,
-                paid_from_date,
-                paid_to_date
-            )
-            if cnt:
-                if obj.sum_type == 'AMOUNT':
-                    allowance_details.append({
-                        'amount': obj.value * cnt
-                    })
-                else:
-                    allowance_details.append({
-                        'amount': obj.value / 100.0 * scale_salary
-                    })
-            else:
-                allowance_details.append({
-                    'amount': 0
-                })
 
-        elif obj.payment_cycle == 'M':
-            if obj.sum_type == 'AMOUNT':
-                allowance_details.append({
-                    'amount': obj.value * total_month
-                })
-            else:
-                allowance_details.append({
-                    'amount': obj.value / 100.0 * scale_salary
-                })
-        elif obj.payment_cycle == 'D':
-            if obj.sum_type == 'AMOUNT':
-                allowance_details.append({
-                    'amount': obj.value * total_work_day
-                })
-            else:
-                allowance_details.append({
-                    'amount':obj.value / 100.0 * scale_salary
-                })
-                # Does this mean percentage in daily wages
-                # else:
-                #     # This is hourly case(Dont think we have it)
-                #     pass
-                # else:
-                #     # Here also same as below
-                #     employee_response['allowance_%d' % (_name.id)] = 0
+        allowance_details.append({
+            'amount': 0
+        })
+
+        for slot in allowance_validity_slots:
+            try:
+                obj = _name.allowances.all().filter(
+                    employee_grade=employee.designation.grade,
+                    validity_id=slot.validity_id
+                )[0]
+            except IndexError:
+                raise IndexError('%s not defined for grade %s' % (_name.name, employee.designation.grade.grade_name))
+            # if obj:
+            #     obj = obj[0]
+
+            total_month, total_work_day = delta_month_date_impure(
+                slot.from_date,
+                slot.to_date
+            )
+
+            if obj.payment_cycle == 'Y':
+                # check obj.year_payment_cycle_month to add to salary
+                cnt = month_cnt_inrange(
+                    obj.year_payment_cycle_month,
+                    slot.from_date,
+                    slot.to_date
+                )
+                if cnt:
+                    if obj.sum_type == 'AMOUNT':
+                        allowance_details[-1]['amount'] += obj.value * cnt
+                    else:
+                        allowance_details[-1]['amount'] += obj.value / 100.0 * scale_salary
+                else:
+                    allowance_details[-1]['amount'] += 0
+
+            elif obj.payment_cycle == 'M':
+                if obj.sum_type == 'AMOUNT':
+                    allowance_details[-1]['amount'] += obj.value * total_month
+                else:
+                    allowance_details[-1]['amount'] += obj.value / 100.0 * scale_salary
+
+
+            elif obj.payment_cycle == 'D':
+                if obj.sum_type == 'AMOUNT':
+                    allowance_details[-1]['amount'] += obj.value * total_work_day
+
+                else:
+                    allowance_details[-1]['amount'] += obj.value / 100.0 * scale_salary
+
+                    # Does this mean percentage in daily wages
+                    # else:
+                    #     # This is hourly case(Dont think we have it)
+                    #     pass
+                    # else:
+                    #     # Here also same as below
+                    #     employee_response['allowance_%d' % (_name.id)] = 0
+            allowance += allowance_details[-1]['amount']
         allowance_details[-1]['allowance'] = _name.id
         allowance_details[-1]['name'] = _name.name
-        allowance += allowance_details[-1]['amount']
 
     employee_response['allowance'] = allowance
     # salary += allowance
@@ -663,28 +486,34 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     # salary += incentive
 
     # Now the deduction part from the salary
+    deduction_validity_slots = get_validity_slots(DeductionValidity, paid_from_date, paid_to_date)
     deduction = 0
     employee_response['deduction_details'] = []
     deduction_details = employee_response['deduction_details']
     for obj in list(deductions.filter(is_optional=False)) + list(employee.optional_deductions.all()):
-        if obj.deduct_type == 'AMOUNT':
-            deduction_details.append({
-                'amount': obj.value * total_month
-            })
-        else:
-            deduction_details.append({
-                'amount': obj.value / 100.0 * salary
-            })
-        if employee.is_permanent and obj.is_refundable_deduction:
-            salary += deduction_details[-1]['amount']
-            deduction_details.append({
-                'amount': deduction_details[-1]['amount'] * 2
-            })
+        deduction_details.append({
+            'amount': 0
+        })
+        for slot in deduction_validity_slots:
+            deduct_obj = Deduction.objects.filter(validity_id=slot.validity_id, name=obj)[0]
+            total_month, total_work_day = delta_month_date_impure(
+                slot.from_date,
+                slot.to_date
+            )
+            if deduct_obj.deduct_type == 'AMOUNT':
+                deduction_details[-1]['amount'] += obj.value * total_month
+            else:
+                deduction_details[-1]['amount'] += obj.value / 100.0 * salary
+
+            if employee.is_permanent and obj.is_refundable_deduction:
+                salary += deduction_details[-1]['amount']
+                deduction_details[-1]['amount'] += deduction_details[-1]['amount'] * 2
+
+            deduction += deduction_details[-1]['amount']
         deduction_details[-1]['deduction'] = obj.id
         deduction_details[-1]['name'] = obj.name
         deduction_details[-1]['editable'] = True if obj.amount_editable else False
 
-        deduction += deduction_details[-1]['amount']
     employee_response['deduced_amount'] = deduction
 
     # PF deduction amount in case of loan from PF
@@ -923,13 +752,15 @@ def save_payroll_entry(request, pk=None):
                 for allowance_name in row.get('allowance_details', []):
                     amount = float(allowance_name['amount'])
                     if amount:
-                        allowances.append(AllowanceDetail.objects.create(allowance_id=allowance_name['allowance'], amount=amount))
+                        allowances.append(
+                            AllowanceDetail.objects.create(allowance_id=allowance_name['allowance'], amount=amount))
 
                 incentives = []
                 for incentive_name in row.get('incentive_details', []):
                     amount = float(incentive_name['amount'])
                     if amount:
-                        incentives.append(IncentiveDetail.objects.create(incentive_id=incentive_name['incentive'], amount=amount))
+                        incentives.append(
+                            IncentiveDetail.objects.create(incentive_id=incentive_name['incentive'], amount=amount))
 
                 # p_r = PaymentRecord()
                 p_r.paid_employee_id = int(row.get('paid_employee', None))
@@ -1432,7 +1263,7 @@ def allowance(request, pk=None):
             'calendar': CALENDAR,
             'av_form': allowance_validity_form
         }
-        )
+    )
 
 
 def deduction_name(request):
@@ -1456,6 +1287,7 @@ def deduction_name(request):
             'deduction_formset': deduction_formset,
         })
 
+
 def deduction(request):
     deduction_validity_form = DeductionValidityForm()
     return render(
@@ -1464,7 +1296,7 @@ def deduction(request):
         {
             'dv_form': deduction_validity_form
         }
-        )
+    )
 
 
 def employee_grade(request):
@@ -1489,6 +1321,7 @@ def employee_grade(request):
             'employee_grade_formset': employee_grade_formset,
         })
 
+
 def employee_grade_group(request):
     if request.method == "POST":
 
@@ -1510,6 +1343,7 @@ def employee_grade_group(request):
         {
             'employee_grade_group_formset': employee_grade_group_formset,
         })
+
 
 def employee_designation(request):
     if request.method == "POST":
@@ -1746,6 +1580,7 @@ def delete_report_setting(request, pk=None):
     #     alw.delete()
     return redirect(reverse('list_allowance'))
 
+
 # GradeScale Validity Crud
 
 # End GradeScale Validity Crud
@@ -1753,9 +1588,10 @@ def delete_report_setting(request, pk=None):
 
 def grades_scale(request):
     grade_scale_validity_form = GradeScaleValidityForm()
-    return render(request, 'grades_scale.html',{
+    return render(request, 'grades_scale.html', {
         'gsv_form': grade_scale_validity_form
     })
+
 
 # def generate_report(request):
 #     if request.method == "POST":
