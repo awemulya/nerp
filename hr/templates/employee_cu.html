@@ -46,7 +46,16 @@
     {% block extrahead %}
         {{ employee_form.media }}
     {% endblock %}
-    {{ employee_form }}
+{#    {{ employee_form }}#}
+    <div class="row">
+        {% for field in employee_form.visible_fields %}
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                {{ filed.errors.as_ul }}
+                <div class="form-inline"><label>{{ field.label }}: </label>{{ field }}</div>
+            </div>
+        {% endfor %}
+    </div>
+
 </div>
 
 
