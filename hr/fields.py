@@ -117,7 +117,8 @@ class HRBSDateField(DateField):
     def get_db_prep_value(self, value, connection, prepared=False):
         if type(value) == tuple:
             value = nepdate.string_from_tuple(value)
-        value = super(HRBSDateField, self).get_db_prep_value(value, connection, prepared)
+        value = super(HRBSDateField, self).get_db_prep_value(
+            value, connection, prepared)
         if isinstance(value, datetime.date):
             return value
         if not value:
