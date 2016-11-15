@@ -3,7 +3,7 @@
 {% load filters %}
 {% load staticfiles %}
 
-{% block title %} {% trans 'Training' %}{% endblock %}
+{% block title %} {% trans 'PayRoll' %}{% endblock %}
 
 
 {% block head_end %}
@@ -12,54 +12,97 @@
 {% endblock %}
 
 {% block content %}
-    <div class="well"> 
-    <div class="row">
-        <div class="col-sm-12">
-    <div class="dashboard">
-{#        {% ifusergroup 'Trainer' %}#}
-{#        {% endifusergroup %}#}
+    <div class="well">
+        <div class="link-group">
+            <h3>{% trans 'Payroll' %}</h3>
+
             <div>
                 <a href="{% url 'payroll_entry' %}">
                     <img src="{% static 'img/icons/training.png' %}">
                     <b>{% trans "Generate Payroll" %}</b></a>
             </div>
             <div>
+                <a href="{% url 'entry_list' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Payroll Entry List" %}</b></a>
+            </div>
+        </div>
+        <div class="link-group">
+            <h3>{% trans 'Employee' %}</h3>
+            <div>
+                <a href="{% url 'employee_grade_group' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Employee Grade Group" %}</b></a>
+            </div>
+            <div>
+                <a href="{% url 'employee_grade' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Employee Grade" %}</b></a>
+            </div>
+            <div>
+                <a href="{% url 'employee_designation' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Designation Entry" %}</b></a>
+            </div>
+            <div>
+                <a href="{% url 'add_employee' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Employee Add" %}</b></a>
+            </div>
+            <div>
                 <a href="{% url 'list_employee' %}">
                     <img src="{% static 'img/icons/training.png' %}">
-                    <b>{% trans "Employees" %}</b></a>
-            </div>
-            <div>
-                <a href="{% url 'deduction' %}">
-                      <img src="{% static 'img/icons/training.png' %}">
-                    <b>{% trans "Deduction" %}</b></a>
-            </div>
-            <div>
-                <a href="#">
-                      <img src="{% static 'img/icons/training.png' %}">
-                    <b>{% trans "Allowance" %}</b></a>
-            </div>
-            <div>
-                <a href="#">
-                      <img src="{% static 'img/icons/training.png' %}">
-                    <b>{% trans "Incentive" %}</b></a>
+                    <b>{% trans "Employee List" %}</b></a>
             </div>
             <div>
                 <a href="{% url 'grade-scale-entry' %}">
-                      <img src="{% static 'img/icons/training.png' %}">
-                    <b>{% trans "Grade Scale" %}</b></a>
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Grade Scale Entry" %}</b></a>
+            </div>
+        </div>
+        <div class="link-group">
+            <h3>{% trans 'Allowances/ Incentives and Deductions' %}</h3>
+
+            <div>
+                <a href="{% url 'add_allowance' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Allowance Add" %}</b></a>
+            </div>
+
+            <div>
+                <a href="{% url 'incentivename_curd' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Incentive Name Entry" %}</b></a>
             </div>
             <div>
-                <a href="#">
-                      <img src="{% static 'img/icons/training.png' %}">
-                    <b>{% trans "Taxation" %}</b></a>
+                <a href="{% url 'deduction_name' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Deduction Name Entry" %}</b></a>
             </div>
-
-
-    </div>
-            
+            <div>
+                <a href="{% url 'deduction' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Deduction Detail Entry" %}</b></a>
+            </div>
         </div>
-    </div>   
+        <div class="link-group">
+            <h3>{% trans 'Tax' %}</h3>
 
-</div>
+            <div>
+                <a href="{% url 'list_tax_scheme' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Tax Scheme List" %}</b></a>
+            </div>
+        </div>
 
+        <div class="link-group">
+            <h3>{% trans 'Report' %}</h3>
+
+            <div>
+                <a href="{% url 'list_report_setting' %}">
+                    <img src="{% static 'img/icons/training.png' %}">
+                    <b>{% trans "Report Setting List" %}</b></a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -528,3 +528,12 @@ tr.total, tr.category, tr.subtotal {
     height: 37px;
     left: 14px;
 }
+
+.link-group > div {
+    display: inline-block;
+}
+
+.link-group > div > a{
+    display: table;
+
+}
