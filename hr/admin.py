@@ -1,7 +1,12 @@
 from django.contrib import admin
-from .models import EmployeeAccount, EmployeeGrade, Employee, Designation, Incentive, Allowance, TaxScheme, BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry, IncentiveName, AllowanceName, DeductionDetail, IncentiveDetail, AllowanceDetail, MaritalStatus, \
+from import_export import resources
+
+from .models import EmployeeAccount, EmployeeGrade, Employee, Designation, Incentive, Allowance, TaxScheme, \
+    BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry, IncentiveName, AllowanceName, DeductionDetail, \
+    IncentiveDetail, AllowanceDetail, MaritalStatus, \
     ReportTable, ReportHR, GradeScaleValidity, EmployeeGradeScale, DeductionValidity, AllowanceValidity
-from .forms import EmployeeAccountInlineFormset, AllowanceForm, IncentiveForm, DeductionForm, EmployeeForm, IncentiveInlineFormset
+from .forms import EmployeeAccountInlineFormset, AllowanceForm, IncentiveForm, DeductionForm, EmployeeForm, \
+    IncentiveInlineFormset
 
 
 class EmployeeAccountInline(admin.TabularInline):
@@ -34,26 +39,14 @@ class DeductionAdmin(admin.ModelAdmin):
     form = DeductionForm
 
 
-# class AccountAdmin(admin.ModelAdmin):
-#     inlines = (EmployeeAccountInline,)
+# Django Import Export Resource Class
+
+class EmployeeResource(resources.ModelResource):
+    class Meta:
+        model = Employee
 
 
-
-# class AccountInline(admin.TabularInline):
-#     model = EmployeeAccount.account.through
-
-
-# class EmployeeInline(admin.TabularInline):
-#     model = EmployeeAccount.employee.through
-
-
-# class EmployeeAccountAdmin(admin.ModelAdmin):
-#     pass
-
-
-# admin.site.register(AccountType)
-# admin.site.register(Account)
-# admin.site.register(Transaction)
+# End Django Import Export Resource Class
 
 admin.site.register(EmployeeGrade)
 admin.site.register(Employee, EmployeeAdmin)
