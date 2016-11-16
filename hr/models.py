@@ -316,6 +316,7 @@ class Employee(models.Model):
     designation = models.ForeignKey(Designation)
     pan_number = models.CharField(max_length=100)
     working_branch = models.ForeignKey(BranchOffice)
+    #TODO see this accounts
     accounts = models.ManyToManyField(Account, through="EmployeeAccount")
     pf_monthly_deduction_amount = models.FloatField(default=0)
     payment_halt = models.BooleanField(default=False)
