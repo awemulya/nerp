@@ -68,6 +68,8 @@ INSTALLED_APPS = (
     'project',
     'hr',
 
+    'import_export',
+
     'debug_toolbar'
 
 )
