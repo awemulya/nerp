@@ -13,7 +13,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from calendar import monthrange as mr
 from datetime import date
 from hr.bsdate import BSDate
-from .helpers import get_y_m_tuple_list, are_side_months, get_validity_slots
+from .helpers import get_y_m_tuple_list, are_side_months, get_validity_slots, get_validity_id
 from django.core.exceptions import ValidationError
 # import pdb
 
@@ -69,6 +69,16 @@ class EmployeeGradeGroup(models.Model):
 class GradeScaleValidity(models.Model):
     valid_from = HRBSDateField()
     note = models.CharField(max_length=150)
+
+# TODO send post save signal to change all available employee start time
+@receiver(post_save, sender=GradeScaleValidity)
+def incentive_account_category_add(sender, instance, created, **kwargs):
+    if created:
+        instance.account_category = Category.objects.create(
+            name='%s-%d' % (instance.name, instance.id),
+            parent_id=ACC_CAT_INCENTIVE_ID
+        )
+        instance.save()
 
 
 class EmployeeGrade(models.Model):
@@ -329,6 +339,15 @@ class Employee(models.Model):
     # Permanent has extra functionality while deduction from salary
     is_permanent = models.BooleanField(default=False)
 
+    def get_scale_start_date(self, from_date):
+        validity_id = get_validity_id(GradeScaleValidity, from_date)
+        validity_valid_from = GradeScaleValidity.objects.get(id=validity_id).valid_from
+
+        if not self.scale_start_date or self.scale_start_date < validity_valid_from:
+            return validity_valid_from
+        else:
+            return self.scale_start_date
+
     def current_salary_by_month(self, from_date, to_date, **kwargs):
         rate_obj = EmployeeGradeScale.objects.filter(
             validity_id=kwargs['validity_id'],
@@ -342,8 +361,9 @@ class Employee(models.Model):
         for year, month in get_y_m_tuple_list(from_date, to_date):
             if type(from_date) == type(to_date):
                 if isinstance(from_date, date):
+                    scale_start_date = self.get_scale_start_date(from_date)
                     try:
-                        days_worked = date(year, month, 1) - self.scale_start_date
+                        days_worked = date(year, month, 1) - scale_start_date
                     except:
                         raise TypeError('Internal and external setting mismatch')
                 else:
