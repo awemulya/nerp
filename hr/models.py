@@ -70,6 +70,12 @@ class GradeScaleValidity(models.Model):
     valid_from = HRBSDateField()
     note = models.CharField(max_length=150)
 
+    def __unicode__(self):
+        return str(self.valid_from)
+
+    class Meta:
+        verbose_name_plural = _('Grade Scale Validities')
+
 # TODO send post save signal to change all available employee start time
 @receiver(post_save, sender=GradeScaleValidity)
 def incentive_account_category_add(sender, instance, created, **kwargs):
@@ -156,6 +162,12 @@ class AllowanceValidity(models.Model):
     note = models.CharField(max_length=150)
     # is_active = models.BooleanField(default=False)
 
+    def __unicode__(self):
+        return str(self.valid_from)
+
+    class Meta:
+        verbose_name_plural = _('Allowance Validities')
+
 
 # TODO allowance validity
 # This is bhatta
@@ -233,6 +245,12 @@ class BranchOffice(models.Model):
 class DeductionValidity(models.Model):
     valid_from = HRBSDateField()
     note = models.CharField(max_length=150)
+
+    def __unicode__(self):
+        return str(self.valid_from)
+
+    class Meta:
+        verbose_name_plural = _('Deduction Validities')
 
 
 class DeductionName(models.Model):
