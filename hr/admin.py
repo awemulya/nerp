@@ -41,7 +41,7 @@ class DeductionAdmin(admin.ModelAdmin):
 
 # Django Import Export Resource Class
 
-class EmployeeResource(resources.ModelResource):
+class EmployeeImportResource(resources.ModelResource):
     class Meta:
         model = Employee
 

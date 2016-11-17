@@ -122,7 +122,7 @@ class EmployeeGradeScale(models.Model):
 
 
 class Designation(models.Model):
-    designation_name = models.CharField(max_length=100)
+    designation_name = models.CharField(max_length=100, unique=True)
     grade = models.ForeignKey(EmployeeGrade)
 
     def __unicode__(self):
@@ -130,7 +130,7 @@ class Designation(models.Model):
 
 
 class AllowanceName(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=250)
     account_category = models.ForeignKey(Category, null=True, blank=True)
 
@@ -202,7 +202,7 @@ class Allowance(models.Model):
 
 
 class IncentiveName(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=250)
     account_category = models.ForeignKey(Category, null=True, blank=True)
     with_scale = models.BooleanField(default=False)
@@ -223,7 +223,7 @@ def incentive_account_category_add(sender, instance, created, **kwargs):
 
 
 class BranchOffice(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     code = models.CharField(max_length=100)
 
     def __unicode__(self):
@@ -236,7 +236,7 @@ class DeductionValidity(models.Model):
 
 
 class DeductionName(models.Model):
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150, unique=True)
     deduct_in_category = models.ForeignKey(Category, null=True, blank=True)
     description = models.CharField(max_length=150)
     priority = models.IntegerField(unique=True)
@@ -306,7 +306,7 @@ class Employee(models.Model):
     # Employee ko section or branch coz he can be in another branch and paid from central
     sex_choice = [('M', _('Male')), ('F', _('Female'))]
     marital_statuses = [('M', _('Married')), ('U', _('Unmarried'))]
-    employee = models.OneToOneField(User)
+    name = models.CharField(max_length=128)
     sex = models.CharField(choices=sex_choice, max_length=1)
     marital_status = models.CharField(
         default='U',
@@ -316,8 +316,10 @@ class Employee(models.Model):
     designation = models.ForeignKey(Designation)
     pan_number = models.CharField(max_length=100)
     working_branch = models.ForeignKey(BranchOffice)
-    #TODO see this accounts
+
+    # TODO see this accounts
     accounts = models.ManyToManyField(Account, through="EmployeeAccount")
+
     pf_monthly_deduction_amount = models.FloatField(default=0)
     payment_halt = models.BooleanField(default=False)
 
