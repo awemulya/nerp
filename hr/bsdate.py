@@ -52,36 +52,56 @@ class BSDate(object):
         return self._day
 
     def __sub__(self, other):
-        delta = date(*bs2ad(self.date_tuple())) - \
-            date(*bs2ad(other.date_tuple()))
-        return BsDelta(delta.days)
+        if type(self) == type(other):
+            delta = date(*bs2ad(self.date_tuple())) - \
+                date(*bs2ad(other.date_tuple()))
+            return BsDelta(delta.days)
+        else:
+            raise TypeError('Cannot subtract %s with BSDate type' % (str(type(other))))
 
     def __eq__(self, other):
-        if self.__sub__(other).days == 0:
-            return True
+        if type(self) == type(other):
+            if self.__sub__(other).days == 0:
+                return True
+            else:
+                return False
         else:
             return False
 
     def __ne__(self, other):
-        return not self.__eq__(other)
+        if type(self) == type(other):
+            return not self.__eq__(other)
+        else:
+            return True
 
     def __lt__(self, other):
-        if self.__sub__(other).days < 0:
-            return True
+        if type(self) == type(other):
+            if self.__sub__(other).days < 0:
+                return True
+            else:
+                return False
         else:
-            return False
+            raise TypeError('Cannot compare %s with BSDate type' % (str(type(other))))
 
     def __le__(self, other):
-        return self.__lt__(other) or self.__eq__(other)
+        if type(self) == type(other):
+            return self.__lt__(other) or self.__eq__(other)
+        else:
+            raise TypeError('Cannot compare %s with BSDate type' % (str(type(other))))
 
     def __gt__(self, other):
-        if self.__sub__(other).days > 0:
-            return True
+        if type(self) == type(other):
+            if self.__sub__(other).days > 0:
+                return True
+            else:
+                return False
         else:
-            return False
+            raise TypeError('Cannot compare %s with BSDate type' % (str(type(other))))
 
     def __ge__(self, other):
-        return self.__gt__(other) or self.__eq__(other)
+        if type(self) == type(other):
+            return self.__gt__(other) or self.__eq__(other)
+        raise TypeError('Cannot compare %s with BSDate type' % (str(type(other))))
 
     def __repr__(self):
         return  'BSDate - ' + self.as_string()
