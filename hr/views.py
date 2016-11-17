@@ -596,7 +596,7 @@ def payroll_entry(request, pk=None):
 
     # Inititial employee options
     employees = Employee.objects.all()
-    emp_opt_list = [{'name': e.employee.full_name, 'id': str(e.id)} for e in employees]
+    emp_opt_list = [{'name': e.name, 'id': str(e.id)} for e in employees]
 
     ko_data = {
         'ctx_data': ctx_data,
