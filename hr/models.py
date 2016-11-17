@@ -236,7 +236,7 @@ class DeductionValidity(models.Model):
 
 
 class DeductionName(models.Model):
-    name = models.CharField(max_length=150, unique=True)
+    name = models.CharField(max_length=150, unique=True )
     deduct_in_category = models.ForeignKey(Category, null=True, blank=True)
     description = models.CharField(max_length=150)
     priority = models.IntegerField(unique=True)
@@ -520,7 +520,7 @@ class Employee(models.Model):
         return False
 
     def __unicode__(self):
-        return str(self.employee.full_name)
+        return self.name
 
 
 @receiver(post_save, sender=Employee)
@@ -555,7 +555,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
             employee=instance,
         )
         # Add deduction accounts (compulsory)
-        for deduction in Deduction.objects.filter(is_optional=False):
+        for deduction in DeductionName.objects.filter(is_optional=False):
             deduction_account = Account.objects.create(
                 name="Deduction#%d-EID#%d" % (
                     deduction.id,
