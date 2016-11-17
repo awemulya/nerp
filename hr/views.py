@@ -984,7 +984,7 @@ def get_employee_options(request):
                 employees = Employee.objects.filter(
                     working_branch__id=int(branch)
                 )
-            opt_list = [{'name': e.employee.full_name, 'id': str(e.id)} for e in employees]
+            opt_list = [{'name': e.name, 'id': str(e.id)} for e in employees]
             return JsonResponse({'opt_data': opt_list})
         else:
             return HttpResponse('No branch')
