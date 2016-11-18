@@ -179,8 +179,9 @@ function PaymentEntryRow(emp_options) {
                         } else {
                             vm.paid_to_date_error(null);
                         }
-                        if (response.errors.invalid_date_range) {
-                            vm.messages.push(response.errors.invalid_date_range);
+                        if (response.errors.global_errors) {
+                            for (var k in response.errors.global_errors)
+                            vm.messages.push(response.errors.global_errors[k]);
                         }
                     } else {
                         vm.paid_from_date_error(null);
@@ -437,8 +438,9 @@ function PayrollEntry(employee_options, group_load) {
                                     self.paid_to_date_error(null);
                                 }
 
-                                if (response.errors.invalid_date_range) {
-                                    self.messages.push(response.errors.invalid_date_range);
+                                if (response.errors.global_errors) {
+                                    for (var k in response.errors.global_errors)
+                                    self.messages.push(response.errors.global_errors[k]);
                                 }
 
 

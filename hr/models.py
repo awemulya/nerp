@@ -414,7 +414,10 @@ class Employee(models.Model):
         return salary
 
     def get_date_range_salary(self, from_date, to_date, **kwargs):
-        validity_slots = get_validity_slots(GradeScaleValidity, from_date, to_date)
+        try:
+            validity_slots = get_validity_slots(GradeScaleValidity, from_date, to_date)
+        except IOError:
+            raise
         salary = 0
         for slot in validity_slots:
             kwargs['validity_id'] = slot.validity_id

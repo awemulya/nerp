@@ -20,7 +20,7 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
-    AllowanceValidity, DeductionValidity
+    AllowanceValidity, DeductionValidity, GradeScaleValidity
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -29,7 +29,7 @@ from .models import get_y_m_tuple_list
 from .bsdate import BSDate
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
-    emp_salary_eligibility_on_edit, get_validity_slots
+    emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id
 from account.models import set_transactions
 from hr.filters import EmployeeFilter
 from django.core import serializers
@@ -81,10 +81,39 @@ def verify_request_date(request):
             except:
                 error['paid_to_date'] = 'Incorrect BS Date'
 
-        if paid_to_date and paid_from_date:
-            if paid_to_date < paid_from_date:
-                error['invalid_date_range'] = \
-                    'Date: paid to must be greater than paid from'
+
+
+        if paid_from_date:
+            error['global_errors'] = []
+            try:
+                get_validity_id(GradeScaleValidity, paid_from_date)
+            except IOError:
+                error['global_errors'].append(
+                    _('Given from date is to early for given Grade Scale Validities')
+                )
+
+            try:
+                get_validity_id(AllowanceValidity, paid_from_date)
+            except IOError:
+                error['global_errors'].append(
+                    _('Given from date is to early for given Allowance Validities')
+                )
+
+            try:
+                get_validity_id(DeductionValidity, paid_from_date)
+            except IOError:
+                error['global_errors'].append(
+                    _('Given from date is to early for given Deduction Validities')
+                )
+
+            if paid_to_date:
+                if paid_to_date < paid_from_date:
+                    error['global_errors'].append(
+                        _('Date: paid to must be greater than paid from')
+                    )
+            if not error['global_errors']:
+                del error['global_errors']
+
 
         if error:
             return error

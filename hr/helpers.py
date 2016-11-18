@@ -243,18 +243,18 @@ def employee_last_payment_record(employee):
     from hr.models import PaymentRecord
     emp_record = PaymentRecord.objects.filter(paid_employee=employee)
     if emp_record:
-        if isinstance(emp_record[0].paid_to_date, date):
-            emp_record = sorted(
-                emp_record,
-                key=lambda pr: pr.paid_to_date,
-                reverse=True
-            )
-        else:
-            emp_record = sorted(
-                emp_record,
-                key=lambda pr: BSDate(*(bs_str2tuple(pr.paid_to_date))),
-                reverse=True
-            )
+        # if isinstance(emp_record[0].paid_to_date, date):
+        emp_record = sorted(
+            emp_record,
+            key=lambda pr: pr.paid_to_date,
+            reverse=True
+        )
+        # else:
+        #     emp_record = sorted(
+        #         emp_record,
+        #         key=lambda pr: BSDate(*(bs_str2tuple(pr.paid_to_date))),
+        #         reverse=True
+        #     )
         return emp_record[0]
     else:
         return None
@@ -297,21 +297,21 @@ def emp_salary_eligibility(emp, p_from, p_to):
 def emp_salary_eligibility_on_edit(fromdate_request, todate_request, employee, edit_row):
     error_msg = None
     fromdate_saved = edit_row.paid_from_date
-    if not isinstance(fromdate_saved, date):
-        fromdate_saved = BSDate(*(bs_str2tuple(fromdate_saved)))
+    # if not isinstance(fromdate_saved, date):
+    #     fromdate_saved = BSDate(*(bs_str2tuple(fromdate_saved)))
     todate_saved = edit_row.paid_to_date
-    if not isinstance(todate_saved, date):
-        todate_saved = BSDate(*(bs_str2tuple(todate_saved)))
+    # if not isinstance(todate_saved, date):
+    #     todate_saved = BSDate(*(bs_str2tuple(todate_saved)))
 
 
     # find this employee last record
     last_payment_record = employee_last_payment_record(employee)
     fromdate_last = last_payment_record.paid_from_date
-    if not isinstance(fromdate_last, date):
-        fromdate_last = BSDate(*(bs_str2tuple(fromdate_last)))
+    # if not isinstance(fromdate_last, date):
+    #     fromdate_last = BSDate(*(bs_str2tuple(fromdate_last)))
     todate_last = last_payment_record.paid_to_date
-    if not isinstance(todate_last, date):
-        todate_last = BSDate(*(bs_str2tuple(todate_last)))
+    # if not isinstance(todate_last, date):
+    #     todate_last = BSDate(*(bs_str2tuple(todate_last)))
 
     # Calculate errors from logical operations
     if fromdate_request < fromdate_saved:
