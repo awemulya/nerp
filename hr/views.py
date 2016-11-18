@@ -89,27 +89,27 @@ def verify_request_date(request):
                 get_validity_id(GradeScaleValidity, paid_from_date)
             except IOError:
                 error['global_errors'].append(
-                    _('Given from date is to early for given Grade Scale Validities')
+                    'Given from date is to early for given Grade Scale Validities'
                 )
 
             try:
                 get_validity_id(AllowanceValidity, paid_from_date)
             except IOError:
                 error['global_errors'].append(
-                    _('Given from date is to early for given Allowance Validities')
+                    'Given from date is to early for given Allowance Validities'
                 )
 
             try:
                 get_validity_id(DeductionValidity, paid_from_date)
             except IOError:
                 error['global_errors'].append(
-                    _('Given from date is to early for given Deduction Validities')
+                    'Given from date is to early for given Deduction Validities'
                 )
 
             if paid_to_date:
                 if paid_to_date < paid_from_date:
                     error['global_errors'].append(
-                        _('Date: paid to must be greater than paid from')
+                        'Date: paid to must be greater than paid from'
                     )
             if not error['global_errors']:
                 del error['global_errors']
@@ -389,55 +389,56 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
             try:
                 obj = _name.allowances.all().filter(
                     employee_grade=employee.designation.grade,
-                    validity_id=slot.validity_id
+                    validity_id=slot.validity_id,
+                    name=_name
                 )[0]
-            except IndexError:
-                raise IndexError('%s not defined for grade %s' % (_name.name, employee.designation.grade.grade_name))
-            # if obj:
-            #     obj = obj[0]
-
-            total_month, total_work_day = delta_month_date_impure(
-                slot.from_date,
-                slot.to_date
-            )
-
-            if obj.payment_cycle == 'Y':
-                # check obj.year_payment_cycle_month to add to salary
-                cnt = month_cnt_inrange(
-                    obj.year_payment_cycle_month,
+                total_month, total_work_day = delta_month_date_impure(
                     slot.from_date,
                     slot.to_date
                 )
-                if cnt:
+
+                if obj.payment_cycle == 'Y':
+                    # check obj.year_payment_cycle_month to add to salary
+                    cnt = month_cnt_inrange(
+                        obj.year_payment_cycle_month,
+                        slot.from_date,
+                        slot.to_date
+                    )
+                    if cnt:
+                        if obj.sum_type == 'AMOUNT':
+                            allowance_details[-1]['amount'] += obj.value * cnt
+                        else:
+                            allowance_details[-1]['amount'] += obj.value / 100.0 * scale_salary
+                    else:
+                        allowance_details[-1]['amount'] += 0
+
+                elif obj.payment_cycle == 'M':
                     if obj.sum_type == 'AMOUNT':
-                        allowance_details[-1]['amount'] += obj.value * cnt
+                        allowance_details[-1]['amount'] += obj.value * total_month
                     else:
                         allowance_details[-1]['amount'] += obj.value / 100.0 * scale_salary
-                else:
-                    allowance_details[-1]['amount'] += 0
-
-            elif obj.payment_cycle == 'M':
-                if obj.sum_type == 'AMOUNT':
-                    allowance_details[-1]['amount'] += obj.value * total_month
-                else:
-                    allowance_details[-1]['amount'] += obj.value / 100.0 * scale_salary
 
 
-            elif obj.payment_cycle == 'D':
-                if obj.sum_type == 'AMOUNT':
-                    allowance_details[-1]['amount'] += obj.value * total_work_day
+                elif obj.payment_cycle == 'D':
+                    if obj.sum_type == 'AMOUNT':
+                        allowance_details[-1]['amount'] += obj.value * total_work_day
 
-                else:
-                    allowance_details[-1]['amount'] += obj.value / 100.0 * scale_salary
+                    else:
+                        allowance_details[-1]['amount'] += obj.value / 100.0 * scale_salary
 
-                    # Does this mean percentage in daily wages
-                    # else:
-                    #     # This is hourly case(Dont think we have it)
-                    #     pass
-                    # else:
-                    #     # Here also same as below
-                    #     employee_response['allowance_%d' % (_name.id)] = 0
-            allowance += allowance_details[-1]['amount']
+                        # Does this mean percentage in daily wages
+                        # else:
+                        #     # This is hourly case(Dont think we have it)
+                        #     pass
+                        # else:
+                        #     # Here also same as below
+                        #     employee_response['allowance_%d' % (_name.id)] = 0
+                allowance += allowance_details[-1]['amount']
+            except IndexError:
+                row_errors.append(
+                    '%s data of %s for this employee grade is not available'
+                )
+
         allowance_details[-1]['allowance'] = _name.id
         allowance_details[-1]['name'] = _name.name
 
@@ -530,21 +531,26 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
             'amount': 0
         })
         for slot in deduction_validity_slots:
-            deduct_obj = Deduction.objects.filter(validity_id=slot.validity_id, name=obj)[0]
-            total_month, total_work_day = delta_month_date_impure(
-                slot.from_date,
-                slot.to_date
-            )
-            if deduct_obj.deduct_type == 'AMOUNT':
-                deduction_details[-1]['amount'] += obj.value * total_month
-            else:
-                deduction_details[-1]['amount'] += obj.value / 100.0 * salary
+            try:
+                deduct_obj = Deduction.objects.filter(validity_id=slot.validity_id, name=obj)[0]
+                total_month, total_work_day = delta_month_date_impure(
+                    slot.from_date,
+                    slot.to_date
+                )
+                if deduct_obj.deduct_type == 'AMOUNT':
+                    deduction_details[-1]['amount'] += obj.value * total_month
+                else:
+                    deduction_details[-1]['amount'] += obj.value / 100.0 * salary
 
-            if employee.is_permanent and obj.is_refundable_deduction:
-                salary += deduction_details[-1]['amount']
-                deduction_details[-1]['amount'] += deduction_details[-1]['amount'] * 2
+                if employee.is_permanent and obj.is_refundable_deduction:
+                    salary += deduction_details[-1]['amount']
+                    deduction_details[-1]['amount'] += deduction_details[-1]['amount'] * 2
 
-            deduction += deduction_details[-1]['amount']
+                deduction += deduction_details[-1]['amount']
+            except IndexError:
+                row_errors.append(
+                    '%s of %s is not available' % (obj, slot)
+                )
         deduction_details[-1]['deduction'] = obj.id
         deduction_details[-1]['name'] = obj.name
         deduction_details[-1]['editable'] = True if obj.amount_editable else False

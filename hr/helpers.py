@@ -468,7 +468,8 @@ def get_validity_id(cls, in_date):
                 try:
                     if in_date < existing_validity[i + 1].valid_from:
                         return_id = validity.id
-                except:
+                        break
+                except IndexError:
                     return_id = validity.id
             else:
                 raise IOError('Input date does not falls on any validity')
@@ -515,8 +516,7 @@ def get_validity_slots(cls, from_date, to_date, **kwargs):
 
 
 def is_required_data_present(employee, from_date, to_date):
-    from hr.models import GradeScaleValidity, AllowanceValidity, Deduction, DeductionValidity, EmployeeGradeScale, \
-        Allowance
+    from hr.models import GradeScaleValidity, EmployeeGradeScale
     errors = []
     try:
         grade_scale_validity_slots = get_validity_slots(GradeScaleValidity, from_date, to_date)
@@ -527,27 +527,6 @@ def is_required_data_present(employee, from_date, to_date):
             )
             if not gs_data:
                 errors.append(_('This employee grade has no  grade scale for:') + str(slot))
-    except IOError:
-        raise
-    try:
-        allowance_validity_slots = get_validity_slots(AllowanceValidity, from_date, to_date)
-        for slot in allowance_validity_slots:
-            allowance_data = Allowance.objects.filter(
-                employee_grade=employee.designation.grade,
-                validity_id=slot.validity_id
-            )
-            if not allowance_data:
-                errors.append(_('This employee grade has no allowance data for:') + str(slot))
-    except IOError:
-        raise
-    try:
-        deduction_validity_slots = get_validity_slots(DeductionValidity, from_date, to_date)
-        for slot in deduction_validity_slots:
-            deduction_data = Deduction.objects.filter(
-                validity_id=slot.validity_id
-            )
-            if not deduction_data:
-                errors.append(_('No deduction data for:') + str(slot))
     except IOError:
         raise
 

@@ -118,7 +118,7 @@ class GradeScaleValiditySerializer(serializers.ModelSerializer):
         else:
             valid_from = BSDate(*bs_str2tuple(valid_from))
             for validity in available_validities:
-                if valid_from < BSDate(*bs_str2tuple(validity.valid_from)):
+                if valid_from < validity.valid_from:
                     raise serializers.ValidationError(_('New validity must be greater than previous validity'))
         return data
 
@@ -200,7 +200,7 @@ class AllowanceValiditySerializer(serializers.ModelSerializer):
         else:
             valid_from = BSDate(*bs_str2tuple(valid_from))
             for validity in available_validities:
-                if valid_from < BSDate(*bs_str2tuple(validity.valid_from)):
+                if valid_from < validity.valid_from:
                     raise serializers.ValidationError(_('New validity must be greater than previous validity'))
         return data
 
@@ -265,7 +265,7 @@ class DeductionValiditySerializer(serializers.ModelSerializer):
         else:
             valid_from = BSDate(*bs_str2tuple(valid_from))
             for validity in available_validities:
-                if valid_from < BSDate(*bs_str2tuple(validity.valid_from)):
+                if valid_from < validity.valid_from:
                     raise serializers.ValidationError(_('New validity must be greater than previous validity'))
         return data
 

@@ -373,8 +373,7 @@ class Employee(models.Model):
             return self.scale_start_date
 
     def current_salary_by_month(self, from_date, to_date, **kwargs):
-        import ipdb
-        ipdb.set_trace()
+
         rate_obj = EmployeeGradeScale.objects.filter(
             validity_id=kwargs['validity_id'],
             grade=self.designation.grade
