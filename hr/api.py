@@ -110,6 +110,8 @@ class AllowanceViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         rows = request.data
+        import ipdb
+        ipdb.set_trace()
         if rows:
             validity_id = rows[0]['employee_grades'][0]['allowance']['validity_id']
             name_id = rows[0]['employee_grades'][0]['allowance']['name_id']
@@ -118,6 +120,11 @@ class AllowanceViewSet(viewsets.ModelViewSet):
                     allowance_dict = {key: value if value else None for key, value in roow['allowance'].items() if key not in ['errors', 'ypcm_disable_edit']}
                     try:
                         id = allowance_dict.pop('id')
+                    except (KeyError):
+                        id = None
+
+                    try:
+                        grade_group = allowance_dict.pop('id')
                     except (KeyError):
                         id = None
                     try:
