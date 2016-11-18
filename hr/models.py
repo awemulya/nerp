@@ -71,7 +71,7 @@ class GradeScaleValidity(models.Model):
     note = models.CharField(max_length=150)
 
     def __unicode__(self):
-        return str(self.valid_from)
+        return 'Valid From: ' + str(self.valid_from)
 
     class Meta:
         verbose_name_plural = _('Grade Scale Validities')
@@ -163,7 +163,7 @@ class AllowanceValidity(models.Model):
     # is_active = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return str(self.valid_from)
+        return 'Valid From: ' + str(self.valid_from)
 
     class Meta:
         verbose_name_plural = _('Allowance Validities')
@@ -247,7 +247,7 @@ class DeductionValidity(models.Model):
     note = models.CharField(max_length=150)
 
     def __unicode__(self):
-        return str(self.valid_from)
+        return 'Valid From: ' + str(self.valid_from)
 
     class Meta:
         verbose_name_plural = _('Deduction Validities')

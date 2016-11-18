@@ -81,8 +81,6 @@ def verify_request_date(request):
             except:
                 error['paid_to_date'] = 'Incorrect BS Date'
 
-
-
         if paid_from_date:
             error['global_errors'] = []
             try:
@@ -113,7 +111,6 @@ def verify_request_date(request):
                     )
             if not error['global_errors']:
                 del error['global_errors']
-
 
         if error:
             return error
@@ -338,7 +335,6 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     if not required_present:
         row_errors += r_p_errors
 
-
     employee_response = {}
     employee_response['paid_employee'] = str(employee.id)
     employee_response['employee_grade'] = employee.designation.grade.grade_name
@@ -434,8 +430,9 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
                         #     employee_response['allowance_%d' % (_name.id)] = 0
                 allowance += allowance_details[-1]['amount']
             except IndexError:
+                validity = AllowanceValidity.objects.get(id=slot.validity_id)
                 row_errors.append(
-                    '%s data of %s for this employee grade is not available'% (_name, slot)
+                    '%s data of %s for this employee grade is not available.(%s)' % (_name, slot, validity)
                 )
 
         allowance_details[-1]['allowance'] = _name.id
@@ -455,68 +452,69 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     for _name in employee.incentives.all():
         try:
             obj = _name.incentives.all().filter(employee=employee)[0]
-        except IndexError:
-            raise IndexError('%s not defined for employee %s' % (_name.name, employee.name))
-            # if obj:
-            #     obj = obj[0]
-            # pdb.set_trace()
-        if obj.payment_cycle == 'Y':
-            # check obj.year_payment_cycle_month to add to salary
-            cnt = month_cnt_inrange(
-                obj.year_payment_cycle_month,
-                paid_from_date,
-                paid_to_date
-            )
-            if cnt:
+            if obj.payment_cycle == 'Y':
+                # check obj.year_payment_cycle_month to add to salary
+                cnt = month_cnt_inrange(
+                    obj.year_payment_cycle_month,
+                    paid_from_date,
+                    paid_to_date
+                )
+                if cnt:
+                    if obj.sum_type == 'AMOUNT':
+                        incentive_details.append({
+                            'amount': obj.value * cnt
+                        })
+                    else:
+                        incentive_details.append({
+                            'amount': obj.value / 100.0 * scale_salary
+                        })
+                else:
+                    incentive_details.append({
+                        'amount': 0
+                    })
+
+            elif obj.payment_cycle == 'M':
                 if obj.sum_type == 'AMOUNT':
                     incentive_details.append({
-                        'amount': obj.value * cnt
+                        'amount': obj.value * total_month
                     })
                 else:
                     incentive_details.append({
                         'amount': obj.value / 100.0 * scale_salary
                     })
+            elif obj.payment_cycle == 'D':
+                if obj.sum_type == 'AMOUNT':
+                    incentive_details.append({
+                        'amount': obj.value * total_work_day
+                    })
+                else:
+                    # Does this mean percentage in daily wages
+                    incentive_details.append({
+                        'amount': obj.value / 100.0 * scale_salary
+                    })
             else:
+                # This is hourly case(Dont think we have it)
                 incentive_details.append({
                     'amount': 0
                 })
+                # else:
+                #     employee_response['incentive_%d' % (_name.id)] = 0
+            # Here we should check for scale and calculate from scale
+            if _name.with_scale:
+                # Get scale here for this employee of this incentive and get value that is
+                # scale = none
+                # employee_response['incentive_%d' % (_name.id)] = scale / 100 * employee_response['incentive_%d' % (_name.id)]
+                pass
+            incentive_details[-1]['incentive'] = _name.id
+            incentive_details[-1]['name'] = _name.name
+            incentive_details[-1]['editable'] = True if _name.amount_editable else False
+            incentive += incentive_details[-1]['amount']
+        except IndexError:
+            row_errors.append('%s not defined for employee %s' % (_name.name, employee.name))
+            # if obj:
+            #     obj = obj[0]
+            # pdb.set_trace()
 
-        elif obj.payment_cycle == 'M':
-            if obj.sum_type == 'AMOUNT':
-                incentive_details.append({
-                    'amount': obj.value * total_month
-                })
-            else:
-                incentive_details.append({
-                    'amount': obj.value / 100.0 * scale_salary
-                })
-        elif obj.payment_cycle == 'D':
-            if obj.sum_type == 'AMOUNT':
-                incentive_details.append({
-                    'amount': obj.value * total_work_day
-                })
-            else:
-                # Does this mean percentage in daily wages
-                incentive_details.append({
-                    'amount': obj.value / 100.0 * scale_salary
-                })
-        else:
-            # This is hourly case(Dont think we have it)
-            incentive_details.append({
-                'amount': 0
-            })
-            # else:
-            #     employee_response['incentive_%d' % (_name.id)] = 0
-        # Here we should check for scale and calculate from scale
-        if _name.with_scale:
-            # Get scale here for this employee of this incentive and get value that is
-            # scale = none
-            # employee_response['incentive_%d' % (_name.id)] = scale / 100 * employee_response['incentive_%d' % (_name.id)]
-            pass
-        incentive_details[-1]['incentive'] = _name.id
-        incentive_details[-1]['name'] = _name.name
-        incentive_details[-1]['editable'] = True if _name.amount_editable else False
-        incentive += incentive_details[-1]['amount']
     employee_response['incentive'] = incentive
     # salary += incentive
 
@@ -547,8 +545,9 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
 
                 deduction += deduction_details[-1]['amount']
             except IndexError:
+                validity = DeductionValidity.objects.get(id=slot.validity_id)
                 row_errors.append(
-                    '%s of %s is not available' % (obj, slot)
+                    '%s of %s is not available. (%s)' % (obj, slot, validity)
                 )
         deduction_details[-1]['deduction'] = obj.id
         deduction_details[-1]['name'] = obj.name
