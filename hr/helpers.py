@@ -266,17 +266,10 @@ def emp_salary_eligibility(emp, p_from, p_to):
     emp_last_record = employee_last_payment_record(emp)
 
     if emp_last_record:
-        if isinstance(emp_last_record.paid_to_date, date):
-            last_paid = emp_last_record.paid_to_date
-        else:
-            last_paid = BSDate(*(bs_str2tuple(emp_last_record.paid_to_date)))
+        last_paid = emp_last_record.paid_to_date
     else:
-        if isinstance(emp.appoint_date, date):
-            last_paid = drc_1_day(emp.appoint_date)
-            never_paid = True
-        else:
-            last_paid = drc_1_day(BSDate(*(bs_str2tuple(emp.appoint_date))))
-            never_paid = True
+        last_paid = drc_1_day(emp.scale_start_date)
+        never_paid = True
     if type(last_paid) != type(p_from):
         raise TypeError('Internal and external setting mismatch')
     if p_from <= last_paid:
@@ -287,7 +280,7 @@ def emp_salary_eligibility(emp, p_from, p_to):
                 error_msg = 'Already paid for/upto date %s. Last paid upto %s' % ('{:%Y-%m-%d}'.format(p_from), '{:%Y-%m-%d}'.format(last_paid))
         else:
             if never_paid:
-                error_msg = 'Employee has not worked yet for %s. Appointed on %s' % (bsdate2str(p_from), emp.appoint_date)
+                error_msg = 'Employee has not worked yet for %s. Appointed on %s' % (bsdate2str(p_from), emp.scale_start_date)
             else:
                 error_msg = 'Already paid for/upto date %s. Last paid upto %s' % (bsdate2str(p_from), bsdate2str(last_paid))
     elif p_from > inc_1_day(last_paid):
@@ -467,8 +460,14 @@ def get_validity_id(cls, in_date):
     )
     for i, validity in enumerate(existing_validity):
         if type(in_date) ==  type(validity.valid_from):
-            if in_date >= validity.valid_from and in_date < existing_validity[i + 1].valid_from:
-                return_id = validity.id
+            if in_date >= validity.valid_from:
+                try:
+                    if in_date < existing_validity[i + 1].valid_from:
+                        return_id = validity.id
+                except:
+                    return_id = validity.id
+            else:
+                raise IOError('Input date does not falls on any validity')
         else:
             raise TypeError(' input date must be of calendar type (datetime.date for "AD" and BSDate for "BS")')
     return return_id
@@ -483,21 +482,30 @@ def get_validity_slots(cls, from_date, to_date, **kwargs):
         in_between_validities = cls.objects.filter(valid_from__gte=from_date.as_ad()).filter(valid_from__lte=to_date.as_ad())
 
     if not in_between_validities:
-        validity_slots.append(
-            ValiditySlot(from_date, to_date, get_validity_id(cls, from_date))
-        )
+        try:
+            validity_slots.append(
+                ValiditySlot(from_date, to_date, get_validity_id(cls, from_date))
+            )
+        except IOError:
+            raise IOError('Given range start date is less than latest valid from date.')
     else:
         date_pointer = from_date
         for validity in sorted(in_between_validities, key=lambda v: v.valid_from):
             if date_pointer <= validity.valid_from:
-                validity_slots.append(
-                    ValiditySlot(date_pointer, validity.valid_from, get_validity_id(cls, date_pointer))
-                )
+                try:
+                    validity_slots.append(
+                        ValiditySlot(date_pointer, validity.valid_from, get_validity_id(cls, date_pointer))
+                    )
+                except IOError:
+                    raise IOError('Given range start date is less than latest valid from date.')
                 date_pointer = inc_1_day(validity.valid_from)
 
         if date_pointer <= to_date:
-            validity_slots.append(
-                ValiditySlot(date_pointer, to_date, get_validity_id(cls, date_pointer))
-            )
+            try:
+                validity_slots.append(
+                    ValiditySlot(date_pointer, to_date, get_validity_id(cls, date_pointer))
+                )
+            except IOError:
+                raise IOError('Given range start date is less than latest valid from date.')
     return validity_slots
 

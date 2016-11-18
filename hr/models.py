@@ -345,6 +345,9 @@ class Employee(models.Model):
     # On newly apponted employee appoint date and scale start date will be same
     # On previous employee(employee working before this software arrival appoint date be null and salary scale date be calculated)
     # Scale start date can also be added manually
+
+    # This is point to start salary calculation
+    # May need during new user entry or import
     scale_start_date = HRBSDateField(null=True, blank=True)
 
     dismiss_date = HRBSDateField(null=True, blank=True)
@@ -370,6 +373,8 @@ class Employee(models.Model):
             return self.scale_start_date
 
     def current_salary_by_month(self, from_date, to_date, **kwargs):
+        import ipdb
+        ipdb.set_trace()
         rate_obj = EmployeeGradeScale.objects.filter(
             validity_id=kwargs['validity_id'],
             grade=self.designation.grade
