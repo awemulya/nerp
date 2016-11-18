@@ -381,12 +381,12 @@ class Employee(models.Model):
 
         grade_salary = rate_obj.salary_scale
         grade_number = rate_obj.grade_number
-        grade_rate = rate_obj.grade.grade_rate
+        grade_rate = rate_obj.grade_rate
         salary = 0
         for year, month in get_y_m_tuple_list(from_date, to_date):
             if type(from_date) == type(to_date):
+                scale_start_date = self.get_scale_start_date(from_date)
                 if isinstance(from_date, date):
-                    scale_start_date = self.get_scale_start_date(from_date)
                     try:
                         days_worked = date(year, month, 1) - scale_start_date
                     except:
@@ -395,7 +395,7 @@ class Employee(models.Model):
                     if isinstance(self.scale_start_date, date):
                         raise TypeError('Internal and external setting mismatch')
                     else:
-                        days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.scale_start_date)))
+                        days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((scale_start_date.as_string())))
             # TODO when to round off to upper value(think about employee added in the middle of the fiscal year)
             # TODO always round off to upper value except for newly apponnted
             # TODO just changed scemas present/past rate rounding

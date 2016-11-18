@@ -389,8 +389,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
             try:
                 obj = _name.allowances.all().filter(
                     employee_grade=employee.designation.grade,
-                    validity_id=slot.validity_id,
-                    name=_name
+                    validity_id=slot.validity_id
                 )[0]
                 total_month, total_work_day = delta_month_date_impure(
                     slot.from_date,
@@ -436,7 +435,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
                 allowance += allowance_details[-1]['amount']
             except IndexError:
                 row_errors.append(
-                    '%s data of %s for this employee grade is not available'
+                    '%s data of %s for this employee grade is not available'% (_name, slot)
                 )
 
         allowance_details[-1]['allowance'] = _name.id
@@ -457,7 +456,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
         try:
             obj = _name.incentives.all().filter(employee=employee)[0]
         except IndexError:
-            raise IndexError('%s not defined for grade %s' % (_name.name, employee.full_name))
+            raise IndexError('%s not defined for employee %s' % (_name.name, employee.name))
             # if obj:
             #     obj = obj[0]
             # pdb.set_trace()
@@ -562,11 +561,13 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     # Income tax logic
     f_y_data = fiscal_year_data(paid_from_date, paid_to_date)
     income_tax = 0
-    for item in f_y_data:
-        income_tax += salary_taxation_unit(
-            employee,
-            item
-        )
+
+    if not row_errors:
+        for item in f_y_data:
+            income_tax += salary_taxation_unit(
+                employee,
+                item
+            )
 
     employee_response['income_tax'] = income_tax
     # employee_response['deduction_detail'] = deduction_detail
@@ -620,7 +621,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     # employee_response['emp_options'] = []
     employee_response['emp_options'] = [{
         'id': employee.id,
-        'name': employee.employee.full_name,
+        'name': employee.name,
     }]
     return employee_response
 
