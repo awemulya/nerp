@@ -29,7 +29,7 @@ from .models import get_y_m_tuple_list
 from .bsdate import BSDate
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
-    emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id
+    emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present
 from account.models import set_transactions
 from hr.filters import EmployeeFilter
 from django.core import serializers
@@ -332,6 +332,12 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
         )
     if not eligible:
         row_errors.append(error)
+
+    required_present, r_p_errors = is_required_data_present(employee, paid_from_date, paid_to_date)
+
+    if not required_present:
+        row_errors += r_p_errors
+
 
     employee_response = {}
     employee_response['paid_employee'] = str(employee.id)

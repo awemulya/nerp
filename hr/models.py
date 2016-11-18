@@ -865,6 +865,7 @@ class AllowanceDetail(models.Model):
 class PaymentRecord(models.Model):
     paid_employee = models.ForeignKey(Employee)
     paid_from_date = HRBSDateField()
+    # TODO designation
     paid_to_date = HRBSDateField()
     absent_days = models.PositiveIntegerField()
     allowance = models.FloatField(null=True, blank=True)

@@ -5,6 +5,8 @@ from app.local_settings import HR_CALENDAR
 from bsdate import BSDate
 from njango.nepdate import bs, bs2ad, ad2bs
 from calendar import monthrange as mr
+from django.utils.translation import ugettext_lazy as _
+
 
 def get_y_m_tuple_list(from_date, to_date):
     return_list = []
@@ -451,6 +453,8 @@ class ValiditySlot(object):
     def __repr__(self):
         return 'ValiditySlot: ' + str(self.from_date) + " to " + str(self.to_date)
 
+    def __str__(self):
+        return 'ValiditySlot: ' + str(self.from_date) + " to " + str(self.to_date)
 
 # This function get in_date belonging validity id
 def get_validity_id(cls, in_date):
@@ -509,3 +513,45 @@ def get_validity_slots(cls, from_date, to_date, **kwargs):
                 raise IOError('Given range start date is less than latest valid from date.')
     return validity_slots
 
+
+def is_required_data_present(employee, from_date, to_date):
+    from hr.models import GradeScaleValidity, AllowanceValidity, Deduction, DeductionValidity, EmployeeGradeScale, \
+        Allowance
+    errors = []
+    try:
+        grade_scale_validity_slots = get_validity_slots(GradeScaleValidity, from_date, to_date)
+        for slot in grade_scale_validity_slots:
+            gs_data = EmployeeGradeScale.objects.filter(
+                grade=employee.designation.grade,
+                validity_id=slot.validity_id
+            )
+            if not gs_data:
+                errors.append(_('This employee grade has no  grade scale for:') + str(slot))
+    except IOError:
+        raise
+    try:
+        allowance_validity_slots = get_validity_slots(AllowanceValidity, from_date, to_date)
+        for slot in allowance_validity_slots:
+            allowance_data = Allowance.objects.filter(
+                employee_grade=employee.designation.grade,
+                validity_id=slot.validity_id
+            )
+            if not allowance_data:
+                errors.append(_('This employee grade has no allowance data for:') + str(slot))
+    except IOError:
+        raise
+    try:
+        deduction_validity_slots = get_validity_slots(DeductionValidity, from_date, to_date)
+        for slot in deduction_validity_slots:
+            deduction_data = Deduction.objects.filter(
+                validity_id=slot.validity_id
+            )
+            if not deduction_data:
+                errors.append(_('No deduction data for:') + str(slot))
+    except IOError:
+        raise
+
+    if errors:
+        return False, errors
+    else:
+        return True, None
