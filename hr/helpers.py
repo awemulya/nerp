@@ -526,7 +526,8 @@ def is_required_data_present(employee, from_date, to_date):
                 validity_id=slot.validity_id
             )
             if not gs_data:
-                errors.append(_('This employee grade has no  grade scale for:') + str(slot))
+                validity = GradeScaleValidity.objects.get(id=slot.validity_id)
+                errors.append('This employee grade has no  grade scale for: %s.[%s]' % (str(slot), validity))
     except IOError:
         raise
 

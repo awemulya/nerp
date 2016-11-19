@@ -163,6 +163,18 @@ def salary_taxation_unit(employee, f_y_item):
 
 
     # First calculate all the uncome of employee
+
+    taxation_unit_errors = []
+
+    try:
+        required_present, r_p_errors = is_required_data_present(employee, f_y_item['f_y'][0], f_y_item['f_y'][1])
+    except IOError:
+        taxation_unit_errors.append('No Grade Scale Data data for fiscal year %s to %s' % (f_y_item['f_y'][0], f_y_item['f_y'][1]));
+
+    if not required_present:
+        taxation_unit_errors += r_p_errors
+
+
     total_month, total_work_day = delta_month_date_impure(
         *f_y_item['f_y']
     )
@@ -177,46 +189,54 @@ def salary_taxation_unit(employee, f_y_item):
     deductions = DeductionName.objects.all()
 
     allowance = 0
-    allowance_validity_slots = get_validity_slots(AllowanceValidity, f_y_item['f_y'][0], f_y_item['f_y'][1])
+    # allowance_validity_slots = get_validity_slots(AllowanceValidity, f_y_item['f_y'][0], f_y_item['f_y'][1])
     for ob in employee.allowances.all():
+        try:
 
-        for slot in allowance_validity_slots:
-            total_month, total_work_day = delta_month_date_impure(
-                slot.from_date,
-                slot.to_date
-            )
-
-            try:
-                obj = ob.allowances.all().filter(
-                    employee_grade=employee.designation.grade,
-                    validity_id=slot.validity_id
-                )[0]
-            except IndexError:
-                raise IndexError('%s not defined for grade %s' % (ob.name, employee.designation.grade.grade_name))
-            if obj.payment_cycle == 'Y':
-                # check obj.year_payment_cycle_month to add to salary
-                cnt = month_cnt_inrange(
-                    obj.year_payment_cycle_month,
+            for slot in get_validity_slots(AllowanceValidity, f_y_item['f_y'][0], f_y_item['f_y'][1]):
+                total_month, total_work_day = delta_month_date_impure(
                     slot.from_date,
                     slot.to_date
                 )
-                if cnt:
-                    if obj.sum_type == 'AMOUNT':
-                        allowance += obj.value * cnt
-                    else:
-                        allowance += obj.value / 100.0 * scale_salary
 
-            elif obj.payment_cycle == 'M':
-                if obj.sum_type == 'AMOUNT':
-                    allowance += obj.value * total_month
-                else:
-                    allowance += obj.value / 100.0 * scale_salary
-            elif obj.payment_cycle == 'D':
-                if obj.sum_type == 'AMOUNT':
-                    allowance += obj.value * total_work_day
-                else:
-                    # Does this mean percentage in daily wages
-                    allowance += obj.value / 100.0 * scale_salary
+                try:
+                    obj = ob.allowances.all().filter(
+                        employee_grade=employee.designation.grade,
+                        validity_id=slot.validity_id
+                    )[0]
+                    if obj.payment_cycle == 'Y':
+                        # check obj.year_payment_cycle_month to add to salary
+                        cnt = month_cnt_inrange(
+                            obj.year_payment_cycle_month,
+                            slot.from_date,
+                            slot.to_date
+                        )
+                        if cnt:
+                            if obj.sum_type == 'AMOUNT':
+                                allowance += obj.value * cnt
+                            else:
+                                allowance += obj.value / 100.0 * scale_salary
+
+                    elif obj.payment_cycle == 'M':
+                        if obj.sum_type == 'AMOUNT':
+                            allowance += obj.value * total_month
+                        else:
+                            allowance += obj.value / 100.0 * scale_salary
+                    elif obj.payment_cycle == 'D':
+                        if obj.sum_type == 'AMOUNT':
+                            allowance += obj.value * total_work_day
+                        else:
+                            # Does this mean percentage in daily wages
+                            allowance += obj.value / 100.0 * scale_salary
+                except IndexError:
+                    validity = AllowanceValidity.objects.get(id=slot.validity_id)
+                    taxation_unit_errors.append(
+                        'TAX-FY: %s data of %s for this employee grade is not available.(%s)[%s]' % (
+                        ob, slot, validity, employee.designation.grade)
+                    )
+        except IOError:
+            taxation_unit_errors.append('No allowance data for FY %s - %s for %s' % (f_y_item['f_y'][0], f_y_item['f_y'][1], employee.designation.grade))
+
 
     # now calculate incentive if it has but not to add to salary just to
     # transact seperately
@@ -226,48 +246,60 @@ def salary_taxation_unit(employee, f_y_item):
             obj = ob.incentives.filter(
                 employee=employee
             )[0]
-        except IndexError:
-            raise IndexError('%s not defined for grade %s' % (ob.name, employee.designation.grade.grade_name))
-        if obj.payment_cycle == 'Y':
-            # check obj.year_payment_cycle_month to add to salary
-            cnt = month_cnt_inrange(
-                obj.year_payment_cycle_month,
-                **f_y_item['f_y']
-            )
-            if cnt:
+            if obj.payment_cycle == 'Y':
+                # check obj.year_payment_cycle_month to add to salary
+                cnt = month_cnt_inrange(
+                    obj.year_payment_cycle_month,
+                    *f_y_item['f_y']
+                )
+                if cnt:
+                    if obj.sum_type == 'AMOUNT':
+                        incentive += obj.value * cnt
+                    else:
+                        incentive += obj.value / 100.0 * scale_salary
+
+            elif obj.payment_cycle == 'M':
                 if obj.sum_type == 'AMOUNT':
-                    incentive += obj.value * cnt
+                    incentive += obj.value * total_month
                 else:
                     incentive += obj.value / 100.0 * scale_salary
+            elif obj.payment_cycle == 'D':
+                if obj.sum_type == 'AMOUNT':
+                    incentive += obj.value * total_work_day
+                else:
+                    # Does this mean percentage in daily wages
+                    incentive += obj.value / 100.0 * scale_salary
+        except IndexError:
+            taxation_unit_errors.append('TAX-FY: %s not defined for employee %s' % (ob.name, employee.name))
 
-        elif obj.payment_cycle == 'M':
-            if obj.sum_type == 'AMOUNT':
-                incentive += obj.value * total_month
-            else:
-                incentive += obj.value / 100.0 * scale_salary
-        elif obj.payment_cycle == 'D':
-            if obj.sum_type == 'AMOUNT':
-                incentive += obj.value * total_work_day
-            else:
-                # Does this mean percentage in daily wages
-                incentive += obj.value / 100.0 * scale_salary
 
     total_deduction = 0
     deduction = 0
     for obj in deductions.filter(is_tax_free=True):
         if obj in deductions.filter(is_optional=False) or obj in employee.optional_deductions.all():
-            for slot in get_validity_slots(DeductionValidity, f_y_item['f_y'][0], *f_y_item['f_y'][1]):
-                deduct_obj = Deduction.objects.filter(validity_id=slot.validity_id, name=obj)[0]
-                if deduct_obj.deduct_type == 'AMOUNT':
-                    deduction = obj.value * total_month
-                    total_deduction += deduction
-                else:
-                    deduction = obj.value / 100.0 * salary
-                    total_deduction += deduction
+            try:
+                for slot in get_validity_slots(DeductionValidity, f_y_item['f_y'][0], f_y_item['f_y'][1]):
+                    try:
+                        deduct_obj = Deduction.objects.filter(validity_id=slot.validity_id, name=obj)[0]
 
-                if employee.is_permanent and obj.is_refundable_deduction:
-                    # This is for addition of refundable deduction
-                    total_deduction += deduction
+                        if deduct_obj.deduct_type == 'AMOUNT':
+                            deduction = deduct_obj.value * total_month
+                            total_deduction += deduction
+                        else:
+                            deduction = deduct_obj.value / 100.0 * salary
+                            total_deduction += deduction
+
+                        if employee.is_permanent and obj.is_refundable_deduction:
+                            # This is for addition of refundable deduction
+                            total_deduction += deduction
+                    except IndexError:
+                        validity = DeductionValidity.objects.get(id=slot.validity_id)
+                        taxation_unit_errors.append(
+                            'TAX-FY: %s of %s is not available. (%s)[%s]' % (obj, slot, validity, employee.designation.grade)
+                        )
+            except IOError:
+                taxation_unit_errors.append('No deduction data for FY %s to %s. [%s] '% (f_y_item['f_y'][0], f_y_item['f_y'][1], employee.designation.grade))
+
 
     taxable_amount = (salary + allowance + incentive - total_deduction)
 
@@ -308,7 +340,7 @@ def salary_taxation_unit(employee, f_y_item):
         if main_loop_break_flag:
             break
     total_tax = social_security_tax + tax_amount
-    return total_tax * (f_y_item['worked_days'] / f_y_item['year_days'])
+    return total_tax * (f_y_item['worked_days'] / f_y_item['year_days']), taxation_unit_errors
 
 
 def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibility_check_on_edit, edit_row):
@@ -432,7 +464,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
             except IndexError:
                 validity = AllowanceValidity.objects.get(id=slot.validity_id)
                 row_errors.append(
-                    '%s data of %s for this employee grade is not available.(%s)' % (_name, slot, validity)
+                    '%s data of %s for this employee grade is not available.(%s)[%s]' % (_name, slot, validity, employee.designation.grade)
                 )
 
         allowance_details[-1]['allowance'] = _name.id
@@ -535,9 +567,9 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
                     slot.to_date
                 )
                 if deduct_obj.deduct_type == 'AMOUNT':
-                    deduction_details[-1]['amount'] += obj.value * total_month
+                    deduction_details[-1]['amount'] += deduct_obj.value * total_month
                 else:
-                    deduction_details[-1]['amount'] += obj.value / 100.0 * salary
+                    deduction_details[-1]['amount'] += deduct_obj.value / 100.0 * salary
 
                 if employee.is_permanent and obj.is_refundable_deduction:
                     salary += deduction_details[-1]['amount']
@@ -547,7 +579,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
             except IndexError:
                 validity = DeductionValidity.objects.get(id=slot.validity_id)
                 row_errors.append(
-                    '%s of %s is not available. (%s)' % (obj, slot, validity)
+                    '%s of %s is not available. (%s)[%s]' % (obj, slot, validity, employee.designation.grade)
                 )
         deduction_details[-1]['deduction'] = obj.id
         deduction_details[-1]['name'] = obj.name
@@ -563,10 +595,15 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
 
     if not row_errors:
         for item in f_y_data:
-            income_tax += salary_taxation_unit(
+            in_tax_amt, taxation_errors = salary_taxation_unit(
                 employee,
                 item
             )
+
+            if not taxation_errors:
+                income_tax += in_tax_amt
+            else:
+                row_errors += taxation_errors
 
     employee_response['income_tax'] = income_tax
     # employee_response['deduction_detail'] = deduction_detail
