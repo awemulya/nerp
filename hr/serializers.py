@@ -50,6 +50,9 @@ class PaymentRecordSerializer(serializers.ModelSerializer):
     employee_grade = serializers.ReadOnlyField(source='paid_employee.designation.grade.grade_name')
     employee_designation = serializers.ReadOnlyField(source='paid_employee.designation.designation_name')
 
+    paid_from_date = serializers.CharField(max_length=50)
+    paid_to_date = serializers.CharField(max_length=50)
+
     class Meta:
         model = PaymentRecord
         fields = '__all__'
