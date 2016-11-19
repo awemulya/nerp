@@ -818,7 +818,7 @@ def save_payroll_entry(request, pk=None):
                     p_r.incentive_details.all().delete()
                     p_r.allowance_details.all().delete()
                 else:
-                    p_r = PaymentRecord
+                    p_r = PaymentRecord()
 
                 # Similar if we need all details of incentive and allowence
                 deductions = []
@@ -843,6 +843,7 @@ def save_payroll_entry(request, pk=None):
                 # p_r = PaymentRecord()
                 p_r.paid_employee_id = int(row.get('paid_employee', None))
 
+                p_r.designation = Employee.objects.get(id=p_r.paid_employee_id).designation
                 # Save according to calender settin`g
                 # from_date = request.POST.get('form-%d-paid_from_date' % (i), None)
                 # to_date = request.POST.get('form-%d-paid_to_date' % (i), None)
@@ -941,7 +942,7 @@ def entry_detail(request, pk=None):
 
     all_allowances = AllowanceName.objects.all()
     all_incentives = IncentiveName.objects.all()
-    all_deductions = Deduction.objects.all()
+    all_deductions = DeductionName.objects.all()
 
     allowance_titles = []
     incentive_titles = []
