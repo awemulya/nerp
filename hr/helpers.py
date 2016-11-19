@@ -373,6 +373,8 @@ def fiscal_year_data(d_from, d_to):
         if isinstance(to_date, date):
             to_date = date(to_date_year, d_to.month, d_to.day)
         else:
+            import ipdb
+            ipdb.set_trace()
             to_date = BSDate(to_date_year, d_to.month, d_to.day)
     if len(result) == 0:
         result.append({
