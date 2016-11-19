@@ -982,8 +982,8 @@ def entry_detail(request, pk=None):
             entry_row_data = {}
             emp = row.paid_employee
             entry_row_data['employee'] = (emp)
-            entry_row_data['employee_designation'] = (row.paid_employee.designation)
-            entry_row_data['employee_grade'] = (row.paid_employee.designation.grade)
+            entry_row_data['employee_designation'] = (row.designation)
+            entry_row_data['employee_grade'] = (row.designation.grade)
 
             allowance_amounts = []
             for obj in all_allowances:
