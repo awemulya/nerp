@@ -210,7 +210,7 @@ class Allowance(models.Model):
         super(Allowance, self).save(*args, **kwargs)
 
     class Meta:
-        unique_together = (("name", "employee_grade"),)
+        unique_together = (("name", "employee_grade", 'validity'),)
 
 
 class IncentiveName(models.Model):
