@@ -2,8 +2,10 @@ $(document).ready(function () {
     // ko.options.deferUpdates = true;
     // var main = this;
     group_load = true;
-    if (typeof(ko_data.ctx_data.id) != 'undefined') {
-        group_load = false
+    if(ko_data.ctx_data){
+        if (typeof(ko_data.ctx_data.id) != 'undefined') {
+            group_load = false
+        }
     }
 
     vm = new PayrollEntry(ko_data.emp_options, group_load);

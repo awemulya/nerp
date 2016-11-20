@@ -669,7 +669,7 @@ def payroll_entry(request, pk=None):
         serializer = PayrollEntrySerializer(entry)
         ctx_data = dict(serializer.data)
     else:
-        ctx_data = {'edit': False,}
+        ctx_data = None
     main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
 
     # Inititial employee options
@@ -809,7 +809,8 @@ def save_payroll_entry(request, pk=None):
         payment_records = []
 
         with transaction.atomic():
-
+            import ipdb
+            ipdb.set_trace()
             for row in params.get('entry_rows'):
 
                 if row.get('id'):

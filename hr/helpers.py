@@ -371,11 +371,13 @@ def fiscal_year_data(d_from, d_to):
         )
         to_date_year -= 1
         if isinstance(to_date, date):
-            to_date = date(to_date_year, d_to.month, d_to.day)
+            month_total_days = mr(to_date_year, d_to.month)[1]
+            to_date = date(to_date_year, d_to.month, month_total_days)
         else:
-            import ipdb
-            ipdb.set_trace()
-            to_date = BSDate(to_date_year, d_to.month, d_to.day)
+            month_total_days = bs[to_date_year][d_to.month - 1]
+            to_date = BSDate(to_date_year, d_to.month, month_total_days)
+
+
     if len(result) == 0:
         result.append({
             'f_y': fiscal_year_by_date(d_from),
