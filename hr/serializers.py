@@ -44,7 +44,7 @@ class PaymentRecordSerializer(serializers.ModelSerializer):
     incentive_details = IncentiveDetailSerializer(many=True)
     allowance_details = AllowanceDetailSerializer(many=True)
     deduction_details = DeductionDetailSerializer(many=True)
-    is_explicitly_added_row = serializers.SerializerMethodField('explicitly_added')
+    # is_explicitly_added_row = serializers.SerializerMethodField('explicitly_added')
     paid_employee = serializers.SerializerMethodField('get_paid_employee_as_str')
 
     employee_grade = serializers.ReadOnlyField(source='paid_employee.designation.grade.grade_name')
@@ -57,8 +57,8 @@ class PaymentRecordSerializer(serializers.ModelSerializer):
         model = PaymentRecord
         fields = '__all__'
 
-    def explicitly_added(self, instance):
-        return False
+    # def explicitly_added(self, instance):
+    #     return False
 
     def get_paid_employee_as_str(self, instance):
         return str(instance.paid_employee.id)

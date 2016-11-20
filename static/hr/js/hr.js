@@ -12,7 +12,7 @@ $(document).ready(function () {
         var mapping = {
             'entry_rows': {
                 create: function (options) {
-                    var entry_row = ko.mapping.fromJS(options.data, {copy: ['is_explicitly_added_row']}, new PaymentEntryRow(ko_data.emp_options.slice(0)));
+                    var entry_row = ko.mapping.fromJS(options.data, {copy: []}, new PaymentEntryRow(ko_data.emp_options.slice(0)));
                     if (typeof(options.parent.paid_from_date()) == 'undefined') {
                         options.parent.paid_from_date(options.data.paid_from_date);
                         options.parent.paid_to_date(options.data.paid_to_date);
@@ -81,7 +81,7 @@ function PaymentEntryRow(emp_options) {
     self.pro_tempore_amount = ko.observable(0);
     self.salary = ko.observable(0);
     self.paid_amount = ko.observable(0);
-    self.request_flag = ko.observable(false);
+    self.request_flag = ko.observable();
     self.row_errors = ko.observableArray();
     self.disable_input = ko.observable(false);
 
@@ -119,41 +119,17 @@ function PaymentEntryRow(emp_options) {
         self.paid_amount(self.salary() - self.deduced_amount() - self.income_tax() + self.incentive() + self.allowance());
     });
 
-    self.is_explicitly_added_row = true;
-
-    self.process_request_flag = ko.computed(function () {
-        if (self.paid_employee() && self.paid_from_date() && self.paid_to_date()) {
-            self.request_flag(true);
+    self.row_salary_detail = ko.computed(function(){
+        if (self.paid_employee() && self.paid_from_date() && self.paid_to_date){
+            self.request_flag(self.paid_employee() + '-' + self.paid_from_date() + '-' + self.paid_to_date());
             console.log(self.request_flag());
         }
-
     });
 
-    // self.emp_options.subscribe(function () {
-    //     self.paid_employee(self.employee_id);
-    // });
-    // self.paid_employee.subscribe(function () {
-    //     console.log('This is paid employee')
-    //     console.log(self.paid_employee());
-    //     // if (self.paid_employee()) {
-    //     //     self.employee_id = parseInt(self.paid_employee());
-    //     // }
-    //     self.request_flag(true);
-    // });
-
-    // self.employee_changed = function () {
-    //     // console.log('We entered here successfully');
-    //     console.log(self.paid_employee());
-    //     debugger;
-    //     self.request_flag(true);
-    //     // self.setOtrParam();
-    //     // if (event.originalEvent) { //user changed
-    //     // } else { // program changed
-    // };
 
     // Make here a observable function dat will set other parameters with employee id and date range
     self.request_flag.subscribe(function () {
-        if (self.request_flag() == true && vm.payroll_type() == "INDIVIDUAL" && self.is_explicitly_added_row) {
+        if (vm.payroll_type() == "INDIVIDUAL") {
             $.ajax({
                 url: '/payroll/get_employee_account/',
                 method: 'POST',
@@ -196,11 +172,12 @@ function PaymentEntryRow(emp_options) {
                         if (typeof(response.data.row_errors) == 'undefined') {
                             self.row_errors([]);
                         }
-                        self.request_flag(false);
+                        // self.request_flag(false);
 
                         // if(vm.entry_rows.length == 1){
                         vm.paid_from_date(response.data.paid_from_date);
                         vm.paid_to_date(response.data.paid_to_date);
+                        // self.date_set_by_server(true);
                         // };
                     }
 
@@ -209,6 +186,7 @@ function PaymentEntryRow(emp_options) {
                     console.log(errorThrown);
                 }
             });
+            console.log('Hey soul sister');
         } else {
         }
         // self.request_flag(false);
@@ -452,9 +430,9 @@ function PayrollEntry(employee_options, group_load) {
                             c = 0;
                             if (ko_data.ctx_data.edit) {
 
-                                ko.utils.arrayForEach(self.entry_rows(), function(row_vm){
+                                ko.utils.arrayForEach(self.entry_rows(), function (row_vm) {
                                     c += 1;
-                                    var row_res = ko.utils.arrayFirst(response.data, function(res_row){
+                                    var row_res = ko.utils.arrayFirst(response.data, function (res_row) {
                                         return res_row.paid_employee == row_vm.paid_employee();
                                     });
 
