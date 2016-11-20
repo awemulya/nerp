@@ -809,8 +809,6 @@ def save_payroll_entry(request, pk=None):
         payment_records = []
 
         with transaction.atomic():
-            import ipdb
-            ipdb.set_trace()
             for row in params.get('entry_rows'):
 
                 if row.get('id'):

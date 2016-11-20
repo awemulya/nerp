@@ -1,7 +1,7 @@
 $(document).ready(function () {
     // ko.options.deferUpdates = true;
     // var main = this;
-    group_load = true;
+    var group_load = true;
     if (typeof(ko_data.ctx_data.id) != 'undefined') {
         group_load = false
     }
@@ -124,6 +124,7 @@ function PaymentEntryRow(emp_options) {
     self.process_request_flag = ko.computed(function () {
         if (self.paid_employee() && self.paid_from_date() && self.paid_to_date()) {
             self.request_flag(true);
+            console.log(self.request_flag());
         }
 
     });
