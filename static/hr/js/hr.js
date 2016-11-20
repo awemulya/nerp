@@ -448,25 +448,50 @@ function PayrollEntry(employee_options, group_load) {
                             self.paid_from_date_error(null);
                             self.paid_to_date_error(null);
 
+                            c = 0;
                             if (ko_data.ctx_data.edit) {
-                                // ko.utils.arrayMap(response.data, function (data) {
-                                //
-                                //     c += 1;
-                                //     var mapping = {
-                                //         'ignore': ["emp_options"]
-                                //     };
-                                //     var row = ko.mapping.fromJS(data, mapping, new PaymentEntryRow(employee_options.slice(0)));
-                                //     // row.is_explicitly_added_row = false;
-                                //     row.request_flag(false);
-                                //     if (typeof(row.row_errors) == 'undefined') {
-                                //         row.row_errors = ko.observableArray([]);
-                                //     }
-                                //     if (c == 1) {
-                                //         self.paid_from_date(row.paid_from_date());
-                                //         self.paid_to_date(row.paid_to_date());
-                                //     }
-                                //     return row;
-                                // });
+
+                                ko.utils.arrayForEach(self.entry_rows(), function(row_vm){
+                                    c += 1;
+                                    var row_res = ko.utils.arrayFirst(response.data, function(res_row){
+                                        return res_row.paid_employee == row_vm.paid_employee();
+                                    });
+
+                                    var mapping = {
+                                        'ignore': ["emp_options"]
+                                    };
+                                    var row = ko.mapping.fromJS(row_res, mapping, row_vm);
+                                    // row.is_explicitly_added_row = false;
+                                    row.request_flag(false);
+                                    if (typeof(row.row_errors) == 'undefined') {
+                                        row.row_errors = ko.observableArray([]);
+                                    }
+                                    if (c == 1) {
+                                        self.paid_from_date(row.paid_from_date());
+                                        self.paid_to_date(row.paid_to_date());
+                                    }
+
+
+                                });
+                                ko.utils.arrayMap(response.data, function (data) {
+
+                                    c += 1;
+                                    var mapping = {
+                                        'ignore': ["emp_options"]
+                                    };
+
+                                    var row = ko.mapping.fromJS(data, mapping, new PaymentEntryRow(employee_options.slice(0)));
+                                    // row.is_explicitly_added_row = false;
+                                    row.request_flag(false);
+                                    if (typeof(row.row_errors) == 'undefined') {
+                                        row.row_errors = ko.observableArray([]);
+                                    }
+                                    if (c == 1) {
+                                        self.paid_from_date(row.paid_from_date());
+                                        self.paid_to_date(row.paid_to_date());
+                                    }
+                                    return row;
+                                });
                             } else {
                                 self.entry_rows([]);
 
