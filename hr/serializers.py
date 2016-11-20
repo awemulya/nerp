@@ -83,7 +83,7 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
         if not instance.branch:
             return 'ALL'
         else:
-            return instance.branch
+            return instance.branch.id
 
 
 class GradeScaleValiditySerializer(serializers.ModelSerializer):
