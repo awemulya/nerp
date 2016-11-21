@@ -252,7 +252,7 @@ class BranchOffice(MPTTModel):
 
 class PayrollAccountant(models.Model):
     user = models.OneToOneField(User, related_name='payroll_accountant')
-    branch = models.ForeignKey(BranchOffice, related_name='payroll_accountants')
+    branch = TreeForeignKey(BranchOffice, related_name='payroll_accountants')
 
     def __unicode__(self):
         return str(self.user) + ' - ' + str(self.branch)
@@ -349,7 +349,7 @@ class Employee(models.Model):
     )
     designation = models.ForeignKey(Designation)
     pan_number = models.CharField(max_length=100)
-    working_branch = TreeForeignKey(BranchOffice)
+    working_branch = TreeForeignKey(BranchOffice, related_name='branch_employees')
 
     # TODO see this accounts
     accounts = models.ManyToManyField(Account, through="EmployeeAccount")
@@ -906,7 +906,7 @@ class PaymentRecord(models.Model):
 
 class PayrollEntry(models.Model):
     entry_rows = models.ManyToManyField(PaymentRecord)
-    branch = models.ForeignKey(BranchOffice, null=True, blank=True)
+    branch = TreeForeignKey(BranchOffice, related_name='payroll_entries')
     is_monthly_payroll = models.BooleanField(default=False)
     entry_datetime = models.DateTimeField(default=timezone.now)
     approved = models.BooleanField(default=False)
@@ -1042,3 +1042,12 @@ class PayrollConfig(SingletonModel):
     #         pass
     #         # pass AllowanceName
 
+
+# ACC_CAT_PAY_HEAD_ID = 1
+# ACC_CAT_DEDUCTION_ID = None
+# ACC_CAT_ALLOWANCE_ID = 2
+# ACC_CAT_INCENTIVE_ID = None
+# ACC_CAT_BASIC_SALARY_ID = None
+# ACC_CAT_TAX_ID = None
+# ACC_CAT_SALARY_GIVING_ID = None
+# ACC_CAT_PRO_TEMPORE_ID = None
