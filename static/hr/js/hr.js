@@ -120,7 +120,7 @@ function PaymentEntryRow(emp_options) {
     });
 
     self.row_salary_detail = ko.computed(function(){
-        if (self.paid_employee() && self.paid_from_date() && self.paid_to_date){
+        if (self.paid_employee() && self.paid_from_date() && self.paid_to_date()){
             self.request_flag(self.paid_employee() + '-' + self.paid_from_date() + '-' + self.paid_to_date());
             console.log(self.request_flag());
         }
@@ -370,21 +370,28 @@ function PayrollEntry(employee_options, group_load) {
         }
     });
 
-    self.request_flag = ko.computed(function () {
-        // console.log("Group request flag IIN ");
-        // console.log("Start");
-        //console.log(self.branch() + self.paid_from_date() + "==" + self.paid_to_date());
-        // console.log("End");
-        // console.log(self.branch());
-        return self.branch() + self.paid_from_date() + self.paid_to_date();
-    });
+    // self.request_flag = ko.computed(function () {
+    //     // console.log("Group request flag IIN ");
+    //     // console.log("Start");
+    //     //console.log(self.branch() + self.paid_from_date() + "==" + self.paid_to_date());
+    //     // console.log("End");
+    //     // console.log(self.branch());
+    //     // 
+    //     if(){}
+    //     return self.branch() + '-' + self.paid_from_date() + '-' + self.paid_to_date();
+    // });
+    self.request_flag = ko.observable();
 
-    self.getGroupSalary = function () {
-    };
+    self.group_req_compute = ko.computed(function(){
+        if (self.branch() && self.paid_from_date() && self.paid_to_date()){
+            self.request_flag(self.branch() + '-' + self.paid_from_date() + '-' + self.paid_to_date());
+            // console.log(self.request_flag());
+        }
+    });
 
     self.request_flag.subscribe(function () {
         console.log(group_load);
-        if (self.payroll_type() == 'GROUP' && self.paid_from_date() && self.paid_to_date()) {
+        if (self.payroll_type() == 'GROUP') {
             console.log(self.id());
             if (group_load) {
                 console.log(self.entry_rows());

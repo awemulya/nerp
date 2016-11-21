@@ -83,6 +83,7 @@ class GroupPayrollForm(forms.Form):
     )
     branch = TreeNodeChoiceField(
         queryset=BranchOffice.objects.all(),
+        empty_label=None,
         widget=Select(attrs={'data-bind': 'value: branch, selectize:{}'})
     )
     from_date = HRBSDateFormField(
