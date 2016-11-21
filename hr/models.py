@@ -242,6 +242,9 @@ class BranchOffice(models.Model):
         return self.name
 
 
+
+
+
 class DeductionValidity(models.Model):
     valid_from = HRBSDateField()
     note = models.CharField(max_length=150)
