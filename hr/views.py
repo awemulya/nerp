@@ -1265,6 +1265,7 @@ def transact_entry(request, pk=None):
 @group_required('Accountant', 'Payroll Accountant')
 @user_passes_test(user_is_branch_accountant)
 def employee(request, pk=None):
+    accountant_branch_id = request.user.payroll_accountant.branch.id
     ko_data = {}
 
     if pk:
@@ -1275,14 +1276,14 @@ def employee(request, pk=None):
         employee = Employee()
 
     if request.method == "POST":
-        employee_form = EmployeeForm(request.POST, instance=employee)
+        employee_form = EmployeeForm(request.POST, instance=employee, accountant_branch_id=accountant_branch_id)
         employee_incentive_formset = EmployeeIncentiveFormSet(request.POST, instance=employee)
         if employee_form.is_valid() and employee_incentive_formset.is_valid():
             employee_form.save()
             employee_incentive_formset.save()
             return redirect(reverse('list_employee'))
     else:
-        employee_form = EmployeeForm(instance=employee)
+        employee_form = EmployeeForm(instance=employee, accountant_branch_id=accountant_branch_id)
         employee_incentive_formset = EmployeeIncentiveFormSet(instance=employee)
 
     return render(

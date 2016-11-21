@@ -444,8 +444,17 @@ class DeductionForm(forms.ModelForm):
 
 class EmployeeForm(HTML5BootstrapModelForm):
     def __init__(self, *args, **kwargs):
+        accountant_branch_id = kwargs.pop('accountant_branch_id')
         super(EmployeeForm, self).__init__(*args, **kwargs)
         self.fields['optional_deductions'].queryset = DeductionName.objects.filter(is_optional=True)
+        if PayrollConfig.get_solo().parent_can_generate_payroll:
+            self.fields['working_branch'].queryset = BranchOffice.objects.get(
+                id=accountant_branch_id).get_descendants(include_self=True)
+        else:
+            self.fields['working_branch'].queryset = BranchOffice.objects.filter(
+                id=accountant_branch_id)
+
+    working_branch = TreeNodeChoiceField(queryset=BranchOffice.objects.all())
 
     class Meta:
         model = Employee
