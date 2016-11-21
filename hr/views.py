@@ -673,13 +673,14 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
 @group_required('Accountant', 'Payroll Accountant')
 @user_passes_test(user_is_branch_accountant)
 def payroll_entry(request, pk=None):
+    accountant_branch_id = request.user.payroll_accountant.branch.id
     if pk:
         entry = PayrollEntry.objects.get(pk=pk)
         serializer = PayrollEntrySerializer(entry)
         ctx_data = dict(serializer.data)
     else:
         ctx_data = {'edit': False,}
-    main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'})
+    main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'}, accountant_branch_id=accountant_branch_id)
 
     # Inititial employee options
     employees = Employee.objects.all()

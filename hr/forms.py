@@ -1,12 +1,13 @@
 from django import forms
 # from datetime import date
+from mptt.forms import TreeNodeChoiceField
 from njango.nepdate import bs2ad
 
 from hr.bsdate import BSDate
 from hr.fields import HRBSFormField, HRBSDateFormField
 from hr.helpers import bs_str2tuple
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
-    Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity
+    Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -64,20 +65,24 @@ class PayrollEntryForm(HTML5BootstrapModelForm):
 
 
 class GroupPayrollForm(forms.Form):
-    try:
-        branch_choices = [(o.id, o.name) for o in BranchOffice.objects.all()]
-    except:
-        branch_choices = [(None, 'None')]
-    branch_choices.insert(0, ("ALL", _('All Branch')))
+    def __init__(self, *args, **kwargs):
+        accountant_branch_id = kwargs.pop('accountant_branch_id')
+        super(GroupPayrollForm, self).__init__(*args, **kwargs)
+        if PayrollConfig.get_solo().parent_can_generate_payroll:
+            self.fields['branch'].queryset = BranchOffice.objects.get(
+                id=accountant_branch_id).get_descendants(include_self=True)
+        else:
+            self.fields['branch'].queryset = BranchOffice.objects.filter(
+                id=accountant_branch_id)
+
     payroll_type = forms.ChoiceField(
         choices=[
             ('INDIVIDUAL', _('Individual')),
             ('GROUP', _('Group'))],
         widget=Select(attrs={'data-bind': 'value: payroll_type, selectize:{}'})
     )
-    branch = forms.ChoiceField(
-        choices=branch_choices,
-        # empty_label="All",
+    branch = TreeNodeChoiceField(
+        queryset=BranchOffice.objects.all(),
         widget=Select(attrs={'data-bind': 'value: branch, selectize:{}'})
     )
     from_date = HRBSDateFormField(

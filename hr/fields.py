@@ -22,7 +22,10 @@ class HRBSFormField(widgets.TextInput):
         super(HRBSFormField, self).__init__(attrs)
 
     def _media(self):
+        from hr.models import PayrollConfig
+        CALENDAR = PayrollConfig.get_solo().hr_calendar
         if CALENDAR == 'BS':
+
             # TODO place CSS in proper path
             css = {
                 'all': ('hr/njango/css/nepali.datepicker.v2.1.min.css',)
