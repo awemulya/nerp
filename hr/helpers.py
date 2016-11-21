@@ -539,3 +539,10 @@ def is_required_data_present(employee, from_date, to_date):
         return False, errors
     else:
         return True, None
+
+
+def user_is_branch_accountant(user):
+    try:
+        return True if user.payroll_accountant else False
+    except:
+        return False

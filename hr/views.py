@@ -2,6 +2,7 @@ from __future__ import division
 
 import json
 
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
 
 from app import settings
@@ -12,6 +13,7 @@ from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 
 from hr.serializers import PayrollEntrySerializer
+from users.models import group_required
 from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, \
     TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
@@ -29,7 +31,8 @@ from .models import get_y_m_tuple_list
 from .bsdate import BSDate
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
-    emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present
+    emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present, \
+    user_is_branch_accountant
 from account.models import set_transactions
 from hr.filters import EmployeeFilter
 from django.core import serializers
@@ -343,6 +346,9 @@ def salary_taxation_unit(employee, f_y_item):
     return total_tax * (f_y_item['worked_days'] / f_y_item['year_days']), taxation_unit_errors
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibility_check_on_edit, edit_row):
     row_errors = []
     if not eligibility_check_on_edit:
@@ -663,6 +669,9 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
 
 
 # Create your views here.
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def payroll_entry(request, pk=None):
     if pk:
         entry = PayrollEntry.objects.get(pk=pk)
@@ -690,6 +699,9 @@ def payroll_entry(request, pk=None):
         })
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def get_employee_account(request):
     response = {}
     error = {}
@@ -741,6 +753,9 @@ def get_employee_account(request):
         return HttpResponse('Damn no request.POST')
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def get_employees_account(request):
     error = {}
     response = {}
@@ -792,6 +807,9 @@ def get_employees_account(request):
         return JsonResponse(response)
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def save_payroll_entry(request, pk=None):
     if pk:
         p_e = PayrollEntry.objects.get(id=pk)
@@ -884,6 +902,9 @@ def save_payroll_entry(request, pk=None):
             return JsonResponse(save_response)  # Should have permissions
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def approve_entry(request, pk=None):
     payroll_entry = PayrollEntry.objects.get(pk=pk)
     payroll_entry.approved = True
@@ -895,6 +916,9 @@ def approve_entry(request, pk=None):
 
 
 # Should have permissions
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def delete_entry(request, pk=None):
     payroll_entry = PayrollEntry.objects.get(pk=pk)
     payment_records_rows = payroll_entry.entry_rows.all()
@@ -933,6 +957,9 @@ def delete_entry(request, pk=None):
     return redirect(reverse('entry_list'))
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def entry_detail(request, pk=None):
     # ko_data contains entry main properties
     ko_data = {}
@@ -1039,6 +1066,9 @@ def entry_detail(request, pk=None):
         )
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def entry_list(request):
     entries = PayrollEntry.objects.all()
     return render(
@@ -1051,6 +1081,9 @@ def entry_list(request):
     pass
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def get_employee_options(request):
     if request.POST:
         # pdb.set_trace()
@@ -1070,6 +1103,9 @@ def get_employee_options(request):
         return HttpResponse('No POST')
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def transact_entry(request, pk=None):
     p_e = PayrollEntry.objects.get(id=pk)
 
@@ -1224,6 +1260,9 @@ def transact_entry(request, pk=None):
         return redirect(reverse('entry_list'))
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def employee(request, pk=None):
     ko_data = {}
 
@@ -1256,6 +1295,9 @@ def employee(request, pk=None):
         })
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def list_employee(request):
     objects = EmployeeFilter(request.GET, queryset=Employee.objects.all())
     return render(
@@ -1267,6 +1309,9 @@ def list_employee(request):
     )
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def toggle_employee_activeness(request, pk=None):
     obj = Employee.objects.get(id=pk)
     # employee_accounts = EmployeeAccount.objects.filter(employee=obj)
@@ -1280,58 +1325,9 @@ def toggle_employee_activeness(request, pk=None):
     return redirect(reverse('list_employee'))
 
 
-# def incentive(request, pk=None):
-#     ko_data = {}
-
-#     if pk:
-#         obj_id = pk
-#         incentive_name = IncentiveName.objects.get(id=pk)
-#     else:
-#         obj_id = None
-#         incentive_name = IncentiveName()
-
-#     if request.method == "POST":
-#         incentive_name_form = IncentiveNameForm(request.POST, instance=incentive_name)
-#         incentive_formset = IncentiveNameFormSet(request.POST, instance=incentive_name)
-#         if incentive_name_form.is_valid() and incentive_formset.is_valid():
-#             incentive_name_form.save()
-#             incentive_formset.save()
-#             return redirect(reverse('list_incentive'))
-#     else:
-#         incentive_name_form = IncentiveNameForm(instance=incentive_name)
-#         incentive_formset = IncentiveNameFormSet(instance=incentive_name)
-
-#     return render(
-#         request,
-#         'incentive_cu.html',
-#         {
-#             'incentive_name_form': incentive_name_form,
-#             'incentive_formset': incentive_formset,
-#             'ko_data': ko_data,
-#             'obj_id': obj_id,
-#         })
-
-
-# def list_incentive(request):
-#     objects = IncentiveName.objects.all()
-#     return render(
-#         request,
-#         'incentive_list.html',
-#         {
-#             'objects': objects,
-#         }
-#     )
-
-
-# def delete_incentive(request, pk=None):
-#     obj = IncentiveName.objects.get(id=pk)
-#     # inc_details = Incentive.objects.filter(name=obj)
-#     obj.delete()
-#     # for inc in inc_details():
-#     #     inc.delete()
-#     return redirect(reverse('list_incentive'))
-
-
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def allowance(request, pk=None):
     allowance_validity_form = AllowanceValidityForm()
     return render(
@@ -1344,6 +1340,9 @@ def allowance(request, pk=None):
     )
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def deduction_name(request):
     if request.method == "POST":
 
@@ -1366,6 +1365,9 @@ def deduction_name(request):
         })
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def deduction(request):
     deduction_validity_form = DeductionValidityForm()
     return render(
@@ -1377,6 +1379,9 @@ def deduction(request):
     )
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def employee_grade(request):
     if request.method == "POST":
 
@@ -1400,6 +1405,9 @@ def employee_grade(request):
         })
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def employee_grade_group(request):
     if request.method == "POST":
 
@@ -1423,6 +1431,9 @@ def employee_grade_group(request):
         })
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def employee_designation(request):
     if request.method == "POST":
 
@@ -1446,6 +1457,9 @@ def employee_designation(request):
         })
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def tax_scheme_detail(request, pk=None):
     ko_data = {}
 
@@ -1478,6 +1492,9 @@ def tax_scheme_detail(request, pk=None):
         })
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def list_tax_scheme(request):
     m_objects = sorted(
         TaxScheme.objects.filter(marital_status__marital_status='M'),
@@ -1497,15 +1514,9 @@ def list_tax_scheme(request):
     )
 
 
-# def delete_tax_scheme(request, pk=None):
-#     obj = TaxScheme.objects.get(id=pk)
-#     # alw_details = Allowance.objects.filter(name=obj)
-#     obj.delete()
-#     # for alw in alw_details():
-#     #     alw.delete()
-#     return redirect(reverse('list_tax_scheme'))
-
-
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def tax_scheme(request, pk=None):
     ko_data = {}
 
@@ -1538,6 +1549,9 @@ def tax_scheme(request, pk=None):
         })
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def delete_taxscheme(request, pk=None):
     obj = MaritalStatus.objects.get(id=pk)
     # alw_details = Allowance.objects.filter(name=obj)
@@ -1547,6 +1561,9 @@ def delete_taxscheme(request, pk=None):
     return redirect(reverse('list_tax_scheme'))
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def incentivename_curd(request):
     if request.method == "POST":
 
@@ -1570,6 +1587,9 @@ def incentivename_curd(request):
         })
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def get_report(request):
     if request.method == "POST":
         report_request_query = GetReportForm(request.POST, calendar=CALENDAR)
@@ -1605,6 +1625,9 @@ def get_report(request):
         return render(request, 'get_report.html', {'get_report_form': get_report_form})
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def report_setting(request, pk=None):
     ko_data = {}
 
@@ -1639,6 +1662,9 @@ def report_setting(request, pk=None):
         })
 
 
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def list_report_setting(request):
     objects = ReportHR.objects.all()
     return render(
@@ -1649,7 +1675,9 @@ def list_report_setting(request):
         }
     )
 
-
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def delete_report_setting(request, pk=None):
     obj = ReportHR.objects.get(id=pk)
     # alw_details = Allowance.objects.filter(name=obj)
@@ -1659,42 +1687,17 @@ def delete_report_setting(request, pk=None):
     return redirect(reverse('list_allowance'))
 
 
-# GradeScale Validity Crud
-
-# End GradeScale Validity Crud
-
-
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def grades_scale(request):
     grade_scale_validity_form = GradeScaleValidityForm()
     return render(request, 'grades_scale.html', {
         'gsv_form': grade_scale_validity_form
     })
 
-
-# def generate_report(request):
-#     if request.method == "POST":
-#         report_request_query = GetReportForm(request.POST, calendar=CALENDAR)
-#         if report_request_query.is_valid():
-#             report = report_request_query.cleaned_data.get('report')
-#             branch = report_request_query.cleaned_data.get('branch')
-#             from_date = report_request_query.cleaned_data.get('from_date')
-#             to_date = report_request_query.cleaned_data.get('to_date')
-#
-#             if branch:
-#                 branch_qry = {'paid_employee__working_branch': branch}
-#             else:
-#                 branch_qry = {}
-#             payment_records = PaymentRecord.objects.filter(
-#                 paid_from_date__gte=from_date,
-#                 paid_to_date__lte=to_date,
-#                 **branch_qry)
-#             import ipdb
-#             ipdb.set_trace()
-#             template_path = '/'.join(report.template.split('/')[-2:])
-#             return render(request, template_path, {})
-#
-#         else:
-#             return render(request, 'get_report.html', {'get_report_form': report_request_query})
-
+@login_required
+@group_required('Accountant', 'Payroll Accountant')
+@user_passes_test(user_is_branch_accountant)
 def payroll_index(request):
     return render(request, 'hr_index.html', {})
