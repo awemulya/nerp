@@ -37,8 +37,10 @@
             <tr>
                 <td><a href={% url 'entry_detail' obj.id %}>{{ obj }}</a></td>
                 <td>
-                    <a href={% url 'delete_entry' obj.id %}><button class="btn btn-raised btn-danger" type="button">Delete</button></a>
-                    <a href={% url 'payroll_entry_edit' obj.id %}><button class="btn btn-raised btn-primary" type="button">Edit</button></a>
+                    {% if not obj.transacted %}
+                        <a href={% url 'delete_entry' obj.id %}><button class="btn btn-raised btn-danger" type="button">Delete</button></a>
+                        <a href={% url 'payroll_entry_edit' obj.id %}><button class="btn btn-raised btn-primary" type="button">Edit</button></a>
+                    {% endif %}
                 </td>
                 {% if obj.transacted %}
                     <td>Entry Transacted</td>

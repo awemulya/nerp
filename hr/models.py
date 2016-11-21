@@ -2,6 +2,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+from mptt.fields import TreeForeignKey
+from mptt.models import MPTTModel
 
 from app.settings import BASE_DIR, HR_CALENDAR
 from hr.fields import HRBSDateField, today
@@ -234,15 +236,25 @@ def incentive_account_category_add(sender, instance, created, **kwargs):
         instance.save()
 
 
-class BranchOffice(models.Model):
+class BranchOffice(MPTTModel):
     name = models.CharField(max_length=100, unique=True)
     code = models.CharField(max_length=100)
+    parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
 
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        verbose_name = _('Office Branch')
+        verbose_name_plural = _('Office Branches')
 
 
+class PayrollAccountant(models.Model):
+    user = models.OneToOneField(User, related_name='payroll_accountant')
+    branch = models.ForeignKey(BranchOffice, related_name='payroll_accountants')
+
+    def __unicode__(self):
+        return str(self.user) + ' - ' + str(self.branch)
 
 
 class DeductionValidity(models.Model):

@@ -4,7 +4,8 @@ from import_export import resources
 from .models import EmployeeAccount, EmployeeGrade, Employee, Designation, Incentive, Allowance, TaxScheme, \
     BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry, IncentiveName, AllowanceName, DeductionDetail, \
     IncentiveDetail, AllowanceDetail, MaritalStatus, \
-    ReportTable, ReportHR, GradeScaleValidity, EmployeeGradeScale, DeductionValidity, AllowanceValidity
+    ReportTable, ReportHR, GradeScaleValidity, EmployeeGradeScale, DeductionValidity, AllowanceValidity, \
+    PayrollAccountant
 from .forms import EmployeeAccountInlineFormset, AllowanceForm, IncentiveForm, DeductionForm, EmployeeForm, \
     IncentiveInlineFormset
 
@@ -49,6 +50,9 @@ class EmployeeImportResource(resources.ModelResource):
 # End Django Import Export Resource Class
 
 admin.site.register(EmployeeGrade)
+
+admin.site.register(PayrollAccountant)
+
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Designation)
 admin.site.register(Incentive, IncentiveAdmin)
