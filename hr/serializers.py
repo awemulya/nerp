@@ -7,12 +7,12 @@ from hr.bsdate import BSDate
 from hr.helpers import bs_str2tuple
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
     GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup, AllowanceValidity, AllowanceName, \
-    Allowance, DeductionValidity, Deduction, DeductionName
+    Allowance, DeductionValidity, Deduction, DeductionName, PayrollConfig
 
 from django.utils.translation import ugettext as _
 
 
-HR_CALENDAR = settings.HR_CALENDAR
+HR_CALENDAR = PayrollConfig.get_solo().hr_calendar
 
 
 class DeductionDetailSerializer(serializers.ModelSerializer):

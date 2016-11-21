@@ -22,7 +22,7 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
-    AllowanceValidity, DeductionValidity, GradeScaleValidity
+    AllowanceValidity, DeductionValidity, GradeScaleValidity, PayrollConfig
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -42,7 +42,7 @@ from hr.models import ACC_CAT_BASIC_SALARY_ID, \
     ACC_CAT_PRO_TEMPORE_ID, \
     ACC_CAT_TAX_ID
 
-CALENDAR = settings.HR_CALENDAR
+CALENDAR = PayrollConfig.get_solo().hr_calendar
 
 # Taxation singleton setting dbsettings
 F_TAX_DISCOUNT_LIMIT = 300000

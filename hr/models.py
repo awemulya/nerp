@@ -4,8 +4,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
+from solo.models import SingletonModel
 
-from app.settings import BASE_DIR, HR_CALENDAR
+from app.settings import BASE_DIR
 from hr.fields import HRBSDateField, today
 from users.models import User
 # from core.models import validate_in_fy
@@ -967,8 +968,8 @@ class EmployeeAccount(models.Model):
     def get_category_name(self):
         return self.account.category.name
 
-    def __unicode__(self):
-        return ('%s-acc#%d' % (self.account.category.name, self.account.id))
+    # def __unicode__(self):
+    #     return ('%s:cat[%s][id:%d]' % (self.employee.name, self.account.category.name, self.account.id))
 
 
 # allowance in EmployeeRank
@@ -1018,3 +1019,26 @@ class ReportTable(models.Model):
     # field_tiltle and field loopup sored as Json
     table_fields = JSONField()
     report = models.ForeignKey(ReportHR, related_name='report_tables')
+
+
+class PayrollConfig(SingletonModel):
+    calendar_choices = (
+        ('BS', 'BS'),
+        ('AD', 'AD'),
+    )
+    parent_can_generate_payroll = models.BooleanField(default=False)
+    hr_calendar = models.CharField(max_length=2, choices=calendar_choices, default='BS')
+
+    def __unicode__(self):
+        return "Payroll Configuration"
+
+    class Meta:
+        verbose_name = "Payroll Configuration"
+
+    # def save(self):
+    #     from django.apps import apps
+    #     app_models = apps.get_app_config('hr').get_models()
+    #     for model in app_models:
+    #         pass
+    #         # pass AllowanceName
+

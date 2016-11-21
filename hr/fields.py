@@ -11,8 +11,6 @@ from njango import nepdate
 from app import settings
 from hr.bsdate import BSDate
 
-CALENDAR = settings.HR_CALENDAR
-
 
 class HRBSFormField(widgets.TextInput):
     def __init__(self, attrs=None):
@@ -43,6 +41,9 @@ class HRBSFormField(widgets.TextInput):
         return mark_safe(html)
 
     def trigger_picker(self, el_id):
+        from hr.models import PayrollConfig
+        CALENDAR = PayrollConfig.get_solo().hr_calendar
+
         if CALENDAR == 'BS':
             str = """
             <script>
@@ -92,6 +93,9 @@ class HRBSDateFormField(DateFormField):
 class HRBSDateField(DateField):
 
     def from_db_value(self, value, expression, connection, context):
+        from hr.models import PayrollConfig
+        CALENDAR = PayrollConfig.get_solo().hr_calendar
+
         if CALENDAR == 'AD':
             return value
         if value is None:
@@ -115,6 +119,9 @@ class HRBSDateField(DateField):
         return value
 
     def get_db_prep_value(self, value, connection, prepared=False):
+        from hr.models import PayrollConfig
+        CALENDAR = PayrollConfig.get_solo().hr_calendar
+
         if type(value) == tuple:
             value = nepdate.string_from_tuple(value)
         value = super(HRBSDateField, self).get_db_prep_value(
@@ -148,12 +155,18 @@ class HRBSDateField(DateField):
 
     @classmethod
     def today(cls):
+        from hr.models import PayrollConfig
+        CALENDAR = PayrollConfig.get_solo().hr_calendar
+
         if CALENDAR == 'AD':
             return datetime.date.today()
         return nepdate.today_as_str()
 
 
 def today():
+    from hr.models import PayrollConfig
+    CALENDAR = PayrollConfig.get_solo().hr_calendar
+
     if CALENDAR == 'AD':
         return datetime.date.today()
     return nepdate.today_as_str()
