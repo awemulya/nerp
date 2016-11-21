@@ -2,7 +2,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
-from mptt.fields import TreeForeignKey
+from mptt.fields import TreeForeignKey, TreeOneToOneField
 from mptt.models import MPTTModel
 from solo.models import SingletonModel
 
@@ -79,13 +79,14 @@ class GradeScaleValidity(models.Model):
     class Meta:
         verbose_name_plural = _('Grade Scale Validities')
 
+
 # TODO send post save signal to change all available employee start time
 @receiver(post_save, sender=GradeScaleValidity)
 def incentive_account_category_add(sender, instance, created, **kwargs):
     if created:
         instance.account_category = Category.objects.create(
             name='%s-%d' % (instance.name, instance.id),
-            parent_id=ACC_CAT_INCENTIVE_ID
+            parent=PayrollConfig.get_solo().incentive_account_category
         )
         instance.save()
 
@@ -155,7 +156,7 @@ def allowance_account_category_add(sender, instance, created, **kwargs):
     if created:
         instance.account_category = Category.objects.create(
             name='%s-%d' % (instance.name, instance.id),
-            parent_id=ACC_CAT_ALLOWANCE_ID
+            parent=PayrollConfig.get_solo().allowance_account_category
         )
         instance.save()
 
@@ -232,7 +233,7 @@ def incentive_account_category_add(sender, instance, created, **kwargs):
     if created:
         instance.account_category = Category.objects.create(
             name='%s-%d' % (instance.name, instance.id),
-            parent_id=ACC_CAT_INCENTIVE_ID
+            parent=PayrollConfig.get_solo().incentive_account_category
         )
         instance.save()
 
@@ -290,7 +291,7 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
     if created:
         instance.deduct_in_category = Category.objects.create(
             name='%s-%d' % (instance.name, instance.id),
-            parent_id=ACC_CAT_DEDUCTION_ID
+            parent=PayrollConfig.get_solo().deduction_account_category
         )
         instance.save()
 
@@ -570,7 +571,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
         # Add salary Account
         salary_account = Account.objects.create(
             name="Salary Account-EID#%d" % instance.id,
-            category_id=ACC_CAT_BASIC_SALARY_ID
+            category=PayrollConfig.get_solo().basic_salary_account_category
         )
         EmployeeAccount.objects.create(
             account=salary_account,
@@ -579,7 +580,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
         # Add tax account
         tax_account = Account.objects.create(
             name="Tax-EID#%d" % instance.id,
-            category_id=ACC_CAT_TAX_ID
+            category=PayrollConfig.get_solo().tax_account_category
         )
         EmployeeAccount.objects.create(
             account=tax_account,
@@ -589,7 +590,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
         # Add pro tempore account
         pro_tempore_account = Account.objects.create(
             name="ProTempore-EID#%d" % instance.id,
-            category_id=ACC_CAT_PRO_TEMPORE_ID
+            category=PayrollConfig.get_solo().pro_tempore_account_category
         )
         EmployeeAccount.objects.create(
             account=pro_tempore_account,
@@ -945,7 +946,7 @@ class PayrollEntry(models.Model):
 
 def employee_account_validator(acc_id):
     category = Account.objects.get(id=acc_id).category
-    if category.id == ACC_CAT_BASIC_SALARY_ID or category.parent.parent.id == ACC_CAT_PAY_HEAD_ID or category.parent_id == ACC_CAT_PAY_HEAD_ID:
+    if category == PayrollConfig.get_solo().basic_salary_account_category or category.parent.parent == PayrollConfig.get_solo().pay_head_account_category or category.parent == PayrollConfig.get_solo().pay_head_account_category:
         pass
     else:
         raise ValidationError(
@@ -1003,7 +1004,6 @@ class EmployeeAccount(models.Model):
 #  When does increse in scale get active?
 #  The day from which the goverment announces it or the day from which the employeer is apponted
 
-
 class ReportHR(models.Model):
     hr_report_template_folder = BASE_DIR + '/hr/templates/report_templates'
     name = models.CharField(max_length=100)
@@ -1027,27 +1027,20 @@ class PayrollConfig(SingletonModel):
         ('AD', 'AD'),
     )
     parent_can_generate_payroll = models.BooleanField(default=False)
+    # TODO below can only be changed when hr has no entries in datefield model
     hr_calendar = models.CharField(max_length=2, choices=calendar_choices, default='BS')
+    # TODO remove category null=True and blank=True
+    pay_head_account_category = TreeOneToOneField(Category, related_name='config_pay_head', null=True, blank=True)
+    deduction_account_category = TreeOneToOneField(Category, related_name='config_deduction', null=True, blank=True)
+    allowance_account_category = TreeOneToOneField(Category, related_name='config_allowance', null=True, blank=True)
+    incentive_account_category = TreeOneToOneField(Category, related_name='config_incentive', null=True, blank=True)
+    basic_salary_account_category = TreeOneToOneField(Category, related_name='config_basic_salary', null=True, blank=True)
+    tax_account_category = TreeOneToOneField(Category, related_name='config_tax', null=True, blank=True)
+    salary_giving_account_category = TreeOneToOneField(Category, related_name='config_salary_giving', null=True, blank=True)
+    pro_tempore_account_category = TreeOneToOneField(Category, related_name='config_pro_tempore', null=True, blank=True)
 
     def __unicode__(self):
         return "Payroll Configuration"
 
     class Meta:
         verbose_name = "Payroll Configuration"
-
-    # def save(self):
-    #     from django.apps import apps
-    #     app_models = apps.get_app_config('hr').get_models()
-    #     for model in app_models:
-    #         pass
-    #         # pass AllowanceName
-
-
-# ACC_CAT_PAY_HEAD_ID = 1
-# ACC_CAT_DEDUCTION_ID = None
-# ACC_CAT_ALLOWANCE_ID = 2
-# ACC_CAT_INCENTIVE_ID = None
-# ACC_CAT_BASIC_SALARY_ID = None
-# ACC_CAT_TAX_ID = None
-# ACC_CAT_SALARY_GIVING_ID = None
-# ACC_CAT_PRO_TEMPORE_ID = None
