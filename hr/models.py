@@ -349,7 +349,7 @@ class Employee(models.Model):
     )
     designation = models.ForeignKey(Designation)
     pan_number = models.CharField(max_length=100)
-    working_branch = models.ForeignKey(BranchOffice)
+    working_branch = TreeForeignKey(BranchOffice)
 
     # TODO see this accounts
     accounts = models.ManyToManyField(Account, through="EmployeeAccount")

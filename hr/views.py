@@ -41,6 +41,7 @@ from hr.models import ACC_CAT_BASIC_SALARY_ID, \
     ACC_CAT_SALARY_GIVING_ID, \
     ACC_CAT_PRO_TEMPORE_ID, \
     ACC_CAT_TAX_ID
+from django.http.request import QueryDict
 
 CALENDAR = PayrollConfig.get_solo().hr_calendar
 
@@ -172,11 +173,11 @@ def salary_taxation_unit(employee, f_y_item):
     try:
         required_present, r_p_errors = is_required_data_present(employee, f_y_item['f_y'][0], f_y_item['f_y'][1])
     except IOError:
-        taxation_unit_errors.append('No Grade Scale Data data for fiscal year %s to %s' % (f_y_item['f_y'][0], f_y_item['f_y'][1]));
+        taxation_unit_errors.append(
+            'No Grade Scale Data data for fiscal year %s to %s' % (f_y_item['f_y'][0], f_y_item['f_y'][1]));
 
     if not required_present:
         taxation_unit_errors += r_p_errors
-
 
     total_month, total_work_day = delta_month_date_impure(
         *f_y_item['f_y']
@@ -235,11 +236,11 @@ def salary_taxation_unit(employee, f_y_item):
                     validity = AllowanceValidity.objects.get(id=slot.validity_id)
                     taxation_unit_errors.append(
                         'TAX-FY: %s data of %s for this employee grade is not available.(%s)[%s]' % (
-                        ob, slot, validity, employee.designation.grade)
+                            ob, slot, validity, employee.designation.grade)
                     )
         except IOError:
-            taxation_unit_errors.append('No allowance data for FY %s - %s for %s' % (f_y_item['f_y'][0], f_y_item['f_y'][1], employee.designation.grade))
-
+            taxation_unit_errors.append('No allowance data for FY %s - %s for %s' % (
+                f_y_item['f_y'][0], f_y_item['f_y'][1], employee.designation.grade))
 
     # now calculate incentive if it has but not to add to salary just to
     # transact seperately
@@ -275,7 +276,6 @@ def salary_taxation_unit(employee, f_y_item):
         except IndexError:
             taxation_unit_errors.append('TAX-FY: %s not defined for employee %s' % (ob.name, employee.name))
 
-
     total_deduction = 0
     deduction = 0
     for obj in deductions.filter(is_tax_free=True):
@@ -298,11 +298,12 @@ def salary_taxation_unit(employee, f_y_item):
                     except IndexError:
                         validity = DeductionValidity.objects.get(id=slot.validity_id)
                         taxation_unit_errors.append(
-                            'TAX-FY: %s of %s is not available. (%s)[%s]' % (obj, slot, validity, employee.designation.grade)
+                            'TAX-FY: %s of %s is not available. (%s)[%s]' % (
+                                obj, slot, validity, employee.designation.grade)
                         )
             except IOError:
-                taxation_unit_errors.append('No deduction data for FY %s to %s. [%s] '% (f_y_item['f_y'][0], f_y_item['f_y'][1], employee.designation.grade))
-
+                taxation_unit_errors.append('No deduction data for FY %s to %s. [%s] ' % (
+                    f_y_item['f_y'][0], f_y_item['f_y'][1], employee.designation.grade))
 
     taxable_amount = (salary + allowance + incentive - total_deduction)
 
@@ -470,7 +471,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
             except IndexError:
                 validity = AllowanceValidity.objects.get(id=slot.validity_id)
                 row_errors.append(
-                    '%s data of %s for this employee grade is not available.(%s)[%s]' % (_name, slot, validity, employee.designation.grade)
+                    '%s data of %s for this employee grade is not available.(%s)[%s]' % (
+                        _name, slot, validity, employee.designation.grade)
                 )
 
         allowance_details[-1]['allowance'] = _name.id
@@ -1301,7 +1303,11 @@ def employee(request, pk=None):
 @group_required('Accountant', 'Payroll Accountant')
 @user_passes_test(user_is_branch_accountant)
 def list_employee(request):
-    objects = EmployeeFilter(request.GET, queryset=Employee.objects.all())
+    accountant_branch_id = request.user.payroll_accountant.branch.id
+    data = request.GET.copy()
+    data.setdefault('working_branch', accountant_branch_id)
+    objects = EmployeeFilter(data, queryset=Employee.objects.all(),
+                             accountant_branch_id=accountant_branch_id)
     return render(
         request,
         'employee_list.html',
@@ -1677,6 +1683,7 @@ def list_report_setting(request):
         }
     )
 
+
 @login_required
 @group_required('Accountant', 'Payroll Accountant')
 @user_passes_test(user_is_branch_accountant)
@@ -1697,6 +1704,7 @@ def grades_scale(request):
     return render(request, 'grades_scale.html', {
         'gsv_form': grade_scale_validity_form
     })
+
 
 @login_required
 @group_required('Accountant', 'Payroll Accountant')
