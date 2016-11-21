@@ -12,9 +12,6 @@ from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDet
 from django.utils.translation import ugettext as _
 
 
-HR_CALENDAR = PayrollConfig.get_solo().hr_calendar
-
-
 class DeductionDetailSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='deduction.name')
     editable = serializers.ReadOnlyField(source='deduction.amount_editable')
@@ -94,6 +91,8 @@ class GradeScaleValiditySerializer(serializers.ModelSerializer):
         fields = ('id', 'valid_from', 'note')
 
     def validate_valid_from(self, value):
+        HR_CALENDAR = PayrollConfig.get_solo().hr_calendar
+        HR_CALENDAR = PayrollConfig.get_solo().hr_calendar
         if HR_CALENDAR == 'AD':
             try:
                 datetime.strptime(value, '%Y-%m-%d')
@@ -109,6 +108,7 @@ class GradeScaleValiditySerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
+        HR_CALENDAR = PayrollConfig.get_solo().hr_calendar
         valid_from = data['valid_from']
 
         available_validities = GradeScaleValidity.objects.all()
@@ -178,6 +178,7 @@ class AllowanceValiditySerializer(serializers.ModelSerializer):
         fields = ('id', 'valid_from', 'note')
 
     def validate_valid_from(self, value):
+        HR_CALENDAR = PayrollConfig.get_solo().hr_calendar
         if HR_CALENDAR == 'AD':
             try:
                 datetime.strptime(value, '%Y-%m-%d')
@@ -191,6 +192,7 @@ class AllowanceValiditySerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
+        HR_CALENDAR = PayrollConfig.get_solo().hr_calendar
         valid_from = data['valid_from']
 
         available_validities = AllowanceValidity.objects.all()
@@ -243,6 +245,7 @@ class DeductionValiditySerializer(serializers.ModelSerializer):
         fields = ('id', 'valid_from', 'note')
 
     def validate_valid_from(self, value):
+        HR_CALENDAR = PayrollConfig.get_solo().hr_calendar
         if HR_CALENDAR == 'AD':
             try:
                 datetime.strptime(value, '%Y-%m-%d')
@@ -256,6 +259,7 @@ class DeductionValiditySerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
+        HR_CALENDAR = PayrollConfig.get_solo().hr_calendar
         valid_from = data['valid_from']
 
         available_validities = DeductionValidity.objects.all()

@@ -43,7 +43,6 @@ from hr.models import ACC_CAT_BASIC_SALARY_ID, \
     ACC_CAT_TAX_ID
 from django.http.request import QueryDict
 
-CALENDAR = PayrollConfig.get_solo().hr_calendar
 
 # Taxation singleton setting dbsettings
 F_TAX_DISCOUNT_LIMIT = 300000
@@ -52,6 +51,7 @@ SOCIAL_SECURITY_TAX_RATE = 1
 
 
 def verify_request_date(request):
+    CALENDAR = PayrollConfig.get_solo().hr_calendar
     error = {}
     paid_from_date = None
     paid_to_date = None
@@ -814,6 +814,7 @@ def get_employees_account(request):
 @group_required('Accountant', 'Payroll Accountant')
 @user_passes_test(user_is_branch_accountant)
 def save_payroll_entry(request, pk=None):
+    CALENDAR = PayrollConfig.get_solo().hr_calendar
     if pk:
         p_e = PayrollEntry.objects.get(id=pk)
     else:
@@ -1337,6 +1338,7 @@ def toggle_employee_activeness(request, pk=None):
 @group_required('Accountant', 'Payroll Accountant')
 @user_passes_test(user_is_branch_accountant)
 def allowance(request, pk=None):
+    CALENDAR = PayrollConfig.get_solo().hr_calendar
     allowance_validity_form = AllowanceValidityForm()
     return render(
         request,
@@ -1599,6 +1601,7 @@ def incentivename_curd(request):
 @group_required('Accountant', 'Payroll Accountant')
 @user_passes_test(user_is_branch_accountant)
 def get_report(request):
+    CALENDAR = PayrollConfig.get_solo().hr_calendar
     if request.method == "POST":
         report_request_query = GetReportForm(request.POST, calendar=CALENDAR)
         if report_request_query.is_valid():
