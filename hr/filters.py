@@ -2,6 +2,7 @@ import django_filters
 from mptt.forms import TreeNodeChoiceField
 
 from hr.models import Employee, PayrollEntry, BranchOffice, PayrollConfig
+from hr.filter_forms import EmployeeFilterForm
 
 
 class TreeNodeModelChoiceFilter(django_filters.Filter):
@@ -15,9 +16,10 @@ class EmployeeFilter(django_filters.FilterSet):
 
         if PayrollConfig.get_solo().parent_can_generate_payroll:
             self.form.fields['working_branch'].queryset = BranchOffice.objects.get(
-                    id=accountant_branch_id).get_descendants(include_self=True)
+                id=accountant_branch_id).get_descendants(include_self=True)
         else:
-            self.form.fields['working_branch'].queryset = BranchOffice.objects.filter(id=accountant_branch_id)
+            self.form.fields['working_branch'].queryset = BranchOffice.objects.filter(
+                id=accountant_branch_id)
         self.form.fields['working_branch'].empty_label = None
 
     is_active = django_filters.BooleanFilter(help_text='')
@@ -29,7 +31,11 @@ class EmployeeFilter(django_filters.FilterSet):
 
     class Meta:
         model = Employee
-        fields = ['is_active', 'working_branch']
+        form = EmployeeFilterForm
+        fields = {
+            'is_active': ['exact'],
+            'working_branch': ['exact']
+        }
 
 
 # class PayrollEntryFilter(django_filters.FilterSet):

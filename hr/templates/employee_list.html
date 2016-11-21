@@ -5,7 +5,7 @@
 {% load i18n %}
 
 {% block head_end %}
-
+    <link rel="stylesheet" href="{% static 'hr/css/hr_custom.css' %}">
 {% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
@@ -28,10 +28,16 @@
 {% endblock %}
 
 {% block  content %}
-    <form action="" method="get">
-        {{ objects.form }}
-        <input type="submit" value="Filter" />
-    </form>
+    <div class="fbox well">
+        <form action="" method="get">
+            <div class='form-inline pull-right'>
+                {{ objects.form }}
+                <input class="btn btn-sm btn-primary btn-raised" type="submit" value="Filter" />
+            </div>
+        </form>
+        <div class="clearfix">
+        </div>
+    </div>
 
     <table class="table table-striped" >
         <tr>
