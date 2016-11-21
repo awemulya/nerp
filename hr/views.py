@@ -347,9 +347,9 @@ def salary_taxation_unit(employee, f_y_item):
     return total_tax * (f_y_item['worked_days'] / f_y_item['year_days']), taxation_unit_errors
 
 
-@login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+# @login_required
+# @group_required('Accountant', 'Payroll Accountant')
+# @user_passes_test(user_is_branch_accountant)
 def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibility_check_on_edit, edit_row):
     row_errors = []
     if not eligibility_check_on_edit:

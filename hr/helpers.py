@@ -478,6 +478,8 @@ def get_validity_id(cls, in_date):
                 raise IOError('Input date does not falls on any validity')
         else:
             raise TypeError(' input date must be of calendar type (datetime.date for "AD" and BSDate for "BS")')
+    if not return_id:
+        raise IOError("No %s's present" % cls)
     return return_id
 
 
@@ -495,7 +497,7 @@ def get_validity_slots(cls, from_date, to_date, **kwargs):
                 ValiditySlot(from_date, to_date, get_validity_id(cls, from_date))
             )
         except IOError:
-            raise IOError('Given range start date is less than latest valid from date.')
+            raise IOError('Given range start date is less than latest valid from date. Or validity not present.')
     else:
         date_pointer = from_date
         for validity in sorted(in_between_validities, key=lambda v: v.valid_from):
