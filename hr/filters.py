@@ -62,12 +62,12 @@ class PayrollEntryFilter(django_filters.FilterSet):
         help_text='',
     )
 
-    entry_datetime
+    # entry_datetime
 
     class Meta:
         model = PayrollEntry
         # form = PayrollEntryFilterForm
         fields = {
             'branch': ['exact'],
-            'entry_datetime': ['exact', 'gte']
+            # 'entry_datetime': ['exact', 'gte']
         }
