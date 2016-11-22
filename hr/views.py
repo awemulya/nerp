@@ -1076,7 +1076,7 @@ def entry_list(request):
     accountant_branch_id = request.user.payroll_accountant.branch.id
     data = request.GET.copy()
     data.setdefault('branch', accountant_branch_id)
-    objects = PayrollEntryFilter(data, queryset=Employee.objects.all(),
+    objects = PayrollEntryFilter(data, queryset=PayrollEntry.objects.all(),
                                  accountant_branch_id=accountant_branch_id)
     # entries = PayrollEntry.objects.all()
     return render(

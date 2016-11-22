@@ -1,12 +1,17 @@
 import django_filters
 from mptt.forms import TreeNodeChoiceField
 
+from hr.fields import HRBSDateFormField
 from hr.models import Employee, PayrollEntry, BranchOffice, PayrollConfig
 from hr.filter_forms import EmployeeFilterForm, PayrollEntryFilterForm
 
 
 class TreeNodeModelChoiceFilter(django_filters.Filter):
     field_class = TreeNodeChoiceField
+
+
+class HRBSDateFilter(django_filters.Filter):
+    fields_class = HRBSDateFormField
 
 
 class EmployeeFilter(django_filters.FilterSet):
@@ -51,18 +56,18 @@ class PayrollEntryFilter(django_filters.FilterSet):
                 id=accountant_branch_id)
         self.form.fields['branch'].empty_label = None
 
-    # is_active = django_filters.BooleanFilter(help_text='')
-    #
-    # branch = TreeNodeModelChoiceFilter(
-    #     queryset=BranchOffice.objects.all(),
-    #     help_text='',
-    # )
+
+    branch = TreeNodeModelChoiceFilter(
+        queryset=BranchOffice.objects.all(),
+        help_text='',
+    )
+
+    entry_datetime
 
     class Meta:
         model = PayrollEntry
-        form = PayrollEntryFilterForm
+        # form = PayrollEntryFilterForm
         fields = {
             'branch': ['exact'],
-            'paid_from_date': ['exact'],
-            'paid_to_date': ['exact', 'lte'],
+            'entry_datetime': ['exact', 'gte']
         }
