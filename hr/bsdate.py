@@ -8,6 +8,7 @@ class BsDelta(object):
     def __init__(self, days):
         self.days = days
 
+# TODO add time support to this module with tz info
 
 class BSDate(object):
 
