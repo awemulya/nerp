@@ -907,6 +907,10 @@ class PaymentRecord(models.Model):
 
 class PayrollEntry(models.Model):
     entry_rows = models.ManyToManyField(PaymentRecord)
+
+    paid_from_date = HRBSDateField()
+    paid_to_date = HRBSDateField()
+
     branch = TreeForeignKey(BranchOffice, related_name='payroll_entries')
     is_monthly_payroll = models.BooleanField(default=False)
     entry_datetime = models.DateTimeField(default=timezone.now)
@@ -936,12 +940,26 @@ class PayrollEntry(models.Model):
             str(self.entry_datetime),
         )
 
-    def get_date_range_in_tuple(self):
-        rows = self.entry_rows.all()
-        if rows:
-            return (rows[0].paid_from_date, rows[0].paid_to_date)
-        else:
-            return None
+    def save(self, *args, **kwargs):
+        self.paid_from_date = self.entry_rows[0].paid_from_date
+        self.paid_to_date = self.entry_rows[0].paid_to_date
+        super(PayrollEntry, self).save(*args, **kwargs)
+
+    # @property
+    # def paid_from_date(self):
+    #     rows = self.entry_rows.all()
+    #     if rows:
+    #         return rows[0].paid_from_date,
+    #     else:
+    #         return None
+    #
+    # @property
+    # def paid_to_date(self):
+    #     rows = self.entry_rows.all()
+    #     if rows:
+    #         return rows[0].paid_to_date,
+    #     else:
+    #         return None
 
 
 def employee_account_validator(acc_id):

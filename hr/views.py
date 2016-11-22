@@ -34,7 +34,7 @@ from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_
     emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present, \
     user_is_branch_accountant
 from account.models import set_transactions
-from hr.filters import EmployeeFilter
+from hr.filters import EmployeeFilter, PayrollEntryFilter
 from django.core import serializers
 
 from hr.models import ACC_CAT_BASIC_SALARY_ID, \
@@ -42,7 +42,6 @@ from hr.models import ACC_CAT_BASIC_SALARY_ID, \
     ACC_CAT_PRO_TEMPORE_ID, \
     ACC_CAT_TAX_ID
 from django.http.request import QueryDict
-
 
 # Taxation singleton setting dbsettings
 F_TAX_DISCOUNT_LIMIT = 300000
@@ -1074,12 +1073,17 @@ def entry_detail(request, pk=None):
 @group_required('Accountant', 'Payroll Accountant')
 @user_passes_test(user_is_branch_accountant)
 def entry_list(request):
-    entries = PayrollEntry.objects.all()
+    accountant_branch_id = request.user.payroll_accountant.branch.id
+    data = request.GET.copy()
+    data.setdefault('branch', accountant_branch_id)
+    objects = PayrollEntryFilter(data, queryset=Employee.objects.all(),
+                                 accountant_branch_id=accountant_branch_id)
+    # entries = PayrollEntry.objects.all()
     return render(
         request,
         'entry_list.html',
         {
-            'objects': entries,
+            'objects': objects,
         }
     )
     pass

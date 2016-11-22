@@ -17,8 +17,8 @@
 	padding-left: 20px;
 }
 
-.fbox > form > div > div > select{
-	padding-left: 10px !important;
+.fbox > form > div > select{
+	margin-left: 10px !important;
 }
 /*.datepicker {*/
     /*z-index: 1151 !important;*/

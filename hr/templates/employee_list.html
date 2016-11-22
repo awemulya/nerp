@@ -32,43 +32,45 @@
         <form action="" method="get">
             <div class='form-inline pull-right'>
                 {{ objects.form }}
-                <input class="btn btn-sm btn-primary btn-raised" type="submit" value="Filter" />
+                <input class="btn btn-sm btn-primary btn-raised" type="submit" value="Filter"/>
             </div>
         </form>
         <div class="clearfix">
         </div>
     </div>
-
-    <table class="table table-striped" >
-        <tr>
-            <th>{% trans 'Name' %}</th>
-            <th>{% trans 'Designation' %}</th>
-            <th>{% trans 'Grade' %}</th>
-            <th>{% trans 'Branch' %}</th>
-            <th>{% trans 'Sex' %}</th>
-            <th>{% trans 'Marital Status' %}</th>
-            <th>{% trans 'Permanent?' %}</th>
-            <th>{% trans 'Controls' %}</th>
-        </tr>
-        {% for obj in objects %}
+    <div class="well">
+        <table class="table table-striped" >
             <tr>
-                <td><a href={% url 'edit_employee' obj.id %}>{{ obj }}</a></td>
-                <td>{{ obj.designation }}</td>
-                <td>{{ obj.designation.grade }}</td>
-                <td>{{ obj.working_branch.name }}</td>
-                <td>{{ obj.sex }}</td>
-                <td>{{ obj.marital_status }}</td>
-                <td>{{ obj.is_permanent }}</td>
-                {% if obj.is_active %}
-                    <td><a href={% url 'toggle_employee_activeness' obj.id %}><button class="btn btn-raised btn-danger" type="button">{% trans 'Deactivate' %}</button></a></td>
-                {% else %}
-                    <td><a href={% url 'toggle_employee_activeness' obj.id %}><button class="btn btn-raised btn-primary" type="button">{% trans 'Activate' %}</button></a></td>
-                {% endif %}
-
+                <th>{% trans 'Name' %}</th>
+                <th>{% trans 'Designation' %}</th>
+                <th>{% trans 'Grade' %}</th>
+                <th>{% trans 'Branch' %}</th>
+                <th>{% trans 'Sex' %}</th>
+                <th>{% trans 'Marital Status' %}</th>
+                <th>{% trans 'Permanent?' %}</th>
+                <th>
+                    <div class="pull-right">{% trans 'Controls' %}</div>
+                </th>
             </tr>
-        {% endfor %}
-    </table>
-<a href={% url 'add_employee' %}><input class="btn btn-raised btn-primary" type="button" value="Add New Employee"></a>
-    
+            {% for obj in objects %}
+                <tr>
+                    <td><a href={% url 'edit_employee' obj.id %}>{{ obj }}</a></td>
+                    <td>{{ obj.designation }}</td>
+                    <td>{{ obj.designation.grade }}</td>
+                    <td>{{ obj.working_branch.name }}</td>
+                    <td>{{ obj.sex }}</td>
+                    <td>{{ obj.marital_status }}</td>
+                    <td>{{ obj.is_permanent }}</td>
+                    {% if obj.is_active %}
+                        <td><a href={% url 'toggle_employee_activeness' obj.id %}><button class="btn btn-raised btn-danger pull-right" type="button">{% trans 'Deactivate' %}</button></a></td>
+                    {% else %}
+                        <td><a href={% url 'toggle_employee_activeness' obj.id %}><button class="btn btn-raised btn-primary pull-right" type="button">{% trans 'Activate' %}</button></a></td>
+                    {% endif %}
+
+                </tr>
+            {% endfor %}
+        </table>
+        <a href={% url 'add_employee' %}><input class="btn btn-raised btn-primary" type="button" value="Add New Employee"></a>
+    </div>
     
 {% endblock %}

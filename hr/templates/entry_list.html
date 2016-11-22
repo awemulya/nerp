@@ -9,7 +9,7 @@
 {% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
-        <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
+    <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
 
 {% endblock %}
 {% block breadcrumbs_before_print %}
@@ -27,35 +27,54 @@
 {% endblock %}
 
 {% block  content %}
-    <table class="table payment-row-table table-striped" >
-        <tr>
-            <th>Payroll Entries</th>
-            <th>Controls</th>
-            <th>Transaction Status</th>
-        </tr>
-        {% for obj in objects %}
+    <div class="fbox well">
+        <form action="" method="get">
+            <div class='form-inline pull-right'>
+                {{ objects.form }}
+                <input class="btn btn-sm btn-primary btn-raised" type="submit" value="Filter"/>
+            </div>
+        </form>
+        <div class="clearfix">
+        </div>
+    </div>
+    <div class="well">
+        <table class="table payment-row-table table-striped">
             <tr>
-                <td><a href={% url 'entry_detail' obj.id %}>{{ obj }}</a></td>
-                <td>
-                    {% if not obj.transacted %}
-                        <a href={% url 'delete_entry' obj.id %}><button class="btn btn-raised btn-danger" type="button">Delete</button></a>
-                        <a href={% url 'payroll_entry_edit' obj.id %}><button class="btn btn-raised btn-primary" type="button">Edit</button></a>
-                    {% endif %}
-                </td>
-                {% if obj.transacted %}
-                    <td>Entry Transacted</td>
-                {% else %}
-                    {% if obj.approved %}
-                        <td><a href={% url 'transact_entry' obj.id %}><button class="btn btn-raised btn-primary" type="button">Transact</button></a></td>
-                    {% else %}
-                        <td><a href={% url 'approve_entry' obj.id %}><button class="btn btn-raised btn-primary" type="button">Approve</button></a></td>
-                    {% endif %}
-                {% endif %}
-
+                <th>Payroll Entries</th>
+                <th>Controls</th>
+                <th>Transaction Status</th>
             </tr>
-        {% endfor %}
-    </table>
+            {% for obj in objects %}
+                <tr>
+                    <td><a href={% url 'entry_detail' obj.id %}>{{ obj }}</a></td>
+                    <td>
+                        {% if not obj.transacted %}
+                            <a href={% url 'delete_entry' obj.id %}>
+                                <button class="btn btn-raised btn-danger" type="button">Delete</button>
+                            </a>
+                            <a href={% url 'payroll_entry_edit' obj.id %}>
+                                <button class="btn btn-raised btn-primary" type="button">Edit</button>
+                            </a>
+                        {% endif %}
+                    </td>
+                    {% if obj.transacted %}
+                        <td>Entry Transacted</td>
+                    {% else %}
+                        {% if obj.approved %}
+                            <td><a href={% url 'transact_entry' obj.id %}>
+                                <button class="btn btn-raised btn-primary" type="button">Transact</button>
+                            </a></td>
+                        {% else %}
+                            <td><a href={% url 'approve_entry' obj.id %}>
+                                <button class="btn btn-raised btn-primary" type="button">Approve</button>
+                            </a></td>
+                        {% endif %}
+                    {% endif %}
 
-    
-    
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+
 {% endblock %}
