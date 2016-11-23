@@ -28,9 +28,9 @@
     <div class="well">
         <table class="table table-striped">
             <thead>
-            <th>{% anchor name _('Payroll Accountant') %}</th>
-            <th>{% anchor address _('Branch') %}</th>
-            <th>{% anchor address _('Control') %}</th>
+            <th>{% anchor user.full_name _('Payroll Accountant') %}</th>
+            <th>{% anchor branch.name _('Branch') %}</th>
+            <th>{% trans 'Control' %}</th>
             </thead>
             <tbody>
             {% for item in paginated_objects %}

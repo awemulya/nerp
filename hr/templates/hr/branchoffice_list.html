@@ -29,9 +29,9 @@
         <table class="table table-striped">
             <thead>
             <th>{% anchor name _('Name') %}</th>
-            <th>{% anchor address _('Code') %}</th>
-            <th>{% anchor address _('Parent Branch') %}</th>
-            <th>{% anchor address _('Controls') %}</th>
+            <th>{% anchor code _('Code') %}</th>
+            <th>{% trans 'Parent Branch' %}</th>
+            <th>{% trans 'Controls' %}</th>
             </thead>
             <tbody>
             {% for item in paginated_objects %}

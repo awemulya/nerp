@@ -135,5 +135,15 @@
                     <h5><strong>{% trans "List" %} {% trans "Payroll" %} {% trans 'Accountant' %}</strong></h5></a>
             </div>
         </div>
+        <div class="link-group">
+            <h3>{% trans 'Payroll' %} {% trans 'Configuration' %}</h3>
+
+            <div>
+                <a href="{% url 'payroll_config' %}">
+                    <img src="{% static 'img/icons/training.png' %}"><br>
+                    <h5><strong>{% trans "Payroll" %} {% trans "Configuration" %}</strong></h5></a>
+            </div>
+
+        </div>
     </div>
 {% endblock %}

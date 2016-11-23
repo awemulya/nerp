@@ -105,7 +105,7 @@ urlpatterns = patterns('',
                        # EndGradeScale
 
                        # Payroll Configuration
-                       url(r'^config/$', views.PayrollConfigUpdateView.as_view(), name='author-detail'),
+                       url(r'^config/$', views.PayrollConfigUpdateView.as_view(), name='payroll_config'),
                        # End Payroll Configuration
 
                        # Branch Accounant Crud
