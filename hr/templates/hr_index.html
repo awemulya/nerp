@@ -111,5 +111,29 @@
                     <h5><strong>{% trans "Report Setting List" %}</strong></h5></a>
             </div>
         </div>
+        <div class="link-group">
+            <h3>{% trans 'Branch' %} {% trans 'and' %} {% trans 'Accountant' %}</h3>
+
+            <div>
+                <a href="{% url 'branch_add' %}">
+                    <img src="{% static 'img/icons/training.png' %}"><br>
+                    <h5><strong>{% trans "Add" %} {% trans "Branch" %}</strong></h5></a>
+            </div>
+            <div>
+                <a href="{% url 'branch_list' %}">
+                    <img src="{% static 'img/icons/training.png' %}"><br>
+                    <h5><strong>{% trans "List" %} {% trans "Branch" %}</strong></h5></a>
+            </div>
+            <div>
+                <a href="{% url 'payroll_accountant_add' %}">
+                    <img src="{% static 'img/icons/training.png' %}"><br>
+                    <h5><strong>{% trans "Add" %} {% trans "Payroll" %} {% trans 'Accountant' %}</strong></h5></a>
+            </div>
+            <div>
+                <a href="{% url 'payroll_accountant_list' %}">
+                    <img src="{% static 'img/icons/training.png' %}"><br>
+                    <h5><strong>{% trans "List" %} {% trans "Payroll" %} {% trans 'Accountant' %}</strong></h5></a>
+            </div>
+        </div>
     </div>
 {% endblock %}

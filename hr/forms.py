@@ -606,13 +606,12 @@ class PayrollConfigForm(HTML5BootstrapModelForm):
         fields = "__all__"
 
 class PayrollAccountantForm(HTML5BootstrapModelForm):
-
+    user = ModelChoiceField(queryset=User.objects.filter(groups__name='Payroll Accountant'), empty_label=None)
     class Meta:
         model = PayrollAccountant
         fields = '__all__'
 
 class BranchOfficeForm(HTML5BootstrapModelForm):
-    user = ModelChoiceField(queryset=User.objects.filter(groups__name='Payroll Accountant'), empty_label=True)
 
     class Meta:
         model = BranchOffice
