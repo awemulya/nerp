@@ -7,7 +7,8 @@ from hr.bsdate import BSDate
 from hr.fields import HRBSFormField, HRBSDateFormField
 from hr.helpers import bs_str2tuple
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
-    Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig
+    Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
+    PayrollAccountant
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -601,3 +602,8 @@ class PayrollConfigForm(HTML5BootstrapModelForm):
     class Meta:
         model = PayrollConfig
         fields = "__all__"
+
+class PayrollAccountantForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = PayrollAccountant
+        fields = '__all__'

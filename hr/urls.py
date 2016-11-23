@@ -108,4 +108,10 @@ urlpatterns = patterns('',
                        url(r'^config/$', views.PayrollConfigUpdateView.as_view(), name='author-detail'),
                        # End Payroll Configuration
 
+                       # Branch Accounant Crud
+                       url(r'^accountant/add/$', views.PayrollAccountantCreate.as_view(), name='payroll-accountant-add'),
+                       url(r'^accountant/edit/(?P<pk>[0-9]+)/$', views.PayrollAccountantUpdate.as_view(), name='payroll-accountant-edit'),
+                       url(r'^accountant/list/$', views.PayrollAccountantList.as_view(), name='payroll-accountant-list'),
+                       url(r'^accountant/delete/(?P<pk>[0-9]+)/$', views.PayrollAccountantDelete.as_view(), name='payroll-accountant-delete'),
+                       # End Branch Accounant Crud
                        )

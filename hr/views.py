@@ -8,9 +8,13 @@ from django.db import transaction
 from django.views.generic import UpdateView
 
 from app import settings
+from app.utils.mixins import CreateView, DeleteView, AjaxableResponseMixin
+from app.utils.mixins import UpdateView as CustomUpdateView
+from django.views.generic import ListView
+
 from core.models import FiscalYear
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 
@@ -20,11 +24,12 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, \
     TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
     EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet, \
-    DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm, PayrollConfigForm
+    DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm, PayrollConfigForm, \
+    PayrollAccountantForm
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
-    AllowanceValidity, DeductionValidity, GradeScaleValidity, PayrollConfig
+    AllowanceValidity, DeductionValidity, GradeScaleValidity, PayrollConfig, PayrollAccountant
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -1396,8 +1401,7 @@ def deduction(request):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def employee_grade(request):
     if request.method == "POST":
 
@@ -1422,8 +1426,7 @@ def employee_grade(request):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def employee_grade_group(request):
     if request.method == "POST":
 
@@ -1448,8 +1451,7 @@ def employee_grade_group(request):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def employee_designation(request):
     if request.method == "POST":
 
@@ -1717,7 +1719,6 @@ def grades_scale(request):
 
 @login_required
 @group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
 def payroll_index(request):
     return render(request, 'hr_index.html', {})
 
@@ -1734,3 +1735,26 @@ class PayrollConfigUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView
 
     def get_success_url(self):
         return reverse('payroll_entry')
+
+
+class PayrollAccountantView(object):
+    model = PayrollAccountant
+    success_url = reverse_lazy('payroll_accountant_list')
+    form_class = PayrollAccountantForm
+    group_requied = ('Accountant')
+
+
+class PayrollAccountantList(LoginRequiredMixin, GroupRequiredMixin, PayrollAccountantView, ListView):
+    pass
+
+
+class PayrollAccountantCreate(LoginRequiredMixin, GroupRequiredMixin, AjaxableResponseMixin, PayrollAccountantView, CreateView):
+    pass
+
+
+class PayrollAccountantUpdate(LoginRequiredMixin, GroupRequiredMixin, PayrollAccountantView, CustomUpdateView):
+    pass
+
+
+class PayrollAccountantDelete(LoginRequiredMixin, GroupRequiredMixin, PayrollAccountantView, DeleteView):
+    pass
