@@ -123,7 +123,7 @@ urlpatterns = patterns('',
                        url(r'^branch/list/$', views.BranchList.as_view(),
                            name='branch_list'),
                        url(r'^branch/delete/(?P<pk>[0-9]+)/$', views.BranchDelete.as_view(),
-                           name='delete_delete'),
+                           name='branch_delete'),
                        # End Branch Office Crud
 
                        )

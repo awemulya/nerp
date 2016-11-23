@@ -604,6 +604,7 @@ class PayrollConfigForm(HTML5BootstrapModelForm):
         fields = "__all__"
 
 class PayrollAccountantForm(HTML5BootstrapModelForm):
+
     class Meta:
         model = PayrollAccountant
         fields = '__all__'

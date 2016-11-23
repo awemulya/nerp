@@ -23,7 +23,7 @@
     {% load pagination_tags %}
     {% load sorting_tags %}
 
-    {% autosort objects as sorted_objects %}
+    {% autosort object_list as sorted_objects %}
     {% autopaginate sorted_objects 25 as paginated_objects %}
     <div class="well">
         <table class="table table-striped">
@@ -43,7 +43,7 @@
                     </td>
                     <td>
                         <a href="{% url 'payroll_accountant_delete' item.id %}">
-                            <button class="btn btn-raised btn-primary"></button>
+                            <button class="btn btn-raised btn-primary">{% trans 'Delete' %}</button>
                         </a>
                     </td>
                 </tr>
@@ -54,7 +54,7 @@
     {% paginate %}
 
     <a class="btn btn-success btn-raised btn-lg"
-       href="{% url 'create_party' %}">{% trans 'New' %} {% trans 'Party' %}</a>
+       href="{% url 'payroll_accountant_add' %}">{% trans 'New' %} {% trans 'Payroll Accountant' %}</a>
 
 
 {% endblock %}
