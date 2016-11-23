@@ -103,7 +103,7 @@ class UpdateView(BaseUpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         context['scenario'] = _('Update')
-        context['base_template'] = 'hr_report_base.html'
+        context['base_template'] = 'base.html'
         super(UpdateView, self).get_context_data()
         return context
 

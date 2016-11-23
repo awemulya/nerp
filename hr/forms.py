@@ -595,3 +595,9 @@ ReportHrTableFormSet = forms.inlineformset_factory(
     exclude=('account',),
     # formset=AllowanceInlineFormset
 )
+
+
+class PayrollConfigForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = PayrollConfig
+        fields = "__all__"

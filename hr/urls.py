@@ -63,7 +63,6 @@ urlpatterns = patterns('',
 
                        url(r'^deduction-name/$', views.deduction_name, name='deduction_name'),
 
-
                        # Employee Grade
                        url(r'^employee-grade-group/$', views.employee_grade_group, name='employee_grade_group'),
                        url(r'^employee-grade/$', views.employee_grade, name='employee_grade'),
@@ -104,5 +103,9 @@ urlpatterns = patterns('',
                        # GradeScale
                        url(r'^grades-scale-entry/$', views.grades_scale, name='grade-scale-entry'),
                        # EndGradeScale
+
+                       # Payroll Configuration
+                       url(r'^config/$', views.PayrollConfigUpdateView.as_view(), name='author-detail'),
+                       # End Payroll Configuration
 
                        )

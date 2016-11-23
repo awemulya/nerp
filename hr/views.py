@@ -4,6 +4,7 @@ import json
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
+from django.views.generic import UpdateView
 
 from app import settings
 from core.models import FiscalYear
@@ -18,7 +19,7 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, \
     TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
     EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet, \
-    DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm
+    DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm, PayrollConfigForm
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
@@ -1718,3 +1719,15 @@ def grades_scale(request):
 @user_passes_test(user_is_branch_accountant)
 def payroll_index(request):
     return render(request, 'hr_index.html', {})
+
+class PayrollConfigUpdateView(UpdateView):
+    model = PayrollConfig
+    form_class = PayrollConfigForm
+    # fields = ['name']
+    template_name_suffix = '_update_form'
+
+    def get_object(self, queryset=None):
+        return PayrollConfig.get_solo()
+
+    def get_success_url(self):
+        return reverse('payroll_entry')
