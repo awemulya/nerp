@@ -2,6 +2,7 @@ from __future__ import division
 from datetime import date
 
 import six
+from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import AccessMixin
 from django.core.exceptions import ImproperlyConfigured
@@ -565,6 +566,7 @@ def user_is_branch_accountant(user):
 
 class GroupRequiredMixin(AccessMixin):
     group_required = None
+    permission_denied_message = 'Only Accountant can access this page.'
 
     def get_group_required(self):
         if self.group_required is None or (

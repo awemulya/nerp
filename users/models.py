@@ -111,6 +111,7 @@ def group_required(*group_names):
                return True
             # if bool(u.groups.filter(name__in=group_names)):
             #     return True
+        # messages.error(request, 'Document deleted.')
         return False
 
     return user_passes_test(in_groups)
