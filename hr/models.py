@@ -333,6 +333,14 @@ class Deduction(models.Model):
     #         return '%s[Rate] %f' % (self.name, self.value)
 
 
+class EmployeeType(models.Model):
+    name = models.CharField(max_length=128)
+    detail = models.CharField(max_length=512)
+
+    def __unicode__(self):
+        return self.name
+
+
 class Employee(models.Model):
     is_active = models.BooleanField(default=True)
     # Budget code (Functionality to change budget code for employee group)
@@ -340,6 +348,7 @@ class Employee(models.Model):
     # working_branch = models.CharField(max_length=100)
     # Employee ko section or branch coz he can be in another branch and paid from central
     sex_choice = [('M', _('Male')), ('F', _('Female'))]
+    emploee_type = models.ForeignKey(EmployeeType, related_name='employees', on_delete=models.PROTECT)
     marital_statuses = [('M', _('Married')), ('U', _('Unmarried'))]
     name = models.CharField(max_length=128)
     sex = models.CharField(choices=sex_choice, max_length=1)
@@ -378,7 +387,7 @@ class Employee(models.Model):
         blank=True
     )
     # Permanent has extra functionality while deduction from salary
-    is_permanent = models.BooleanField(default=False)
+    # is_permanent = models.BooleanField(default=False)
 
     def get_scale_start_date(self, from_date):
         validity_id = get_validity_id(GradeScaleValidity, from_date)
