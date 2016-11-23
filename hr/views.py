@@ -25,7 +25,7 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
     EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet, \
     DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm, PayrollConfigForm, \
-    PayrollAccountantForm
+    PayrollAccountantForm, BranchOfficeForm
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
@@ -1757,4 +1757,27 @@ class PayrollAccountantUpdate(LoginRequiredMixin, GroupRequiredMixin, PayrollAcc
 
 
 class PayrollAccountantDelete(LoginRequiredMixin, GroupRequiredMixin, PayrollAccountantView, DeleteView):
+    pass
+
+
+class BranchView(object):
+    model = BranchOffice
+    success_url = reverse_lazy('branch_list')
+    form_class = BranchOfficeForm
+    group_requied = ('Accountant')
+
+
+class BranchList(LoginRequiredMixin, GroupRequiredMixin, BranchView, ListView):
+    pass
+
+
+class BranchCreate(LoginRequiredMixin, GroupRequiredMixin, AjaxableResponseMixin, BranchView, CreateView):
+    pass
+
+
+class BranchUpdate(LoginRequiredMixin, GroupRequiredMixin, BranchView, CustomUpdateView):
+    pass
+
+
+class BranchDelete(LoginRequiredMixin, GroupRequiredMixin, BranchView, DeleteView):
     pass

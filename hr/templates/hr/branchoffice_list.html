@@ -28,21 +28,25 @@
     <div class="well">
         <table class="table table-striped">
             <thead>
-            <th>{% anchor name _('Payroll Accountant') %}</th>
-            <th>{% anchor address _('Branch') %}</th>
-            <th>{% anchor address _('Control') %}</th>
+            <th>{% anchor name _('Name') %}</th>
+            <th>{% anchor address _('Code') %}</th>
+            <th>{% anchor address _('Parent Branch') %}</th>
+            <th>{% anchor address _('Controls') %}</th>
             </thead>
             <tbody>
             {% for item in paginated_objects %}
                 <tr>
                     <td class="link">
-                        <a href="{% url 'payroll_accountant_edit' item.id %}">{{ item.user.fullname }}</a>
+                        <a href="{% url 'branch_edit' item.id %}">{{ item.name }}</a>
                     </td>
                     <td>
-                        {{ item.branch.name }}
+                        {{ item.code }}
                     </td>
                     <td>
-                        <a href="{% url 'payroll_accountant_delete' item.id %}">
+                        {{ item.parent.name }}
+                    </td>
+                    <td>
+                        <a href="{% url 'branch_delete' item.id %}">
                             <button class="btn btn-raised btn-primary"></button>
                         </a>
                     </td>

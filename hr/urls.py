@@ -109,9 +109,21 @@ urlpatterns = patterns('',
                        # End Payroll Configuration
 
                        # Branch Accounant Crud
-                       url(r'^accountant/add/$', views.PayrollAccountantCreate.as_view(), name='payroll-accountant-add'),
-                       url(r'^accountant/edit/(?P<pk>[0-9]+)/$', views.PayrollAccountantUpdate.as_view(), name='payroll-accountant-edit'),
-                       url(r'^accountant/list/$', views.PayrollAccountantList.as_view(), name='payroll-accountant-list'),
-                       url(r'^accountant/delete/(?P<pk>[0-9]+)/$', views.PayrollAccountantDelete.as_view(), name='payroll-accountant-delete'),
+                       url(r'^accountant/add/$', views.PayrollAccountantCreate.as_view(), name='payroll_accountant_add'),
+                       url(r'^accountant/edit/(?P<pk>[0-9]+)/$', views.PayrollAccountantUpdate.as_view(), name='payroll_accountant_edit'),
+                       url(r'^accountant/list/$', views.PayrollAccountantList.as_view(), name='payroll_accountant_list'),
+                       url(r'^accountant/delete/(?P<pk>[0-9]+)/$', views.PayrollAccountantDelete.as_view(), name='payroll_accountant_delete'),
                        # End Branch Accounant Crud
+
+                       # Branch Office Crud
+                       url(r'^branch/add/$', views.BranchCreate.as_view(),
+                           name='branch_add'),
+                       url(r'^branch/edit/(?P<pk>[0-9]+)/$', views.BranchUpdate.as_view(),
+                           name='branch_edit'),
+                       url(r'^branch/list/$', views.BranchList.as_view(),
+                           name='branch_list'),
+                       url(r'^branch/delete/(?P<pk>[0-9]+)/$', views.BranchDelete.as_view(),
+                           name='delete_delete'),
+                       # End Branch Office Crud
+
                        )
