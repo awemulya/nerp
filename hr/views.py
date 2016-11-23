@@ -3,6 +3,7 @@ from __future__ import division
 import json
 
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.views.generic import UpdateView
 
@@ -14,7 +15,7 @@ from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 
 from hr.serializers import PayrollEntrySerializer
-from users.models import group_required
+from users.models import group_required, all_group_required
 from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, \
     TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
@@ -33,7 +34,7 @@ from .bsdate import BSDate
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
     emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present, \
-    user_is_branch_accountant
+    user_is_branch_accountant, GroupRequiredMixin
 from account.models import set_transactions
 from hr.filters import EmployeeFilter, PayrollEntryFilter
 from django.core import serializers
@@ -1720,7 +1721,9 @@ def grades_scale(request):
 def payroll_index(request):
     return render(request, 'hr_index.html', {})
 
-class PayrollConfigUpdateView(UpdateView):
+
+class PayrollConfigUpdateView(LoginRequiredMixin, GroupRequiredMixin, UpdateView):
+    group_required = ('Accountant')
     model = PayrollConfig
     form_class = PayrollConfigForm
     # fields = ['name']

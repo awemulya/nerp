@@ -1,6 +1,11 @@
 from __future__ import division
 from datetime import date
 
+import six
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.mixins import AccessMixin
+from django.core.exceptions import ImproperlyConfigured
+
 from bsdate import BSDate
 from njango.nepdate import bs, bs2ad, ad2bs
 from calendar import monthrange as mr
@@ -173,7 +178,8 @@ def delta_month_date_impure(p_from, p_to):
                 rhs_month_days = bs[rhs_month.year][rhs_month.month - 1]
 
             y_m_tuple = get_y_m_tuple_list(p_from_m, p_to_m)
-            total_month = len(y_m_tuple) + (lhs_month_work_days / lhs_month_days) + (rhs_month_work_days / rhs_month_days)
+            total_month = len(y_m_tuple) + (lhs_month_work_days / lhs_month_days) + (
+            rhs_month_work_days / rhs_month_days)
             total_days = (p_to - p_from).days + 1
     return (total_month, total_days)
 
@@ -240,6 +246,7 @@ def drc_date_by_days(in_date, drc):
         r_date = drc_1_day(in_date)
     return r_date
 
+
 def employee_last_payment_record(employee):
     from hr.models import PaymentRecord
     emp_record = PaymentRecord.objects.filter(paid_employee=employee)
@@ -276,19 +283,25 @@ def emp_salary_eligibility(emp, p_from, p_to):
     if p_from <= last_paid:
         if isinstance(p_from, date):
             if never_paid:
-                error_msg = 'Employee has not worked yet for %s. Appointed on %s' % ('{:%Y-%m-%d}'.format(p_from), '{:%Y-%m-%d}'.format(emp.appoint_date))
+                error_msg = 'Employee has not worked yet for %s. Appointed on %s' % (
+                '{:%Y-%m-%d}'.format(p_from), '{:%Y-%m-%d}'.format(emp.appoint_date))
             else:
-                error_msg = 'Already paid for/upto date %s. Last paid upto %s' % ('{:%Y-%m-%d}'.format(p_from), '{:%Y-%m-%d}'.format(last_paid))
+                error_msg = 'Already paid for/upto date %s. Last paid upto %s' % (
+                '{:%Y-%m-%d}'.format(p_from), '{:%Y-%m-%d}'.format(last_paid))
         else:
             if never_paid:
-                error_msg = 'Employee has not worked yet for %s. Appointed on %s' % (bsdate2str(p_from), emp.scale_start_date)
+                error_msg = 'Employee has not worked yet for %s. Appointed on %s' % (
+                bsdate2str(p_from), emp.scale_start_date)
             else:
-                error_msg = 'Already paid for/upto date %s. Last paid upto %s' % (bsdate2str(p_from), bsdate2str(last_paid))
+                error_msg = 'Already paid for/upto date %s. Last paid upto %s' % (
+                bsdate2str(p_from), bsdate2str(last_paid))
     elif p_from > inc_1_day(last_paid):
         if isinstance(p_from, date):
-            error_msg = 'Missed payment from %s to %s' % ('{:%Y/%m/%d}'.format(inc_1_day(last_paid)), '{:%Y-%m-%d}'.format(drc_1_day(p_from)))
+            error_msg = 'Missed payment from %s to %s' % (
+            '{:%Y/%m/%d}'.format(inc_1_day(last_paid)), '{:%Y-%m-%d}'.format(drc_1_day(p_from)))
         else:
-            error_msg = 'Missed payment from %s to %s' % (bsdate2str(inc_1_day(last_paid)), bsdate2str(drc_1_day(p_from)))
+            error_msg = 'Missed payment from %s to %s' % (
+            bsdate2str(inc_1_day(last_paid)), bsdate2str(drc_1_day(p_from)))
     if error_msg:
         return False, error_msg
     else:
@@ -325,6 +338,7 @@ def emp_salary_eligibility_on_edit(fromdate_request, todate_request, employee, e
         return False, error_msg
     else:
         return True, None
+
 
 def fiscal_year_by_date(f_date):
     fiscal_year_range = None
@@ -376,7 +390,6 @@ def fiscal_year_data(d_from, d_to):
             month_total_days = bs[to_date_year][d_to.month - 1]
             to_date = BSDate(to_date_year, d_to.month, month_total_days)
 
-
     if len(result) == 0:
         result.append({
             'f_y': fiscal_year_by_date(d_from),
@@ -424,7 +437,6 @@ def none_for_zero(obj):
 
 
 class ValiditySlot(object):
-
     def __init__(self, from_date=None, to_date=None, validity_id=None):
         if from_date:
             self.check_for_valid_date(from_date)
@@ -459,6 +471,7 @@ class ValiditySlot(object):
     def __str__(self):
         return 'ValiditySlot: ' + str(self.from_date) + " to " + str(self.to_date)
 
+
 # This function get in_date belonging validity id
 def get_validity_id(cls, in_date):
     return_id = None
@@ -466,7 +479,7 @@ def get_validity_id(cls, in_date):
         cls.objects.all(), key=lambda v: v.valid_from
     )
     for i, validity in enumerate(existing_validity):
-        if type(in_date) ==  type(validity.valid_from):
+        if type(in_date) == type(validity.valid_from):
             if in_date >= validity.valid_from:
                 try:
                     if in_date < existing_validity[i + 1].valid_from:
@@ -489,7 +502,8 @@ def get_validity_slots(cls, from_date, to_date, **kwargs):
     if isinstance(from_date, date):
         in_between_validities = cls.objects.filter(valid_from__gte=from_date).filter(valid_from__lte=to_date)
     else:
-        in_between_validities = cls.objects.filter(valid_from__gte=from_date.as_ad()).filter(valid_from__lte=to_date.as_ad())
+        in_between_validities = cls.objects.filter(valid_from__gte=from_date.as_ad()).filter(
+            valid_from__lte=to_date.as_ad())
 
     if not in_between_validities:
         try:
@@ -547,3 +561,39 @@ def user_is_branch_accountant(user):
         return True if user.payroll_accountant else False
     except:
         return False
+
+
+class GroupRequiredMixin(AccessMixin):
+    group_required = None
+
+    def get_group_required(self):
+        if self.group_required is None or (
+                not isinstance(self.group_required,
+                               (list, tuple) + six.string_types)
+        ):
+            raise ImproperlyConfigured(
+                '{0} requires the "group_required" attribute to be set and be '
+                'one of the following types: string, unicode, list or '
+                'tuple'.format(self.__class__.__name__))
+        if not isinstance(self.group_required, (list, tuple)):
+            self.group_required = (self.group_required,)
+        return self.group_required
+
+    def check_group_required(self, request, *group_names):
+        """Requires user membership in at least one of the groups passed in."""
+
+        def in_groups(u, request):
+            if u.is_authenticated():
+                if bool(u.groups.filter(name__in=group_names)) | u.is_superuser():
+                    return True
+                if bool(u.groups.filter(name__in=group_names)):
+                    return True
+            return self.handle_no_permission()
+
+        return user_passes_test(in_groups)
+
+    def dispatch(self, request, *args, **kwargs):
+        has_required_group = self.check_group_required(request, self.group_required)
+        if has_required_group:
+            return super(GroupRequiredMixin, self).dispatch(
+                request, *args, **kwargs)
