@@ -1,11 +1,13 @@
 from django import forms
 # from datetime import date
+from django.forms import ModelChoiceField
 from mptt.forms import TreeNodeChoiceField
 from njango.nepdate import bs2ad
 
 from hr.bsdate import BSDate
 from hr.fields import HRBSFormField, HRBSDateFormField
 from hr.helpers import bs_str2tuple
+from users.models import User
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
     PayrollAccountant
@@ -610,6 +612,8 @@ class PayrollAccountantForm(HTML5BootstrapModelForm):
         fields = '__all__'
 
 class BranchOfficeForm(HTML5BootstrapModelForm):
+    user = ModelChoiceField(queryset=User.objects.filter(groups__name='Payroll Accountant'), empty_label=True)
+
     class Meta:
         model = BranchOffice
         fields = '__all__'

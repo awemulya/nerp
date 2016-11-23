@@ -36,7 +36,7 @@
             {% for item in paginated_objects %}
                 <tr>
                     <td class="link">
-                        <a href="{% url 'payroll_accountant_edit' item.id %}">{{ item.user.fullname }}</a>
+                        <a href="{% url 'payroll_accountant_edit' item.id %}">{{ item.user.full_name }}</a>
                     </td>
                     <td>
                         {{ item.branch.name }}
