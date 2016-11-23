@@ -1346,8 +1346,7 @@ def toggle_employee_activeness(request, pk=None):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def allowance(request, pk=None):
     CALENDAR = PayrollConfig.get_solo().hr_calendar
     allowance_validity_form = AllowanceValidityForm()
@@ -1362,8 +1361,7 @@ def allowance(request, pk=None):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def deduction_name(request):
     if request.method == "POST":
 
@@ -1387,8 +1385,7 @@ def deduction_name(request):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def deduction(request):
     deduction_validity_form = DeductionValidityForm()
     return render(
@@ -1476,8 +1473,7 @@ def employee_designation(request):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def tax_scheme_detail(request, pk=None):
     ko_data = {}
 
@@ -1511,8 +1507,7 @@ def tax_scheme_detail(request, pk=None):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def list_tax_scheme(request):
     m_objects = sorted(
         TaxScheme.objects.filter(marital_status__marital_status='M'),
@@ -1533,8 +1528,7 @@ def list_tax_scheme(request):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def tax_scheme(request, pk=None):
     ko_data = {}
 
@@ -1568,8 +1562,7 @@ def tax_scheme(request, pk=None):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def delete_taxscheme(request, pk=None):
     obj = MaritalStatus.objects.get(id=pk)
     # alw_details = Allowance.objects.filter(name=obj)
@@ -1580,8 +1573,7 @@ def delete_taxscheme(request, pk=None):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def incentivename_curd(request):
     if request.method == "POST":
 
@@ -1645,8 +1637,7 @@ def get_report(request):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def report_setting(request, pk=None):
     ko_data = {}
 
@@ -1682,8 +1673,7 @@ def report_setting(request, pk=None):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def list_report_setting(request):
     objects = ReportHR.objects.all()
     return render(
@@ -1696,8 +1686,7 @@ def list_report_setting(request):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def delete_report_setting(request, pk=None):
     obj = ReportHR.objects.get(id=pk)
     # alw_details = Allowance.objects.filter(name=obj)
@@ -1708,8 +1697,7 @@ def delete_report_setting(request, pk=None):
 
 
 @login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
+@group_required('Accountant')
 def grades_scale(request):
     grade_scale_validity_form = GradeScaleValidityForm()
     return render(request, 'grades_scale.html', {
