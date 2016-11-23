@@ -123,7 +123,10 @@ class HRBSDateField(DateField):
 
     def get_db_prep_value(self, value, connection, prepared=False):
         from hr.models import PayrollConfig
-        CALENDAR = PayrollConfig.get_solo().hr_calendar
+        try:
+            CALENDAR = PayrollConfig.get_solo().hr_calendar
+        except:
+            CALENDAR = None
 
         if type(value) == tuple:
             value = nepdate.string_from_tuple(value)
@@ -168,7 +171,10 @@ class HRBSDateField(DateField):
 
 def today():
     from hr.models import PayrollConfig
-    CALENDAR = PayrollConfig.get_solo().hr_calendar
+    try:
+        CALENDAR = PayrollConfig.get_solo().hr_calendar
+    except:
+        CALENDAR = None
 
     if CALENDAR == 'AD':
         return datetime.date.today()
