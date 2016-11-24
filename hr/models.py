@@ -48,16 +48,6 @@ payment_cycle = [('M', _('Monthly')),
 #    >> Pro Tempore
 #  >> Salary Giving
 
-ACC_CAT_PAY_HEAD_ID = 1
-ACC_CAT_DEDUCTION_ID = None
-ACC_CAT_ALLOWANCE_ID = 2
-ACC_CAT_INCENTIVE_ID = None
-ACC_CAT_BASIC_SALARY_ID = None
-ACC_CAT_TAX_ID = None
-ACC_CAT_SALARY_GIVING_ID = None
-ACC_CAT_PRO_TEMPORE_ID = None
-
-
 
 class EmployeeGradeGroup(models.Model):
     name = models.CharField(max_length=100)
@@ -363,7 +353,16 @@ class Employee(models.Model):
         ('PERMANENT', _('Permanent')),
         ('TEMPORARY', _('Temporary')),
     )
-    is_active = models.BooleanField(default=True)
+    status_choices = (
+        ('ACTIVE', _('Active')),
+        ('INACTIVE', _('Inactive')),
+        ('SALARY_PUSED', _('Salary Paused')),
+    )
+    status = models.CharField(
+        max_length=128,
+        choices=status_choices,
+        default="ACTIVE"
+    )
     # Budget code (Functionality to change budget code for employee group)
     budget_code = models.CharField(max_length=100)
     # working_branch = models.CharField(max_length=100)

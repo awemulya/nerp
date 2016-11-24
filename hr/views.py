@@ -44,10 +44,6 @@ from account.models import set_transactions
 from hr.filters import EmployeeFilter, PayrollEntryFilter
 from django.core import serializers
 
-from hr.models import ACC_CAT_BASIC_SALARY_ID, \
-    ACC_CAT_SALARY_GIVING_ID, \
-    ACC_CAT_PRO_TEMPORE_ID, \
-    ACC_CAT_TAX_ID
 from django.http.request import QueryDict
 
 # Taxation singleton setting dbsettings
@@ -788,7 +784,7 @@ def get_employees_account(request):
         edit = request.POST.get('edit')
         employee_type = request.POST.get('employee_type')
 
-        employees = Employee.objects.filter(is_active=True)
+        employees = Employee.objects.filter(status='ACTIVE')
         if branch != 'ALL':
             employees = employees.filter(working_branch__id=int(branch))
 
@@ -1110,7 +1106,7 @@ def get_employee_options(request):
         # pdb.set_trace()
         branch = request.POST.get('branch', None)
         employee_type = request.POST.get('employee_type', None)
-        employees = Employee.objects.filter(is_active=True)
+        employees = Employee.objects.filter(status='ACTIVE')
         if branch and employee_type:
             if branch != 'ALL':
                 employees = employees.filter(working_branch__id=int(branch))
@@ -1135,14 +1131,14 @@ def transact_entry(request, pk=None):
         salary = entry.salary
 
         salary_giving_account = Account.objects.get(
-            category_id=ACC_CAT_SALARY_GIVING_ID,
+            category=PayrollConfig.get_solo().salary_giving_account_category,
             name='SalaryGivingAccount'
         )
 
         # NeedUpdate
         # Later This will be one by its fiscal year
         emp_basic_salary_account = Account.objects.get(
-            category_id=ACC_CAT_BASIC_SALARY_ID,
+            category=PayrollConfig.get_solo().basic_salary_account_category,
             employee_account__employee=employee
         )
         # First ma slary and allowance transact grade_name
@@ -1158,7 +1154,7 @@ def transact_entry(request, pk=None):
 
         # Transact Pro Tempore
         protempore_account = Account.objects.get(
-            category_id=ACC_CAT_PRO_TEMPORE_ID,
+            category=PayrollConfig.get_solo().pro_tempore_account_category,
             employee_account__employee=employee
         )
         pro_tempore_amount = entry.pro_tempore_amount
@@ -1250,7 +1246,7 @@ def transact_entry(request, pk=None):
 
         # Transact Tax
         emp_tax_account = Account.objects.get(
-            category_id=ACC_CAT_TAX_ID,
+            category=PayrollConfig.get_solo().tax_account_category,
             employee_account__employee=employee
         )
         tax_amount = entry.income_tax
@@ -1324,6 +1320,8 @@ def list_employee(request):
     accountant_branch_id = request.user.payroll_accountant.branch.id
     data = request.GET.copy()
     data.setdefault('working_branch', accountant_branch_id)
+    data.setdefault('type', 'PERMANENT')
+    data.setdefault('status', 'ACTIVE')
     objects = EmployeeFilter(data, queryset=Employee.objects.all(),
                              accountant_branch_id=accountant_branch_id)
     return render(
@@ -1333,22 +1331,6 @@ def list_employee(request):
             'objects': objects,
         }
     )
-
-
-@login_required
-@group_required('Accountant', 'Payroll Accountant')
-@user_passes_test(user_is_branch_accountant)
-def toggle_employee_activeness(request, pk=None):
-    obj = Employee.objects.get(id=pk)
-    # employee_accounts = EmployeeAccount.objects.filter(employee=obj)
-    if obj.is_active:
-        obj.is_active = False
-    else:
-        obj.is_active = True
-    obj.save()
-    # for emp_acc in employee_accounts:
-    #     emp_acc.delete()
-    return redirect(reverse('list_employee'))
 
 
 @login_required

@@ -3,7 +3,7 @@ from mptt.forms import TreeNodeChoiceField
 
 from hr.fields import HRBSDateFormField
 from hr.models import Employee, PayrollEntry, BranchOffice, PayrollConfig
-from hr.filter_forms import EmployeeFilterForm, PayrollEntryFilterForm
+# from hr.filter_forms import EmployeeFilterForm, PayrollEntryFilterForm
 
 
 class TreeNodeModelChoiceFilter(django_filters.Filter):
@@ -38,7 +38,7 @@ class EmployeeFilter(django_filters.FilterSet):
         model = Employee
         # form = EmployeeFilterForm
         fields = {
-            'is_active': ['exact'],
+            'status': ['exact'],
             'working_branch': ['exact'],
             'type': ['exact']
         }

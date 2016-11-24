@@ -44,8 +44,8 @@ urlpatterns = patterns('',
                        # employee crud
                        url(r'^employee/add/$', views.employee, name='add_employee'),
                        url(r'^employee/edit/(?P<pk>[0-9]+)/$', views.employee, name='edit_employee'),
-                       url(r'^employee/toggle_activeness/(?P<pk>[0-9]+)/$', views.toggle_employee_activeness,
-                           name='toggle_employee_activeness'),
+                       # url(r'^employee/toggle_activeness/(?P<pk>[0-9]+)/$', views.toggle_employee_activeness,
+                       #     name='toggle_employee_activeness'),
                        url(r'^employee/list/$', views.list_employee, name='list_employee'),
 
                        # # incentive crud

@@ -56,7 +56,7 @@
                 <th>{% trans 'Marital Status' %}</th>
                 <th>{% trans 'Type' %}</th>
                 <th>
-                    <div class="pull-right">{% trans 'Controls' %}</div>
+                    <div class="pull-right">{% trans 'Status' %}</div>
                 </th>
             </tr>
             {% for obj in objects %}
@@ -68,17 +68,8 @@
                     <td>{{ obj.sex }}</td>
                     <td>{{ obj.marital_status }}</td>
                     <td>{{ obj.type }}</td>
-                    {% if obj.is_active %}
-                        <td><a href={% url 'toggle_employee_activeness' obj.id %}>
-                            <button class="btn btn-raised btn-danger pull-right"
-                                    type="button">{% trans 'Deactivate' %}</button>
-                        </a></td>
-                    {% else %}
-                        <td><a href={% url 'toggle_employee_activeness' obj.id %}>
-                            <button class="btn btn-raised btn-primary pull-right"
-                                    type="button">{% trans 'Activate' %}</button>
-                        </a></td>
-                    {% endif %}
+                    <td>{{ obj.status }}</td>
+                    
 
                 </tr>
             {% endfor %}
