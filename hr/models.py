@@ -384,7 +384,7 @@ class Employee(models.Model):
     # TODO see this accounts
     accounts = models.ManyToManyField(Account, through="EmployeeAccount")
 
-    appoint_date = HRBSDateField(default=today, null=True, blank=True)
+    appoint_date = HRBSDateField(null=True, blank=True)
     # On newly apponted employee appoint date and scale start date will be same
     # On previous employee(employee working before this software arrival appoint date be null and salary scale date be calculated)
     # Scale start date can also be added manually
