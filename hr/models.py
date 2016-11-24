@@ -69,14 +69,14 @@ class GradeScaleValidity(models.Model):
 
 
 # TODO send post save signal to change all available employee start time
-@receiver(post_save, sender=GradeScaleValidity)
-def incentive_account_category_add(sender, instance, created, **kwargs):
-    if created:
-        instance.account_category = Category.objects.create(
-            name='%s-%d' % (instance.name, instance.id),
-            parent=PayrollConfig.get_solo().incentive_account_category
-        )
-        instance.save()
+# @receiver(post_save, sender=GradeScaleValidity)
+# def incentive_account_category_add(sender, instance, created, **kwargs):
+#     if created:
+#         instance.account_category = Category.objects.create(
+#             name='%s-%d' % (instance.name, instance.id),
+#             parent=PayrollConfig.get_solo().incentive_account_category
+#         )
+#         instance.save()
 
 
 class EmployeeGrade(models.Model):
