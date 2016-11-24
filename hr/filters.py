@@ -27,19 +27,21 @@ class EmployeeFilter(django_filters.FilterSet):
                 id=accountant_branch_id)
         self.form.fields['working_branch'].empty_label = None
 
-    is_active = django_filters.BooleanFilter(help_text='')
-
+    # is_active = django_filters.BooleanFilter(help_text='')
+    #
     working_branch = TreeNodeModelChoiceFilter(
         queryset=BranchOffice.objects.all(),
-        help_text='',
+        help_text='Filter',
     )
+    # type = django_filters.ChoiceFilter()
 
     class Meta:
         model = Employee
         # form = EmployeeFilterForm
         fields = {
             'is_active': ['exact'],
-            'working_branch': ['exact']
+            'working_branch': ['exact'],
+            'type': ['exact']
         }
 
 
