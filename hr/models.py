@@ -23,7 +23,7 @@ from django.core.exceptions import ValidationError
 from django.dispatch.dispatcher import receiver
 
 from account.models import Account, Category
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 
 from jsonfield import JSONField
 
@@ -144,8 +144,10 @@ class AllowanceName(models.Model):
     description = models.CharField(max_length=250)
     account_category = models.ForeignKey(Category, null=True, blank=True)
 
-    # FIXME accout cat deleted when removed
-    # TODO add parent category
+    def delete(self, *args, **kwargs):
+        if self.account_category:
+            self.account_category.delete()
+        super(AllowanceName, self).delete(*args, **kwargs)
 
     def __unicode__(self):
         return self.name
@@ -159,6 +161,10 @@ def allowance_account_category_add(sender, instance, created, **kwargs):
             parent=PayrollConfig.get_solo().allowance_account_category
         )
         instance.save()
+    else:
+        if instance.account_category:
+            instance.account_category.name = '%s-%d' % (instance.name, instance.id)
+            instance.account_category.save()
 
 
 class AllowanceValidity(models.Model):
@@ -236,6 +242,10 @@ def incentive_account_category_add(sender, instance, created, **kwargs):
             parent=PayrollConfig.get_solo().incentive_account_category
         )
         instance.save()
+    else:
+        if instance.account_category:
+            instance.account_category.name = name='%s-%d' % (instance.name, instance.id)
+            instance.account_category.save()
 
 
 class BranchOffice(MPTTModel):
@@ -285,6 +295,11 @@ class DeductionName(models.Model):
     def __unicode__(self):
         return self.name
 
+    def delete(self, *args, **kwargs):
+        if self.deduct_in_category:
+            self.deduct_in_category.delete()
+        super(DeductionName, self).delete(*args, **kwargs)
+
 
 @receiver(post_save, sender=DeductionName)
 def deduct_in_category_add(sender, instance, created, **kwargs):
@@ -306,6 +321,10 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                     account=acc,
                     employee=emp
                 )
+    else:
+        if instance.deduct_in_category:
+            instance.deduct_in_category.name = '%s-%d' % (instance.name, instance.id)
+            instance.deduct_in_category.save()
 
 
 # These two below should be in setting as many to many
@@ -665,6 +684,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
             )
 
     else:
+        # Cannot delete previous accounts because there might already be some transactions
         # Do things when not created
         # To See
         #     Optional Deduction
