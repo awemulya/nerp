@@ -216,7 +216,7 @@ function PayrollEntry(employee_options, group_load) {
 
     self.employee_type = ko.observable();
 
-    self.messages = ko.observableArray();
+    // self.messages = ko.observableArray();
 
     self.employee_options = ko.observableArray(employee_options);
 
@@ -327,7 +327,7 @@ function PayrollEntry(employee_options, group_load) {
             if (row.row_errors().length > 0) {
                 // here has true should be true 
                 has_error = true;
-                self.messages.push('Remove rows with warnings to Save the entry');
+                notifyUser('Remove rows with warnings to Save the entry', 'error');
             }
         }
         if (!has_error) {
@@ -429,7 +429,7 @@ function PayrollEntry(employee_options, group_load) {
 
                             if (response.errors.global_errors) {
                                 for (var k in response.errors.global_errors)
-                                    self.messages.push(response.errors.global_errors[k]);
+                                    notifyUser(response.errors.global_errors[k], 'error');
                             }
 
 
@@ -507,7 +507,7 @@ function PayrollEntry(employee_options, group_load) {
                         }
                     },
                     error: function (errorThrown) {
-                        self.messages.push(errorThrown);
+                        notifyUser(errorThrown, 'error');
                     }
                 });
                 // }
@@ -621,9 +621,17 @@ function PayrollEntry(employee_options, group_load) {
         }
     });
 
-    self.remove_alert = function (alert_msg) {
-        self.messages.remove(alert_msg);
-    };
+    // self.remove_alert = function (alert_msg) {
+    //     self.messages.remove(alert_msg);
+    // };
+    // self.messages.subscribe(function(){
+    //     if(self.messages()){
+    //         for(var k in self.messages()){
+    //             notifyUser(self.messages()[k], 'error')
+    //         }
+    //         self.messages([]);
+    //     }
+    // });
 }
 
 

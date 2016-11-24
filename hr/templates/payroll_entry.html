@@ -5,9 +5,18 @@
 {% load i18n %}
 
 {% block head_end %}
+
+    <link rel="stylesheet" href="{% static 'hr/css/plugins/toastr/toastr.css' %}">
+
+    <script src="{% static 'hr/js/plugins/toastr/toastr.js' %}"></script>
+{#    <script src="{% static 'hr/js/plugins/blockUI/jquery.blockUI.js' %}"></script>#}
+    <script src="{% static 'hr/js/notify_user.js' %}"></script>
+
+
     <link rel="stylesheet" href="{% static 'hr/css/hr_custom.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap/datepicker.css' %}">
     <link rel="stylesheet" href="{% static 'css/vendors/nepali.datepicker.v2.1.min.css' %}">
+
     <script src="{% static 'js/vendors/knockout-mapping-plugin.js' %}"></script>
     <script src="{% static 'js/vendors/nepali.datepicker.v2.1.min.js' %}"></script>
     <script src="{% static 'js/bootstrap/bootstrap-datepicker.js' %}"></script>
@@ -29,16 +38,16 @@
 {% endblock %}
 
 {% block alert %}
-    <!-- ko foreach: messages -->
-    <div class="row">
-            <span class="alert alert-warning pull-right" role="alert">
-                <span class="font-weight-bold text-info" data-bind="text: $data"></span>
-                <button type="button" class="close" aria-label="Close" data-bind="click: $parent.remove_alert">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                </button>
-            </span>
-    </div>
-    <!-- /ko -->
+{#    <!-- ko foreach: messages -->#}
+{#    <div class="row">#}
+{#            <span class="alert alert-warning pull-right" role="alert">#}
+{#                <span class="font-weight-bold text-info" data-bind="text: $data"></span>#}
+{#                <button type="button" class="close" aria-label="Close" data-bind="click: $parent.remove_alert">#}
+{#                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>#}
+{#                </button>#}
+{#            </span>#}
+{#    </div>#}
+{#    <!-- /ko -->#}
 {% endblock %}
 
 {% block  content %}
