@@ -384,9 +384,6 @@ class Employee(models.Model):
     # TODO see this accounts
     accounts = models.ManyToManyField(Account, through="EmployeeAccount")
 
-    pf_monthly_deduction_amount = models.FloatField(default=0)
-    payment_halt = models.BooleanField(default=False)
-
     appoint_date = HRBSDateField(default=today, null=True, blank=True)
     # On newly apponted employee appoint date and scale start date will be same
     # On previous employee(employee working before this software arrival appoint date be null and salary scale date be calculated)
