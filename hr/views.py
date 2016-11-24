@@ -298,7 +298,7 @@ def salary_taxation_unit(employee, f_y_item):
                             deduction = deduct_obj.value / 100.0 * salary
                             total_deduction += deduction
 
-                        if employee.is_permanent and obj.is_refundable_deduction:
+                        if employee.type == 'PERMANENT' and obj.is_refundable_deduction:
                             # This is for addition of refundable deduction
                             total_deduction += deduction
                     except IndexError:
@@ -585,7 +585,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
                 else:
                     deduction_details[-1]['amount'] += deduct_obj.value / 100.0 * salary
 
-                if employee.is_permanent and obj.is_refundable_deduction:
+                if employee.type == 'PERMANENT' and obj.is_refundable_deduction:
                     salary += deduction_details[-1]['amount']
                     deduction_details[-1]['amount'] += deduction_details[-1]['amount'] * 2
 

@@ -333,22 +333,26 @@ class Deduction(models.Model):
     #         return '%s[Rate] %f' % (self.name, self.value)
 
 
-class EmployeeType(models.Model):
-    name = models.CharField(max_length=128)
-    detail = models.CharField(max_length=512)
-
-    def __unicode__(self):
-        return self.name
+# class EmployeeType(models.Model):
+#     name = models.CharField(max_length=128)
+#     detail = models.CharField(max_length=512)
+#
+#     def __unicode__(self):
+#         return self.name
 
 
 class Employee(models.Model):
+    employee_type_choices = (
+        ('PERMANENT', _('Permanent')),
+        ('TEMPORARY', _('Temporary')),
+    )
     is_active = models.BooleanField(default=True)
     # Budget code (Functionality to change budget code for employee group)
     budget_code = models.CharField(max_length=100)
     # working_branch = models.CharField(max_length=100)
     # Employee ko section or branch coz he can be in another branch and paid from central
     sex_choice = [('M', _('Male')), ('F', _('Female'))]
-    emploee_type = models.ForeignKey(EmployeeType, related_name='employees', on_delete=models.PROTECT)
+    type = models.CharField(max_length=128, choices=employee_type_choices)
     marital_statuses = [('M', _('Married')), ('U', _('Unmarried'))]
     name = models.CharField(max_length=128)
     sex = models.CharField(choices=sex_choice, max_length=1)
