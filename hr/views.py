@@ -784,7 +784,7 @@ def get_employees_account(request):
         edit = request.POST.get('edit')
         employee_type = request.POST.get('employee_type')
 
-        employees = Employee.objects.all()
+        employees = Employee.objects.filter(is_active=True)
         if branch != 'ALL':
             employees = employees.filter(working_branch__id=int(branch))
 
@@ -1106,7 +1106,7 @@ def get_employee_options(request):
         # pdb.set_trace()
         branch = request.POST.get('branch', None)
         employee_type = request.POST.get('employee_type', None)
-        employees = Employee.objects.all()
+        employees = Employee.objects.filter(is_active=True)
         if branch and employee_type:
             if branch != 'ALL':
                 employees = employees.filter(working_branch__id=int(branch))
