@@ -142,6 +142,8 @@ class HRBSDateField(DateField):
                 return '-'.join([str(x).zfill(2) for x in value])
             else:
                 return value
+        if isinstance(value, BSDate):
+            return nepdate.string_from_tuple(nepdate.bs2ad(value.as_string()))
         return nepdate.string_from_tuple(nepdate.bs2ad(value))
         # return value.as_string()
 

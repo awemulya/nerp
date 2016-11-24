@@ -27,8 +27,7 @@ class EmployeeFilter(django_filters.FilterSet):
                 id=accountant_branch_id)
         self.form.fields['working_branch'].empty_label = None
 
-    # is_active = django_filters.BooleanFilter(help_text='')
-    #
+    # is_active = django_filters.BooleanFilter(initial=True)
     working_branch = TreeNodeModelChoiceFilter(
         queryset=BranchOffice.objects.all(),
         help_text='Filter',
