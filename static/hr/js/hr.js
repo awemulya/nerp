@@ -214,6 +214,8 @@ function PayrollEntry(employee_options, group_load) {
 
     self.branch = ko.observable();
 
+    self.employee_type = ko.observable();
+
     self.messages = ko.observableArray();
 
     self.employee_options = ko.observableArray(employee_options);
@@ -406,7 +408,8 @@ function PayrollEntry(employee_options, group_load) {
                         paid_from_date: self.paid_from_date(),
                         paid_to_date: self.paid_to_date(),
                         is_monthly_payroll: self.is_monthly_payroll(),
-                        edit: ko_data.ctx_data.id
+                        edit: ko_data.ctx_data.id,
+                        employee_type: self.employee_type()
                     },
                     // async: true,
                     success: function (response) {
@@ -522,7 +525,8 @@ function PayrollEntry(employee_options, group_load) {
             dataType: 'json',
             // async: false,
             data: {
-                branch: self.branch() ? self.branch() : 'ALL'
+                branch: self.branch() ? self.branch() : 'ALL',
+                employee_type: self.employee_type()
             },
             success: function (response) {
                 // self.employee_options(response.opt_data);

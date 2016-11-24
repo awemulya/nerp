@@ -68,6 +68,7 @@ class PayrollEntryForm(HTML5BootstrapModelForm):
 
 
 class GroupPayrollForm(forms.Form):
+
     def __init__(self, *args, **kwargs):
         accountant_branch_id = kwargs.pop('accountant_branch_id')
         super(GroupPayrollForm, self).__init__(*args, **kwargs)
@@ -89,6 +90,16 @@ class GroupPayrollForm(forms.Form):
         empty_label=None,
         widget=Select(attrs={'data-bind': 'value: branch, selectize:{}'})
     )
+    employee_type_choices = (
+        ('ALL', _('All Type')),
+        ('PERMANENT', _('Permanent')),
+        ('TEMPORARY', _('Temporary')),
+    )
+    employee_type = forms.ChoiceField(
+        choices=employee_type_choices,
+        widget=Select(attrs={'data-bind': 'value: employee_type, selectize:{}'})
+    )
+
     from_date = HRBSDateFormField(
         widget=HRBSFormField(attrs={
             'data-bind': 'value: paid_from_date',

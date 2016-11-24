@@ -782,12 +782,14 @@ def get_employees_account(request):
 
         branch = request.POST.get('branch', None)
         edit = request.POST.get('edit')
-        if branch == 'ALL':
-            employees = Employee.objects.all()
-        else:
-            employees = Employee.objects.filter(
-                working_branch__id=int(branch)
-            )
+        employee_type = request.POST.get('employee_type')
+
+        employees = Employee.objects.all()
+        if branch != 'ALL':
+            employees = employees.filter(working_branch__id=int(branch))
+
+        if employee_type != 'ALL':
+            employees = employees.filter(type=employee_type)
 
         for employee in employees:
             # data_dict = {'employee_id': employee.id}
@@ -1103,13 +1105,13 @@ def get_employee_options(request):
     if request.POST:
         # pdb.set_trace()
         branch = request.POST.get('branch', None)
-        if branch:
-            if branch == 'ALL':
-                employees = Employee.objects.all()
-            else:
-                employees = Employee.objects.filter(
-                    working_branch__id=int(branch)
-                )
+        employee_type = request.POST.get('employee_type', None)
+        employees = Employee.objects.all()
+        if branch and employee_type:
+            if branch != 'ALL':
+                employees = employees.filter(working_branch__id=int(branch))
+            if employee_type != 'ALL':
+                employees = employees.filter(type=employee_type)
             opt_list = [{'name': e.name, 'id': str(e.id)} for e in employees]
             return JsonResponse({'opt_data': opt_list})
         else:
