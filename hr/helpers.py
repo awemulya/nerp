@@ -516,14 +516,14 @@ def get_validity_slots(cls, from_date, to_date, **kwargs):
     else:
         date_pointer = from_date
         for validity in sorted(in_between_validities, key=lambda v: v.valid_from):
-            if date_pointer <= validity.valid_from:
+            if date_pointer < validity.valid_from:
                 try:
                     validity_slots.append(
-                        ValiditySlot(date_pointer, validity.valid_from, get_validity_id(cls, date_pointer))
+                        ValiditySlot(date_pointer, drc_1_day(validity.valid_from), get_validity_id(cls, date_pointer))
                     )
                 except IOError:
                     raise IOError('Given range start date is less than latest valid from date.')
-                date_pointer = inc_1_day(validity.valid_from)
+                date_pointer = validity.valid_from
 
         if date_pointer <= to_date:
             try:
@@ -539,6 +539,8 @@ def is_required_data_present(employee, from_date, to_date):
     from hr.models import GradeScaleValidity, EmployeeGradeScale
     errors = []
     try:
+        import ipdb
+        ipdb.set_trace()
         grade_scale_validity_slots = get_validity_slots(GradeScaleValidity, from_date, to_date)
         for slot in grade_scale_validity_slots:
             gs_data = EmployeeGradeScale.objects.filter(
@@ -551,6 +553,8 @@ def is_required_data_present(employee, from_date, to_date):
     except IOError:
         raise
 
+    import ipdb
+    ipdb.set_trace()
     if errors:
         return False, errors
     else:
