@@ -539,8 +539,6 @@ def is_required_data_present(employee, from_date, to_date):
     from hr.models import GradeScaleValidity, EmployeeGradeScale
     errors = []
     try:
-        import ipdb
-        ipdb.set_trace()
         grade_scale_validity_slots = get_validity_slots(GradeScaleValidity, from_date, to_date)
         for slot in grade_scale_validity_slots:
             gs_data = EmployeeGradeScale.objects.filter(
@@ -553,8 +551,6 @@ def is_required_data_present(employee, from_date, to_date):
     except IOError:
         raise
 
-    import ipdb
-    ipdb.set_trace()
     if errors:
         return False, errors
     else:

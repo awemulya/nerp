@@ -379,27 +379,31 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
 
     if not required_present:
         row_errors += r_p_errors
+        total_month, total_work_day = 0, 0
+        salary, scale_salary = 0, 0
 
+    else:
+        # This should be in if when we combine both monthly and daily payroll
+        total_month, total_work_day = delta_month_date_impure(
+            paid_from_date,
+            paid_to_date
+        )
+
+        salary = employee.get_date_range_salary(
+            paid_from_date,
+            paid_to_date,
+            apply_grade_rate=True
+        )
+        scale_salary = employee.get_date_range_salary(
+            paid_from_date,
+            paid_to_date
+        )
     employee_response = {}
     employee_response['paid_employee'] = str(employee.id)
     employee_response['employee_grade'] = employee.designation.grade.grade_name
     employee_response['employee_designation'] = employee.designation.designation_name
 
-    # This should be in if when we combine both monthly and daily payroll
-    total_month, total_work_day = delta_month_date_impure(
-        paid_from_date,
-        paid_to_date
-    )
 
-    salary = employee.get_date_range_salary(
-        paid_from_date,
-        paid_to_date,
-        apply_grade_rate=True
-    )
-    scale_salary = employee.get_date_range_salary(
-        paid_from_date,
-        paid_to_date
-    )
     deductions = DeductionName.objects.all()
 
     # # Addition of PF and bima to salary if employee is permanent
@@ -587,7 +591,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
 
                 if employee.type == 'PERMANENT' and obj.is_refundable_deduction:
                     salary += deduction_details[-1]['amount']
-                    deduction_details[-1]['amount'] += deduction_details[-1]['amount'] * 2
+                    deduction_details[-1]['amount'] += deduction_details[-1]['amount']
 
                 deduction += deduction_details[-1]['amount']
             except IndexError:
