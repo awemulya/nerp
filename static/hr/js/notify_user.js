@@ -4,10 +4,7 @@
 // Dependencies:
 //     <link rel="stylesheet" href="{% static 'hr/css/plugins/toastr/toastr.css' %}">
 //     <script src="{% static 'hr/js/plugins/toastr/toastr.js' %}"></script>
-//     <script src="{% static 'hr/js/plugins/blockUI/jquery.blockUI.js' %}"></script>
 var notifyUser = function (message, type, layout) {
-    // var layout = layout || 'top';
-    // toastr.clear();
     toastr.options = {
         "closeButton": true,
         "debug": false,

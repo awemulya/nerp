@@ -158,7 +158,7 @@ function PaymentEntryRow(emp_options) {
                         }
                         if (response.errors.global_errors) {
                             for (var k in response.errors.global_errors)
-                                vm.messages.push(response.errors.global_errors[k]);
+                                notifyUser(response.errors.global_errors[k], 'error');
                         }
                     } else {
                         vm.paid_from_date_error(null);
@@ -385,8 +385,8 @@ function PayrollEntry(employee_options, group_load) {
     self.request_flag = ko.observable();
 
     self.group_req_compute = ko.computed(function(){
-        if (self.branch() && self.paid_from_date() && self.paid_to_date()){
-            self.request_flag(self.branch() + '-' + self.paid_from_date() + '-' + self.paid_to_date());
+        if (self.branch() && self.paid_from_date() && self.paid_to_date() && self.employee_type()){
+            self.request_flag(self.branch() + '-' + self.paid_from_date() + '-' + self.paid_to_date() + '-' + self.employee_type());
             // console.log(self.request_flag());
         }
     });
@@ -552,7 +552,14 @@ function PayrollEntry(employee_options, group_load) {
         });
     };
     // self.update_employee_options();
-    self.branch.subscribe(function () {
+
+    self.this_on_ch_update_emp = ko.observable();
+    self.branch_emp_type = ko.computed(function(){
+        if(self.branch() && self.employee_type()){
+            self.this_on_ch_update_emp(self.branch() + '-' + self.employee_type());
+        }
+    });
+    self.this_on_ch_update_emp.subscribe(function () {
         self.update_employee_options();
     });
 
