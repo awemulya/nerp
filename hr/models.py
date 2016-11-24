@@ -58,8 +58,6 @@ ACC_CAT_SALARY_GIVING_ID = None
 ACC_CAT_PRO_TEMPORE_ID = None
 
 
-# TODO Make hr home screen options
-# TODO Make hr home screen options
 
 class EmployeeGradeGroup(models.Model):
     name = models.CharField(max_length=100)
@@ -1095,3 +1093,5 @@ class PayrollConfig(SingletonModel):
 
     class Meta:
         verbose_name = "Payroll Configuration"
+
+

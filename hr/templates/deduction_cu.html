@@ -3,6 +3,7 @@
 
 {% load filters %}
 {% load i18n %}
+{% load pconfig %}
 
 {% block head_end %}
     <script src="{% static 'js/vendors/jquery-formset.js' %}" xmlns="http://www.w3.org/1999/html"></script>
@@ -72,7 +73,13 @@
         </table>
     </div>
     {{ deduction_formset.management_form }}
+    
+    {% conf_has_category as has_config %}
+    {% if has_config %}
     <input class="btn btn-raised btn-primary" type="submit" value="Save">
+    {% else %}
+        {% include '_pconfig.html' %}
+    {% endif %}
 
 </form>
 
