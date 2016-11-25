@@ -6,7 +6,7 @@ from njango.nepdate import bs2ad
 
 from hr.bsdate import BSDate
 from hr.fields import HRBSFormField, HRBSDateFormField
-from hr.helpers import bs_str2tuple
+from hr.helpers import bs_str2tuple, employee_last_payment_record, inc_1_day
 from users.models import User
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
@@ -633,3 +633,26 @@ class ProTemporeForm(HTML5BootstrapModelForm):
     class Meta:
         model = ProTempore
         fields = '__all__'
+
+    # def clean(self):
+    #     cleaned_data = super(ProTemporeForm, self).clean()
+    #     appoint_date = cleaned_data['appoint_date']
+    #     dismiss_date = cleaned_data['dismiss_date']
+    #     employee = cleaned_data['employee']
+    #     pro_tempore = cleaned_data['employee']
+    #     if employee == pro_tempore:
+    #         raise forms.ValidationError(_('Same employee cannot be assigned as pro tempore.'))
+    #     if dismiss_date < appoint_date:
+    #         raise forms.ValidationError(_('Dismiss date must be greater than appoint date'))
+    #
+    #     # TODO we can do eligibility check as in view(optional)
+    #     # check whether apoint date is greater than last paid date
+    #     pro_tempore_last_paid_date = employee_last_payment_record(employee)
+    #     if pro_tempore_last_paid_date:
+    #         if appoint_date != inc_1_day(pro_tempore_last_paid_date):
+    #             raise forms.ValidationError(_('Appoint date must be next to last pro tempore paid date'))
+    #     else:
+    #         # TODO check whether from and to of salary is valid time frame
+    #         if appoint_date != employee.scale_start_date:
+    #             raise forms.ValidationError(_('If employee is never paid appoint date must be employee scale start time.'))
+

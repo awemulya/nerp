@@ -626,7 +626,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     # Handle Pro Tempore
     # paid flag should be set after transaction
     # TODO change status when this protempore are transacted
-    pro_tempores = ProTempore.objects.filter(employee=employee, status='READY_FOR_PAYMENT')
+    pro_tempores = ProTempore.objects.filter(pro_tempore_employee=employee, status='READY_FOR_PAYMENT')
     p_t_amount = 0
     to_be_paid_pt_ids = []
     for p_t in pro_tempores:

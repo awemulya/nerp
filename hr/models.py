@@ -806,7 +806,7 @@ class ProTempore(models.Model):
     )
     employee = models.OneToOneField(Employee,
                                     related_name="real_employee_post")
-    pro_tempore = models.OneToOneField(Employee,
+    pro_tempore_employee = models.OneToOneField(Employee,
                                        related_name="virtual_employee_post")
     appoint_date = HRBSDateField(default=today)
     dismiss_date = HRBSDateField(null=True, blank=True)

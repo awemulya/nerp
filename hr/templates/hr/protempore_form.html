@@ -28,6 +28,7 @@
 {% block  content %}
     <div class="well">
         <form method="post">
+            {{ form.non_field_errors }}
             {% block extrahead %}
                 {{ employee_form.media }}
             {% endblock %}
