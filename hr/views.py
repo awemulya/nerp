@@ -25,7 +25,7 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
     EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet, \
     DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm, PayrollConfigForm, \
-    PayrollAccountantForm, BranchOfficeForm
+    PayrollAccountantForm, BranchOfficeForm, ProTemporeForm
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
@@ -39,7 +39,7 @@ from .bsdate import BSDate
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
     emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present, \
-    user_is_branch_accountant, GroupRequiredMixin
+    user_is_branch_accountant, GroupRequiredMixin, IsBranchAccountantMixin
 from account.models import set_transactions
 from hr.filters import EmployeeFilter, PayrollEntryFilter
 from django.core import serializers
@@ -631,14 +631,14 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     for p_t in pro_tempores:
         if not p_t.paid:
             if isinstance(p_t.appoint_date, date):
-                p_t_amount += p_t.pro_tempore.current_salary_by_day(
+                p_t_amount += p_t.pro_tempore.get_date_range_salary(
                     p_t.appoint_date,
                     p_t.dismiss_date
                 )
 
                 to_be_paid_pt_ids.append(p_t.id)
             else:
-                p_t_amount += p_t.pro_tempore.current_salary_by_day(
+                p_t_amount += p_t.pro_tempore.get_date_range_salary(
                     BSDate(*bs_str2tuple(p_t.appoint_date)),
                     BSDate(*bs_str2tuple(p_t.dismiss_date))
                 )
@@ -1756,4 +1756,27 @@ class BranchUpdate(LoginRequiredMixin, GroupRequiredMixin, BranchView, CustomUpd
 
 
 class BranchDelete(LoginRequiredMixin, GroupRequiredMixin, BranchView, DeleteView):
+    pass
+
+
+class ProTemporeView(object):
+    model = ProTempore
+    success_url = reverse_lazy('protempore_list')
+    form_class = ProTemporeForm
+    group_requied = ('Accountant, Payroll Accountant')
+
+
+class ProTemporeList(LoginRequiredMixin, GroupRequiredMixin, IsBranchAccountantMixin,  ProTemporeView, ListView):
+    pass
+
+
+class ProTemporeCreate(LoginRequiredMixin, GroupRequiredMixin, IsBranchAccountantMixin, AjaxableResponseMixin, ProTemporeView, CreateView):
+    pass
+
+
+class ProTemporeUpdate(LoginRequiredMixin, GroupRequiredMixin, IsBranchAccountantMixin, ProTemporeView, CustomUpdateView):
+    pass
+
+
+class ProTemporeDelete(LoginRequiredMixin, GroupRequiredMixin, IsBranchAccountantMixin, ProTemporeView, DeleteView):
     pass

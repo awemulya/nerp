@@ -10,7 +10,7 @@ from hr.helpers import bs_str2tuple
 from users.models import User
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
-    PayrollAccountant
+    PayrollAccountant, ProTempore
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -626,4 +626,10 @@ class BranchOfficeForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = BranchOffice
+        fields = '__all__'
+
+class ProTemporeForm(HTML5BootstrapModelForm):
+
+    class Meta:
+        model = ProTempore
         fields = '__all__'

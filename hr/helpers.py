@@ -599,3 +599,18 @@ class GroupRequiredMixin(AccessMixin):
         if has_required_group:
             return super(GroupRequiredMixin, self).dispatch(
                 request, *args, **kwargs)
+
+
+class IsBranchAccountantMixin(AccessMixin):
+
+    def user_is_branch_accountant(self, user):
+        try:
+            return True if user.payroll_accountant else self.handle_no_permission()
+        except:
+            return self.handle_no_permission()
+
+    def dispatch(self, request, *args, **kwargs):
+        is_branch_accountant = self.user_is_branch_accountant(request.user)
+        if is_branch_accountant:
+            return super(IsBranchAccountantMixin, self).dispatch(
+                request, *args, **kwargs)

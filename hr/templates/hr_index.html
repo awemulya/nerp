@@ -135,6 +135,17 @@
                     <h5><strong>{% trans "List" %} {% trans "Payroll" %} {% trans 'Accountant' %}</strong></h5></a>
             </div>
         </div>
+
+        <div class="link-group">
+            <h3>{% trans 'Pro Tempore' %}</h3>
+
+            <div>
+                <a href="{% url 'protempore_list' %}">
+                    <img src="{% static 'img/icons/training.png' %}"><br>
+                    <h5><strong>{% trans "Pro Tempore" %} {% trans "List" %}</strong></h5></a>
+            </div>
+
+        </div>
         <div class="link-group">
             <h3>{% trans 'Payroll' %} {% trans 'Configuration' %}</h3>
 

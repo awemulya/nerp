@@ -126,4 +126,15 @@ urlpatterns = patterns('',
                            name='branch_delete'),
                        # End Branch Office Crud
 
+                       # Pro Tempore Crud
+                       url(r'^protempore/add/$', views.ProTemporeCreate.as_view(),
+                           name='protempore_add'),
+                       url(r'^protempore/edit/(?P<pk>[0-9]+)/$', views.ProTemporeUpdate.as_view(),
+                           name='protempore_edit'),
+                       url(r'^protempore/list/$', views.ProTemporeList.as_view(),
+                           name='protempore_list'),
+                       url(r'^protempore/delete/(?P<pk>[0-9]+)/$', views.ProTemporeDelete.as_view(),
+                           name='protempore_delete'),
+                       # End ProTempore Crud
+
                        )
