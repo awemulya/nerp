@@ -69,7 +69,8 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
     class Meta:
 
         model = PayrollEntry
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('paid_from_date', 'paid_to_date')
         include = ('entry_saved',)
 
     # either edit True or False

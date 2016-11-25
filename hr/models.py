@@ -959,13 +959,7 @@ class PayrollEntry(models.Model):
             typ = "Monthly"
         else:
             typ = "Custom Date range"
-        timestamp = ''
-        for row in self.entry_rows.all():
-            timestamp = "From %s to %s" % (
-                str(row.paid_from_date),
-                str(row.paid_to_date)
-            )
-            break
+        timestamp = 'From %s to %s' % (self.paid_from_date, self.paid_to_date)
         return '%s-%s-%s-Entry on %s. ' % (
             branch_name,
             typ,
@@ -973,10 +967,6 @@ class PayrollEntry(models.Model):
             str(self.entry_datetime),
         )
 
-    def save(self, *args, **kwargs):
-        self.paid_from_date = self.entry_rows[0].paid_from_date
-        self.paid_to_date = self.entry_rows[0].paid_to_date
-        super(PayrollEntry, self).save(*args, **kwargs)
 
     # @property
     # def paid_from_date(self):
