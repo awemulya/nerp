@@ -317,9 +317,9 @@ def salary_taxation_unit(employee, f_y_item):
     if taxable_amount < 0:
         taxable_amount = 0
 
-    social_security_tax = SOCIAL_SECURITY_TAX_RATE / 100 * taxable_amount
+    # social_security_tax = SOCIAL_SECURITY_TAX_RATE / 100 * taxable_amount
 
-    taxable_amount -= social_security_tax
+    # taxable_amount -= social_security_tax
     tax_amount = 0
     tax_schemes = sorted(
         TaxScheme.objects.filter(
@@ -345,7 +345,7 @@ def salary_taxation_unit(employee, f_y_item):
                     break
         if main_loop_break_flag:
             break
-    total_tax = social_security_tax + tax_amount
+    total_tax = tax_amount
     return total_tax * (f_y_item['worked_days'] / f_y_item['year_days']), taxation_unit_errors
 
 
