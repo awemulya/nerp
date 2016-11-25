@@ -68,7 +68,15 @@
                     <td>{{ obj.sex }}</td>
                     <td>{{ obj.marital_status }}</td>
                     <td>{{ obj.type }}</td>
-                    <td>{{ obj.status }}</td>
+                    <td><div class="pull-right">
+                        {% if obj.status == 'ACTIVE' %}
+                            <p class="text-primary"><strong>{{ obj.status }}</strong></p>
+                        {% elif  obj.status == 'INACTIVE'%}
+                            <p class="text-danger"><strong>{{ obj.status }}</strong></p>
+                        {% else %}
+                            <p class="text-warning"><strong>{{ obj.status }}</strong></p>
+                        {% endif %}
+                    </div></td>
                     
 
                 </tr>
