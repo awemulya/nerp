@@ -565,6 +565,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     # salary += incentive
 
     # Now the deduction part from the salary
+    # FIXME maybe deduction is done on total income (may exclude incentive)
     deduction_validity_slots = get_validity_slots(DeductionValidity, paid_from_date, paid_to_date)
     deduction = 0
     employee_response['deduction_details'] = []
@@ -586,6 +587,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
                     deduction_details[-1]['amount'] += deduct_obj.value / 100.0 * salary
 
                 if employee.type == 'PERMANENT' and obj.is_refundable_deduction:
+                    # this is making increase in salary to get 300 extra
                     salary += deduction_details[-1]['amount']
                     deduction_details[-1]['amount'] += deduction_details[-1]['amount']
 
