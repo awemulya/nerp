@@ -798,13 +798,19 @@ class Incentive(models.Model):
 
 
 class ProTempore(models.Model):
+    status_choices = (
+        ('STARTED', _('Started')),
+        ('ENDED', _('ENDED')),
+        ('READY_FOR_PAYMENT', _('Ready for Payment')),
+        ('PAID', _('Paid')),
+    )
     employee = models.OneToOneField(Employee,
                                     related_name="real_employee_post")
     pro_tempore = models.OneToOneField(Employee,
                                        related_name="virtual_employee_post")
     appoint_date = HRBSDateField(default=today)
     dismiss_date = HRBSDateField(null=True, blank=True)
-    paid = models.BooleanField(default=False)
+    status = models.CharField(max_length=128, choices=status_choices, default='STARTED')
 
     def __unicode__(self):
         return str(self.id)

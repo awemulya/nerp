@@ -625,24 +625,24 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
 
     # Handle Pro Tempore
     # paid flag should be set after transaction
-    pro_tempores = ProTempore.objects.filter(employee=employee)
+    # TODO change status when this protempore are transacted
+    pro_tempores = ProTempore.objects.filter(employee=employee, status='READY_FOR_PAYMENT')
     p_t_amount = 0
     to_be_paid_pt_ids = []
     for p_t in pro_tempores:
-        if not p_t.paid:
-            if isinstance(p_t.appoint_date, date):
-                p_t_amount += p_t.pro_tempore.get_date_range_salary(
-                    p_t.appoint_date,
-                    p_t.dismiss_date
-                )
+        if isinstance(p_t.appoint_date, date):
+            p_t_amount += p_t.pro_tempore.get_date_range_salary(
+                p_t.appoint_date,
+                p_t.dismiss_date
+            )
 
-                to_be_paid_pt_ids.append(p_t.id)
-            else:
-                p_t_amount += p_t.pro_tempore.get_date_range_salary(
-                    BSDate(*bs_str2tuple(p_t.appoint_date)),
-                    BSDate(*bs_str2tuple(p_t.dismiss_date))
-                )
-                to_be_paid_pt_ids.append(p_t.id)
+            to_be_paid_pt_ids.append(p_t.id)
+        else:
+            p_t_amount += p_t.pro_tempore.get_date_range_salary(
+                BSDate(*bs_str2tuple(p_t.appoint_date)),
+                BSDate(*bs_str2tuple(p_t.dismiss_date))
+            )
+            to_be_paid_pt_ids.append(p_t.id)
 
     employee_response['pro_tempore_amount'] = p_t_amount
     employee_response['pro_tempore_ids'] = to_be_paid_pt_ids
