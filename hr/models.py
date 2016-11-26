@@ -23,7 +23,7 @@ from django.core.exceptions import ValidationError
 from django.dispatch.dispatcher import receiver
 
 from account.models import Account, Category
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, m2m_changed
 
 from jsonfield import JSONField
 
@@ -35,6 +35,7 @@ payment_cycle = [('M', _('Monthly')),
                  ('Y', _('Yearly')),
                  ('D', _('Daily')),
                  ]
+
 
 # Accout Category settingShoul
 
@@ -158,6 +159,7 @@ def allowance_account_category_add(sender, instance, created, **kwargs):
 class AllowanceValidity(models.Model):
     valid_from = HRBSDateField()
     note = models.CharField(max_length=150)
+
     # is_active = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -232,7 +234,7 @@ def incentive_account_category_add(sender, instance, created, **kwargs):
         instance.save()
     else:
         if instance.account_category:
-            instance.account_category.name = name='%s-%d' % (instance.name, instance.id)
+            instance.account_category.name = name = '%s-%d' % (instance.name, instance.id)
             instance.account_category.save()
 
 
@@ -269,7 +271,7 @@ class DeductionValidity(models.Model):
 
 
 class DeductionName(models.Model):
-    name = models.CharField(max_length=150, unique=True )
+    name = models.CharField(max_length=150, unique=True)
     deduct_in_category = models.ForeignKey(Category, null=True, blank=True)
     description = models.CharField(max_length=150)
     priority = models.IntegerField(unique=True)
@@ -403,6 +405,7 @@ class Employee(models.Model):
         DeductionName,
         blank=True
     )
+
     # Permanent has extra functionality while deduction from salary
     # is_permanent = models.BooleanField(default=False)
 
@@ -591,6 +594,84 @@ class Employee(models.Model):
         return self.name
 
 
+@receiver(m2m_changed, sender=Employee.optional_deductions.through)
+def on_optional_deductions_change(sender, instance, action, **kwargs):
+    if action == 'post_add':
+        for this_deduction in instance.optional_deductions.all():
+            this_deduction_emp_accs = EmployeeAccount.objects.filter(
+                account__name="Deduction#%d-EID#%d" % (
+                    this_deduction.id,
+                    instance.id
+                ),
+                account__category=this_deduction.deduct_in_category,
+                employee=instance
+            )
+            if not this_deduction_emp_accs:
+                opt_deduction_account = Account.objects.create(
+                    name="Deduction#%d-EID#%d" % (
+                        this_deduction.id,
+                        instance.id
+                    ),
+                    category=this_deduction.deduct_in_category
+                )
+                EmployeeAccount.objects.create(
+                    account=opt_deduction_account,
+                    employee=instance,
+                )
+
+
+@receiver(m2m_changed, sender=Employee.allowances.through)
+def on_allowances_change(sender, instance, action, **kwargs):
+    if action == 'post_add':
+        for this_allowance in instance.allowances.all():
+            this_allowance_emp_accs = EmployeeAccount.objects.filter(
+                account__name="Allowance#%d-EID#%d" % (
+                    this_allowance.id,
+                    instance.id
+                ),
+                account__category=this_allowance.account_category,
+                employee=instance
+            )
+            if not this_allowance_emp_accs:
+                all_account = Account.objects.create(
+                    name="Allowance#%d-EID#%d" % (
+                        this_allowance.id,
+                        instance.id
+                    ),
+                    category=this_allowance.account_category
+                )
+                EmployeeAccount.objects.create(
+                    account=all_account,
+                    employee=instance,
+                )
+
+
+# @receiver(m2m_changed, sender=Employee.incentives.through)
+# def on_incentives_change(sender, instance, action, **kwargs):
+#     if action == 'post_add':
+#         for this_incentive in instance.incentives.all():
+#             this_incentive_emp_accs = EmployeeAccount.objects.filter(
+#                 account__name="Incentive#%d-EID#%d" % (
+#                     this_incentive.id,
+#                     instance.id
+#                 ),
+#                 account__category=this_incentive.account_category,
+#                 employee=instance
+#             )
+#             if not this_incentive_emp_accs:
+#                 incent_account = Account.objects.create(
+#                     name="Incentive#%d-EID#%d" % (
+#                         this_incentive.id,
+#                         instance.id
+#                     ),
+#                     category=this_incentive.account_category
+#                 )
+#                 EmployeeAccount.objects.create(
+#                     account=incent_account,
+#                     employee=instance,
+#                 )
+
+
 @receiver(post_save, sender=Employee)
 def add_employee_accounts(sender, instance, created, **kwargs):
     if created:
@@ -635,118 +716,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                 account=deduction_account,
                 employee=instance,
             )
-        # Add deduction accounts (optional)
-        for deduct in instance.optional_deductions.all():
-            opt_deduction_account = Account.objects.create(
-                name="Deduction#%d-EID#%d" % (
-                    deduct.id,
-                    instance.id
-                ),
-                category=deduct.deduct_in_category
-            )
-            EmployeeAccount.objects.create(
-                account=opt_deduction_account,
-                employee=instance,
-            )
 
-        # Add employee allowance account
-        for allowancename in instance.allowances.all():
-            all_acc = Account.objects.create(
-                name="Allowance#%d-EID#%d" % (
-                    allowancename.id,
-                    instance.id
-                ),
-                category=allowancename.account_category
-            )
-            EmployeeAccount.objects.create(
-                account=all_acc,
-                employee=instance,
-            )
-
-        # Add employee incentive account
-        for incentivename in instance.incentives.all():
-            in_acc = Account.objects.create(
-                name="Incentive#%d-EID#%d" % (
-                    incentivename.id,
-                    instance.id
-                ),
-                category=incentivename.account_category
-            )
-            EmployeeAccount.objects.create(
-                account=in_acc,
-                employee=instance,
-            )
-
-    else:
-        # Cannot delete previous accounts because there might already be some transactions
-        # Do things when not created
-        # To See
-        #     Optional Deduction
-        #     Allowances
-        #     Incentives
-        for this_deduction in instance.optional_deductions.all():
-            this_deduction_emp_accs = EmployeeAccount.objects.filter(
-                account__name="Deduction#%d-EID#%d" % (
-                    this_deduction.id,
-                    instance.id
-                ),
-                account__category=this_deduction.deduct_in_category,
-                employee=instance
-            )
-            if not this_deduction_emp_accs:
-                opt_deduction_account = Account.objects.create(
-                    name="Deduction#%d-EID#%d" % (
-                        this_deduction.id,
-                        instance.id
-                    ),
-                    category=this_deduction.deduct_in_category
-                )
-                EmployeeAccount.objects.create(
-                    account=opt_deduction_account,
-                    employee=instance,
-                )
-        for this_allowance in instance.allowances.all():
-            this_allowance_emp_accs = EmployeeAccount.objects.filter(
-                account__name="Allowance#%d-EID#%d" % (
-                    this_allowance.id,
-                    instance.id
-                ),
-                account__category=this_allowance.account_category,
-                employee=instance
-            )
-            if not this_allowance_emp_accs:
-                all_account = Account.objects.create(
-                    name="Allowance#%d-EID#%d" % (
-                        this_allowance.id,
-                        instance.id
-                    ),
-                    category=this_allowance.account_category
-                )
-                EmployeeAccount.objects.create(
-                    account=all_account,
-                    employee=instance,
-                )
-        for this_incentive in instance.incentives.all():
-            this_incentive_emp_accs = EmployeeAccount.objects.filter(
-                account__name="Incentive#%d-EID#%d" % (
-                    this_incentive.id,
-                    instance.id
-                ),
-                account__category=this_incentive.account_category,
-                employee=instance
-            )
-            if not this_incentive_emp_accs:
-                incent_account = Account.objects.create(
-                    name="Incentive#%d-EID#%d" % (
-                        this_incentive.id,
-                        instance.id
-                    ),
-                    category=this_incentive.account_category
-                )
-                EmployeeAccount.objects.create(
-                    account=incent_account,
-                    employee=instance,
-                )
 
 
 # This is incentive(for motivation)
@@ -785,16 +755,38 @@ class Incentive(models.Model):
             return '%s-NOTFIXED' % (self.name)
 
     def save(self, *args, **kwargs):
-        # if self.sum_type == 'AMOUNT':
-        #     self.amount_rate = None
-        # elif self.sum_type == 'RATE':
-        #     self.amount = None
         if self.payment_cycle != 'Y':
             self.year_payment_cycle_month = None
         super(Incentive, self).save(*args, **kwargs)
 
+    # TODO error when not unique not displayed because global errors not shown
     class Meta:
         unique_together = (("name", "employee"),)
+
+
+@receiver(post_save, sender=Incentive)
+def add_emloyee_incentive_account(sender, instance, created, **kwargs):
+    if created:
+        this_incentive_emp_accs = EmployeeAccount.objects.filter(
+            account__name="Incentive#%d-EID#%d" % (
+                instance.name.id,
+                instance.employee.id
+            ),
+            account__category=instance.name.account_category,
+            employee=instance.employee
+        )
+        if not this_incentive_emp_accs:
+            incent_account = Account.objects.create(
+                name="Incentive#%d-EID#%d" % (
+                    instance.name.id,
+                    instance.id
+                ),
+                category=instance.name.account_category
+            )
+            EmployeeAccount.objects.create(
+                account=incent_account,
+                employee=instance.employee,
+            )
 
 
 class ProTempore(models.Model):
@@ -807,7 +799,7 @@ class ProTempore(models.Model):
     employee = models.OneToOneField(Employee,
                                     related_name="real_employee_post")
     pro_tempore_employee = models.OneToOneField(Employee,
-                                       related_name="virtual_employee_post")
+                                                related_name="virtual_employee_post")
     appoint_date = HRBSDateField(default=today)
     dismiss_date = HRBSDateField(null=True, blank=True)
     status = models.CharField(max_length=128, choices=status_choices, default='STARTED')
@@ -892,7 +884,7 @@ class DeductionDetail(models.Model):
     amount = models.FloatField()
 
     def __unicode__(self):
-        return "%s-[%s]" %(self.deduction.name, str(self.amount))
+        return "%s-[%s]" % (self.deduction.name, str(self.amount))
 
 
 class IncentiveDetail(models.Model):
@@ -968,21 +960,21 @@ class PayrollEntry(models.Model):
         )
 
 
-    # @property
-    # def paid_from_date(self):
-    #     rows = self.entry_rows.all()
-    #     if rows:
-    #         return rows[0].paid_from_date,
-    #     else:
-    #         return None
-    #
-    # @property
-    # def paid_to_date(self):
-    #     rows = self.entry_rows.all()
-    #     if rows:
-    #         return rows[0].paid_to_date,
-    #     else:
-    #         return None
+        # @property
+        # def paid_from_date(self):
+        #     rows = self.entry_rows.all()
+        #     if rows:
+        #         return rows[0].paid_from_date,
+        #     else:
+        #         return None
+        #
+        # @property
+        # def paid_to_date(self):
+        #     rows = self.entry_rows.all()
+        #     if rows:
+        #         return rows[0].paid_to_date,
+        #     else:
+        #         return None
 
 
 def employee_account_validator(acc_id):
@@ -1010,8 +1002,8 @@ class EmployeeAccount(models.Model):
     def get_category_name(self):
         return self.account.category.name
 
-    # def __unicode__(self):
-    #     return ('%s:cat[%s][id:%d]' % (self.employee.name, self.account.category.name, self.account.id))
+        # def __unicode__(self):
+        #     return ('%s:cat[%s][id:%d]' % (self.employee.name, self.account.category.name, self.account.id))
 
 
 # allowance in EmployeeRank
@@ -1074,9 +1066,11 @@ class PayrollConfig(SingletonModel):
     deduction_account_category = TreeOneToOneField(Category, related_name='config_deduction', null=True, blank=True)
     allowance_account_category = TreeOneToOneField(Category, related_name='config_allowance', null=True, blank=True)
     incentive_account_category = TreeOneToOneField(Category, related_name='config_incentive', null=True, blank=True)
-    basic_salary_account_category = TreeOneToOneField(Category, related_name='config_basic_salary', null=True, blank=True)
+    basic_salary_account_category = TreeOneToOneField(Category, related_name='config_basic_salary', null=True,
+                                                      blank=True)
     tax_account_category = TreeOneToOneField(Category, related_name='config_tax', null=True, blank=True)
-    salary_giving_account_category = TreeOneToOneField(Category, related_name='config_salary_giving', null=True, blank=True)
+    salary_giving_account_category = TreeOneToOneField(Category, related_name='config_salary_giving', null=True,
+                                                       blank=True)
     pro_tempore_account_category = TreeOneToOneField(Category, related_name='config_pro_tempore', null=True, blank=True)
 
     def __unicode__(self):
@@ -1084,5 +1078,3 @@ class PayrollConfig(SingletonModel):
 
     class Meta:
         verbose_name = "Payroll Configuration"
-
-
