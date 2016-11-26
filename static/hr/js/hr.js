@@ -227,14 +227,15 @@ function PayrollEntry(employee_options, group_load) {
     // })
 
     self.approve_entry = function () {
+        debugger;
         $.ajax({
-            url: 'approve_entry/' + String(self.id()),
+            url: '/payroll/approve_entry/' + String(self.id()),
             method: 'GET',
             dataType: 'json',
             // data: post_data,
             // async: true,
             success: function (response) {
-                self.approved(response.approved);
+                self.approved(response.entry_approved);
 
             },
             error: function (errorThrown) {
@@ -242,6 +243,7 @@ function PayrollEntry(employee_options, group_load) {
             }
             //            self.budget_heads = ko.observableArray(data);
         });
+        
 
     };
     self.transact = function () {
@@ -339,10 +341,11 @@ function PayrollEntry(employee_options, group_load) {
                 // async: true,
                 success: function (response) {
                     console.log(response);
-                    self.id(response.id);
+                    debugger;
+                    self.id(response.entry_id);
                     self.entry_saved(response.entry_saved);
-                    self.approved(response.approved);
-                    self.transacted(response.transacted);
+                    self.approved(response.entry_approved);
+                    self.transacted(response.entry_transacted);
 
                 },
                 error: function (errorThrown) {

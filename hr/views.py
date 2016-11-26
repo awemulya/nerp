@@ -1144,145 +1144,145 @@ def transact_entry(request, pk=None):
         name='Salary Giving Account'
     )
 
-    for entry in p_e.entry_rows.all():
-        employee = entry.paid_employee
-        salary = entry.salary
+    with transaction.atomic():
+        for entry in p_e.entry_rows.all():
+            employee = entry.paid_employee
+            salary = entry.salary
 
-        # NeedUpdate
-        # TODO Later This will be one by its fiscal year(confused)
-        emp_basic_salary_account = Account.objects.get(
-            category=PayrollConfig.get_solo().basic_salary_account_category,
-            employee_account__employee=employee
-        )
-
-
-        # First ma slary and allowance transact grade_name
-        # SET TRANSACTION HERE FOR SALARY: DR IN EMP ACC
-        set_transactions(
-            entry,
-            p_e.entry_datetime,
-            *[
-                ('cr', salary_giving_account, salary),
-                ('dr', emp_basic_salary_account, salary),
-            ]
-        )
-
-        # Transact Pro Tempore
-        protempore_account = Account.objects.get(
-            category=PayrollConfig.get_solo().pro_tempore_account_category,
-            employee_account__employee=employee
-        )
-        pro_tempore_amount = entry.pro_tempore_amount
-
-        set_transactions(
-            entry,
-            p_e.entry_datetime,
-            *[
-                ('cr', salary_giving_account, pro_tempore_amount),
-                ('dr', protempore_account, pro_tempore_amount),
-            ]
-        )
-
-        set_transactions(
-            entry,
-            p_e.entry_datetime,
-            *[
-                ('cr', protempore_account, pro_tempore_amount),
-                ('dr', emp_basic_salary_account, pro_tempore_amount),
-            ]
-        )
-
-        for allowance_details_item in entry.allowance_details.all():
-            a_account = Account.objects.get(
-                category=allowance_details_item.allowance.account_category,
+            # NeedUpdate
+            # TODO Later This will be one by its fiscal year(confused)
+            emp_basic_salary_account = Account.objects.get(
+                category=PayrollConfig.get_solo().basic_salary_account_category,
                 employee_account__employee=employee
             )
-            a_amount = allowance_details_item.amount
 
-            # Should be changed
+
+            # First ma slary and allowance transact grade_name
+            # SET TRANSACTION HERE FOR SALARY: DR IN EMP ACC
             set_transactions(
                 entry,
                 p_e.entry_datetime,
                 *[
-                    ('cr', salary_giving_account, a_amount),
-                    ('dr', a_account, a_amount),
-                ]
-            )
-            set_transactions(
-                entry,
-                p_e.entry_datetime,
-                *[
-                    # ('dr', employee_salary_account, a_amount),
-                    ('cr', a_account, a_amount),
-                    ('dr', emp_basic_salary_account, a_amount),
+                    ('cr', salary_giving_account, salary),
+                    ('dr', emp_basic_salary_account, salary),
                 ]
             )
 
-        for incentive_details_item in entry.incentive_details.all():
-            i_account = Account.objects.get(
-                category=incentive_details_item.incentive.account_category,
+            # Transact Pro Tempore
+            protempore_account = Account.objects.get(
+                category=PayrollConfig.get_solo().pro_tempore_account_category,
                 employee_account__employee=employee
             )
-            i_amount = incentive_details_item.amount
+            pro_tempore_amount = entry.pro_tempore_amount
 
             set_transactions(
                 entry,
                 p_e.entry_datetime,
                 *[
-                    ('cr', salary_giving_account, i_amount),
-                    ('dr', i_account, i_amount),
+                    ('cr', salary_giving_account, pro_tempore_amount),
+                    ('dr', protempore_account, pro_tempore_amount),
                 ]
             )
+
             set_transactions(
                 entry,
                 p_e.entry_datetime,
                 *[
-                    ('cr', i_account, i_amount),
-                    ('dr', emp_basic_salary_account, i_amount),
+                    ('cr', protempore_account, pro_tempore_amount),
+                    ('dr', emp_basic_salary_account, pro_tempore_amount),
                 ]
             )
 
-        for deduction_details_item in entry.deduction_details.all():
-            deduction_obj = deduction_details_item.deduction
-            d_account = a_account = Account.objects.get(
-                category=deduction_obj.deduct_in_category,
+            for allowance_details_item in entry.allowance_details.all():
+                import ipdb
+                ipdb.set_trace()
+                a_account = Account.objects.get(category=allowance_details_item.allowance.account_category, employee_account__employee=employee)
+                a_amount = allowance_details_item.amount
+
+                # Should be changed
+                set_transactions(
+                    entry,
+                    p_e.entry_datetime,
+                    *[
+                        ('cr', salary_giving_account, a_amount),
+                        ('dr', a_account, a_amount),
+                    ]
+                )
+                set_transactions(
+                    entry,
+                    p_e.entry_datetime,
+                    *[
+                        # ('dr', employee_salary_account, a_amount),
+                        ('cr', a_account, a_amount),
+                        ('dr', emp_basic_salary_account, a_amount),
+                    ]
+                )
+
+            for incentive_details_item in entry.incentive_details.all():
+                i_account = Account.objects.get(
+                    category=incentive_details_item.incentive.account_category,
+                    employee_account__employee=employee
+                )
+                i_amount = incentive_details_item.amount
+
+                set_transactions(
+                    entry,
+                    p_e.entry_datetime,
+                    *[
+                        ('cr', salary_giving_account, i_amount),
+                        ('dr', i_account, i_amount),
+                    ]
+                )
+                set_transactions(
+                    entry,
+                    p_e.entry_datetime,
+                    *[
+                        ('cr', i_account, i_amount),
+                        ('dr', emp_basic_salary_account, i_amount),
+                    ]
+                )
+
+            for deduction_details_item in entry.deduction_details.all():
+                deduction_obj = deduction_details_item.deduction
+                d_account = a_account = Account.objects.get(
+                    category=deduction_obj.deduct_in_category,
+                    employee_account__employee=employee
+                )
+                d_amount = deduction_details_item.amount
+
+                set_transactions(
+                    entry,
+                    p_e.entry_datetime,
+                    *[
+                        ('cr', emp_basic_salary_account, d_amount),
+                        ('dr', d_account, d_amount),
+                    ]
+                )
+
+            # Transact Tax
+            emp_tax_account = Account.objects.get(
+                category=PayrollConfig.get_solo().tax_account_category,
                 employee_account__employee=employee
             )
-            d_amount = deduction_details_item.amount
+            tax_amount = entry.income_tax
 
             set_transactions(
                 entry,
                 p_e.entry_datetime,
                 *[
-                    ('cr', emp_basic_salary_account, d_amount),
-                    ('dr', d_account, d_amount),
+                    ('cr', emp_basic_salary_account, tax_amount),
+                    ('dr', emp_tax_account, tax_amount),
                 ]
             )
 
-        # Transact Tax
-        emp_tax_account = Account.objects.get(
-            category=PayrollConfig.get_solo().tax_account_category,
-            employee_account__employee=employee
-        )
-        tax_amount = entry.income_tax
-
-        set_transactions(
-            entry,
-            p_e.entry_datetime,
-            *[
-                ('cr', emp_basic_salary_account, tax_amount),
-                ('dr', emp_tax_account, tax_amount),
-            ]
-        )
-
-        set_transactions(
-            entry,
-            p_e.entry_datetime,
-            *[
-                ('cr', emp_tax_account, tax_amount),
-                ('dr', salary_giving_account, tax_amount),
-            ]
-        )
+            set_transactions(
+                entry,
+                p_e.entry_datetime,
+                *[
+                    ('cr', emp_tax_account, tax_amount),
+                    ('dr', salary_giving_account, tax_amount),
+                ]
+            )
 
     p_e.transacted = True
     p_e.save()
