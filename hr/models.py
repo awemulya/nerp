@@ -1070,7 +1070,6 @@ class PayrollConfig(SingletonModel):
     parent_can_generate_payroll = models.BooleanField(default=False)
     # TODO below can only be changed when hr has no entries in datefield model
     hr_calendar = models.CharField(max_length=2, choices=calendar_choices, default='BS')
-    # TODO remove category null=True and blank=True
     pay_head_account_category = TreeOneToOneField(Category, related_name='config_pay_head', null=True, blank=True)
     deduction_account_category = TreeOneToOneField(Category, related_name='config_deduction', null=True, blank=True)
     allowance_account_category = TreeOneToOneField(Category, related_name='config_allowance', null=True, blank=True)

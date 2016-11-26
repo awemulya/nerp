@@ -13,7 +13,7 @@ from mptt.models import MPTTModel
 
 from app.utils.helpers import zero_for_none, none_for_zero, model_exists_in_db
 from core.models import FiscalYear, Donor, Activity, BudgetHead, TaxScheme
-
+from django.db.models import F
 
 class Category(MPTTModel):
     name = models.CharField(max_length=50, unique=True)

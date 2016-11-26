@@ -40,7 +40,7 @@ from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
     emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present, \
     user_is_branch_accountant, GroupRequiredMixin, IsBranchAccountantMixin
-from account.models import set_transactions
+from account.models import set_transactions, JournalEntry
 from hr.filters import EmployeeFilter, PayrollEntryFilter
 from django.core import serializers
 
@@ -1139,21 +1139,23 @@ def get_employee_options(request):
 def transact_entry(request, pk=None):
     p_e = PayrollEntry.objects.get(id=pk)
 
+    salary_giving_account = Account.objects.get(
+        category=PayrollConfig.get_solo().salary_giving_account_category,
+        name='Salary Giving Account'
+    )
+
     for entry in p_e.entry_rows.all():
         employee = entry.paid_employee
         salary = entry.salary
 
-        salary_giving_account = Account.objects.get(
-            category=PayrollConfig.get_solo().salary_giving_account_category,
-            name='SalaryGivingAccount'
-        )
-
         # NeedUpdate
-        # Later This will be one by its fiscal year
+        # TODO Later This will be one by its fiscal year(confused)
         emp_basic_salary_account = Account.objects.get(
             category=PayrollConfig.get_solo().basic_salary_account_category,
             employee_account__employee=employee
         )
+
+
         # First ma slary and allowance transact grade_name
         # SET TRANSACTION HERE FOR SALARY: DR IN EMP ACC
         set_transactions(
