@@ -202,19 +202,20 @@ def salary_taxation_unit(employee, f_y_item):
 
     taxation_unit_errors += i_errors
 
+
     salary += allowance + incentive + get_deduction(
         employee,
         role='addition',
-        from_date=f_y_item['f_y'][0],
-        to_date=f_y_item['f_y'][1]
+        paid_from_date=f_y_item['f_y'][0],
+        paid_to_date=f_y_item['f_y'][1]
     )
 
     total_deduction, d_errors = get_deduction(
         employee,
         role='deduction',
         request_from_tax_unit=True,
-        from_date=f_y_item['f_y'][0],
-        to_date=f_y_item['f_y'][1]
+        paid_from_date=f_y_item['f_y'][0],
+        paid_to_date=f_y_item['f_y'][1]
     )
 
     taxation_unit_errors += d_errors

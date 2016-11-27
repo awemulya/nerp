@@ -85,12 +85,14 @@ def get_incentive(employee, **kwargs):
         incentive_details[-1]['name'] = _name.name
         incentive_details[-1]['editable'] = True if _name.amount_editable else False
         incentive += incentive_details[-1]['amount']
-
+    if kwargs.get('role') == 'tax_incentive':
+        return incentive, row_errors
     return incentive, incentive_details, row_errors
 
 
 def get_allowance(employee, **kwargs):
     allowance_validity_slots = get_validity_slots(AllowanceValidity, kwargs.get('from_date'), kwargs.get('to_date'))
+
     allowance = 0
     row_errors = []
     # employee_response['allowance_details'] = []
@@ -112,7 +114,7 @@ def get_allowance(employee, **kwargs):
                     slot.to_date
                 )
                 a_salary = employee.get_date_range_salary(
-                    slot.form_date,
+                    slot.from_date,
                     slot.to_date,
                     apply_grade_rate=True
                 )
@@ -172,6 +174,7 @@ def get_deduction(employee, **kwargs):
     deductions = DeductionName.objects.filter(**d_filter)
     deduction_validity_slots = get_validity_slots(DeductionValidity, kwargs.get('paid_from_date'),
                                                   kwargs.get('paid_to_date'))
+    
     deduction = 0
     # employee_response['deduction_details'] = []
     deduction_details = []
@@ -191,8 +194,8 @@ def get_deduction(employee, **kwargs):
                     slot.to_date,
                     apply_grade_rate=True
                 )
-                slot_incentive = get_incentive(employee, from_date=slot.from_date, to_date=slot.to_date)
-                slot_allowance = get_allowance(employee, from_date=slot.from_date, to_date=slot.to_date)
+                slot_incentive = get_incentive(employee, from_date=slot.from_date, to_date=slot.to_date)[0]
+                slot_allowance = get_allowance(employee, from_date=slot.from_date, to_date=slot.to_date)[0]
                 slot_addition_from_deduction = get_deduction(
                     employee,
                     role='addition',
@@ -234,10 +237,6 @@ def get_deduction(employee, **kwargs):
                 )
                 try:
                     deduct_obj = Deduction.objects.filter(validity_id=slot.validity_id, name=obj)[0]
-                    total_month, total_work_day = delta_month_date_impure(
-                        slot.from_date,
-                        slot.to_date
-                    )
 
                     if employee.type == 'PERMANENT' and obj.first_add_to_salary:
                         if deduct_obj.deduct_type == 'AMOUNT':
