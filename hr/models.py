@@ -310,13 +310,12 @@ class DeductionName(models.Model):
 
 @receiver(post_save, sender=DeductionName)
 def deduct_in_category_add(sender, instance, created, **kwargs):
+
     if created:
-        instance.deduct_in_category = Category.objects.create(
+        instance.deduct_in_category=Category.objects.create(
             name='%s-%d' % (instance.name, instance.id),
             parent=PayrollConfig.get_solo().deduction_account_category
         )
-        instance.save()
-
         # Add newly created deduction accout for existing user
         if not instance.is_optional:
             for emp in Employee.objects.all():
@@ -334,21 +333,7 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                 name='addition-from-deduction-%s-%d' % (instance.name, instance.id),
                 parent=instance.deduct_in_category
             )
-            # TODO create permanent employee account of this category
-            # if not instance.is_optional:
-                # FIXME here also need employee who has dedution with first add to salary
-            for emp in Employee.objects.filter(
-                    type='PERMANENT',
-                    optional_deductions__first_add_to_salary=True
-                ):
-                acc = Account.objects.create(
-                    name='AddBeforeDedution%d-EID%d' % (instance.id, emp.id),
-                    category=add_before_deduction_cat
-                )
-                EmployeeAccount.objects.create(
-                    account=acc,
-                    employee=emp
-                )
+
             if not instance.is_optional:
                 for emp in Employee.objects.filter(type='PERMANENT'):
                     acc = Account.objects.create(
@@ -359,6 +344,7 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                         account=acc,
                         employee=emp
                     )
+        instance.save()
 
     else:
         if instance.deduct_in_category:
@@ -791,7 +777,6 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                     account=add_before_deduction_account,
                     employee=instance,
                 )
-
 
 
 # This is incentive(for motivation)
