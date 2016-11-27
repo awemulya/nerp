@@ -338,7 +338,7 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
             # if not instance.is_optional:
                 # FIXME here also need employee who has dedution with first add to salary
             for emp in Employee.objects.filter(
-                    employee_type='PERMANENT',
+                    type='PERMANENT',
                     optional_deductions__first_add_to_salary=True
                 ):
                 acc = Account.objects.create(
@@ -350,7 +350,7 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                     employee=emp
                 )
             if not instance.is_optional:
-                for emp in Employee.objects.filter(employee_type='PERMANENT'):
+                for emp in Employee.objects.filter(type='PERMANENT'):
                     acc = Account.objects.create(
                         name='AddBeforeDedution%d-EID%d' % (instance.id, emp.id),
                         category=add_before_deduction_cat
@@ -681,7 +681,7 @@ def on_optional_deductions_change(sender, instance, action, **kwargs):
                     account=opt_deduction_account,
                     employee=instance,
                 )
-        if instance.employee_type == 'PERMANENT':
+        if instance.type == 'PERMANENT':
             for this_deduction in instance.optional_deductions.filter(first_add_to_salary=True):
                 add_before_deduction_emp_acc = EmployeeAccount.objects.filter(
                     account__name='AddBeforeDedution%d-EID%d' % (this_deduction.id, instance.id),
@@ -723,32 +723,6 @@ def on_allowances_change(sender, instance, action, **kwargs):
                     account=all_account,
                     employee=instance,
                 )
-
-
-# @receiver(m2m_changed, sender=Employee.incentives.through)
-# def on_incentives_change(sender, instance, action, **kwargs):
-#     if action == 'post_add':
-#         for this_incentive in instance.incentives.all():
-#             this_incentive_emp_accs = EmployeeAccount.objects.filter(
-#                 account__name="Incentive#%d-EID#%d" % (
-#                     this_incentive.id,
-#                     instance.id
-#                 ),
-#                 account__category=this_incentive.account_category,
-#                 employee=instance
-#             )
-#             if not this_incentive_emp_accs:
-#                 incent_account = Account.objects.create(
-#                     name="Incentive#%d-EID#%d" % (
-#                         this_incentive.id,
-#                         instance.id
-#                     ),
-#                     category=this_incentive.account_category
-#                 )
-#                 EmployeeAccount.objects.create(
-#                     account=incent_account,
-#                     employee=instance,
-#                 )
 
 
 @receiver(post_save, sender=Employee)
@@ -795,6 +769,28 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                 account=deduction_account,
                 employee=instance,
             )
+        for deduction in DeductionName.objects.filter(is_optional=False):
+            if instance.type == 'PERMANENT':
+                add_before_deduction_account = Account.objects.create(
+                    name='AddBeforeDedution%d-EID%d' % (deduction.id, instance.id),
+                    category=deduction.deduct_in_category.children.all()[0]
+                )
+                EmployeeAccount.objects.create(
+                    account=add_before_deduction_account,
+                    employee=instance,
+                ) 
+    else:
+        if instance.type == 'PERMANENT':
+            for deduction in DeductionName.objects.filter(is_optional=False):
+
+                add_before_deduction_account, created = Account.objects.get_or_create(
+                    name='AddBeforeDedution%d-EID%d' % (deduction.id, instance.id),
+                    category=deduction.deduct_in_category.children.all()[0]
+                )
+                EmployeeAccount.objects.get_or_create(
+                    account=add_before_deduction_account,
+                    employee=instance,
+                )
 
 
 
