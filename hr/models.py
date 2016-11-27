@@ -681,6 +681,22 @@ def on_optional_deductions_change(sender, instance, action, **kwargs):
                     account=opt_deduction_account,
                     employee=instance,
                 )
+        if instance.employee_type == 'PERMANENT':
+            for this_deduction in instance.optional_deductions.filter(first_add_to_salary=True):
+                add_before_deduction_emp_acc = EmployeeAccount.objects.filter(
+                    account__name='AddBeforeDedution%d-EID%d' % (this_deduction.id, instance.id),
+                    account__category=this_deduction.deduct_in_category.children.all()[0],
+                    employee=instance
+                )
+                if not add_before_deduction_emp_acc:
+                    add_before_deduction_account = Account.objects.create(
+                        name='AddBeforeDedution%d-EID%d' % (this_deduction.id, instance.id),
+                        category=this_deduction.deduct_in_category.children.all()[0],
+                    )
+                    EmployeeAccount.objects.create(
+                        account=add_before_deduction_account,
+                        employee=instance,
+                    )
 
 
 @receiver(m2m_changed, sender=Employee.allowances.through)
