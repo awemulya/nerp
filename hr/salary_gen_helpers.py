@@ -174,7 +174,7 @@ def get_deduction(employee, **kwargs):
     deductions = DeductionName.objects.filter(**d_filter)
     deduction_validity_slots = get_validity_slots(DeductionValidity, kwargs.get('paid_from_date'),
                                                   kwargs.get('paid_to_date'))
-    
+
     deduction = 0
     # employee_response['deduction_details'] = []
     deduction_details = []
