@@ -18,7 +18,7 @@ class DeductionDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DeductionDetail
-        fields = ('deduction', 'name', 'amount', 'editable')
+        fields = ('deduction', 'name', 'amount', 'editable', 'amount_added_before_deduction')
 
 
 class AllowanceDetailSerializer(serializers.ModelSerializer):

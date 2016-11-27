@@ -600,8 +600,13 @@ def save_payroll_entry(request, pk=None):
                 deductions = []
                 for ded in row.get('deduction_details', []):
                     amount = float(ded['amount'])
+                    amount_added_before_deduction = float(ded['amount_added_before_deduction'])
                     if amount:
-                        deductions.append(DeductionDetail.objects.create(deduction_id=ded['deduction'], amount=amount))
+                        deductions.append(DeductionDetail.objects.create(
+                            deduction_id=ded['deduction'],
+                            amount=amount,
+                            amount_added_before_deduction=amount_added_before_deduction
+                        ))
                 allowances = []
                 for allowance_name in row.get('allowance_details', []):
                     amount = float(allowance_name['amount'])

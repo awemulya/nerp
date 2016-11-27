@@ -884,6 +884,7 @@ class DeductionDetail(models.Model):
         related_name='deduced_amount_detail'
     )
     amount = models.FloatField()
+    amount_added_before_deduction = models.FloatField(default=0.0)
 
     def __unicode__(self):
         return "%s-[%s]" % (self.deduction.name, str(self.amount))
