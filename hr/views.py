@@ -332,7 +332,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
         paid_to_date=paid_to_date
     )
 
-    salary += employee_response['incentive'] + employee_response['allowance'] + addition_from_deduction
+    # salary += employee_response['incentive'] + employee_response['allowance'] + addition_from_deduction
 
     employee_response['deduced_amount'], deduction_details, d_errors = get_deduction(
         employee,
