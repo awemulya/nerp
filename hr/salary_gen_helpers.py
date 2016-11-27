@@ -2,6 +2,14 @@ from hr.helpers import get_validity_slots, delta_month_date_impure, month_cnt_in
 from hr.models import DeductionName, DeductionValidity, Deduction, AllowanceValidity
 
 
+def combine_deduction_details(deduction_details, added_deduction_details):
+    for deduction_detail in deduction_details:
+        for added_deduction_detail in added_deduction_details:
+            if deduction_detail['deduction'] == added_deduction_detail['deduction']:
+                deduction_detail['amount_added_before_deduction'] = added_deduction_detail['amount']
+    return deduction_details
+
+
 def get_incentive(employee, **kwargs):
     if kwargs.get('role') == 'tax_incentive':
         i_filter = {'is_tax_free': False}

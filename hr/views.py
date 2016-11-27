@@ -18,7 +18,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 
-from hr.salary_gen_helpers import get_deduction, get_allowance, get_incentive
+from hr.salary_gen_helpers import get_deduction, get_allowance, get_incentive, combine_deduction_details
 from hr.serializers import PayrollEntrySerializer
 from users.models import group_required, all_group_required
 from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
@@ -325,7 +325,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     )
     row_errors += i_errors
 
-    addition_from_deduction, employee_response['addition_from_deduction_details'] = get_deduction(
+    addition_from_deduction, addition_from_deduction_details = get_deduction(
         employee,
         role='addition',
         paid_from_date=paid_from_date,
@@ -334,7 +334,7 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
 
     salary += employee_response['incentive'] + employee_response['allowance'] + addition_from_deduction
 
-    employee_response['deduced_amount'], employee_response['deduction_details'], d_errors = get_deduction(
+    employee_response['deduced_amount'], deduction_details, d_errors = get_deduction(
         employee,
         role='deduction',
         paid_from_date=paid_from_date,
@@ -342,6 +342,10 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     )
     row_errors += d_errors
 
+    employee_response['deduction_details'] = combine_deduction_details(deduction_details, addition_from_deduction_details)
+
+    # import ipdb
+    # ipdb.set_trace()
     # PF deduction amount in case of loan from PF
 
     # Income tax logic

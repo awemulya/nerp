@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'hr/css/plugins/toastr/toastr.css' %}">
 
     <script src="{% static 'hr/js/plugins/toastr/toastr.js' %}"></script>
-{#    <script src="{% static 'hr/js/plugins/blockUI/jquery.blockUI.js' %}"></script>#}
+    {#    <script src="{% static 'hr/js/plugins/blockUI/jquery.blockUI.js' %}"></script>#}
     <script src="{% static 'hr/js/notify_user.js' %}"></script>
 
 
@@ -38,16 +38,16 @@
 {% endblock %}
 
 {% block alert %}
-{#    <!-- ko foreach: messages -->#}
-{#    <div class="row">#}
-{#            <span class="alert alert-warning pull-right" role="alert">#}
-{#                <span class="font-weight-bold text-info" data-bind="text: $data"></span>#}
-{#                <button type="button" class="close" aria-label="Close" data-bind="click: $parent.remove_alert">#}
-{#                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>#}
-{#                </button>#}
-{#            </span>#}
-{#    </div>#}
-{#    <!-- /ko -->#}
+    {#    <!-- ko foreach: messages -->#}
+    {#    <div class="row">#}
+    {#            <span class="alert alert-warning pull-right" role="alert">#}
+    {#                <span class="font-weight-bold text-info" data-bind="text: $data"></span>#}
+    {#                <button type="button" class="close" aria-label="Close" data-bind="click: $parent.remove_alert">#}
+    {#                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>#}
+    {#                </button>#}
+    {#            </span>#}
+    {#    </div>#}
+    {#    <!-- /ko -->#}
 {% endblock %}
 
 {% block  content %}
@@ -76,7 +76,7 @@
                     </td>
                 {% endfor %}
             </tr>
-            </table>
+        </table>
 
         <div>
             <form data-bind="submit: saveAndAdd">
@@ -95,7 +95,7 @@
                         <th>{% trans 'Total Incentive' %}</th>
 
 
-                        <th>{% trans 'Total Addition From Deduction' %}</th>
+                        {#                        <th>{% trans 'Total Addition From Deduction' %}</th>#}
 
 
                         <th>{% trans 'Total Deduced Amount' %}</th>
@@ -132,24 +132,26 @@
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                     <span data-bind="text: allowance"></span>
                                 </button>
-                                <table class="dropdown-menu table table-bordered table-striped"
-                                       aria-labelledby="allowance-details">
-                                    <thead>
-                                    <tr>
-                                        <th>{% trans 'Allowance Name' %}</th>
-                                        <th>{% trans 'Amount' %}</th>
-                                    </tr>
-                                    </thead>
+                                <div class="dropdown-menu">
+                                    <table class=" table table-bordered table-striped"
+                                           aria-labelledby="allowance-details">
+                                        <thead>
+                                        <tr>
+                                            <th>{% trans 'Allowance Name' %}</th>
+                                            <th>{% trans 'Amount' %}</th>
+                                        </tr>
+                                        </thead>
 
-                                    <tbody>
-                                    <!-- ko foreach: allowance_details -->
-                                    <tr>
-                                        <td data-bind="text: name"></td>
-                                        <td data-bind="text: amount"></td>
-                                    </tr>
-                                    <!-- /ko -->
-                                    </tbody>
-                                </table>
+                                        <tbody>
+                                        <!-- ko foreach: allowance_details -->
+                                        <tr>
+                                            <td data-bind="text: name"></td>
+                                            <td data-bind="text: amount"></td>
+                                        </tr>
+                                        <!-- /ko -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </td>
 
@@ -160,53 +162,29 @@
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                     <span data-bind="text: incentive"></span>
                                 </button>
-                                <table class="dropdown-menu table table-bordered table-striped"
-                                       aria-labelledby="incentive-details">
-                                    <thead>
-                                    <tr>
-                                        <th>{% trans 'Incentive Name' %}</th>
-                                        <th>{% trans 'Amount' %}</th>
-                                    </tr>
-                                    </thead>
+                                <div class="dropdown-menu">
+                                    <table class="table table-bordered table-striped"
+                                           aria-labelledby="incentive-details">
+                                        <thead>
+                                        <tr>
+                                            <th>{% trans 'Incentive Name' %}</th>
+                                            <th>{% trans 'Amount' %}</th>
+                                        </tr>
+                                        </thead>
 
-                                    <tbody>
-                                    <!-- ko foreach: incentive_details -->
-                                    <tr>
-                                        <td data-bind="text: name"></td>
-                                        <td data-bind="editableText: amount, disable_content_editable: !editable(), numeric: true"></td>
-                                    </tr>
-                                    <!-- /ko -->
-                                    </tbody>
-                                </table>
+                                        <tbody>
+                                        <!-- ko foreach: incentive_details -->
+                                        <tr>
+                                            <td data-bind="text: name"></td>
+                                            <td data-bind="editableText: amount, disable_content_editable: !editable(), numeric: true"></td>
+                                        </tr>
+                                        <!-- /ko -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </td>
 
-                        <td>
-                            <div class="dropdown">
-                                <button class="btn btn-default dropdown-toggle" type="button" id="addition-from-deduction-details"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    <span data-bind="text: addition_from_deduction_amount"></span>
-                                </button>
-                                <table class="dropdown-menu table table-bordered table-striped"
-                                       aria-labelledby="addition-from-deduction-details">
-                                    <thead>
-                                    <tr>
-                                        <th>{% trans 'Deduction Name' %}</th>
-                                        <th>{% trans 'Amount' %}</th>
-                                    </tr>
-                                    </thead>
-
-                                    <tbody>
-                                    <!-- ko foreach: addition_from_deduction_details -->
-                                    <tr>
-                                        <td data-bind="text: name"></td>
-                                        <td data-bind="editableText: amount, numeric: true"></td>
-                                    </tr>
-                                    <!-- /ko -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </td>
 
                         <td>
                             <div class="dropdown">
@@ -214,24 +192,28 @@
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                     <span data-bind="text: deduced_amount"></span>
                                 </button>
-                                <table class="dropdown-menu table table-bordered table-striped"
-                                       aria-labelledby="deduction-details">
-                                    <thead>
-                                    <tr>
-                                        <th>{% trans 'Deduction Name' %}</th>
-                                        <th>{% trans 'Amount' %}</th>
-                                    </tr>
-                                    </thead>
+                                <div class="dropdown-menu">
+                                    <table class="table table-bordered table-striped"
+                                           aria-labelledby="deduction-details">
+                                        <thead>
+                                        <tr>
+                                            <th>{% trans 'Deduction Name' %}</th>
+                                            <th>{% trans 'Amount Added Before Deduction' %}</th>
+                                            <th>{% trans 'Deduced Amount' %}</th>
+                                        </tr>
+                                        </thead>
 
-                                    <tbody>
-                                    <!-- ko foreach: deduction_details -->
-                                    <tr>
-                                        <td data-bind="text: name"></td>
-                                        <td data-bind="editableText: amount, disable_content_editable: !editable(), numeric: true"></td>
-                                    </tr>
-                                    <!-- /ko -->
-                                    </tbody>
-                                </table>
+                                        <tbody>
+                                        <!-- ko foreach: deduction_details -->
+                                        <tr>
+                                            <td data-bind="text: name"></td>
+                                            <td data-bind="text: amount_added_before_deduction"></td>
+                                            <td data-bind="editableText: amount, disable_content_editable: !editable(), numeric: true"></td>
+                                        </tr>
+                                        <!-- /ko -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </td>
 
