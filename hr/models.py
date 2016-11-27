@@ -275,7 +275,7 @@ class DeductionName(models.Model):
     deduct_in_category = models.ForeignKey(Category, null=True, blank=True)
     description = models.CharField(max_length=150)
     priority = models.IntegerField(unique=True)
-    is_refundable_deduction = models.BooleanField(default=False)
+    first_add_to_salary = models.BooleanField(default=False)
     # If true we can deduct while calculating taxable amount
     is_tax_free = models.BooleanField(default=False)
 
