@@ -132,12 +132,17 @@ class AllowanceName(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=250)
     is_tax_free = models.BooleanField(default=False)
-    account_category = models.ForeignKey(Category, null=True, blank=True)
+    account_category = models.OneToOneField(Category, null=True, blank=True)
+    # deduction_name_choices = (
+    #     ('ACTIVE', _('Active')),
+    #     ('INACTIVE', _('Inactive'))
+    # )
+    # status = models.CharField(max_length=20, choices=deduction_name_choices, default='ACTIVE')
 
-    def delete(self, *args, **kwargs):
-        if self.account_category:
-            self.account_category.delete()
-        super(AllowanceName, self).delete(*args, **kwargs)
+    # def delete(self, *args, **kwargs):
+    #     if self.account_category:
+    #         self.account_category.delete()
+    #     super(AllowanceName, self).delete(*args, **kwargs)
 
     def __unicode__(self):
         return self.name
@@ -217,10 +222,15 @@ class Allowance(models.Model):
 class IncentiveName(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=250)
-    account_category = models.ForeignKey(Category, null=True, blank=True)
+    account_category = models.OneToOneField(Category, null=True, blank=True)
     with_scale = models.BooleanField(default=False)
     amount_editable = models.BooleanField(default=False)
     is_tax_free = models.BooleanField(default=False)
+    # deduction_name_choices = (
+    #     ('ACTIVE', _('Active')),
+    #     ('INACTIVE', _('Inactive'))
+    # )
+    # status = models.CharField(max_length=20, choices=deduction_name_choices, default='ACTIVE')
 
     def __unicode__(self):
         return self.name
@@ -273,8 +283,12 @@ class DeductionValidity(models.Model):
 
 
 class DeductionName(models.Model):
+    # deduction_name_choices = (
+    #     ('ACTIVE', _('Active')),
+    #     ('INACTIVE', _('Inactive'))
+    # )
     name = models.CharField(max_length=150, unique=True)
-    deduct_in_category = models.ForeignKey(Category, null=True, blank=True)
+    deduct_in_category = models.OneToOneField(Category, null=True, blank=True)
     description = models.CharField(max_length=150)
     priority = models.IntegerField(unique=True)
     first_add_to_salary = models.BooleanField(default=False)
@@ -283,14 +297,15 @@ class DeductionName(models.Model):
 
     is_optional = models.BooleanField(default=False)
     amount_editable = models.BooleanField(default=False)
+    # status = models.CharField(max_length=20, choices=deduction_name_choices, default='ACTIVE')
 
     def __unicode__(self):
         return self.name
 
-    def delete(self, *args, **kwargs):
-        if self.deduct_in_category:
-            self.deduct_in_category.delete()
-        super(DeductionName, self).delete(*args, **kwargs)
+    # def delete(self, *args, **kwargs):
+    #     if self.deduct_in_category:
+    #         self.deduct_in_category.delete()
+    #     super(DeductionName, self).delete(*args, **kwargs)
 
 
 @receiver(post_save, sender=DeductionName)
@@ -315,22 +330,35 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                 )
 
         if instance.first_add_to_salary:
-            Category.objects.create(
+            add_before_deduction_cat = Category.objects.create(
                 name='addition-from-deduction-%s-%d' % (instance.name, instance.id),
                 parent=instance.deduct_in_category
             )
             # TODO create permanent employee account of this category
             # if not instance.is_optional:
-            #     FIXME here also need employee who has dedution with first add to salary
-            #     for emp in Employee.objects.filter(employee_type='PERMANENT', ):
-            #         acc = Account.objects.create(
-            #             name='Deduction#%d-EID%d' % (instance.id, emp.id),
-            #             category=instance.deduct_in_category
-            #         )
-            #         EmployeeAccount.objects.create(
-            #             account=acc,
-            #             employee=emp
-            #         )
+                # FIXME here also need employee who has dedution with first add to salary
+            for emp in Employee.objects.filter(
+                    employee_type='PERMANENT',
+                    optional_deductions__first_add_to_salary=True
+                ):
+                acc = Account.objects.create(
+                    name='AddBeforeDedution%d-EID%d' % (instance.id, emp.id),
+                    category=add_before_deduction_cat
+                )
+                EmployeeAccount.objects.create(
+                    account=acc,
+                    employee=emp
+                )
+            if not instance.is_optional:
+                for emp in Employee.objects.filter(employee_type='PERMANENT'):
+                    acc = Account.objects.create(
+                        name='AddBeforeDedution%d-EID%d' % (instance.id, emp.id),
+                        category=add_before_deduction_cat
+                    )
+                    EmployeeAccount.objects.create(
+                        account=acc,
+                        employee=emp
+                    )
 
     else:
         if instance.deduct_in_category:
@@ -348,9 +376,9 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                     addition_from_deduction_cats[0].name = 'addition-from-deduction-%s-%d' % (instance.name, instance.id)
                     addition_from_deduction_cats[0].save()
 
-            else:
-                if addition_from_deduction_cats:
-                    addition_from_deduction_cats[0].delete()
+            # else:
+            #     if addition_from_deduction_cats:
+            #         addition_from_deduction_cats[0].delete()
 
 # These two below should be in setting as many to many
 # Imp: Deductin cant be in BAnk Account type and should be one to one with account type
