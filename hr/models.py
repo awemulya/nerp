@@ -769,8 +769,8 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                 account=deduction_account,
                 employee=instance,
             )
-        for deduction in DeductionName.objects.filter(is_optional=False):
-            if instance.type == 'PERMANENT':
+        if instance.type == 'PERMANENT':
+            for deduction in DeductionName.objects.filter(is_optional=False, first_add_to_salary=True):
                 add_before_deduction_account = Account.objects.create(
                     name='AddBeforeDedution%d-EID%d' % (deduction.id, instance.id),
                     category=deduction.deduct_in_category.children.all()[0]
@@ -778,10 +778,10 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                 EmployeeAccount.objects.create(
                     account=add_before_deduction_account,
                     employee=instance,
-                ) 
+                )
     else:
         if instance.type == 'PERMANENT':
-            for deduction in DeductionName.objects.filter(is_optional=False):
+            for deduction in DeductionName.objects.filter(is_optional=False, first_add_to_salary=True):
 
                 add_before_deduction_account, created = Account.objects.get_or_create(
                     name='AddBeforeDedution%d-EID%d' % (deduction.id, instance.id),
