@@ -116,7 +116,7 @@ function PaymentEntryRow(emp_options) {
 
     self.compute_paid_amount = ko.computed(function () {
         // console.log(self.salary() - self.deduced_amount() - self.income_tax() + self.incentive() + self.allowance());
-        self.paid_amount(self.salary() - self.deduced_amount() - self.income_tax() + self.incentive() + self.allowance());
+        self.paid_amount(self.salary() - self.deduced_amount() - self.income_tax());
     });
 
     self.row_salary_detail = ko.computed(function(){
