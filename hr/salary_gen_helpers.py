@@ -186,6 +186,7 @@ def get_deduction(employee, **kwargs):
     deduction = 0
     # employee_response['deduction_details'] = []
     deduction_details = []
+    addition_from_deduction_details = []
     for obj in list(deductions.filter(is_optional=False)) + list(employee.optional_deductions.filter(**d_filter)):
 
         if kwargs.get('role') == 'deduction':
@@ -209,7 +210,7 @@ def get_deduction(employee, **kwargs):
                     role='addition',
                     paid_from_date=slot.from_date,
                     paid_to_date=slot.to_date
-                )
+                )[0]
                 d_salary = slot_salary + slot_incentive + slot_allowance + slot_addition_from_deduction
 
                 try:
@@ -233,6 +234,9 @@ def get_deduction(employee, **kwargs):
             deduction_details[-1]['name'] = obj.name
             deduction_details[-1]['editable'] = True if obj.amount_editable else False
         else:
+            addition_from_deduction_details.append({
+                'amount': 0
+            })
             for slot in deduction_validity_slots:
                 total_month, total_work_day = delta_month_date_impure(
                     slot.from_date,
@@ -249,13 +253,20 @@ def get_deduction(employee, **kwargs):
                     if employee.type == 'PERMANENT' and obj.first_add_to_salary:
                         if deduct_obj.deduct_type == 'AMOUNT':
                             salary_addition_amount += deduct_obj.value * total_month
+                            addition_from_deduction_details[-1]['amount'] += deduct_obj.value * total_month
                         else:
                             salary_addition_amount += deduct_obj.value / 100.0 * d_salary
+                            addition_from_deduction_details[-1]['amount'] += deduct_obj.value / 100.0 * d_salary
                 except IndexError:
                     pass
+            addition_from_deduction_details[-1]['deduction'] = obj.id
+            addition_from_deduction_details[-1]['name'] = obj.name
 
     if kwargs.get('role') == 'addition':
-        return salary_addition_amount
+        if kwargs.get('request_from_tax_unit') == True:
+            return salary_addition_amount
+        else:
+            return salary_addition_amount, addition_from_deduction_details
     else:
         if kwargs.get('request_from_tax_unit') == True:
             return deduction, row_errors

@@ -90,6 +90,17 @@ function PaymentEntryRow(emp_options) {
     self.allowance_details = ko.observableArray();
     self.deduction_details = ko.observableArray();
 
+    self.addition_from_deduction_amount = ko.observable(0);
+    self.addition_from_deduction_details = ko.observableArray();
+
+    self.addition_from_deduction_total = ko.computed(function () {
+        var total = 0;
+        ko.utils.arrayForEach(self.addition_from_deduction_details(), function (obj) {
+            total += parseInt(obj.amount());
+        });
+        self.addition_from_deduction_amount(total);
+    });
+
     self.deduction_details_total = ko.computed(function () {
         var total = 0;
         ko.utils.arrayForEach(self.deduction_details(), function (obj) {

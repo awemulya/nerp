@@ -95,6 +95,9 @@
                         <th>{% trans 'Total Incentive' %}</th>
 
 
+                        <th>{% trans 'Total Addition From Deduction' %}</th>
+
+
                         <th>{% trans 'Total Deduced Amount' %}</th>
 
                         <th>{% trans 'Income Tax' %}</th>
@@ -178,6 +181,32 @@
                             </div>
                         </td>
 
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="addition-from-deduction-details"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    <span data-bind="text: addition_from_deduction_amount"></span>
+                                </button>
+                                <table class="dropdown-menu table table-bordered table-striped"
+                                       aria-labelledby="addition-from-deduction-details">
+                                    <thead>
+                                    <tr>
+                                        <th>{% trans 'Deduction Name' %}</th>
+                                        <th>{% trans 'Amount' %}</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    <!-- ko foreach: addition_from_deduction_details -->
+                                    <tr>
+                                        <td data-bind="text: name"></td>
+                                        <td data-bind="editableText: amount, numeric: true"></td>
+                                    </tr>
+                                    <!-- /ko -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
 
                         <td>
                             <div class="dropdown">
