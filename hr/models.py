@@ -313,11 +313,44 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                     account=acc,
                     employee=emp
                 )
+
+        if instance.first_add_to_salary:
+            Category.objects.create(
+                name='addition-from-deduction-%s-%d' % (instance.name, instance.id),
+                parent=instance.deduct_in_category
+            )
+            # TODO create permanent employee account of this category
+            # if not instance.is_optional:
+            #     FIXME here also need employee who has dedution with first add to salary
+            #     for emp in Employee.objects.filter(employee_type='PERMANENT', ):
+            #         acc = Account.objects.create(
+            #             name='Deduction#%d-EID%d' % (instance.id, emp.id),
+            #             category=instance.deduct_in_category
+            #         )
+            #         EmployeeAccount.objects.create(
+            #             account=acc,
+            #             employee=emp
+            #         )
+
     else:
         if instance.deduct_in_category:
             instance.deduct_in_category.name = '%s-%d' % (instance.name, instance.id)
             instance.deduct_in_category.save()
 
+            addition_from_deduction_cats = instance.deduct_in_category.children.all()
+            if instance.first_add_to_salary:
+                if not addition_from_deduction_cats:
+                    Category.objects.create(
+                        name='addition-from-deduction-%s-%d' % (instance.name, instance.id),
+                        parent=instance.deduct_in_category
+                    )
+                else:
+                    addition_from_deduction_cats[0].name = 'addition-from-deduction-%s-%d' % (instance.name, instance.id)
+                    addition_from_deduction_cats[0].save()
+
+            else:
+                if addition_from_deduction_cats:
+                    addition_from_deduction_cats[0].delete()
 
 # These two below should be in setting as many to many
 # Imp: Deductin cant be in BAnk Account type and should be one to one with account type
