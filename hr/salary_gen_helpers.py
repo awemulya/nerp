@@ -3,6 +3,10 @@ from hr.models import DeductionName, DeductionValidity, Deduction, AllowanceVali
 
 
 def get_incentive(employee, **kwargs):
+    if kwargs.get('role') == 'tax_incentive':
+        i_filter = {'is_tax_free': False}
+    else:
+        i_filter = {}
     incentive = 0
     row_errors = []
     # for obj in employee.incentives.all():
@@ -21,7 +25,7 @@ def get_incentive(employee, **kwargs):
         kwargs.get('to_date')
     )
 
-    for _name in employee.incentives.all():
+    for _name in employee.incentives.filter(**i_filter):
 
         try:
             obj = _name.incentives.all().filter(employee=employee)[0]
@@ -91,13 +95,17 @@ def get_incentive(employee, **kwargs):
 
 
 def get_allowance(employee, **kwargs):
+    if kwargs.get('role') == 'tax_allowance':
+        a_filter = {'is_tax_free': False}
+    else:
+        a_filter = {}
     allowance_validity_slots = get_validity_slots(AllowanceValidity, kwargs.get('from_date'), kwargs.get('to_date'))
 
     allowance = 0
     row_errors = []
     # employee_response['allowance_details'] = []
     allowance_details = []
-    for _name in employee.allowances.all():
+    for _name in employee.allowances.filter(**a_filter):
 
         allowance_details.append({
             'amount': 0

@@ -131,6 +131,7 @@ class Designation(models.Model):
 class AllowanceName(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=250)
+    is_tax_free = models.BooleanField(default=False)
     account_category = models.ForeignKey(Category, null=True, blank=True)
 
     def delete(self, *args, **kwargs):
@@ -219,6 +220,7 @@ class IncentiveName(models.Model):
     account_category = models.ForeignKey(Category, null=True, blank=True)
     with_scale = models.BooleanField(default=False)
     amount_editable = models.BooleanField(default=False)
+    is_tax_free = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
