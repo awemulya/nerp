@@ -203,7 +203,6 @@ def salary_taxation_unit(employee, f_y_item):
 
     taxation_unit_errors += i_errors
 
-
     salary += allowance + incentive + get_deduction(
         employee,
         role='addition',
