@@ -515,10 +515,7 @@ class Employee(models.Model):
                         raise TypeError('Internal and external setting mismatch')
                     else:
                         days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((scale_start_date.as_string())))
-            # TODO when to round off to upper value(think about employee added in the middle of the fiscal year)
-            # TODO always round off to upper value except for newly apponnted
-            # TODO just changed scemas present/past rate rounding
-            # TODO above things are confusing see hard note(its about not rounding off)
+
             years_worked = days_worked.days / 365
             # the above will work for both appointed and old employee with no change in salary scale
             # Everything gets diffent when salary scale sheet is ammended
