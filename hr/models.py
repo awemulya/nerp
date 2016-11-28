@@ -1070,23 +1070,6 @@ class PayrollEntry(models.Model):
     #         super(PayrollEntry, self).delete(*args, **kwargs)
 
 
-        # @property
-        # def paid_from_date(self):
-        #     rows = self.entry_rows.all()
-        #     if rows:
-        #         return rows[0].paid_from_date,
-        #     else:
-        #         return None
-        #
-        # @property
-        # def paid_to_date(self):
-        #     rows = self.entry_rows.all()
-        #     if rows:
-        #         return rows[0].paid_to_date,
-        #     else:
-        #         return None
-
-
 def employee_account_validator(acc_id):
     category = Account.objects.get(id=acc_id).category
     if category == PayrollConfig.get_solo().basic_salary_account_category or category.parent.parent == PayrollConfig.get_solo().pay_head_account_category or category.parent == PayrollConfig.get_solo().pay_head_account_category:
