@@ -65,6 +65,7 @@
 
 
 <div class="well">
+<h3 class="nerp-title">{% trans 'Employee incentives' %}</h3>
     {{ employee_incentive_formset.non_form_errors.as_ul }}
     <table id="formset" class="form table table-striped">
         {% for form in employee_incentive_formset.forms %}
@@ -99,6 +100,7 @@
 {{ employee_incentive_formset.management_form }}
 
 <div class="well">
+<h3 class="nerp-title">{% trans 'Grade number pause date range' %}</h3>
     {{ employee_grade_number_pause_formset.non_form_errors.as_ul }}
     <table id="formset" class="form table table-striped">
         {% for form in employee_grade_number_pause_formset.forms %}
