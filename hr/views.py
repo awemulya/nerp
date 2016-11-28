@@ -697,6 +697,7 @@ def delete_entry(request, pk=None):
         record_deduction_details = [rdd.id for rdd in p_r.deduction_details.all()]
         record_allowance_details = [rad.id for rad in p_r.allowance_details.all()]
         record_incentive_details = [rid.id for rid in p_r.incentive_details.all()]
+        record_pro_tempore_details = [rid.id for rid in p_r.pro_tempore_details.all()]
 
         try:
             JournalEntry.objects.get(content_type=ContentType.objects.get_for_model(PaymentRecord),
@@ -712,6 +713,8 @@ def delete_entry(request, pk=None):
             AllowanceDetail.objects.get(id=rad_id).delete()
         for rid_id in record_incentive_details:
             IncentiveDetail.objects.get(id=rid_id).delete()
+        for rid_id in record_pro_tempore_details:
+            ProTemporeDetail.objects.get(id=rid_id).delete()
     return redirect(reverse('entry_list'))
 
 

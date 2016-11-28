@@ -1057,6 +1057,12 @@ class PayrollEntry(models.Model):
             str(self.entry_datetime),
         )
 
+    def delete(self, *args, **kwargs):
+        if self.transacted:
+            pass
+        else:
+            super(PayrollEntry, self).delete(*args, **kwargs)
+
 
         # @property
         # def paid_from_date(self):
