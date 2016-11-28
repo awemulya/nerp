@@ -351,6 +351,18 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
             instance.deduct_in_category.name = '%s-%d' % (instance.name, instance.id)
             instance.deduct_in_category.save()
 
+            # Add newly created deduction accout for existing user
+            if not instance.is_optional:
+                for emp in Employee.objects.all():
+                    acc = Account.objects.get_or_create(
+                        name='Deduction#%d-EID%d' % (instance.id, emp.id),
+                        category=instance.deduct_in_category
+                    )
+                    EmployeeAccount.objects.get_or_create(
+                        account=acc,
+                        employee=emp
+                    )
+
             addition_from_deduction_cats = instance.deduct_in_category.children.all()
             if instance.first_add_to_salary:
                 if not addition_from_deduction_cats:
@@ -1067,6 +1079,9 @@ class EmployeeAccount(models.Model):
         related_name='employee_account',
         validators=[employee_account_validator]
     )
+
+    def __unicode__(self):
+        return '%s-%s-%s' % (self.employee.name, self.account.category.name, self.account.name)
 
     class Meta:
         unique_together = (("employee", "account"),)
