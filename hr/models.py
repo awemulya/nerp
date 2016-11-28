@@ -874,8 +874,7 @@ def add_emloyee_incentive_account(sender, instance, created, **kwargs):
 
 class ProTempore(models.Model):
     status_choices = (
-        ('STARTED', _('Started')),
-        ('ENDED', _('ENDED')),
+        ('REGISTERED', _('Registered')),
         ('READY_FOR_PAYMENT', _('Ready for Payment')),
         ('PAID', _('Paid')),
     )
@@ -885,7 +884,7 @@ class ProTempore(models.Model):
                                                 related_name="virtual_employee_post")
     appoint_date = HRBSDateField(default=today)
     dismiss_date = HRBSDateField(null=True, blank=True)
-    status = models.CharField(max_length=128, choices=status_choices, default='STARTED')
+    status = models.CharField(max_length=128, choices=status_choices, default='REGISTERED')
 
     def __unicode__(self):
         return str(self.id)

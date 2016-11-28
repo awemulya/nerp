@@ -246,7 +246,7 @@ function PayrollEntry(employee_options, group_load) {
     // })
 
     self.approve_entry = function () {
-        debugger;
+        // debugger;
         $.ajax({
             url: '/payroll/approve_entry/' + String(self.id()),
             method: 'GET',
@@ -360,7 +360,7 @@ function PayrollEntry(employee_options, group_load) {
                 // async: true,
                 success: function (response) {
                     console.log(response);
-                    debugger;
+                    // debugger;
                     self.id(response.entry_id);
                     self.entry_saved(response.entry_saved);
                     self.approved(response.entry_approved);

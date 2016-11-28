@@ -600,9 +600,10 @@ def save_payroll_entry(request, pk=None):
                             IncentiveDetail.objects.create(incentive_id=incentive_name['incentive'], amount=amount))
 
                 pro_tempores = []
+                paid_pro_tempore_ids = []
                 for pro_tempore in row.get('pro_tempore_details', []):
                     amount = float(pro_tempore['amount'])
-
+                    paid_pro_tempore_ids.append(pro_tempore['p_t_id'])
                     pro_tempores.append(
                         ProTemporeDetail.objects.create(pro_tempore_id=pro_tempore['p_t_id'], amount=amount))
 
@@ -641,6 +642,12 @@ def save_payroll_entry(request, pk=None):
                 p_r.incentive_details.add(*incentives)
                 p_r.allowance_details.add(*allowances)
                 p_r.pro_tempore_details.add(*pro_tempores)
+
+                # Set pro tempore status to paid
+                for pt in ProTempore.objects.filter(id__in=paid_pro_tempore_ids):
+                    pt.status = 'PAID'
+                    pt.save()
+                # End Set pro tempore status to paid
 
                 payment_records.append(p_r.id)
             # p_e = PayrollEntry()
@@ -699,6 +706,8 @@ def delete_entry(request, pk=None):
         record_incentive_details = [rid.id for rid in p_r.incentive_details.all()]
         record_pro_tempore_details = [rid.id for rid in p_r.pro_tempore_details.all()]
 
+        paid_pro_tempore_ids = [rid.pro_tempore.id for rid in p_r.pro_tempore_details.all()]
+
         try:
             JournalEntry.objects.get(content_type=ContentType.objects.get_for_model(PaymentRecord),
                                      object_id=p_r.id).delete()
@@ -707,14 +716,17 @@ def delete_entry(request, pk=None):
 
         p_r.delete()
 
-        for rdd_id in record_deduction_details:
-            DeductionDetail.objects.get(id=rdd_id).delete()
-        for rad_id in record_allowance_details:
-            AllowanceDetail.objects.get(id=rad_id).delete()
-        for rid_id in record_incentive_details:
-            IncentiveDetail.objects.get(id=rid_id).delete()
-        for rid_id in record_pro_tempore_details:
-            ProTemporeDetail.objects.get(id=rid_id).delete()
+        DeductionDetail.objects.filter(id__in=record_deduction_details).delete()
+        AllowanceDetail.objects.filter(id__in=record_allowance_details).delete()
+        IncentiveDetail.objects.filter(id__in=record_incentive_details).delete()
+        ProTemporeDetail.objects.filter(id__in=record_pro_tempore_details).delete()
+
+        # Change paid pro tempore status back to ready for payment
+        for pt in ProTempore.objects.filter(id__in=paid_pro_tempore_ids):
+            pt.status = 'READY_FOR_PAYMENT'
+            pt.save()
+        # End Change paid pro tempore status back to ready for payment
+
     return redirect(reverse('entry_list'))
 
 
