@@ -218,7 +218,44 @@
                         </td>
 
                         <td data-bind="editableText: income_tax, disable_content_editable: disable_input, numeric: true"></td>
-                        <td data-bind="editableText: pro_tempore_amount, disable_content_editable: disable_input, numeric: true"></td>
+
+
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="pro-tempore-details"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    <span data-bind="text: pro_tempore_amount"></span>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <table class="table table-bordered table-striped"
+                                           aria-labelledby="pro-tempore-details">
+                                        <thead>
+                                        <tr>
+                                            <th>{% trans 'Employee' %}</th>
+                                            <th>{% trans 'Employee Designation' %}</th>
+                                            <th>{% trans 'Appoint Date' %}</th>
+                                            <th>{% trans 'Dismiss Date' %}</th>
+                                            <th>{% trans 'Amount' %}</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        <!-- ko foreach: pro_tempore_details -->
+                                        <tr>
+                                            <td data-bind="text: employee_name"></td>
+                                            <td data-bind="text: employee_designation"></td>
+                                            <td data-bind="text: appoint_date"></td>
+                                            <td data-bind="text: dismiss_date"></td>
+                                            <td data-bind="text: amount"></td>
+
+                                        </tr>
+                                        <!-- /ko -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+
                         <td data-bind="editableText: salary, disable_content_editable: disable_input, numeric: true"></td>
                         <td data-bind="editableText: paid_amount, disable_content_editable: disable_input, numeric: true"></td>
                         <td><input class="btn btn-raised btn-danger" type="button" value="Remove"

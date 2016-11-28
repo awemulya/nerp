@@ -1,5 +1,5 @@
 from hr.helpers import get_validity_slots, delta_month_date_impure, month_cnt_inrange
-from hr.models import DeductionName, DeductionValidity, Deduction, AllowanceValidity
+from hr.models import DeductionName, DeductionValidity, Deduction, AllowanceValidity, ProTempore
 
 
 def combine_deduction_details(deduction_details, added_deduction_details):
@@ -280,3 +280,42 @@ def get_deduction(employee, **kwargs):
             return deduction, row_errors
         else:
             return deduction, deduction_details, row_errors
+
+
+def get_pro_tempore_data(employee):
+    # TODO change status when this protempore are transacted
+    pro_tempores = ProTempore.objects.filter(pro_tempore_employee=employee, status='READY_FOR_PAYMENT')
+    pro_tempore_details = []
+    for p_t in pro_tempores:
+        pro_tempore_details.append({
+            'amount': 0
+        })
+
+        pte_salary = p_t.pro_tempore_employee.get_date_range_salary(
+            p_t.appoint_date,
+            p_t.dismiss_date,
+            apply_grade_rate=True
+        )
+        pte_allowance = get_allowance(p_t.pro_tempore_employee, from_date=p_t.appoint_date, to_date=p_t.dismiss_date)[0]
+        pte_total = pte_salary + pte_allowance
+
+        e_salary = p_t.employee.get_date_range_salary(
+            p_t.appoint_date,
+            p_t.dismiss_date,
+            apply_grade_rate=True
+        )
+        e_allowance = get_allowance(p_t.employee, from_date=p_t.appoint_date,
+                                    to_date=p_t.dismiss_date)[0]
+        e_total = e_salary + e_allowance
+
+        diff_total = e_total - pte_total
+        if diff_total < 0:
+            diff_total = 0
+        pro_tempore_details[-1]['amount'] = diff_total
+        pro_tempore_details[-1]['id'] = p_t.id
+        pro_tempore_details[-1]['appoint_date'] = str(p_t.appoint_date)
+        pro_tempore_details[-1]['dismiss_date'] = str(p_t.dismiss_date)
+        pro_tempore_details[-1]['employee_name'] = p_t.employee.name
+        pro_tempore_details[-1]['employee_designation'] = p_t.employee.designation.designation_name
+
+    return pro_tempore_details

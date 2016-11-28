@@ -89,6 +89,7 @@ function PaymentEntryRow(emp_options) {
     self.incentive_details = ko.observableArray();
     self.allowance_details = ko.observableArray();
     self.deduction_details = ko.observableArray();
+    self.pro_tempore_details = ko.observableArray();
 
     self.amount_added_before_deduction = ko.observable(0);
 
@@ -124,9 +125,17 @@ function PaymentEntryRow(emp_options) {
         self.incentive(total);
     });
 
+    self.pro_tempore_details_total = ko.computed(function(){
+        var total = 0;
+        ko.utils.arrayForEach(self.pro_tempore_details(), function (obj) {
+            total += parseInt(obj.amount());
+        });
+        self.pro_tempore_amount(total);
+    });
+
     self.compute_paid_amount = ko.computed(function () {
         // console.log(self.salary() - self.deduced_amount() - self.income_tax() + self.incentive() + self.allowance());
-        self.paid_amount(self.salary() + self.incentive() + self.allowance() + self.amount_added_before_deduction() - self.deduced_amount() - self.income_tax());
+        self.paid_amount(self.salary() + self.incentive() + self.allowance() + self.amount_added_before_deduction()  - self.deduced_amount() - self.income_tax() + self.pro_tempore_amount());
     });
 
     self.row_salary_detail = ko.computed(function(){

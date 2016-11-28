@@ -18,7 +18,8 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 
-from hr.salary_gen_helpers import get_deduction, get_allowance, get_incentive, combine_deduction_details
+from hr.salary_gen_helpers import get_deduction, get_allowance, get_incentive, combine_deduction_details, \
+    get_pro_tempore_data
 from hr.serializers import PayrollEntrySerializer
 from users.models import group_required, all_group_required
 from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
@@ -365,32 +366,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
                 row_errors += taxation_errors
 
     employee_response['income_tax'] = income_tax
-    # employee_response['deduction_detail'] = deduction_detail
-    # employee_response['other_deduction'] = other_deduction
 
-    # Handle Pro Tempore
-    # paid flag should be set after transaction
-    # TODO change status when this protempore are transacted
-    pro_tempores = ProTempore.objects.filter(pro_tempore_employee=employee, status='READY_FOR_PAYMENT')
-    p_t_amount = 0
-    to_be_paid_pt_ids = []
-    for p_t in pro_tempores:
-        if isinstance(p_t.appoint_date, date):
-            p_t_amount += p_t.pro_tempore.get_date_range_salary(
-                p_t.appoint_date,
-                p_t.dismiss_date
-            )
-
-            to_be_paid_pt_ids.append(p_t.id)
-        else:
-            p_t_amount += p_t.pro_tempore.get_date_range_salary(
-                BSDate(*bs_str2tuple(p_t.appoint_date)),
-                BSDate(*bs_str2tuple(p_t.dismiss_date))
-            )
-            to_be_paid_pt_ids.append(p_t.id)
-
-    employee_response['pro_tempore_amount'] = p_t_amount
-    employee_response['pro_tempore_ids'] = to_be_paid_pt_ids
+    employee_response['pro_tempore_details'] = get_pro_tempore_data(employee)
     # First allowence added to salary for deduction and income tax.
     # For pure salary here added allowance should be duduced
     employee_response['salary'] = salary

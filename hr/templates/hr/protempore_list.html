@@ -50,16 +50,16 @@
                         {{ item.pro_tempore_employee.name }}
                     </td>
                     <td>
-                        {{ item.pro_tempore.designation }}
+                        {{ item.employee.designation }}
                     </td>
                     <td>
-                        {{ item.pro_tempore.appoint_date }}
+                        {{ item.appoint_date }}
                     </td>
                     <td>
-                        {{ item.pro_tempore.dismiss_date }}
+                        {{ item.dismiss_date }}
                     </td>
                     <td>
-                        {{ item.pro_tempore.paid }}
+                        {{ item.status }}
                     </td>
                     <td>
                         <a href="{% url 'protempore_delete' item.id %}">
