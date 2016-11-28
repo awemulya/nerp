@@ -31,7 +31,7 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
-    AllowanceValidity, DeductionValidity, GradeScaleValidity, PayrollConfig, PayrollAccountant
+    AllowanceValidity, DeductionValidity, GradeScaleValidity, PayrollConfig, PayrollAccountant, ProTemporeDetail
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -570,6 +570,7 @@ def save_payroll_entry(request, pk=None):
                     p_r.deduction_details.all().delete()
                     p_r.incentive_details.all().delete()
                     p_r.allowance_details.all().delete()
+                    p_r.pro_tempore_details.all().delete()
                 else:
                     p_r = PaymentRecord()
 
@@ -597,6 +598,13 @@ def save_payroll_entry(request, pk=None):
                     if amount:
                         incentives.append(
                             IncentiveDetail.objects.create(incentive_id=incentive_name['incentive'], amount=amount))
+
+                pro_tempores = []
+                for pro_tempore in row.get('pro_tempore_details', []):
+                    amount = float(pro_tempore['amount'])
+
+                    pro_tempores.append(
+                        ProTemporeDetail.objects.create(pro_tempore_id=pro_tempore['p_t_id'], amount=amount))
 
                 # p_r = PaymentRecord()
                 p_r.paid_employee_id = int(row.get('paid_employee', None))
@@ -632,6 +640,7 @@ def save_payroll_entry(request, pk=None):
                 p_r.deduction_details.add(*deductions)
                 p_r.incentive_details.add(*incentives)
                 p_r.allowance_details.add(*allowances)
+                p_r.pro_tempore_details.add(*pro_tempores)
 
                 payment_records.append(p_r.id)
             # p_e = PayrollEntry()

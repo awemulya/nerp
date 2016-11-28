@@ -987,6 +987,19 @@ class AllowanceDetail(models.Model):
     amount = models.FloatField()
 
 
+class ProTemporeDetail(models.Model):
+    pro_tempore = models.OneToOneField(ProTempore, related_name='pro_tempore_record')
+    amount = models.FloatField()
+
+    @property
+    def appoint_date(self):
+        return str(self.pro_tempore.appoint_date)
+
+    @property
+    def dismiss_date(self):
+        return str(self.pro_tempore.dismiss_date)
+
+
 class PaymentRecord(models.Model):
     paid_employee = models.ForeignKey(Employee)
     designation = models.ForeignKey(Designation)
@@ -999,8 +1012,9 @@ class PaymentRecord(models.Model):
     deduction_details = models.ManyToManyField(DeductionDetail, blank=True)
     incentive_details = models.ManyToManyField(IncentiveDetail, blank=True)
     allowance_details = models.ManyToManyField(AllowanceDetail, blank=True)
+    pro_tempore_details = models.ManyToManyField(ProTemporeDetail, blank=True)
     income_tax = models.FloatField(null=True, blank=True)
-    pro_tempore_amount = models.FloatField(null=True, blank=True)
+    # pro_tempore_amount = models.FloatField(null=True, blank=True)
     salary = models.FloatField(null=True, blank=True)
     paid_amount = models.FloatField()
 

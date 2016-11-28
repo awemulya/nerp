@@ -312,7 +312,7 @@ def get_pro_tempore_data(employee):
         if diff_total < 0:
             diff_total = 0
         pro_tempore_details[-1]['amount'] = diff_total
-        pro_tempore_details[-1]['id'] = p_t.id
+        pro_tempore_details[-1]['p_t_id'] = p_t.id
         pro_tempore_details[-1]['appoint_date'] = str(p_t.appoint_date)
         pro_tempore_details[-1]['dismiss_date'] = str(p_t.dismiss_date)
         pro_tempore_details[-1]['employee_name'] = p_t.employee.name

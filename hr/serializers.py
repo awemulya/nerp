@@ -7,7 +7,7 @@ from hr.bsdate import BSDate
 from hr.helpers import bs_str2tuple
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
     GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup, AllowanceValidity, AllowanceName, \
-    Allowance, DeductionValidity, Deduction, DeductionName, PayrollConfig
+    Allowance, DeductionValidity, Deduction, DeductionName, PayrollConfig, ProTemporeDetail
 
 from django.utils.translation import ugettext as _
 
@@ -36,11 +36,22 @@ class IncentiveDetailSerializer(serializers.ModelSerializer):
         model = IncentiveDetail
         fields = ('incentive', 'name', 'amount', 'editable')
 
+class ProTemporeDetailSerializer(serializers.ModelSerializer):
+    p_t_id = serializers.ReadOnlyField(source='pro_tempore.p_t_id')
+    # appoint_date = serializers.ReadOnlyField(source='appoint_date')
+    # dismiss_date = serializers.ReadOnlyField(source='dismiss_date')
+    employee_name = serializers.ReadOnlyField(source='pro_tempore.employee.name')
+    employee_designation = serializers.ReadOnlyField(source='pro_tempore.employee.designation.designation_name')
+    class Meta:
+        model = ProTemporeDetail
+        fields = ('p_t_id', 'amount', 'appoint_date', 'dismiss_date', 'employee_name', 'employee_designation')
+
 
 class PaymentRecordSerializer(serializers.ModelSerializer):
     incentive_details = IncentiveDetailSerializer(many=True)
     allowance_details = AllowanceDetailSerializer(many=True)
     deduction_details = DeductionDetailSerializer(many=True)
+    pro_tempore_details = ProTemporeDetailSerializer(many=True)
     # is_explicitly_added_row = serializers.SerializerMethodField('explicitly_added')
     paid_employee = serializers.SerializerMethodField('get_paid_employee_as_str')
 
