@@ -919,7 +919,7 @@ def transact_entry(request, pk=None):
                 category=PayrollConfig.get_solo().pro_tempore_account_category,
                 employee_account__employee=employee
             )
-            pro_tempore_amount = entry.pro_tempore_amount
+            pro_tempore_amount = entry.pro_tempore_amount()
 
             set_transactions(
                 entry,
@@ -993,6 +993,7 @@ def transact_entry(request, pk=None):
                     category=deduction_obj.deduct_in_category,
                     employee_account__employee=employee
                 )
+
                 d_amount = deduction_details_item.amount
 
                 set_transactions(
@@ -1003,6 +1004,32 @@ def transact_entry(request, pk=None):
                         ('dr', d_account, d_amount),
                     ]
                 )
+
+                if employee.type == 'PERMANENT' and deduction_details_item.deduction.first_add_to_salary:
+                    add_before_deduction_account = Account.objects.get(
+                        category=deduction_obj.deduct_in_category.children.all()[0],
+                        employee_account__employee=employee
+                    )
+                    amount_added_before_deduction = deduction_details_item.amount_added_before_deduction
+
+                    set_transactions(
+                        entry,
+                        p_e.entry_datetime,
+                        *[
+                            ('cr', salary_giving_account, amount_added_before_deduction),
+                            ('dr', add_before_deduction_account, amount_added_before_deduction),
+                        ]
+                    )
+
+                    set_transactions(
+                        entry,
+                        p_e.entry_datetime,
+                        *[
+                            ('cr', add_before_deduction_account, amount_added_before_deduction),
+                            ('dr', emp_basic_salary_account, amount_added_before_deduction),
+                        ]
+                    )
+
 
             # Transact Tax
             emp_tax_account = Account.objects.get(
@@ -1020,14 +1047,14 @@ def transact_entry(request, pk=None):
                 ]
             )
 
-            set_transactions(
-                entry,
-                p_e.entry_datetime,
-                *[
-                    ('cr', emp_tax_account, tax_amount),
-                    ('dr', salary_giving_account, tax_amount),
-                ]
-            )
+            # set_transactions(
+            #     entry,
+            #     p_e.entry_datetime,
+            #     *[
+            #         ('cr', emp_tax_account, tax_amount),
+            #         ('dr', salary_giving_account, tax_amount),
+            #     ]
+            # )
 
     p_e.transacted = True
     p_e.save()

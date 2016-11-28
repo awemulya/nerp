@@ -54,11 +54,11 @@
                                 <button class="btn btn-raised btn-primary pull-right" type="button">Edit</button>
                             </a>
                         {% endif %}
-                        {% if not obj.transacted%}
+{#                        {% if not obj.transacted%}#}
                             <a href={% url 'delete_entry' obj.id %}>
                                 <button class="btn btn-raised btn-danger pull-right" type="button">Delete</button>
                             </a>
-                        {% endif %}
+{#                        {% endif %}#}
                     </td>
                     {% if obj.transacted %}
                         <td>Entry Transacted</td>
