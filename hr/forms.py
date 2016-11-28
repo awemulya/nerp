@@ -10,7 +10,7 @@ from hr.helpers import bs_str2tuple, employee_last_payment_record, inc_1_day
 from users.models import User
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
-    PayrollAccountant, ProTempore
+    PayrollAccountant, ProTempore, EmployeeGradeNumberPause
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -513,7 +513,6 @@ class ReportHrForm(HTML5BootstrapModelForm):
         fields = '__all__'
 
 
-
 # These are crud formset
 EmployeeIncentiveFormSet = forms.inlineformset_factory(
     Employee,
@@ -522,6 +521,15 @@ EmployeeIncentiveFormSet = forms.inlineformset_factory(
     fields='__all__',
     formset=IncentiveInlineFormset
 )
+
+EmployeeGradeNumberPauseFormset = forms.inlineformset_factory(
+    Employee,
+    EmployeeGradeNumberPause,
+    extra=1,
+    fields='__all__',
+    # formset=IncentiveInlineFormset
+)
+
 IncentiveNameFormSet = forms.inlineformset_factory(
     IncentiveName,
     Incentive,

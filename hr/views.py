@@ -27,7 +27,7 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
     EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet, \
     DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm, PayrollConfigForm, \
-    PayrollAccountantForm, BranchOfficeForm, ProTemporeForm
+    PayrollAccountantForm, BranchOfficeForm, ProTemporeForm, EmployeeGradeNumberPauseFormset
 from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
@@ -1082,14 +1082,17 @@ def employee(request, pk=None):
         employee_form = EmployeeForm(request.POST, instance=employee, accountant_branch_id=accountant_branch_id)
         employee_incentive_formset = EmployeeIncentiveFormSet(request.POST, instance=employee)
         # TODO add here a formset for grade briddhi rokka
-        
-        if employee_form.is_valid() and employee_incentive_formset.is_valid():
+        employee_grade_number_pause_formset = EmployeeGradeNumberPauseFormset(request.POST, instance=employee)
+
+        if employee_form.is_valid() and employee_incentive_formset.is_valid() and employee_grade_number_pause_formset.is_valid():
             employee_form.save()
             employee_incentive_formset.save()
+            employee_grade_number_pause_formset.save()
             return redirect(reverse('list_employee'))
     else:
         employee_form = EmployeeForm(instance=employee, accountant_branch_id=accountant_branch_id)
         employee_incentive_formset = EmployeeIncentiveFormSet(instance=employee)
+        employee_grade_number_pause_formset = EmployeeGradeNumberPauseFormset(instance=employee)
 
     return render(
         request,
@@ -1097,6 +1100,7 @@ def employee(request, pk=None):
         {
             'employee_form': employee_form,
             'employee_incentive_formset': employee_incentive_formset,
+            'employee_grade_number_pause_formset': employee_grade_number_pause_formset,
             'ko_data': ko_data,
             'obj_id': obj_id,
         })
