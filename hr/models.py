@@ -468,6 +468,7 @@ class Employee(models.Model):
     scale_start_date = HRBSDateField(null=True, blank=True)
 
     dismiss_date = HRBSDateField(null=True, blank=True)
+    grade_number = models.PositiveIntegerField()
     # allowance will be added to salary
     allowances = models.ManyToManyField(AllowanceName, blank=True)
     # incentive will have diff trancation
@@ -498,7 +499,7 @@ class Employee(models.Model):
         )[0]
 
         grade_salary = rate_obj.salary_scale
-        grade_number = rate_obj.grade_number
+        grade_number = self.grade_number if self.grade_number < rate_obj.grade_number else rate_obj.grade_number
         grade_rate = rate_obj.grade_rate
         salary = 0
         for year, month in get_y_m_tuple_list(from_date, to_date):
