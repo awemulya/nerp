@@ -354,14 +354,25 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
             addition_from_deduction_cats = instance.deduct_in_category.children.all()
             if instance.first_add_to_salary:
                 if not addition_from_deduction_cats:
-                    Category.objects.create(
+                    addition_from_deduction_cat = Category.objects.create(
                         name='addition-from-deduction-%s-%d' % (instance.name, instance.id),
                         parent=instance.deduct_in_category
                     )
                 else:
                     addition_from_deduction_cats[0].name = 'addition-from-deduction-%s-%d' % (instance.name, instance.id)
                     addition_from_deduction_cats[0].save()
+                    addition_from_deduction_cat = addition_from_deduction_cats[0]
 
+                if not instance.is_optional:
+                    for emp in Employee.objects.filter(type='PERMANENT'):
+                        acc, created = Account.objects.get_or_create(
+                            name='AddBeforeDedution%d-EID%d' % (instance.id, emp.id),
+                            category=addition_from_deduction_cat
+                        )
+                        EmployeeAccount.objects.get_or_create(
+                            account=acc,
+                            employee=emp
+                        )
             # else:
             #     if addition_from_deduction_cats:
             #         addition_from_deduction_cats[0].delete()
