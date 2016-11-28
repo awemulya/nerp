@@ -1062,6 +1062,7 @@ class PayrollEntry(models.Model):
             str(self.entry_datetime),
         )
 
+    # TODO uncomment delete function after transaction testing is done
     # def delete(self, *args, **kwargs):
     #     if self.transacted:
     #         pass
