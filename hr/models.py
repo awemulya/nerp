@@ -1026,6 +1026,12 @@ class PaymentRecord(models.Model):
     def __unicode__(self):
         return str(self.id)
 
+    def pro_tempore_amount(self):
+        total = 0
+        for pt in self.pro_tempore_details.all():
+            total += pt.amount
+        return total
+
 
 class PayrollEntry(models.Model):
     entry_rows = models.ManyToManyField(PaymentRecord)

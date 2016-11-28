@@ -898,7 +898,6 @@ def transact_entry(request, pk=None):
             salary = entry.salary
 
             # NeedUpdate
-            # TODO Later This will be one by its fiscal year(confused)
             emp_basic_salary_account = Account.objects.get(
                 category=PayrollConfig.get_solo().basic_salary_account_category,
                 employee_account__employee=employee
@@ -941,8 +940,6 @@ def transact_entry(request, pk=None):
             )
 
             for allowance_details_item in entry.allowance_details.all():
-                import ipdb
-                ipdb.set_trace()
                 a_account = Account.objects.get(category=allowance_details_item.allowance.account_category,
                                                 employee_account__employee=employee)
                 a_amount = allowance_details_item.amount
