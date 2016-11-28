@@ -800,6 +800,15 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                 )
 
 
+class EmployeeGradeNumberPause(models.Model):
+    employee = models.ForeignKey(Employee, related_name='grade_number_pause_details')
+    from_date = HRBSDateField()
+    to_date = HRBSDateField()
+
+    def __unicode__(self):
+        return '%s-to-%s' % (self.from_date, self.to_date)
+
+
 # This is incentive(for motivation)
 class Incentive(models.Model):
     # deduct_choice = [('AMOUNT', _('Amount')), ('RATE', _('Rate'))]
