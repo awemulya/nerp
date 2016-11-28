@@ -3,7 +3,7 @@ $(document).ready(function () {
     // var main = this;
     var group_load = true;
     if (typeof(ko_data.ctx_data.id) != 'undefined') {
-        group_load = false
+        group_load = false;
     }
 
     vm = new PayrollEntry(ko_data.emp_options, group_load);
@@ -17,7 +17,7 @@ $(document).ready(function () {
                         options.parent.paid_from_date(options.data.paid_from_date);
                         options.parent.paid_to_date(options.data.paid_to_date);
                     }
-                    return entry_row
+                    return entry_row;
                 }
             },
             // 'branch': {
@@ -38,17 +38,17 @@ $(document).ready(function () {
 function diffByID(list1, list2, pdb) {
     if (list1.length >= list2.length) {
         var list1_ids = ko.utils.arrayMap(list1, function (obj) {
-            return obj.id
+            return obj.id;
         });
         var list2_ids = ko.utils.arrayMap(list2, function (obj) {
-            return obj.id
+            return obj.id;
         });
         var diff = $(list1_ids).not(list2_ids).get();
 
         var diff_obj_array = ko.utils.arrayFilter(list1, function (obj) {
 
             if ($.inArray(obj.id, diff) != -1) {
-                return obj
+                return obj;
             }
         });
 
@@ -341,7 +341,7 @@ function PayrollEntry(employee_options, group_load) {
         if (typeof(ko_data.ctx_data.id) != 'undefined') {
             var save_url = '/payroll/save_payroll_entry/' + String(ko_data.ctx_data.id) + '/';
         } else {
-            var save_url = '/payroll/save_payroll_entry/'
+            var save_url = '/payroll/save_payroll_entry/';
         }
         var has_error = false;
         for (var row of self.entry_rows()) {
@@ -459,7 +459,7 @@ function PayrollEntry(employee_options, group_load) {
                             self.paid_from_date_error(null);
                             self.paid_to_date_error(null);
 
-                            c = 0;
+                            var c = 0;
                             if (ko_data.ctx_data.edit) {
 
                                 ko.utils.arrayForEach(self.entry_rows(), function (row_vm) {
@@ -559,11 +559,11 @@ function PayrollEntry(employee_options, group_load) {
                     // debugger;
                     self.employee_options.removeAll(diffByID(self.employee_options(), response.opt_data));
                 } else if (self.employee_options().length < response.opt_data.length) {
-                    ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()))
+                    ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()));
                 } else {
                     // self.employee_options(response.opt_data);
                     self.employee_options.removeAll(diffByID(self.employee_options(), response.opt_data));
-                    ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()))
+                    ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()));
                 }
                 // self.employee_options(response.opt_data);
 
@@ -587,7 +587,7 @@ function PayrollEntry(employee_options, group_load) {
 
     self.employee_options.subscribe(function () {
         var branch_emp_ids = ko.utils.arrayMap(self.employee_options(), function (obj) {
-            return obj.id
+            return obj.id;
         });
         var rows_to_remove = [];
         for (var roo of self.entry_rows()) {
