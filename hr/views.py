@@ -1078,9 +1078,9 @@ def employee(request, pk=None):
         employee = Employee()
 
     if request.method == "POST":
-        employee_form = EmployeeForm(request.POST, instance=employee, accountant_branch_id=accountant_branch_id)
-        employee_incentive_formset = EmployeeIncentiveFormSet(request.POST, instance=employee)
-        employee_grade_number_pause_formset = EmployeeGradeNumberPauseFormset(request.POST, instance=employee)
+        employee_form = EmployeeForm(request.POST, instance=employee, accountant_branch_id=accountant_branch_id, prefix='emp_form')
+        employee_incentive_formset = EmployeeIncentiveFormSet(request.POST, instance=employee, prefix='emp_inc_formset')
+        employee_grade_number_pause_formset = EmployeeGradeNumberPauseFormset(request.POST, instance=employee, prefix='emp_gnp_formset')
 
         if employee_form.is_valid() and employee_incentive_formset.is_valid() and employee_grade_number_pause_formset.is_valid():
             employee_form.save()
@@ -1088,9 +1088,9 @@ def employee(request, pk=None):
             employee_grade_number_pause_formset.save()
             return redirect(reverse('list_employee'))
     else:
-        employee_form = EmployeeForm(instance=employee, accountant_branch_id=accountant_branch_id)
-        employee_incentive_formset = EmployeeIncentiveFormSet(instance=employee)
-        employee_grade_number_pause_formset = EmployeeGradeNumberPauseFormset(instance=employee)
+        employee_form = EmployeeForm(instance=employee, accountant_branch_id=accountant_branch_id, prefix='emp_form')
+        employee_incentive_formset = EmployeeIncentiveFormSet(instance=employee, prefix='emp_inc_formset')
+        employee_grade_number_pause_formset = EmployeeGradeNumberPauseFormset(instance=employee, prefix='emp_gnp_formset')
 
     return render(
         request,
