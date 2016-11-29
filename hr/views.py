@@ -1080,7 +1080,6 @@ def employee(request, pk=None):
     if request.method == "POST":
         employee_form = EmployeeForm(request.POST, instance=employee, accountant_branch_id=accountant_branch_id)
         employee_incentive_formset = EmployeeIncentiveFormSet(request.POST, instance=employee)
-        # TODO add here a formset for grade briddhi rokka
         employee_grade_number_pause_formset = EmployeeGradeNumberPauseFormset(request.POST, instance=employee)
 
         if employee_form.is_valid() and employee_incentive_formset.is_valid() and employee_grade_number_pause_formset.is_valid():

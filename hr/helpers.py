@@ -250,14 +250,8 @@ def drc_date_by_days(in_date, drc):
 
 def employee_last_payment_record(employee):
     from hr.models import PaymentRecord
-    from hr.models import ProTempore
-    # TODO also check last ProTempore Payment Record if only pro tempore is only paid(this done but made off for now)
     emp_record = PaymentRecord.objects.filter(paid_employee=employee)
-    # emp_pt_record = ProTempore.objects.filter(employee=employee)
-    # below variable assignment will take the functioality to previous stage
-    emp_pt_record = None
     pr_last_date = None
-    pt_last_date = None
     if emp_record:
         emp_record = sorted(
             emp_record,
@@ -265,23 +259,10 @@ def employee_last_payment_record(employee):
             reverse=True
         )
         pr_last_date = emp_record[0].paid_to_date
-    if emp_pt_record:
-        emp_pt_record = sorted(
-            emp_pt_record,
-            key=lambda pr: pr.dismiss_date,
-            reverse=True
-        )
-        pr_last_date = emp_record[0].pt_last_date
-
-    if pr_last_date and pt_last_date:
-        return pr_last_date if pr_last_date > pt_last_date else pt_last_date
-    elif pr_last_date and not pt_last_date:
+    if pr_last_date:
         return pr_last_date
-    elif not pr_last_date and not pt_last_date:
-        return pt_last_date
     else:
         return None
-
 
 def emp_salary_eligibility(emp, p_from, p_to):
     error_msg = None

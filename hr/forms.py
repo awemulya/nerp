@@ -6,7 +6,7 @@ from njango.nepdate import bs2ad
 
 from hr.bsdate import BSDate
 from hr.fields import HRBSFormField, HRBSDateFormField
-from hr.helpers import bs_str2tuple, employee_last_payment_record, inc_1_day
+from hr.helpers import bs_str2tuple, employee_last_payment_record, inc_1_day, drc_1_day
 from users.models import User
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
@@ -210,6 +210,37 @@ class IncentiveInlineFormset(forms.BaseInlineFormSet):
                     form.add_error(
                         'year_payment_cycle_month',
                         _('This field is needed if it is a yearly allowance')
+                    )
+
+
+class EmployeeGradeNumberPauseInlineFormset(forms.BaseInlineFormSet):
+    def clean(self):
+        if any(self.errors):
+            return
+
+        for form in self.forms:
+            if form.cleaned_data:
+                from_date = form.cleaned_data.get("from_date")
+                to_date = form.cleaned_data.get("to_date")
+                employee = form.cleaned_data.get("employee")
+
+                import ipdb
+                ipdb.set_trace()
+
+                if from_date > to_date:
+                    form.add_error(
+                        'from_date',
+                        _('From date must be less than to date')
+                    )
+
+                last_paid = employee_last_payment_record(employee)
+                if not last_paid:
+                    last_paid = drc_1_day(employee.scale_start_date)
+
+                if from_date < last_paid:
+                    form.add_error(
+                        'from_date',
+                        _('From date cannot be less than employee last paid date. Last paid on %s' % last_paid)
                     )
 
 
@@ -456,7 +487,6 @@ class DeductionForm(forms.ModelForm):
     #             'This field is required with Deduction for Employee Account'
     #         )
 
-
 class EmployeeForm(HTML5BootstrapModelForm):
     def __init__(self, *args, **kwargs):
         accountant_branch_id = kwargs.pop('accountant_branch_id')
@@ -527,7 +557,7 @@ EmployeeGradeNumberPauseFormset = forms.inlineformset_factory(
     EmployeeGradeNumberPause,
     extra=1,
     fields='__all__',
-    # formset=IncentiveInlineFormset
+    formset=EmployeeGradeNumberPauseInlineFormset
 )
 
 IncentiveNameFormSet = forms.inlineformset_factory(
