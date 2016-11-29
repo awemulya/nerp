@@ -240,6 +240,14 @@ class EmployeeGradeNumberPauseInlineFormset(forms.BaseInlineFormSet):
                         _('From date cannot be less than employee last paid date. Last paid on %s' % last_paid)
                     )
 
+                for gnp in EmployeeGradeNumberPause.objects.filter(employee=employee):
+                    if from_date <= gnp.to_date:
+                        form.add_error(
+                            'from_date',
+                            _('From date cannot be less than previous to dates.' % last_paid)
+                        )
+                        break
+
 
 class AllowanceInlineFormset(forms.BaseInlineFormSet):
     def clean(self):

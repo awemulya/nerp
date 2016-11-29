@@ -16,7 +16,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from calendar import monthrange as mr
 from datetime import date
 from hr.bsdate import BSDate
-from .helpers import get_y_m_tuple_list, are_side_months, get_validity_slots, get_validity_id
+from .helpers import get_y_m_tuple_list, are_side_months, get_validity_slots, get_validity_id, \
+    employee_last_payment_record, drc_1_day
 from django.core.exceptions import ValidationError
 # import pdb
 
@@ -465,6 +466,7 @@ class Employee(models.Model):
 
     # This is point to start salary calculation
     # May need during new user entry or import
+    # if below field is not present then given from date validity start from is used
     scale_start_date = HRBSDateField(null=True, blank=True)
 
     dismiss_date = HRBSDateField(null=True, blank=True)
@@ -491,6 +493,30 @@ class Employee(models.Model):
         else:
             return self.scale_start_date
 
+    def excluded_days_for_grade_pause(self, scale_start_date, check_upto_date):
+        excluded_days = 0
+        if isinstance(scale_start_date, date):
+            filter = {
+                'from_date__gte': scale_start_date
+            }
+        else:
+            filter = {
+                'from_date__gte': scale_start_date.as_ad()
+            }
+        for gnp in self.grade_number_pause_details.filter(**filter):
+            if check_upto_date < gnp.from_date:
+                pass
+            elif check_upto_date >= gnp.from_date and check_upto_date <= gnp.to_date:
+                diff =  check_upto_date - gnp.from_date
+                excluded_days += diff.days
+
+            elif check_upto_date > gnp.to_date:
+                diff = gnp.to_date - gnp.from_date
+                excluded_days += diff.days + 1
+        return excluded_days
+
+
+
     def current_salary_by_month(self, from_date, to_date, **kwargs):
 
         rate_obj = EmployeeGradeScale.objects.filter(
@@ -508,15 +534,18 @@ class Employee(models.Model):
                 if isinstance(from_date, date):
                     try:
                         days_worked = date(year, month, 1) - scale_start_date
+                        upto_date = date(year, month, 1)
                     except:
                         raise TypeError('Internal and external setting mismatch')
                 else:
                     if isinstance(self.scale_start_date, date):
                         raise TypeError('Internal and external setting mismatch')
                     else:
+                        # TODO think whether it is upto beggining of month or last of month
                         days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((scale_start_date.as_string())))
+                        upto_date = BSDate(year, month, 1)
 
-            years_worked = days_worked.days / 365
+            years_worked = (days_worked.days - self.excluded_days_for_grade_pause(upto_date)) / 365
             # the above will work for both appointed and old employee with no change in salary scale
             # Everything gets diffent when salary scale sheet is ammended
             if kwargs.get('apply_grade_rate'):
@@ -804,6 +833,16 @@ class EmployeeGradeNumberPause(models.Model):
     employee = models.ForeignKey(Employee, related_name='grade_number_pause_details')
     from_date = HRBSDateField()
     to_date = HRBSDateField()
+
+    # TODO prevent delete if employee last paid is in between validities or exceeded validities
+    def delete(self):
+        employee_last_paid = employee_last_payment_record(self.employee)
+        if not employee_last_paid:
+            employee_last_paid = drc_1_day(self.employee.scale_start_date)
+        if (employee_last_paid >= self.from_date and employee_last_paid <= self.to_date) or employee_last_paid > self.to_date:
+            pass
+        else:
+            super(EmployeeGradeNumberPause, self).delete()
 
     def __unicode__(self):
         return '%s-to-%s' % (self.from_date, self.to_date)
