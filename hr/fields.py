@@ -10,6 +10,7 @@ from njango import nepdate
 
 from app import settings
 from hr.bsdate import BSDate
+from hr.helpers import bs_str2tuple
 
 
 class HRBSFormField(widgets.TextInput):
@@ -83,9 +84,18 @@ class HRBSDateFormField(DateFormField):
         super(HRBSDateFormField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
-        if not value or nepdate.is_valid(value):
+        from hr.models import PayrollConfig
+        CALENDAR = PayrollConfig.get_solo().hr_calendar
+
+        if not value:
             return value
-        else:
+
+        try:
+            if CALENDAR == "AD":
+                return self.strptime(value, "%Y-%m-%d")
+            else:
+                return BSDate(*bs_str2tuple(value))
+        except:
             raise ValidationError(
                 self.default_error_messages['invalid'],
                 code='invalid',

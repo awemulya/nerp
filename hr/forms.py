@@ -224,9 +224,6 @@ class EmployeeGradeNumberPauseInlineFormset(forms.BaseInlineFormSet):
                 to_date = form.cleaned_data.get("to_date")
                 employee = form.cleaned_data.get("employee")
 
-                import ipdb
-                ipdb.set_trace()
-
                 if from_date > to_date:
                     form.add_error(
                         'from_date',
