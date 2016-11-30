@@ -1417,7 +1417,10 @@ def get_report(request):
                 data = []
                 for record in payment_records:
                     row = {}
+
                     for key in fields.keys():
+                        import ipdb
+                        ipdb.set_trace()
                         row[key] = getattr_custom(record, fields[key], deduction=deduction)
                     data.append(row)
                 tables[table.title] = data
