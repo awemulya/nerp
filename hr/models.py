@@ -836,7 +836,6 @@ class EmployeeGradeNumberPause(models.Model):
     from_date = HRBSDateField()
     to_date = HRBSDateField()
 
-    # TODO prevent delete if employee last paid is in between validities or exceeded validities
     def delete(self):
         employee_last_paid = employee_last_payment_record(self.employee)
         if not employee_last_paid:
@@ -1192,6 +1191,12 @@ class ReportHR(models.Model):
     code = models.CharField(max_length=100)
     template = models.FilePathField(path=hr_report_template_folder, match=".*\.html$")
     for_employee_type = models.CharField(max_length=50, choices=emp_type_choices)
+    deduction = models.ForeignKey(
+        DeductionName,
+        related_name='reports',
+        null=True,
+        blank=True
+    )
 
     def __unicode__(self):
         return self.name

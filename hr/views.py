@@ -41,7 +41,7 @@ from .bsdate import BSDate
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
     emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present, \
-    user_is_branch_accountant, GroupRequiredMixin, IsBranchAccountantMixin
+    user_is_branch_accountant, GroupRequiredMixin, IsBranchAccountantMixin, getattr_custom
 from account.models import set_transactions, JournalEntry
 from hr.filters import EmployeeFilter, PayrollEntryFilter
 from django.core import serializers
@@ -1388,6 +1388,7 @@ def get_report(request):
             branch = report_request_query.cleaned_data.get('branch')
             from_date = report_request_query.cleaned_data.get('from_date')
             to_date = report_request_query.cleaned_data.get('to_date')
+            deduction = report.deduction
 
             branch_qry = {'paid_employee__working_branch': branch}
 
@@ -1410,13 +1411,16 @@ def get_report(request):
 
             # create table data here
             report_tables = report.report_tables.all()
+            tables = {}
             for table in report_tables:
                 fields = table.table_fields
+                data = []
                 for record in payment_records:
-                    import ipdb
-                    ipdb.set_trace()
+                    row = {}
                     for key in fields.keys():
-                        pass
+                        row[key] = getattr_custom(record, fields[key], deduction=deduction)
+                    data.append(row)
+                tables[table.title] = data
 
             return render(request, template_path, context)
 

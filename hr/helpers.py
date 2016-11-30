@@ -609,3 +609,11 @@ class IsBranchAccountantMixin(AccessMixin):
         if is_branch_accountant:
             return super(IsBranchAccountantMixin, self).dispatch(
                 request, *args, **kwargs)
+
+
+def getattr_custom(obj, attr_as_str, **kwargs):
+    attributes = attr_as_str.split('__')
+    if attributes[0] == 'm2m':
+        pass
+    else:
+        pass
