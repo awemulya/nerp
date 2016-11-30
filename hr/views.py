@@ -1389,24 +1389,36 @@ def get_report(request):
             from_date = report_request_query.cleaned_data.get('from_date')
             to_date = report_request_query.cleaned_data.get('to_date')
 
-            if branch:
-                branch_qry = {'paid_employee__working_branch': branch}
-            else:
-                branch_qry = {}
+            branch_qry = {'paid_employee__working_branch': branch}
+
+            if report.for_employee_type is not 'ALL':
+                branch_qry['paid_employee__type'] = report.for_employee_type
+
+            context = {
+                'report_title': report.name,
+                'branch': branch,
+                'from_date': from_date,
+                'to_date': to_date,
+            }
+
             payment_records = PaymentRecord.objects.filter(
                 paid_from_date__gte=from_date,
                 paid_to_date__lte=to_date,
                 **branch_qry)
+
             template_path = '/'.join(report.template.split('/')[-2:])
 
             # create table data here
             report_tables = report.report_tables.all()
             for table in report_tables:
                 fields = table.table_fields
-                import ipdb
-                ipdb.set_trace()
+                for record in payment_records:
+                    import ipdb
+                    ipdb.set_trace()
+                    for key in fields.keys():
+                        pass
 
-            return render(request, template_path, {})
+            return render(request, template_path, context)
 
         else:
             return render(request, 'get_report.html', {'get_report_form': report_request_query})

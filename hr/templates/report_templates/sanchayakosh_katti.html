@@ -9,7 +9,64 @@
 {% block report_header_table %}{% endblock %}
 
 {% block report_content %}
-    <h1>This is sanchaya kosh report</h1>
+    <h1>{{ report_title }}</h1>
+    <h4>{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}</h4>
+
+    {#    Office detail block#}
+    <h4>{% trans 'Office' %} {% trans 'Name' %} : {{ branch.name }}</h4>
+    <h4>{% trans 'Office' %} {% trans 'Address' %} : {{ branch.address }}</h4>
+    <h4>{% trans 'Office' %} {% trans 'Code' %} : {{ branch.code }}</h4>
+    {#    End Office detail block#}
+
+    {#    Bank Detail Block#}
+    <h4>{% trans 'Amount' %} {% trans 'Deposit Bank Name' %} : _________</h4>
+    <h4>{% trans 'Amount' %} {% trans 'Deposit Bank Address' %} : _________</h4>
+    <h4>{% trans 'Amount' %} {% trans 'Deposited' %} : _________</h4>
+    {#    End Bank Detail Block#}
+
+    {#    Message text#}
+    <h3>{% trans 'Dear PF' %}</h3>
+    <h4>{% trans 'Tridevi Marg, Thamel, Kathmandu' %}</h4>
+    <p>PF deduction of this branch of this detail has been deposited to the speciified bank above</p>
+    {#    End Messege text#}
+
+    {#    Detail table here #}
+    <table class="table">
+        <thead>
+        <th>
+        <td>{% trans 'SN' %}</td>
+        <td>{% trans 'Personal Number' %}</td>
+        <td>{% trans 'Designation' %}</td>
+        <td>{% trans 'PF ID Number' %}</td>
+        <td>{% trans 'Employee Name' %}</td>
+        <td>{% trans 'Total Deduction' %}</td>
+        <td>{% trans 'Compulsory Deduction' %}</td>
+        <td>{% trans 'Addition in deduction' %}</td>
+        </th>
+        </thead>
+        <tbody>
+
+        </tbody>
+
+    </table>
+    {#    End Detail table here #}
+
+    {#    This is report footer#}
+    <div class="row">
+        <div class="col-lg-4">
+            <p>{% trans 'Creator Signatute' %}</p>
+            <p>{% trans 'Date' %}: ________</p>
+        </div>
+        <div class="col-lg-4">
+            <p>{% trans 'Head Accountant Signature' %}</p>
+            <p>{% trans 'Date' %}: _________</p>
+        </div>
+        <div class="col-lg-4">
+            <p>{% trans 'Approved by Signature' %}</p>
+            <p>{% trans 'Date' %}: __________</p>
+        </div>
+    </div>
+    {#    End This is report footer#}
 {% endblock %}
 
 {% block report_footer %}{% endblock %}

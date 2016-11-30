@@ -255,6 +255,7 @@ class BranchOffice(MPTTModel):
     name = models.CharField(max_length=100, unique=True)
     code = models.CharField(max_length=100)
     parent = TreeForeignKey('self', blank=True, null=True, related_name='children')
+    address = models.CharField(max_length=256)
 
     def __unicode__(self):
         return self.name
@@ -440,6 +441,7 @@ class Employee(models.Model):
     )
     # Budget code (Functionality to change budget code for employee group)
     budget_code = models.CharField(max_length=100)
+    pf_id_number = models.PositiveIntegerField(blank=True, null=True)
     # working_branch = models.CharField(max_length=100)
     # Employee ko section or branch coz he can be in another branch and paid from central
     sex_choice = [('M', _('Male')), ('F', _('Female'))]
@@ -1180,10 +1182,16 @@ class EmployeeAccount(models.Model):
 #  The day from which the goverment announces it or the day from which the employeer is apponted
 
 class ReportHR(models.Model):
+    emp_type_choices = (
+        ('PERMANENT', _('Permanent')),
+        ('TEMPORARY', _('Temporary')),
+        ('ALL', _('All Type')),
+    )
     hr_report_template_folder = BASE_DIR + '/hr/templates/report_templates'
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=100)
     template = models.FilePathField(path=hr_report_template_folder, match=".*\.html$")
+    for_employee_type = models.CharField(max_length=50, choices=emp_type_choices)
 
     def __unicode__(self):
         return self.name
