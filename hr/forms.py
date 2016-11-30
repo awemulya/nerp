@@ -119,20 +119,30 @@ class GroupPayrollForm(forms.Form):
 
 
 class GetReportForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        accountant_branch_id = kwargs.pop('accountant_branch_id')
+        super(GetReportForm, self).__init__(*args, **kwargs)
+        if PayrollConfig.get_solo().parent_can_generate_payroll:
+            self.fields['branch'].queryset = BranchOffice.objects.get(
+                id=accountant_branch_id).get_descendants(include_self=True)
+        else:
+            self.fields['branch'].queryset = BranchOffice.objects.filter(
+                id=accountant_branch_id)
+
     report = forms.ModelChoiceField(queryset=ReportHR.objects.all())
-    from_date = forms.CharField(
-        widget=TextInput(attrs={
+    from_date = HRBSDateFormField(
+        widget=HRBSFormField(attrs={
             'placeholder': 'YYYY-MM-DD',
         }),
     )
-    to_date = forms.CharField(
-        widget=TextInput(attrs={
+    to_date = HRBSDateFormField(
+        widget=HRBSFormField(attrs={
             'placeholder': 'YYYY-MM-DD',
         }),
     )
-    branch = forms.ModelChoiceField(
+    branch = TreeNodeChoiceField(
         queryset=BranchOffice.objects.all(),
-        required=False
+        empty_label=None
     )
 
     def clean(self):
@@ -140,42 +150,11 @@ class GetReportForm(forms.Form):
         from_date = cleaned_data.get('from_date')
         to_date = cleaned_data.get('to_date')
 
-        if self.calendar == 'AD':
-            try:
-                # Validate it for bsdate
-                cleaned_data['from_date'] = datetime.datetime.strptime(
-                    from_date, '%Y-%m-%d').date()
-            except:
-                self.add_error('from_date', _('AD- Incorrect From Date'))
-            try:
-                cleaned_data['to_date'] = datetime.datetime.strptime(
-                    to_date, '%Y-%m-%d').date()
-            except:
-                self.add_error('to_date', _('AD- Incorrect To Date'))
-
-        else:
-            try:
-
-                from_bs_date_as_tuple = BSDate(*bs_str2tuple(
-                    from_date
-                )).date_tuple()
-                cleaned_data['from_date'] = datetime.date(*bs2ad(from_bs_date_as_tuple))
-
-            except:
-                # error['paid_from_date'] = 'Incorrect BS Date'
-                self.add_error('from_date', _('BS- Incorrect From Date'))
-            try:
-                to_bs_date_as_tuple = BSDate(*bs_str2tuple(
-                    to_date
-                )).date_tuple()
-                cleaned_data['to_date'] = datetime.date(*bs2ad(to_bs_date_as_tuple))
-            except:
-                self.add_error('to_date', _('BS- Incorrect To date'))
-
-    def __init__(self, *args, **kwargs):
-        if 'calendar' in kwargs.keys():
-            self.calendar=kwargs.pop('calendar')
-        super(GetReportForm, self).__init__(*args, **kwargs)
+        if to_date < from_date:
+            self.add_error(
+                'from_date',
+                _('From date must be less than to date')
+            )
 
 
 class EmployeeAccountInlineFormset(forms.BaseInlineFormSet):

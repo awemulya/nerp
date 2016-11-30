@@ -1380,9 +1380,9 @@ def incentivename_curd(request):
 @group_required('Accountant', 'Payroll Accountant')
 @user_passes_test(user_is_branch_accountant)
 def get_report(request):
-    CALENDAR = PayrollConfig.get_solo().hr_calendar
+    accountant_branch_id = request.user.payroll_accountant.branch.id
     if request.method == "POST":
-        report_request_query = GetReportForm(request.POST, calendar=CALENDAR)
+        report_request_query = GetReportForm(request.POST, accountant_branch_id=accountant_branch_id)
         if report_request_query.is_valid():
             report = report_request_query.cleaned_data.get('report')
             branch = report_request_query.cleaned_data.get('branch')
@@ -1411,7 +1411,7 @@ def get_report(request):
         else:
             return render(request, 'get_report.html', {'get_report_form': report_request_query})
     else:
-        get_report_form = GetReportForm()
+        get_report_form = GetReportForm(accountant_branch_id=accountant_branch_id)
         return render(request, 'get_report.html', {'get_report_form': get_report_form})
 
 

@@ -106,9 +106,14 @@
             <h3>{% trans 'Report' %}</h3>
 
             <div>
+                <a href="{% url 'get_report' %}">
+                    <img src="{% static 'img/icons/training.png' %}"><br>
+                    <h5><strong>{% trans "Generate" %} {% trans "Report" %}</strong></h5></a>
+            </div>
+            <div>
                 <a href="{% url 'list_report_setting' %}">
                     <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Report Setting List" %}</strong></h5></a>
+                    <h5><strong>{% trans "Report" %} {% trans "Settings" %} {% trans "List" %}</strong></h5></a>
             </div>
         </div>
         <div class="link-group">

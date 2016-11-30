@@ -33,6 +33,7 @@
 
 {% block  content %}
     <form method="post" action="{% url 'get_report' %}">
+    {{ get_report_form.media }}
         {% csrf_token %}
         {{ get_report_form }}
         <input type="submit" value="Get Report">
