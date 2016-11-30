@@ -1422,6 +1422,8 @@ def get_report(request):
                     data.append(row)
                 tables[table.title] = data
 
+            context['tables'] = tables
+
             return render(request, template_path, context)
 
         else:
