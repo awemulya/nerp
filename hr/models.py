@@ -545,7 +545,7 @@ class Employee(models.Model):
                         days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((scale_start_date.as_string())))
                         upto_date = BSDate(year, month, 1)
 
-            years_worked = (days_worked.days - self.excluded_days_for_grade_pause(upto_date)) / 365
+            years_worked = (days_worked.days - self.excluded_days_for_grade_pause(scale_start_date, upto_date)) / 365
             # the above will work for both appointed and old employee with no change in salary scale
             # Everything gets diffent when salary scale sheet is ammended
             if kwargs.get('apply_grade_rate'):
