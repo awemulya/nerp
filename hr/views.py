@@ -1419,13 +1419,13 @@ def get_report(request):
                     row = {}
 
                     for key in fields.keys():
-                        import ipdb
-                        ipdb.set_trace()
                         row[key] = getattr_custom(record, fields[key], deduction=deduction)
                     data.append(row)
                 tables[table.title] = data
 
             context['tables'] = tables
+            # import ipdb
+            # ipdb.set_trace()
 
             return render(request, template_path, context)
 
