@@ -31,7 +31,7 @@
     {#    End Messege text#}
 
     {#    Detail table here #}
-    <table class="table">
+    <table class="table table-bordered">
         <thead>
         <tr>
             <td>{% trans 'SN' %}</td>
@@ -54,7 +54,7 @@
                 <td>{{ row.pf_id_number }}</td>
                 <td>{{ row.employee_name }}</td>
                 <td>{{ row.total_deduction }}</td>
-                <td>{{ row.compulsory_deduction }}</td>
+                <td>Need it</td>
                 <td>{{ row.addition_in_deduction }}</td>
             </tr>
         {% endfor %}
