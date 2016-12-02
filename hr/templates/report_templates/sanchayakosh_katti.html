@@ -3,6 +3,7 @@
 
 {% load filters %}
 {% load i18n %}
+{% load arithmatic %}
 
 {% block report_header %}{% endblock %}
 
@@ -48,13 +49,14 @@
         <tbody>
         {% for row in tables.sanchaya_kosh_bibaran %}
             <tr>
-                <td>Auto SN</td>
+                <td>{{ forloop.counter }}</td>
                 <td>{{ row.personal_number }}</td>
                 <td>{{ row.designation }}</td>
                 <td>{{ row.pf_id_number }}</td>
                 <td>{{ row.employee_name }}</td>
                 <td>{{ row.total_deduction }}</td>
-                <td>Need it</td>
+                {% sub row.total_deduction row.addition_in_deduction as diff %}
+                <td>{{ diff }}</td>
                 <td>{{ row.addition_in_deduction }}</td>
             </tr>
         {% endfor %}
