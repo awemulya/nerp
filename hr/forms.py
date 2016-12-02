@@ -219,6 +219,7 @@ class EmployeeGradeNumberPauseInlineFormset(forms.BaseInlineFormSet):
                         _('From date cannot be less than employee last paid date. Last paid on %s' % str(last_paid))
                     )
 
+                # FIXME new entry should not me smal or eqaul to previous same if edited
                 for gnp in EmployeeGradeNumberPause.objects.filter(employee=employee):
                     if from_date <= gnp.to_date:
                         form.add_error(

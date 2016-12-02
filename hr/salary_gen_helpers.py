@@ -214,13 +214,13 @@ def get_deduction(employee, **kwargs):
                 slot_incentive = get_incentive(employee, from_date=slot.from_date, to_date=slot.to_date)[0]
                 slot_allowance = get_allowance(employee, from_date=slot.from_date, to_date=slot.to_date)[0]
                 # FIXME may nedd to remove this
-                slot_addition_from_deduction = get_deduction(
-                    employee,
-                    role='addition',
-                    paid_from_date=slot.from_date,
-                    paid_to_date=slot.to_date
-                )[0]
-                d_salary = slot_salary + slot_incentive + slot_allowance + slot_addition_from_deduction
+                # slot_addition_from_deduction = get_deduction(
+                #     employee,
+                #     role='addition',
+                #     paid_from_date=slot.from_date,
+                #     paid_to_date=slot.to_date
+                # )[0]
+                d_salary = slot_salary + slot_incentive + slot_allowance
 
                 try:
                     deduct_obj = Deduction.objects.filter(validity_id=slot.validity_id, name=obj)[0]
@@ -251,12 +251,14 @@ def get_deduction(employee, **kwargs):
                     slot.from_date,
                     slot.to_date
                 )
-                d_salary = employee.get_date_range_salary(
+                slot_salary = employee.get_date_range_salary(
                     slot.from_date,
                     slot.to_date,
                     apply_grade_rate=True
                 )
-                # FIXME slot allowance slot incentive add.(may)
+                slot_incentive = get_incentive(employee, from_date=slot.from_date, to_date=slot.to_date)[0]
+                slot_allowance = get_allowance(employee, from_date=slot.from_date, to_date=slot.to_date)[0]
+                d_salary = slot_salary + slot_allowance + slot_incentive
                 try:
                     deduct_obj = Deduction.objects.filter(validity_id=slot.validity_id, name=obj)[0]
 
