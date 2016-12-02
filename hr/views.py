@@ -1421,9 +1421,11 @@ def get_report(request):
                     for key in fields.keys():
                         row[key] = getattr_custom(record, fields[key], deduction=deduction)
                     data.append(row)
-                tables[table.title] = data
+                tables['_'.join(table.title.lower().split(' '))] = data
 
             context['tables'] = tables
+            import ipdb
+            ipdb.set_trace()
             # import ipdb
             # ipdb.set_trace()
 

@@ -619,18 +619,14 @@ def getattr_custom(obj, attr_query, **kwargs):
         filter_dict[attr_query[1]] = kwargs.get(attr_query[1])
         attributes = attr_query[0].split('__')
         value = None
-        m2m_related_obj = getattr_custom(obj, '__'.join(attributes[0:-2]))
-        try:
-            value = getattr(m2m_related_obj.filter(**filter_dict)[0], attributes[-1])
-            return value
-        except:
-            pass
+        m2m_related_obj = getattr_custom(obj, '__'.join(attributes[0:-1]))
+
+        value = getattr(m2m_related_obj.filter(**filter_dict)[0], attributes[-1])
+        return value
+
     else:
         attributes = attr_query.split('__')
         value = obj
-        try:
-            for attr in attributes:
-                value = getattr(value, attr)
-            return value
-        except:
-            pass
+    for attr in attributes:
+        value = getattr(value, attr)
+    return value

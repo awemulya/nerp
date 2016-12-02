@@ -33,18 +33,31 @@
     {#    Detail table here #}
     <table class="table">
         <thead>
-        <th>
-        <td>{% trans 'SN' %}</td>
-        <td>{% trans 'Personal Number' %}</td>
-        <td>{% trans 'Designation' %}</td>
-        <td>{% trans 'PF ID Number' %}</td>
-        <td>{% trans 'Employee Name' %}</td>
-        <td>{% trans 'Total Deduction' %}</td>
-        <td>{% trans 'Compulsory Deduction' %}</td>
-        <td>{% trans 'Addition in deduction' %}</td>
-        </th>
+        <tr>
+            <td>{% trans 'SN' %}</td>
+            <td>{% trans 'Personal Number' %}</td>
+            <td>{% trans 'Designation' %}</td>
+            <td>{% trans 'PF ID Number' %}</td>
+            <td>{% trans 'Employee Name' %}</td>
+            <td>{% trans 'Total Deduction' %}</td>
+            <td>{% trans 'Compulsory Deduction' %}</td>
+            <td>{% trans 'Addition in deduction' %}</td>
+        </tr>
         </thead>
+
         <tbody>
+        {% for row in tables.sanchaya_kosh_bibaran %}
+            <tr>
+                <td>Auto SN</td>
+                <td>{{ row.personal_number }}</td>
+                <td>{{ row.designation }}</td>
+                <td>{{ row.pf_id_number }}</td>
+                <td>{{ row.employee_name }}</td>
+                <td>{{ row.total_deduction }}</td>
+                <td>{{ row.compulsory_deduction }}</td>
+                <td>{{ row.addition_in_deduction }}</td>
+            </tr>
+        {% endfor %}
 
         </tbody>
 
