@@ -14,8 +14,8 @@ from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportH
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
-from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, TaxScheme, \
-    TaxCalcScheme, MaritalStatus
+from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, IncomeTaxScheme, \
+    IncomeTaxCalcScheme, MaritalStatus
 from account.models import Account
 from app.utils.forms import HTML5BootstrapModelForm
 import datetime
@@ -258,9 +258,9 @@ class AllowanceInlineFormset(forms.BaseInlineFormSet):
                     )
 
 
-class TaxSchemeInlineFormSet(forms.BaseInlineFormSet):
+class IncomeTaxSchemeInlineFormSet(forms.BaseInlineFormSet):
     def clean(self):
-        super(TaxSchemeInlineFormSet, self).clean()
+        super(IncomeTaxSchemeInlineFormSet, self).clean()
         e_p_dict_list = []
         for form in self.forms:
             if form.cleaned_data:
@@ -331,9 +331,9 @@ class TaxSchemeInlineFormSet(forms.BaseInlineFormSet):
                         pass
 
 
-class TaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
+class IncomeTaxCalcSchemeInlineFormSet(forms.BaseInlineFormSet):
     def clean(self):
-        super(TaxCalcSchemeInlineFormSet, self).clean()
+        super(IncomeTaxCalcSchemeInlineFormSet, self).clean()
         e_p_dict_list = []
         for form in self.forms:
             instance = self.instance
@@ -509,9 +509,9 @@ class MaritalStatusForm(HTML5BootstrapModelForm):
         fields = '__all__'
 
 
-class TaxSchemeForm(HTML5BootstrapModelForm):
+class IncomeTaxSchemeForm(HTML5BootstrapModelForm):
     class Meta:
-        model = TaxScheme
+        model = IncomeTaxScheme
         fields = '__all__'
 
         widgets = {
@@ -609,20 +609,20 @@ IncentiveNameDetailFormSet = forms.modelformset_factory(
     exclude=('account_category',),
 )
 
-TaxSchemeFormSet = forms.inlineformset_factory(
+IncomeTaxSchemeFormSet = forms.inlineformset_factory(
     MaritalStatus,
-    TaxScheme,
+    IncomeTaxScheme,
     extra=1,
     fields='__all__',
-    formset=TaxSchemeInlineFormSet
+    formset=IncomeTaxSchemeInlineFormSet
 )
 
-TaxCalcSchemeFormSet = forms.inlineformset_factory(
-    TaxScheme,
-    TaxCalcScheme,
+IncomeTaxCalcSchemeFormSet = forms.inlineformset_factory(
+    IncomeTaxScheme,
+    IncomeTaxCalcScheme,
     extra=1,
     fields='__all__',
-    formset=TaxCalcSchemeInlineFormSet
+    formset=IncomeTaxCalcSchemeInlineFormSet
 )
 
 ReportHrTableFormSet = forms.inlineformset_factory(

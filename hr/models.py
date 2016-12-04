@@ -985,7 +985,7 @@ class MaritalStatus(models.Model):
         return str('MARRIED' if self.marital_status == 'M' else 'UNMARRIED')
 
 
-class TaxScheme(models.Model):
+class IncomeTaxScheme(models.Model):
     # marital_statuses = [('M', _('Married')), ('U', _('Unmarried'))]
     marital_status = models.ForeignKey(
         MaritalStatus,
@@ -1006,9 +1006,9 @@ class TaxScheme(models.Model):
         )
 
 
-class TaxCalcScheme(models.Model):
+class IncomeTaxCalcScheme(models.Model):
     scheme = models.ForeignKey(
-        TaxScheme,
+        IncomeTaxScheme,
         related_name="tax_calc_scheme"
     )
     start_from = models.FloatField()

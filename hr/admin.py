@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export import resources
 
-from .models import EmployeeAccount, EmployeeGrade, Employee, Designation, Incentive, Allowance, TaxScheme, \
+from .models import EmployeeAccount, EmployeeGrade, Employee, Designation, Incentive, Allowance, IncomeTaxScheme, \
     BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry, IncentiveName, AllowanceName, DeductionDetail, \
     IncentiveDetail, AllowanceDetail, MaritalStatus, \
     ReportTable, ReportHR, GradeScaleValidity, EmployeeGradeScale, DeductionValidity, AllowanceValidity, \
@@ -57,7 +57,7 @@ admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Designation)
 admin.site.register(Incentive, IncentiveAdmin)
 admin.site.register(Allowance, AllowanceAdmin)
-admin.site.register(TaxScheme)
+admin.site.register(IncomeTaxScheme)
 admin.site.register(BranchOffice)
 admin.site.register(Deduction, DeductionAdmin)
 admin.site.register(DeductionName)

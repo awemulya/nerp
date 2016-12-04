@@ -24,11 +24,11 @@ from hr.serializers import PayrollEntrySerializer
 from users.models import group_required, all_group_required
 from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, \
-    TaxSchemeForm, TaxCalcSchemeFormSet, TaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
+    IncomeTaxSchemeForm, IncomeTaxCalcSchemeFormSet, IncomeTaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
     EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet, \
     DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm, PayrollConfigForm, \
     PayrollAccountantForm, BranchOfficeForm, ProTemporeForm, EmployeeGradeNumberPauseFormset
-from .models import Employee, Deduction, EmployeeAccount, TaxScheme, ProTempore, IncentiveName, AllowanceName, \
+from .models import Employee, Deduction, EmployeeAccount, IncomeTaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
     AllowanceValidity, DeductionValidity, GradeScaleValidity, PayrollConfig, PayrollAccountant, ProTemporeDetail
@@ -236,7 +236,7 @@ def salary_taxation_unit(employee, f_y_item):
     # taxable_amount -= social_security_tax
     tax_amount = 0
     tax_schemes = sorted(
-        TaxScheme.objects.filter(
+        IncomeTaxScheme.objects.filter(
             marital_status__marital_status=employee.marital_status
         ), key=lambda obj: obj.priority)
     main_loop_break_flag = False
@@ -1258,21 +1258,21 @@ def tax_scheme_detail(request, pk=None):
 
     if pk:
         obj_id = pk
-        tax_scheme = TaxScheme.objects.get(id=pk)
+        tax_scheme = IncomeTaxScheme.objects.get(id=pk)
     else:
         obj_id = None
-        tax_scheme = TaxScheme()
+        tax_scheme = IncomeTaxScheme()
 
     if request.method == "POST":
-        tax_scheme_form = TaxSchemeForm(request.POST, instance=tax_scheme)
-        tax_calc_scheme_formset = TaxCalcSchemeFormSet(request.POST, instance=tax_scheme)
+        tax_scheme_form = IncomeTaxSchemeForm(request.POST, instance=tax_scheme)
+        tax_calc_scheme_formset = IncomeTaxCalcSchemeFormSet(request.POST, instance=tax_scheme)
         if tax_scheme_form.is_valid() and tax_calc_scheme_formset.is_valid():
             tax_scheme_form.save()
             tax_calc_scheme_formset.save()
             return redirect(reverse('list_tax_scheme'))
     else:
-        tax_scheme_form = TaxSchemeForm(instance=tax_scheme)
-        tax_calc_scheme_formset = TaxCalcSchemeFormSet(instance=tax_scheme)
+        tax_scheme_form = IncomeTaxSchemeForm(instance=tax_scheme)
+        tax_calc_scheme_formset = IncomeTaxCalcSchemeFormSet(instance=tax_scheme)
 
     return render(
         request,
@@ -1289,11 +1289,11 @@ def tax_scheme_detail(request, pk=None):
 @group_required('Accountant')
 def list_tax_scheme(request):
     m_objects = sorted(
-        TaxScheme.objects.filter(marital_status__marital_status='M'),
+        IncomeTaxScheme.objects.filter(marital_status__marital_status='M'),
         key=lambda x: x.priority
     )
     u_objects = sorted(
-        TaxScheme.objects.filter(marital_status__marital_status='U'),
+        IncomeTaxScheme.objects.filter(marital_status__marital_status='U'),
         key=lambda x: x.priority
     )
     return render(
@@ -1320,14 +1320,14 @@ def tax_scheme(request, pk=None):
 
     if request.method == "POST":
         marital_status_form = MaritalStatusForm(request.POST, instance=marital_status)
-        tax_scheme_formset = TaxSchemeFormSet(request.POST, instance=marital_status)
+        tax_scheme_formset = IncomeTaxSchemeFormSet(request.POST, instance=marital_status)
         if marital_status_form.is_valid() and tax_scheme_formset.is_valid():
             marital_status_form.save()
             tax_scheme_formset.save()
             return redirect(reverse('list_tax_scheme'))
     else:
         marital_status_form = MaritalStatusForm(instance=marital_status)
-        tax_scheme_formset = TaxSchemeFormSet(instance=marital_status)
+        tax_scheme_formset = IncomeTaxSchemeFormSet(instance=marital_status)
 
     return render(
         request,
