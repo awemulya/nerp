@@ -793,6 +793,8 @@ def add_employee_accounts(sender, instance, created, **kwargs):
             account=salary_account,
             employee=instance,
         )
+
+        # Add tax deduction account
         for tax_deduction in TaxDeduction.objects.all():
             td_account = Account.objects.create(
                 name='TaxDeduction#%d-EID%d' % (tax_deduction.id, instance.id),
@@ -803,16 +805,6 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                 account=td_account,
                 employee=instance,
             )
-
-        # # Add tax account
-        # tax_account = Account.objects.create(
-        #     name="Tax-EID#%d" % instance.id,
-        #     category=PayrollConfig.get_solo().tax_account_category
-        # )
-        # EmployeeAccount.objects.create(
-        #     account=tax_account,
-        #     employee=instance,
-        # )
 
         # Add pro tempore account
         pro_tempore_account = Account.objects.create(
