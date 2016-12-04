@@ -793,15 +793,26 @@ def add_employee_accounts(sender, instance, created, **kwargs):
             account=salary_account,
             employee=instance,
         )
-        # Add tax account
-        tax_account = Account.objects.create(
-            name="Tax-EID#%d" % instance.id,
-            category=PayrollConfig.get_solo().tax_account_category
-        )
-        EmployeeAccount.objects.create(
-            account=tax_account,
-            employee=instance,
-        )
+        for tax_deduction in TaxDeduction.objects.all():
+            td_account = Account.objects.create(
+                name='TaxDeduction#%d-EID%d' % (tax_deduction.id, instance.id),
+                category=tax_deduction.account_category
+            )
+
+            EmployeeAccount.objects.create(
+                account=td_account,
+                employee=instance,
+            )
+
+        # # Add tax account
+        # tax_account = Account.objects.create(
+        #     name="Tax-EID#%d" % instance.id,
+        #     category=PayrollConfig.get_solo().tax_account_category
+        # )
+        # EmployeeAccount.objects.create(
+        #     account=tax_account,
+        #     employee=instance,
+        # )
 
         # Add pro tempore account
         pro_tempore_account = Account.objects.create(
@@ -983,6 +994,34 @@ class MaritalStatus(models.Model):
 
     def __unicode__(self):
         return str('MARRIED' if self.marital_status == 'M' else 'UNMARRIED')
+
+class TaxDeduction(models.Model):
+    name = models.CharField(max_length=100)
+    account_category = models.OneToOneField(Category, null=True, blank=True)
+    description = models.CharField(max_length=256)
+
+    def __unicode__(self):
+        return self.name
+
+
+@receiver(post_save, sender=TaxDeduction)
+def account_category_add(sender, instance, created, **kwargs):
+    if created:
+        instance.account_category = Category.objects.create(
+            name='%s-%d' % (instance.name, instance.id),
+            parent=PayrollConfig.get_solo().tax_account_category
+        )
+
+        for emp in Employee.objects.all():
+            acc = Account.objects.create(
+                name='TaxDeduction#%d-EID%d' % (instance.id, emp.id),
+                category=instance.account_category
+            )
+            EmployeeAccount.objects.create(
+                account=acc,
+                employee=emp
+            )
+    instance.save()
 
 
 class IncomeTaxScheme(models.Model):
