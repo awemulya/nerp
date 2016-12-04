@@ -27,11 +27,12 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncomeTaxSchemeForm, IncomeTaxCalcSchemeFormSet, IncomeTaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
     EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet, \
     DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm, PayrollConfigForm, \
-    PayrollAccountantForm, BranchOfficeForm, ProTemporeForm, EmployeeGradeNumberPauseFormset
+    PayrollAccountantForm, BranchOfficeForm, ProTemporeForm, EmployeeGradeNumberPauseFormset, TaxDeductionForm
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
-    AllowanceValidity, DeductionValidity, GradeScaleValidity, PayrollConfig, PayrollAccountant, ProTemporeDetail
+    AllowanceValidity, DeductionValidity, GradeScaleValidity, PayrollConfig, PayrollAccountant, ProTemporeDetail, \
+    TaxDeduction
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -1569,6 +1570,7 @@ class BranchDelete(LoginRequiredMixin, GroupRequiredMixin, BranchView, DeleteVie
     pass
 
 
+# TODO show only of employee under
 class ProTemporeView(object):
     model = ProTempore
     success_url = reverse_lazy('protempore_list')
@@ -1591,4 +1593,29 @@ class ProTemporeUpdate(LoginRequiredMixin, GroupRequiredMixin, IsBranchAccountan
 
 
 class ProTemporeDelete(LoginRequiredMixin, GroupRequiredMixin, IsBranchAccountantMixin, ProTemporeView, DeleteView):
+    pass
+
+
+class TaxDeductionView(object):
+    model = TaxDeduction
+    success_url = reverse_lazy('taxdeduction_list')
+    form_class = TaxDeductionForm
+    group_requied = ('Accountant')
+
+
+class TaxDeductionList(LoginRequiredMixin, GroupRequiredMixin, TaxDeductionView, ListView):
+    pass
+
+
+class TaxDeductionCreate(LoginRequiredMixin, GroupRequiredMixin,
+                       TaxDeductionView, CreateView):
+    pass
+
+
+class TaxDeductionUpdate(LoginRequiredMixin, GroupRequiredMixin, TaxDeductionView,
+                       CustomUpdateView):
+    pass
+
+
+class TaxDeductionDelete(LoginRequiredMixin, GroupRequiredMixin, TaxDeductionView, DeleteView):
     pass

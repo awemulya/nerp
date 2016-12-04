@@ -137,4 +137,15 @@ urlpatterns = patterns('',
                            name='protempore_delete'),
                        # End ProTempore Crud
 
+                       # TaxDeduction Crud
+                       url(r'^taxdeduction/add/$', views.TaxDeductionCreate.as_view(),
+                           name='taxdeduction_add'),
+                       url(r'^taxdeduction/edit/(?P<pk>[0-9]+)/$', views.TaxDeductionUpdate.as_view(),
+                           name='taxdeduction_edit'),
+                       url(r'^taxdeduction/list/$', views.TaxDeductionList.as_view(),
+                           name='taxdeduction_list'),
+                       url(r'^taxdedution/delete/(?P<pk>[0-9]+)/$', views.TaxDeductionDelete.as_view(),
+                           name='taxdeduction_delete'),
+                       # End ProTempore Crud
+
                        )

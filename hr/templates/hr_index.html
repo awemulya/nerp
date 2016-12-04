@@ -94,7 +94,11 @@
         </div>
         <div class="link-group">
             <h3>{% trans 'Tax' %}</h3>
-
+            <div>
+                <a href="{% url 'taxdeduction_list' %}">
+                    <img src="{% static 'img/icons/training.png' %}"><br>
+                    <h5><strong>{% trans "Tax Deduction List" %}</strong></h5></a>
+            </div>
             <div>
                 <a href="{% url 'list_tax_scheme' %}">
                     <img src="{% static 'img/icons/training.png' %}"><br>

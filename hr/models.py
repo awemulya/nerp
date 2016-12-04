@@ -1013,7 +1013,7 @@ def account_category_add(sender, instance, created, **kwargs):
                 account=acc,
                 employee=emp
             )
-    instance.save()
+        instance.save()
 
 
 class IncomeTaxScheme(models.Model):

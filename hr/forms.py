@@ -10,7 +10,7 @@ from hr.helpers import bs_str2tuple, employee_last_payment_record, inc_1_day, dr
 from users.models import User
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
-    PayrollAccountant, ProTempore, EmployeeGradeNumberPause
+    PayrollAccountant, ProTempore, EmployeeGradeNumberPause, TaxDeduction
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -651,8 +651,8 @@ class BranchOfficeForm(HTML5BootstrapModelForm):
         model = BranchOffice
         fields = '__all__'
 
-class ProTemporeForm(HTML5BootstrapModelForm):
 
+class ProTemporeForm(HTML5BootstrapModelForm):
     class Meta:
         model = ProTempore
         fields = '__all__'
@@ -678,4 +678,11 @@ class ProTemporeForm(HTML5BootstrapModelForm):
     #         # TODO check whether from and to of salary is valid time frame
     #         if appoint_date != employee.scale_start_date:
     #             raise forms.ValidationError(_('If employee is never paid appoint date must be employee scale start time.'))
+
+
+class TaxDeductionForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = TaxDeduction
+        exclude = ('account_category',)
+
 
