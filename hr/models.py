@@ -377,7 +377,7 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                     )
                 else:
                     addition_from_deduction_cats[0].name = 'addition-from-deduction-%s-%d' % (
-                        instance.name, instance.id)
+                    instance.name, instance.id)
                     addition_from_deduction_cats[0].save()
                     addition_from_deduction_cat = addition_from_deduction_cats[0]
 
@@ -519,7 +519,6 @@ class Employee(models.Model):
         '''
         upto_date = drc_1_day(upto_date)
         grade_validity_slots = get_validity_slots(GradeScaleValidity, self.scale_start_date, upto_date)
-
         current_addition = 0
         current_grade_number = 0
         for slot in grade_validity_slots:
@@ -529,194 +528,189 @@ class Employee(models.Model):
             )[0]
             # slot_scale = rate_obj.salary_scale
             slot_rate = rate_obj.grade_rate
-            slot_initial_number = math.ceil(float(current_addition) / float(slot_rate))
+            slot_initial_number = math.ceil(float(current_addition)/float(slot_rate))
 
             days_worked = slot.to_date - slot.from_date
-            years_worked = ((days_worked.days + 1) - self.excluded_days_for_grade_pause(slot.from_date,
-                                                                                        slot.to_date)) / 365
+            years_worked = ((days_worked.days + 1) - self.excluded_days_for_grade_pause(slot.from_date, slot.to_date)) / 365
             current_grade_number += years_worked + slot_initial_number
             current_addition += current_grade_number * slot_rate
         return current_grade_number
 
+    def current_salary_by_month(self, from_date, to_date, **kwargs):
 
-def current_salary_by_month(self, from_date, to_date, **kwargs):
-    rate_obj = EmployeeGradeScale.objects.filter(
-        validity_id=kwargs['validity_id'],
-        grade=self.designation.grade
-    )[0]
+        rate_obj = EmployeeGradeScale.objects.filter(
+            validity_id=kwargs['validity_id'],
+            grade=self.designation.grade
+        )[0]
 
-    grade_salary = rate_obj.salary_scale
-    grade_number = self.grade_number if self.grade_number < rate_obj.grade_number else rate_obj.grade_number
-    grade_rate = rate_obj.grade_rate
-    salary = 0
-    for year, month in get_y_m_tuple_list(from_date, to_date):
-        if type(from_date) == type(to_date):
-            # scale_start_date = self.get_scale_start_date(from_date)
-            if isinstance(from_date, date):
-                try:
-                    days_worked = date(year, month, 1) - self.scale_start_date
-                    upto_date = date(year, month, 1)
-                except:
-                    raise TypeError('Internal and external setting mismatch')
-            else:
-                if isinstance(self.scale_start_date, date):
-                    raise TypeError('Internal and external setting mismatch')
+        grade_salary = rate_obj.salary_scale
+        grade_number = self.grade_number if self.grade_number < rate_obj.grade_number else rate_obj.grade_number
+        grade_rate = rate_obj.grade_rate
+        salary = 0
+        for year, month in get_y_m_tuple_list(from_date, to_date):
+            if type(from_date) == type(to_date):
+                # scale_start_date = self.get_scale_start_date(from_date)
+                if isinstance(from_date, date):
+                    try:
+                        days_worked = date(year, month, 1) - self.scale_start_date
+                        upto_date = date(year, month, 1)
+                    except:
+                        raise TypeError('Internal and external setting mismatch')
                 else:
-                    # TODO think whether it is upto beggining of month or last of month
-                    days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.scale_start_date.as_string())))
-                    upto_date = BSDate(year, month, 1)
+                    if isinstance(self.scale_start_date, date):
+                        raise TypeError('Internal and external setting mismatch')
+                    else:
+                        # TODO think whether it is upto beggining of month or last of month
+                        days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.scale_start_date.as_string())))
+                        upto_date = BSDate(year, month, 1)
 
-        # years_worked = (days_worked.days - self.excluded_days_for_grade_pause(scale_start_date, upto_date)) / 365
-        computed_grade_number = self.get_grade_number(upto_date)
-        # the above will work for both appointed and old employee with no change in salary scale
-        # Everything gets diffent when salary scale sheet is ammended
-        if kwargs.get('apply_grade_rate'):
-            if computed_grade_number <= grade_number:
-                salary += grade_salary + int(computed_grade_number) * grade_rate
-            elif computed_grade_number > grade_number:
-                salary += grade_salary + grade_number * grade_rate
+            # years_worked = (days_worked.days - self.excluded_days_for_grade_pause(scale_start_date, upto_date)) / 365
+            computed_grade_number = self.get_grade_number(upto_date)
+            # the above will work for both appointed and old employee with no change in salary scale
+            # Everything gets diffent when salary scale sheet is ammended
+            if kwargs.get('apply_grade_rate'):
+                if computed_grade_number <= grade_number:
+                    salary += grade_salary + int(computed_grade_number) * grade_rate
+                elif computed_grade_number > grade_number:
+                    salary += grade_salary + grade_number * grade_rate
+            else:
+                salary += grade_salary
+        return salary
+
+    def get_date_range_salary(self, from_date, to_date, **kwargs):
+        try:
+            validity_slots = get_validity_slots(GradeScaleValidity, from_date, to_date)
+        except IOError:
+            raise
+        salary = 0
+        for slot in validity_slots:
+            kwargs['validity_id'] = slot.validity_id
+            salary += self.current_salary_by_day(slot.from_date, slot.to_date, **kwargs)
+        return salary
+
+    def current_salary_by_day(self, from_date, to_date, **kwargs):
+        if from_date.year == to_date.year and from_date.month == to_date.month:
+            salary_pure_months = 0
+            lhs_month_salary = 0
+            lhs_days = 0
+            if type(from_date) == type(to_date):
+                if isinstance(from_date, date):
+                    month = date(from_date.year, from_date.month, 1)
+                    # We need to add because from and to in same month
+                    # Will be different when many months
+                    # because we cut them to slots
+                    rhs_days = (to_date - from_date).days + 1
+
+                    from_date_month_days = mr(month.year, month.month)[1]
+                    to_date_month_days = from_date_month_days
+                else:
+                    month = BSDate(from_date.year, from_date.month, 1)
+                    rhs_days = (to_date - from_date).days + 1
+                    from_date_month_days = bs[month.year][month.month - 1]
+                    to_date_month_days = from_date_month_days
+                    # pdb.set_trace()
+
+            rhs_month_salary = self.current_salary_by_month(
+                month,
+                month,
+                **kwargs
+            )
+
+        elif are_side_months(from_date, to_date):
+            salary_pure_months = 0
+            if type(from_date) == type(to_date):
+                if isinstance(from_date, date):
+                    lhs_month = date(from_date.year, from_date.month, 1)
+                    rhs_month = date(to_date.year, to_date.month, 1)
+                    lhs_days = (rhs_month - from_date).days
+                    rhs_days = (to_date - rhs_month).days + 1
+
+                    from_date_month_days = mr(lhs_month.year, lhs_month.month)[1]
+                    to_date_month_days = mr(rhs_month.year, rhs_month.month)[1]
+
+                else:
+                    lhs_month = BSDate(from_date.year, from_date.month, 1)
+                    rhs_month = BSDate(to_date.year, to_date.month, 1)
+                    lhs_days = (rhs_month - from_date).days
+                    rhs_days = (to_date - rhs_month).days + 1
+
+                    from_date_month_days = bs[lhs_month.year][lhs_month.month - 1]
+                    to_date_month_days = bs[rhs_month.year][rhs_month.month - 1]
+            lhs_month_salary = self.current_salary_by_month(
+                lhs_month,
+                lhs_month,
+                **kwargs
+            )
+            rhs_month_salary = self.current_salary_by_month(
+                rhs_month,
+                rhs_month,
+                **kwargs
+            )
         else:
-            salary += grade_salary
-    return salary
+            # Get pure months
+            if type(from_date) == type(to_date):
+                if isinstance(from_date, date):
+                    if from_date.month == 12:
+                        from_date_m = date(from_date.year + 1, 1, 1)
+                    else:
+                        from_date_m = date(from_date.year, from_date.month + 1, 1)
+                    if to_date.month == 1:
+                        to_date_m = date(to_date.year - 1, 12, 1)
+                    else:
+                        to_date_m = date(to_date.year, to_date.month - 1, 1)
+                    lhs_month = date(from_date.year, from_date.month, 1)
+                    rhs_month = date(to_date.year, to_date.month, 1)
+                    lhs_days = (from_date_m - from_date).days
+                    rhs_days = (to_date - to_date_m).days + 1
 
+                    from_date_month_days = mr(lhs_month.year, lhs_month.month)[1]
+                    to_date_month_days = mr(rhs_month.year, rhs_month.month)[1]
 
-def get_date_range_salary(self, from_date, to_date, **kwargs):
-    try:
-        validity_slots = get_validity_slots(GradeScaleValidity, from_date, to_date)
-    except IOError:
-        raise
-    salary = 0
-    for slot in validity_slots:
-        kwargs['validity_id'] = slot.validity_id
-        salary += self.current_salary_by_day(slot.from_date, slot.to_date, **kwargs)
-    return salary
-
-
-def current_salary_by_day(self, from_date, to_date, **kwargs):
-    if from_date.year == to_date.year and from_date.month == to_date.month:
-        salary_pure_months = 0
-        lhs_month_salary = 0
-        lhs_days = 0
-        if type(from_date) == type(to_date):
-            if isinstance(from_date, date):
-                month = date(from_date.year, from_date.month, 1)
-                # We need to add because from and to in same month
-                # Will be different when many months
-                # because we cut them to slots
-                rhs_days = (to_date - from_date).days + 1
-
-                from_date_month_days = mr(month.year, month.month)[1]
-                to_date_month_days = from_date_month_days
-            else:
-                month = BSDate(from_date.year, from_date.month, 1)
-                rhs_days = (to_date - from_date).days + 1
-                from_date_month_days = bs[month.year][month.month - 1]
-                to_date_month_days = from_date_month_days
-                # pdb.set_trace()
-
-        rhs_month_salary = self.current_salary_by_month(
-            month,
-            month,
-            **kwargs
-        )
-
-    elif are_side_months(from_date, to_date):
-        salary_pure_months = 0
-        if type(from_date) == type(to_date):
-            if isinstance(from_date, date):
-                lhs_month = date(from_date.year, from_date.month, 1)
-                rhs_month = date(to_date.year, to_date.month, 1)
-                lhs_days = (rhs_month - from_date).days
-                rhs_days = (to_date - rhs_month).days + 1
-
-                from_date_month_days = mr(lhs_month.year, lhs_month.month)[1]
-                to_date_month_days = mr(rhs_month.year, rhs_month.month)[1]
-
-            else:
-                lhs_month = BSDate(from_date.year, from_date.month, 1)
-                rhs_month = BSDate(to_date.year, to_date.month, 1)
-                lhs_days = (rhs_month - from_date).days
-                rhs_days = (to_date - rhs_month).days + 1
-
-                from_date_month_days = bs[lhs_month.year][lhs_month.month - 1]
-                to_date_month_days = bs[rhs_month.year][rhs_month.month - 1]
-        lhs_month_salary = self.current_salary_by_month(
-            lhs_month,
-            lhs_month,
-            **kwargs
-        )
-        rhs_month_salary = self.current_salary_by_month(
-            rhs_month,
-            rhs_month,
-            **kwargs
-        )
-    else:
-        # Get pure months
-        if type(from_date) == type(to_date):
-            if isinstance(from_date, date):
-                if from_date.month == 12:
-                    from_date_m = date(from_date.year + 1, 1, 1)
                 else:
-                    from_date_m = date(from_date.year, from_date.month + 1, 1)
-                if to_date.month == 1:
-                    to_date_m = date(to_date.year - 1, 12, 1)
-                else:
-                    to_date_m = date(to_date.year, to_date.month - 1, 1)
-                lhs_month = date(from_date.year, from_date.month, 1)
-                rhs_month = date(to_date.year, to_date.month, 1)
-                lhs_days = (from_date_m - from_date).days
-                rhs_days = (to_date - to_date_m).days + 1
+                    if from_date.month == 12:
+                        from_date_m = BSDate(from_date.year + 1, 1, 1)
+                    else:
+                        from_date_m = BSDate(from_date.year, from_date.month + 1, 1)
+                    if to_date.month == 1:
+                        to_date_m = BSDate(to_date.year - 1, 12, 1)
+                    else:
+                        to_date_m = BSDate(to_date.year, to_date.month - 1, 1)
+                    lhs_month = BSDate(from_date.year, from_date.month, 1)
+                    rhs_month = BSDate(to_date.year, to_date.month, 1)
+                    lhs_days = (from_date_m - from_date).days
+                    rhs_days = (to_date - to_date_m).days + 1
 
-                from_date_month_days = mr(lhs_month.year, lhs_month.month)[1]
-                to_date_month_days = mr(rhs_month.year, rhs_month.month)[1]
+                    from_date_month_days = bs[lhs_month.year][lhs_month.month - 1]
+                    to_date_month_days = bs[rhs_month.year][rhs_month.month - 1]
 
-            else:
-                if from_date.month == 12:
-                    from_date_m = BSDate(from_date.year + 1, 1, 1)
-                else:
-                    from_date_m = BSDate(from_date.year, from_date.month + 1, 1)
-                if to_date.month == 1:
-                    to_date_m = BSDate(to_date.year - 1, 12, 1)
-                else:
-                    to_date_m = BSDate(to_date.year, to_date.month - 1, 1)
-                lhs_month = BSDate(from_date.year, from_date.month, 1)
-                rhs_month = BSDate(to_date.year, to_date.month, 1)
-                lhs_days = (from_date_m - from_date).days
-                rhs_days = (to_date - to_date_m).days + 1
+            salary_pure_months = self.current_salary_by_month(
+                from_date_m,
+                to_date_m,
+                **kwargs
+            )
+            lhs_month_salary = self.current_salary_by_month(
+                lhs_month,
+                lhs_month,
+                **kwargs
+            )
+            rhs_month_salary = self.current_salary_by_month(
+                rhs_month,
+                rhs_month,
+                **kwargs
+            )
+        lhs_salary = lhs_month_salary / float(from_date_month_days) * lhs_days
+        rhs_salary = rhs_month_salary / float(to_date_month_days) * rhs_days
+        salary = salary_pure_months + lhs_salary + rhs_salary
+        return salary
 
-                from_date_month_days = bs[lhs_month.year][lhs_month.month - 1]
-                to_date_month_days = bs[rhs_month.year][rhs_month.month - 1]
+    def has_account(self, account_type):
+        for i in self.accounts.all():
+            if i.employee_account.other_account_type == account_type:
+                return True
+        return False
 
-        salary_pure_months = self.current_salary_by_month(
-            from_date_m,
-            to_date_m,
-            **kwargs
-        )
-        lhs_month_salary = self.current_salary_by_month(
-            lhs_month,
-            lhs_month,
-            **kwargs
-        )
-        rhs_month_salary = self.current_salary_by_month(
-            rhs_month,
-            rhs_month,
-            **kwargs
-        )
-    lhs_salary = lhs_month_salary / float(from_date_month_days) * lhs_days
-    rhs_salary = rhs_month_salary / float(to_date_month_days) * rhs_days
-    salary = salary_pure_months + lhs_salary + rhs_salary
-    return salary
-
-
-def has_account(self, account_type):
-    for i in self.accounts.all():
-        if i.employee_account.other_account_type == account_type:
-            return True
-    return False
-
-
-def __unicode__(self):
-    return self.name
+    def __unicode__(self):
+        return self.name
 
 
 @receiver(m2m_changed, sender=Employee.optional_deductions.through)
@@ -864,7 +858,7 @@ class EmployeeGradeNumberPause(models.Model):
         if not employee_last_paid:
             employee_last_paid = drc_1_day(self.employee.scale_start_date)
         if (
-                        employee_last_paid >= self.from_date and employee_last_paid <= self.to_date) or employee_last_paid > self.to_date:
+                employee_last_paid >= self.from_date and employee_last_paid <= self.to_date) or employee_last_paid > self.to_date:
             pass
         else:
             super(EmployeeGradeNumberPause, self).delete()
