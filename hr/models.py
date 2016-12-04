@@ -402,31 +402,18 @@ class Deduction(models.Model):
     name = models.ForeignKey(DeductionName)
     deduct_type = models.CharField(max_length=50, choices=deduct_choice)
 
-    # Below is deduct type value
     value = models.FloatField()
-    # amount_rate = models.FloatField(null=True, blank=True)
-
-
-
-    # Whether to include this deduction with temporary employee
-    # with_temporary_employee = models.BooleanField(default=False)
-    # For permanent
 
     validity = models.ForeignKey(DeductionValidity, blank=True, null=True)
 
-    # def __unicode__(self):
-    #     if self.deduct_type == 'AMOUNT':
-    #         return '%s[Amount] %f' % (self.name, self.value)
-    #     else:
-    #         return '%s[Rate] %f' % (self.name, self.value)
 
+# TODO make Employee Facility Crud
+class EmployeeFacility(models.Model):
+    name = models.CharField(max_length=100)
+    rate = models.FloatField()
 
-# class EmployeeType(models.Model):
-#     name = models.CharField(max_length=128)
-#     detail = models.CharField(max_length=512)
-#
-#     def __unicode__(self):
-#         return self.name
+    def __unicode__(self):
+        return self.name
 
 
 class Employee(models.Model):
@@ -477,6 +464,8 @@ class Employee(models.Model):
     scale_start_date = HRBSDateField()
 
     dismiss_date = HRBSDateField(null=True, blank=True)
+    yearly_insurance_premium = models.FloatField(default=0.0)
+
     grade_number = models.PositiveIntegerField()
     # allowance will be added to salary
     allowances = models.ManyToManyField(AllowanceName, blank=True)
@@ -487,6 +476,7 @@ class Employee(models.Model):
         DeductionName,
         blank=True
     )
+    facilities = models.ManyToManyField(EmployeeFacility)
 
     def excluded_days_for_grade_pause(self, scale_start_date, check_upto_date):
         excluded_days = 0

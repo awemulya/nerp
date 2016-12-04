@@ -194,23 +194,22 @@ def salary_taxation_unit(employee, f_y_item):
     #     *f_y_item['f_y']
     # )
 
-    allowance, a_errors = get_allowance(employee, role='tax_allowance', from_date=f_y_item['f_y'][0],
+    allowance, a_errors = get_allowance(employee, from_date=f_y_item['f_y'][0],
                                         to_date=f_y_item['f_y'][1])
 
     taxation_unit_errors += a_errors
 
-    incentive, i_errors = get_incentive(employee, role='tax_incentive', from_date=f_y_item['f_y'][0],
+    incentive, i_errors = get_incentive(employee, from_date=f_y_item['f_y'][0],
                                         to_date=f_y_item['f_y'][1])
 
     taxation_unit_errors += i_errors
 
-    salary += allowance + incentive + get_deduction(
-        employee,
-        role='addition',
-        request_from_tax_unit=True,
-        paid_from_date=f_y_item['f_y'][0],
-        paid_to_date=f_y_item['f_y'][1]
-    )
+    facility_value = 0
+    for facility in employee.facilities.all():
+        facility_value += (facility.rate/100) * salary
+
+
+    salary += allowance + incentive + facility_value
 
     total_deduction, d_errors = get_deduction(
         employee,
@@ -220,10 +219,21 @@ def salary_taxation_unit(employee, f_y_item):
         paid_to_date=f_y_item['f_y'][1]
     )
 
+    # 1/3 of total deduction
+    deductable_limit = (1/3.0)* salary if (1/3.0)* salary < 300000 else 300000
+    deductatble_from_deduction = 0
+    if total_deduction <= deductable_limit:
+        deductatble_from_deduction = total_deduction
+    else:
+        deductatble_from_deduction = deductable_limit
+
+    deduction_from_yearly_insurance_premium = employee.yearly_insurance_premium if employee.yearly_insurance_premium < 20000 else 20000
+
     taxation_unit_errors += d_errors
 
-    taxable_amount = (salary - total_deduction)
+    taxable_amount = (salary - deductatble_from_deduction - deduction_from_yearly_insurance_premium)
 
+    # TODO married unmarried tax limit in setting
     if employee.sex == 'F':
         taxable_amount -= F_TAX_DISCOUNT_LIMIT
     else:
