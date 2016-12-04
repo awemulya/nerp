@@ -24,7 +24,8 @@ from hr.serializers import PayrollEntrySerializer
 from users.models import group_required, all_group_required
 from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, \
-    IncomeTaxSchemeForm, IncomeTaxCalcSchemeFormSet, IncomeTaxSchemeFormSet, MaritalStatusForm, IncentiveNameDetailFormSet, GetReportForm, \
+    IncomeTaxSchemeForm, IncomeTaxCalcSchemeFormSet, IncomeTaxSchemeFormSet, MaritalStatusForm, \
+    IncentiveNameDetailFormSet, GetReportForm, \
     EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet, \
     DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm, PayrollConfigForm, \
     PayrollAccountantForm, BranchOfficeForm, ProTemporeForm, EmployeeGradeNumberPauseFormset, TaxDeductionForm
@@ -206,8 +207,7 @@ def salary_taxation_unit(employee, f_y_item):
 
     facility_value = 0
     for facility in employee.facilities.all():
-        facility_value += (facility.rate/100) * salary
-
+        facility_value += (facility.rate / 100) * salary
 
     salary += allowance + incentive + facility_value
 
@@ -220,7 +220,7 @@ def salary_taxation_unit(employee, f_y_item):
     )
 
     # 1/3 of total deduction
-    deductable_limit = (1/3.0)* salary if (1/3.0)* salary < 300000 else 300000
+    deductable_limit = (1 / 3.0) * salary if (1 / 3.0) * salary < 300000 else 300000
     deductatble_from_deduction = 0
     if total_deduction <= deductable_limit:
         deductatble_from_deduction = total_deduction
@@ -233,18 +233,19 @@ def salary_taxation_unit(employee, f_y_item):
 
     taxable_amount = (salary - deductatble_from_deduction - deduction_from_yearly_insurance_premium)
 
-    # TODO married unmarried tax limit in setting
-    if employee.sex == 'F':
-        taxable_amount -= F_TAX_DISCOUNT_LIMIT
+    if employee.marital_status == 'M':
+        taxable_amount -= PayrollConfig.get_solo().married_remuneration_discount
+        social_security_tax = PayrollConfig.get_solo().married_remuneration_discount / 100.0
     else:
-        taxable_amount -= M_TAX_DISCOUNT_LIMIT
+        taxable_amount -= PayrollConfig.get_solo().unmarried_remuneration_discount
+        social_security_tax = PayrollConfig.get_solo().unmarried_remuneration_discount / 100.0
+
+    if employee.is_disabled_person:
+        taxable_amount -= (PayrollConfig.get_solo().disabled_remuneration_additional_discount / 100.0) * taxable_amount
 
     if taxable_amount < 0:
         taxable_amount = 0
 
-    # social_security_tax = SOCIAL_SECURITY_TAX_RATE / 100 * taxable_amount
-
-    # taxable_amount -= social_security_tax
     tax_amount = 0
     tax_schemes = sorted(
         IncomeTaxScheme.objects.filter(
@@ -270,8 +271,12 @@ def salary_taxation_unit(employee, f_y_item):
                     break
         if main_loop_break_flag:
             break
-    total_tax = tax_amount
-    return total_tax * (f_y_item['worked_days'] / f_y_item['year_days']), taxation_unit_errors
+    if employee.sex == 'F' and tax_amount > 0:
+        tax_amount -= (PayrollConfig.get_solo().female_remuneration_tax_discount / 100.0) * tax_amount
+    remuneration_tax = tax_amount  # yearly
+    social_security_tax  # yearly
+    # TODO return monthly tax detail like deduction detail
+    return remuneration_tax * (f_y_item['worked_days'] / f_y_item['year_days']), taxation_unit_errors
 
 
 # @login_required
@@ -353,7 +358,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     )
     row_errors += d_errors
 
-    employee_response['deduction_details'] = combine_deduction_details(deduction_details, addition_from_deduction_details)
+    employee_response['deduction_details'] = combine_deduction_details(deduction_details,
+                                                                       addition_from_deduction_details)
 
     # import ipdb
     # ipdb.set_trace()
@@ -735,7 +741,7 @@ def delete_entry(request, pk=None):
         for pt in ProTempore.objects.filter(id__in=paid_pro_tempore_ids):
             pt.status = 'READY_FOR_PAYMENT'
             pt.save()
-        # End Change paid pro tempore status back to ready for payment
+            # End Change paid pro tempore status back to ready for payment
 
     return redirect(reverse('entry_list'))
 
@@ -1040,7 +1046,6 @@ def transact_entry(request, pk=None):
                         ]
                     )
 
-
             # Transact Tax
             emp_tax_account = Account.objects.get(
                 category=PayrollConfig.get_solo().tax_account_category,
@@ -1089,9 +1094,11 @@ def employee(request, pk=None):
         employee = Employee()
 
     if request.method == "POST":
-        employee_form = EmployeeForm(request.POST, instance=employee, accountant_branch_id=accountant_branch_id, prefix='emp_form')
+        employee_form = EmployeeForm(request.POST, instance=employee, accountant_branch_id=accountant_branch_id,
+                                     prefix='emp_form')
         employee_incentive_formset = EmployeeIncentiveFormSet(request.POST, instance=employee, prefix='emp_inc_formset')
-        employee_grade_number_pause_formset = EmployeeGradeNumberPauseFormset(request.POST, instance=employee, prefix='emp_gnp_formset')
+        employee_grade_number_pause_formset = EmployeeGradeNumberPauseFormset(request.POST, instance=employee,
+                                                                              prefix='emp_gnp_formset')
 
         if employee_form.is_valid() and employee_incentive_formset.is_valid() and employee_grade_number_pause_formset.is_valid():
             employee_form.save()
@@ -1101,7 +1108,8 @@ def employee(request, pk=None):
     else:
         employee_form = EmployeeForm(instance=employee, accountant_branch_id=accountant_branch_id, prefix='emp_form')
         employee_incentive_formset = EmployeeIncentiveFormSet(instance=employee, prefix='emp_inc_formset')
-        employee_grade_number_pause_formset = EmployeeGradeNumberPauseFormset(instance=employee, prefix='emp_gnp_formset')
+        employee_grade_number_pause_formset = EmployeeGradeNumberPauseFormset(instance=employee,
+                                                                              prefix='emp_gnp_formset')
 
     return render(
         request,
@@ -1618,12 +1626,12 @@ class TaxDeductionList(LoginRequiredMixin, GroupRequiredMixin, TaxDeductionView,
 
 
 class TaxDeductionCreate(LoginRequiredMixin, GroupRequiredMixin,
-                       TaxDeductionView, CreateView):
+                         TaxDeductionView, CreateView):
     pass
 
 
 class TaxDeductionUpdate(LoginRequiredMixin, GroupRequiredMixin, TaxDeductionView,
-                       CustomUpdateView):
+                         CustomUpdateView):
     pass
 
 

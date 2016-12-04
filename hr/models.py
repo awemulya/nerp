@@ -465,6 +465,7 @@ class Employee(models.Model):
 
     dismiss_date = HRBSDateField(null=True, blank=True)
     yearly_insurance_premium = models.FloatField(default=0.0)
+    is_disabled_person = models.BooleanField(default=False)
 
     grade_number = models.PositiveIntegerField()
     # allowance will be added to salary
@@ -1266,6 +1267,27 @@ class PayrollConfig(SingletonModel):
     salary_giving_account_category = TreeOneToOneField(Category, related_name='config_salary_giving', null=True,
                                                        blank=True)
     pro_tempore_account_category = TreeOneToOneField(Category, related_name='config_pro_tempore', null=True, blank=True)
+
+    # Taxation settings global
+    married_remuneration_discount = models.FloatField(
+        default=300000.0,
+        verbose_name=_('Remuneration tax discount for married employee on taxable amount.')
+    )
+    unmarried_remuneration_discount = models.FloatField(
+        default=300000.0,
+        verbose_name=_('Remuneration tax discount for married employee on taxable amount.')
+    )
+
+    # below field is in percentage
+    disabled_remuneration_additional_discount = models.FloatField(
+        default=50,
+        verbose_name=_('Remuneration tax additional discount for disabled employee on taxable amount.(%)')
+    )
+    female_remuneration_tax_discount = models.FloatField(
+        default=10,
+        verbose_name=_('Discount for female on evaluated remuneration tax. (%)')
+    )
+
 
     def __unicode__(self):
         return "Payroll Configuration"
