@@ -511,10 +511,17 @@ class Employee(models.Model):
         return excluded_days
 
     def get_grade_number(self, upto_date):
+        '''
+        if upto date is last of month den do nothing
+        if first of month then drc date by one day
+        :param upto_date:
+        :return:
+        '''
+        upto_date = drc_1_day(upto_date)
         grade_validity_slots = get_validity_slots(GradeScaleValidity, self.scale_start_date, upto_date)
         if len(grade_validity_slots) == 1:
-            days_worked = grade_validity_slots[0].to_date - grade_validity_slots[0].from_date + 1
-            years_worked = (days_worked.days - self.excluded_days_for_grade_pause(grade_validity_slots[0].from_date,
+            days_worked = grade_validity_slots[0].to_date - grade_validity_slots[0].from_date
+            years_worked = ((days_worked.days + 1) - self.excluded_days_for_grade_pause(grade_validity_slots[0].from_date,
                                                                                   grade_validity_slots[
                                                                                       0].to_date)) / 365
             return years_worked
@@ -530,8 +537,8 @@ class Employee(models.Model):
                 slot_rate = rate_obj.grade_rate
                 slot_initial_number = math.ceil(float(current_addition)/float(slot_rate))
 
-                days_worked = slot.to_date - slot.from_date + 1
-                years_worked = (days_worked.days - self.excluded_days_for_grade_pause(slot.from_date, slot.to_date)) / 365
+                days_worked = slot.to_date - slot.from_date
+                years_worked = ((days_worked.days + 1) - self.excluded_days_for_grade_pause(slot.from_date, slot.to_date)) / 365
                 current_grade_number += years_worked + slot_initial_number
                 current_addition += current_grade_number * slot_rate
             return current_grade_number
