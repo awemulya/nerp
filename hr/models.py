@@ -1,4 +1,5 @@
 # import dbsettings
+import math
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
@@ -134,6 +135,7 @@ class AllowanceName(models.Model):
     description = models.CharField(max_length=250)
     is_tax_free = models.BooleanField(default=False)
     account_category = models.OneToOneField(Category, null=True, blank=True)
+
     # deduction_name_choices = (
     #     ('ACTIVE', _('Active')),
     #     ('INACTIVE', _('Inactive'))
@@ -227,6 +229,7 @@ class IncentiveName(models.Model):
     with_scale = models.BooleanField(default=False)
     amount_editable = models.BooleanField(default=False)
     is_tax_free = models.BooleanField(default=False)
+
     # deduction_name_choices = (
     #     ('ACTIVE', _('Active')),
     #     ('INACTIVE', _('Inactive'))
@@ -299,22 +302,22 @@ class DeductionName(models.Model):
 
     is_optional = models.BooleanField(default=False)
     amount_editable = models.BooleanField(default=False)
+
     # status = models.CharField(max_length=20, choices=deduction_name_choices, default='ACTIVE')
 
     def __unicode__(self):
         return self.name
 
-    # def delete(self, *args, **kwargs):
-    #     if self.deduct_in_category:
-    #         self.deduct_in_category.delete()
-    #     super(DeductionName, self).delete(*args, **kwargs)
+        # def delete(self, *args, **kwargs):
+        #     if self.deduct_in_category:
+        #         self.deduct_in_category.delete()
+        #     super(DeductionName, self).delete(*args, **kwargs)
 
 
 @receiver(post_save, sender=DeductionName)
 def deduct_in_category_add(sender, instance, created, **kwargs):
-
     if created:
-        instance.deduct_in_category=Category.objects.create(
+        instance.deduct_in_category = Category.objects.create(
             name='%s-%d' % (instance.name, instance.id),
             parent=PayrollConfig.get_solo().deduction_account_category
         )
@@ -373,7 +376,8 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                         parent=instance.deduct_in_category
                     )
                 else:
-                    addition_from_deduction_cats[0].name = 'addition-from-deduction-%s-%d' % (instance.name, instance.id)
+                    addition_from_deduction_cats[0].name = 'addition-from-deduction-%s-%d' % (
+                    instance.name, instance.id)
                     addition_from_deduction_cats[0].save()
                     addition_from_deduction_cat = addition_from_deduction_cats[0]
 
@@ -387,9 +391,10 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                             account=acc,
                             employee=emp
                         )
-            # else:
-            #     if addition_from_deduction_cats:
-            #         addition_from_deduction_cats[0].delete()
+                        # else:
+                        #     if addition_from_deduction_cats:
+                        #         addition_from_deduction_cats[0].delete()
+
 
 # These two below should be in setting as many to many
 # Imp: Deductin cant be in BAnk Account type and should be one to one with account type
@@ -469,7 +474,7 @@ class Employee(models.Model):
     # This is point to start salary calculation
     # May need during new user entry or import
     # if below field is not present then given from date validity start from is used
-    scale_start_date = HRBSDateField(null=True, blank=True)
+    scale_start_date = HRBSDateField()
 
     dismiss_date = HRBSDateField(null=True, blank=True)
     grade_number = models.PositiveIntegerField()
@@ -490,7 +495,7 @@ class Employee(models.Model):
         validity_id = get_validity_id(GradeScaleValidity, from_date)
         validity_valid_from = GradeScaleValidity.objects.get(id=validity_id).valid_from
 
-        if not self.scale_start_date or self.scale_start_date < validity_valid_from:
+        if self.scale_start_date < validity_valid_from:
             return validity_valid_from
         else:
             return self.scale_start_date
@@ -509,7 +514,7 @@ class Employee(models.Model):
             if check_upto_date < gnp.from_date:
                 pass
             elif check_upto_date >= gnp.from_date and check_upto_date <= gnp.to_date:
-                diff =  check_upto_date - gnp.from_date
+                diff = check_upto_date - gnp.from_date
                 excluded_days += diff.days
 
             elif check_upto_date > gnp.to_date:
@@ -517,7 +522,31 @@ class Employee(models.Model):
                 excluded_days += diff.days + 1
         return excluded_days
 
+    def get_grade_number(self, upto_date):
+        grade_validity_slots = get_validity_slots(GradeScaleValidity, self.scale_start_date, upto_date)
+        if len(grade_validity_slots) == 1:
+            days_worked = grade_validity_slots[0].to_date - grade_validity_slots[0].from_date + 1
+            years_worked = (days_worked.days - self.excluded_days_for_grade_pause(grade_validity_slots[0].from_date,
+                                                                                  grade_validity_slots[
+                                                                                      0].to_date)) / 365
+            return years_worked
+        else:
+            current_addition = 0
+            current_grade_number = 0
+            for slot in grade_validity_slots:
+                rate_obj = EmployeeGradeScale.objects.filter(
+                    validity_id=slot.validity_id,
+                    grade=self.designation.grade
+                )[0]
+                # slot_scale = rate_obj.salary_scale
+                slot_rate = rate_obj.grade_rate
+                slot_initial_number = math.ceil(float(current_addition)/float(slot_rate))
 
+                days_worked = slot.to_date - slot.from_date + 1
+                years_worked = (days_worked.days - self.excluded_days_for_grade_pause(slot.from_date, slot.to_date)) / 365
+                current_grade_number += years_worked + slot_initial_number
+                current_addition += current_grade_number * slot_rate
+            return current_grade_number
 
     def current_salary_by_month(self, from_date, to_date, **kwargs):
 
@@ -547,13 +576,14 @@ class Employee(models.Model):
                         days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((scale_start_date.as_string())))
                         upto_date = BSDate(year, month, 1)
 
-            years_worked = (days_worked.days - self.excluded_days_for_grade_pause(scale_start_date, upto_date)) / 365
+            # years_worked = (days_worked.days - self.excluded_days_for_grade_pause(scale_start_date, upto_date)) / 365
+            computed_grade_number = self.get_grade_number(upto_date)
             # the above will work for both appointed and old employee with no change in salary scale
             # Everything gets diffent when salary scale sheet is ammended
             if kwargs.get('apply_grade_rate'):
-                if years_worked <= grade_number:
-                    salary += grade_salary + int(years_worked) * grade_rate
-                elif years_worked > grade_number:
+                if computed_grade_number <= grade_number:
+                    salary += grade_salary + int(computed_grade_number) * grade_rate
+                elif computed_grade_number > grade_number:
                     salary += grade_salary + grade_number * grade_rate
             else:
                 salary += grade_salary
@@ -820,7 +850,6 @@ def add_employee_accounts(sender, instance, created, **kwargs):
     else:
         if instance.type == 'PERMANENT':
             for deduction in DeductionName.objects.filter(is_optional=False, first_add_to_salary=True):
-
                 add_before_deduction_account, created = Account.objects.get_or_create(
                     name='AddBeforeDedution%d-EID%d' % (deduction.id, instance.id),
                     category=deduction.deduct_in_category.children.all()[0]
@@ -840,7 +869,8 @@ class EmployeeGradeNumberPause(models.Model):
         employee_last_paid = employee_last_payment_record(self.employee)
         if not employee_last_paid:
             employee_last_paid = drc_1_day(self.employee.scale_start_date)
-        if (employee_last_paid >= self.from_date and employee_last_paid <= self.to_date) or employee_last_paid > self.to_date:
+        if (
+                employee_last_paid >= self.from_date and employee_last_paid <= self.to_date) or employee_last_paid > self.to_date:
             pass
         else:
             super(EmployeeGradeNumberPause, self).delete()
@@ -1109,12 +1139,12 @@ class PayrollEntry(models.Model):
             str(self.entry_datetime),
         )
 
-    # TODO uncomment delete function after transaction testing is done
-    # def delete(self, *args, **kwargs):
-    #     if self.transacted:
-    #         pass
-    #     else:
-    #         super(PayrollEntry, self).delete(*args, **kwargs)
+        # TODO uncomment delete function after transaction testing is done
+        # def delete(self, *args, **kwargs):
+        #     if self.transacted:
+        #         pass
+        #     else:
+        #         super(PayrollEntry, self).delete(*args, **kwargs)
 
 
 def employee_account_validator(acc_id):
