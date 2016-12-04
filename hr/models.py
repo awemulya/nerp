@@ -488,18 +488,6 @@ class Employee(models.Model):
         blank=True
     )
 
-    # Permanent has extra functionality while deduction from salary
-    # is_permanent = models.BooleanField(default=False)
-
-    def get_scale_start_date(self, from_date):
-        validity_id = get_validity_id(GradeScaleValidity, from_date)
-        validity_valid_from = GradeScaleValidity.objects.get(id=validity_id).valid_from
-
-        if self.scale_start_date < validity_valid_from:
-            return validity_valid_from
-        else:
-            return self.scale_start_date
-
     def excluded_days_for_grade_pause(self, scale_start_date, check_upto_date):
         excluded_days = 0
         if isinstance(scale_start_date, date):
@@ -561,10 +549,10 @@ class Employee(models.Model):
         salary = 0
         for year, month in get_y_m_tuple_list(from_date, to_date):
             if type(from_date) == type(to_date):
-                scale_start_date = self.get_scale_start_date(from_date)
+                # scale_start_date = self.get_scale_start_date(from_date)
                 if isinstance(from_date, date):
                     try:
-                        days_worked = date(year, month, 1) - scale_start_date
+                        days_worked = date(year, month, 1) - self.scale_start_date
                         upto_date = date(year, month, 1)
                     except:
                         raise TypeError('Internal and external setting mismatch')
@@ -573,7 +561,7 @@ class Employee(models.Model):
                         raise TypeError('Internal and external setting mismatch')
                     else:
                         # TODO think whether it is upto beggining of month or last of month
-                        days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((scale_start_date.as_string())))
+                        days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.scale_start_date.as_string())))
                         upto_date = BSDate(year, month, 1)
 
             # years_worked = (days_worked.days - self.excluded_days_for_grade_pause(scale_start_date, upto_date)) / 365
