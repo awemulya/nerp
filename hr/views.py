@@ -1034,6 +1034,30 @@ def transact_entry(request, pk=None):
                     ]
                 )
 
+            for tax in entry.tax_details.all():
+                t_account = Account.objects.get(
+                    category=tax.tax_deduction.account_category,
+                    employee_account__employee=employee
+                )
+                t_amount = tax.amount
+
+                set_transactions(
+                    entry,
+                    p_e.entry_datetime,
+                    *[
+                        ('cr', emp_basic_salary_account, t_amount),
+                        ('dr', t_account, t_amount),
+                    ]
+                )
+                # set_transactions(
+                #     entry,
+                #     p_e.entry_datetime,
+                #     *[
+                #         ('cr', t_account, t_amount),
+                #         ('dr', salary_giving_account, t_amount),
+                #     ]
+                # )
+
             for deduction_details_item in entry.deduction_details.all():
                 deduction_obj = deduction_details_item.deduction
                 d_account = a_account = Account.objects.get(
@@ -1077,21 +1101,21 @@ def transact_entry(request, pk=None):
                         ]
                     )
 
-            # Transact Tax
-            emp_tax_account = Account.objects.get(
-                category=PayrollConfig.get_solo().tax_account_category,
-                employee_account__employee=employee
-            )
-            tax_amount = entry.income_tax
-
-            set_transactions(
-                entry,
-                p_e.entry_datetime,
-                *[
-                    ('cr', emp_basic_salary_account, tax_amount),
-                    ('dr', emp_tax_account, tax_amount),
-                ]
-            )
+            # # Transact Tax
+            # emp_tax_account = Account.objects.get(
+            #     category=PayrollConfig.get_solo().tax_account_category,
+            #     employee_account__employee=employee
+            # )
+            # tax_amount = entry.income_tax
+            #
+            # set_transactions(
+            #     entry,
+            #     p_e.entry_datetime,
+            #     *[
+            #         ('cr', emp_basic_salary_account, tax_amount),
+            #         ('dr', emp_tax_account, tax_amount),
+            #     ]
+            # )
 
             # set_transactions(
             #     entry,
