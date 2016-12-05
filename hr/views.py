@@ -1101,30 +1101,6 @@ def transact_entry(request, pk=None):
                         ]
                     )
 
-            # # Transact Tax
-            # emp_tax_account = Account.objects.get(
-            #     category=PayrollConfig.get_solo().tax_account_category,
-            #     employee_account__employee=employee
-            # )
-            # tax_amount = entry.income_tax
-            #
-            # set_transactions(
-            #     entry,
-            #     p_e.entry_datetime,
-            #     *[
-            #         ('cr', emp_basic_salary_account, tax_amount),
-            #         ('dr', emp_tax_account, tax_amount),
-            #     ]
-            # )
-
-            # set_transactions(
-            #     entry,
-            #     p_e.entry_datetime,
-            #     *[
-            #         ('cr', emp_tax_account, tax_amount),
-            #         ('dr', salary_giving_account, tax_amount),
-            #     ]
-            # )
 
     p_e.transacted = True
     p_e.save()

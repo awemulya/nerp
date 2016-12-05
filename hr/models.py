@@ -931,6 +931,7 @@ def add_emloyee_incentive_account(sender, instance, created, **kwargs):
             )
 
 
+# FIXME not proper entry validate properly
 class ProTempore(models.Model):
     status_choices = (
         ('REGISTERED', _('Registered')),
