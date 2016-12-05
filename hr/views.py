@@ -678,7 +678,6 @@ def save_payroll_entry(request, pk=None):
 
                 p_r.allowance = float(row.get('allowance', None))
                 p_r.incentive = float(row.get('incentive', None))
-                p_r.income_tax = float(row.get('income_tax', None))
                 p_r.pro_tempore_amount = float(row.get('pro_tempore_amount', None))
                 p_r.salary = float(row.get('salary', None))
                 p_r.paid_amount = float(row.get('paid_amount', None))
@@ -687,7 +686,7 @@ def save_payroll_entry(request, pk=None):
                 p_r.incentive_details.add(*incentives)
                 p_r.allowance_details.add(*allowances)
                 p_r.pro_tempore_details.add(*pro_tempores)
-                p_r.pro_tempore_details.add(*taxes)
+                p_r.tax_details.add(*taxes)
 
                 # Set pro tempore status to paid
                 for pt in ProTempore.objects.filter(id__in=paid_pro_tempore_ids):
