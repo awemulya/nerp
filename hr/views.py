@@ -33,7 +33,7 @@ from .models import Employee, Deduction, EmployeeAccount, IncomeTaxScheme, ProTe
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
     AllowanceValidity, DeductionValidity, GradeScaleValidity, PayrollConfig, PayrollAccountant, ProTemporeDetail, \
-    TaxDeduction
+    TaxDeduction, TaxDetail
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -608,6 +608,7 @@ def save_payroll_entry(request, pk=None):
                     p_r.incentive_details.all().delete()
                     p_r.allowance_details.all().delete()
                     p_r.pro_tempore_details.all().delete()
+                    p_r.tax_details.all().delete()
                 else:
                     p_r = PaymentRecord()
 
@@ -644,6 +645,13 @@ def save_payroll_entry(request, pk=None):
                     pro_tempores.append(
                         ProTemporeDetail.objects.create(pro_tempore_id=pro_tempore['p_t_id'], amount=amount))
 
+                taxes = []
+                for tax in row.get('tax_details', []):
+                    amount = float(tax['amount'])
+                    if amount:
+                        taxes.append(
+                            TaxDetail.objects.create(tax_deduction_id=tax['id'], amount=amount))
+
                 # p_r = PaymentRecord()
                 p_r.paid_employee_id = int(row.get('paid_employee', None))
 
@@ -679,6 +687,7 @@ def save_payroll_entry(request, pk=None):
                 p_r.incentive_details.add(*incentives)
                 p_r.allowance_details.add(*allowances)
                 p_r.pro_tempore_details.add(*pro_tempores)
+                p_r.pro_tempore_details.add(*taxes)
 
                 # Set pro tempore status to paid
                 for pt in ProTempore.objects.filter(id__in=paid_pro_tempore_ids):
@@ -742,6 +751,7 @@ def delete_entry(request, pk=None):
         record_allowance_details = [rad.id for rad in p_r.allowance_details.all()]
         record_incentive_details = [rid.id for rid in p_r.incentive_details.all()]
         record_pro_tempore_details = [rid.id for rid in p_r.pro_tempore_details.all()]
+        record_tax_details = [rid.id for rid in p_r.tax_details.all()]
 
         paid_pro_tempore_ids = [rid.pro_tempore.id for rid in p_r.pro_tempore_details.all()]
 
@@ -757,6 +767,7 @@ def delete_entry(request, pk=None):
         AllowanceDetail.objects.filter(id__in=record_allowance_details).delete()
         IncentiveDetail.objects.filter(id__in=record_incentive_details).delete()
         ProTemporeDetail.objects.filter(id__in=record_pro_tempore_details).delete()
+        TaxDetail.objects.filter(id__in=record_tax_details).delete()
 
         # Change paid pro tempore status back to ready for payment
         for pt in ProTempore.objects.filter(id__in=paid_pro_tempore_ids):

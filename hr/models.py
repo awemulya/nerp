@@ -477,7 +477,7 @@ class Employee(models.Model):
         DeductionName,
         blank=True
     )
-    facilities = models.ManyToManyField(EmployeeFacility)
+    facilities = models.ManyToManyField(EmployeeFacility, blank=True)
 
     def excluded_days_for_grade_pause(self, scale_start_date, check_upto_date):
         excluded_days = 0
@@ -1087,6 +1087,11 @@ class ProTemporeDetail(models.Model):
         return str(self.pro_tempore.dismiss_date)
 
 
+class TaxDetail(models.Model):
+    tax_deduction = models.ForeignKey(TaxDeduction, related_name='tax_details')
+    amount = models.FloatField()
+
+
 class PaymentRecord(models.Model):
     paid_employee = models.ForeignKey(Employee)
     designation = models.ForeignKey(Designation)
@@ -1100,7 +1105,7 @@ class PaymentRecord(models.Model):
     incentive_details = models.ManyToManyField(IncentiveDetail, blank=True)
     allowance_details = models.ManyToManyField(AllowanceDetail, blank=True)
     pro_tempore_details = models.ManyToManyField(ProTemporeDetail, blank=True)
-    income_tax = models.FloatField(null=True, blank=True)
+    tax_details = models.ManyToManyField(TaxDetail, blank=True)
     # pro_tempore_amount = models.FloatField(null=True, blank=True)
     salary = models.FloatField(null=True, blank=True)
     paid_amount = models.FloatField()

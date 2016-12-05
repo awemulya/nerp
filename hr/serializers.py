@@ -36,6 +36,15 @@ class IncentiveDetailSerializer(serializers.ModelSerializer):
         model = IncentiveDetail
         fields = ('incentive', 'name', 'amount', 'editable')
 
+
+class TaxDetailSerializer(serializers.ModelSerializer):
+    name = serializers.ReadOnlyField(source='tax_dedution.name')
+
+    class Meta:
+        model = IncentiveDetail
+        fields = ('id', 'name', 'amount')
+
+
 class ProTemporeDetailSerializer(serializers.ModelSerializer):
     p_t_id = serializers.ReadOnlyField(source='pro_tempore.p_t_id')
     # appoint_date = serializers.ReadOnlyField(source='appoint_date')
@@ -52,6 +61,7 @@ class PaymentRecordSerializer(serializers.ModelSerializer):
     allowance_details = AllowanceDetailSerializer(many=True)
     deduction_details = DeductionDetailSerializer(many=True)
     pro_tempore_details = ProTemporeDetailSerializer(many=True)
+    tax_details = TaxDetailSerializer(many=True)
     # is_explicitly_added_row = serializers.SerializerMethodField('explicitly_added')
     paid_employee = serializers.SerializerMethodField('get_paid_employee_as_str')
 
