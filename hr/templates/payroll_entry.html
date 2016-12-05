@@ -100,7 +100,7 @@
 
                         <th>{% trans 'Total Deduced Amount' %}</th>
 
-                        <th>{% trans 'Income Tax' %}</th>
+                        <th>{% trans 'Tax Details' %}</th>
                         <th>{% trans 'Pro Tempore Amount' %}</th>
                         <th>{% trans 'Salary' %}</th>
                         <th>{% trans 'Paid Amount' %}</th>
@@ -217,8 +217,37 @@
                             </div>
                         </td>
 
-                        <td data-bind="editableText: income_tax, disable_content_editable: disable_input, numeric: true"></td>
+{#                        <td data-bind="editableText: income_tax, disable_content_editable: disable_input, numeric: true"></td>#}
 
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="tax-details"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    <span data-bind="text: total_tax"></span>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <table class="table table-bordered table-striped"
+                                           aria-labelledby="tax-details">
+                                        <thead>
+                                        <tr>
+                                            <th>{% trans 'Name' %}</th>
+                                            <th>{% trans 'Amount' %}</th>
+
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        <!-- ko foreach: tax_details -->
+                                        <tr>
+                                            <td data-bind="text: name"></td>
+                                            <td data-bind="text: amount"></td>
+                                        </tr>
+                                        <!-- /ko -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
 
                         <td>
                             <div class="dropdown">

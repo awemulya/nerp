@@ -97,7 +97,7 @@ def get_incentive(employee, **kwargs):
         incentive_details[-1]['name'] = _name.name
         incentive_details[-1]['editable'] = True if _name.amount_editable else False
         incentive += incentive_details[-1]['amount']
-    if kwargs.get('role') == 'tax_incentive':
+    if kwargs.get('role') == 'tax_incentive' or kwargs.get('request_from_tax_unit'):
         return incentive, row_errors
     return incentive, incentive_details, row_errors
 
@@ -174,7 +174,7 @@ def get_allowance(employee, **kwargs):
         allowance_details[-1]['allowance'] = _name.id
         allowance_details[-1]['name'] = _name.name
 
-    if kwargs.get('role') == 'tax_allowance':
+    if kwargs.get('role') == 'tax_allowance' or kwargs.get('request_from_tax_unit'):
         return allowance, row_errors
     return allowance, allowance_details, row_errors
 

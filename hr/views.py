@@ -196,12 +196,12 @@ def salary_taxation_unit(employee, f_y_item):
     # )
 
     allowance, a_errors = get_allowance(employee, from_date=f_y_item['f_y'][0],
-                                        to_date=f_y_item['f_y'][1])
+                                        to_date=f_y_item['f_y'][1], request_from_tax_unit=True)
 
     taxation_unit_errors += a_errors
 
     incentive, i_errors = get_incentive(employee, from_date=f_y_item['f_y'][0],
-                                        to_date=f_y_item['f_y'][1])
+                                        to_date=f_y_item['f_y'][1], request_from_tax_unit=True)
 
     taxation_unit_errors += i_errors
 
@@ -243,6 +243,11 @@ def salary_taxation_unit(employee, f_y_item):
     if employee.is_disabled_person:
         taxable_amount -= (PayrollConfig.get_solo().disabled_remuneration_additional_discount / 100.0) * taxable_amount
 
+    subtracted_allowance = get_allowance(employee, from_date=f_y_item['f_y'][0],
+                                        to_date=f_y_item['f_y'][1], role='tax_allowance')[0]
+    subtracted_incentive = get_incentive(employee, from_date=f_y_item['f_y'][0],
+                                        to_date=f_y_item['f_y'][1], role='tax_incentive')[0]
+    taxable_amount -= subtracted_allowance + subtracted_incentive
     if taxable_amount < 0:
         taxable_amount = 0
 
@@ -275,8 +280,7 @@ def salary_taxation_unit(employee, f_y_item):
         tax_amount -= (PayrollConfig.get_solo().female_remuneration_tax_discount / 100.0) * tax_amount
     remuneration_tax = tax_amount  # yearly
     social_security_tax  # yearly
-    # TODO return monthly tax detail like deduction detail
-    return remuneration_tax * (f_y_item['worked_days'] / f_y_item['year_days']), taxation_unit_errors
+    return social_security_tax * (f_y_item['worked_days'] / f_y_item['year_days']), remuneration_tax * (f_y_item['worked_days'] / f_y_item['year_days']), taxation_unit_errors
 
 
 # @login_required
@@ -367,22 +371,39 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
 
     # Income tax logic
     f_y_data = fiscal_year_data(paid_from_date, paid_to_date)
-    income_tax = 0
 
+    social_security_tax = 0
+    remuneration_tax = 0
     if not row_errors:
         for item in f_y_data:
-            in_tax_amt, taxation_errors = salary_taxation_unit(
+            s_tax, r_tax, taxation_errors = salary_taxation_unit(
                 employee,
                 item
             )
 
             if not taxation_errors:
-                income_tax += in_tax_amt
+                social_security_tax += s_tax
+                remuneration_tax += r_tax
             else:
                 row_errors += taxation_errors
 
-    employee_response['income_tax'] = income_tax
+    tax_details = []
+    for tax_deduction in TaxDeduction.objects.all():
 
+        if tax_deduction.name == "Social Security Tax":
+            tax_details.append({
+                'id': tax_deduction.id,
+                'name': tax_deduction.name,
+                'amount': social_security_tax
+            })
+        elif tax_deduction.name == "Remuneration Tax":
+            tax_details.append({
+                'id': tax_deduction.id,
+                'name': tax_deduction.name,
+                'amount': remuneration_tax
+            })
+
+    employee_response['tax_details'] = tax_details
     employee_response['pro_tempore_details'] = get_pro_tempore_data(employee)
     # First allowence added to salary for deduction and income tax.
     # For pure salary here added allowance should be duduced

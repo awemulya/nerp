@@ -978,8 +978,9 @@ class MaritalStatus(models.Model):
     def __unicode__(self):
         return str('MARRIED' if self.marital_status == 'M' else 'UNMARRIED')
 
+
 class TaxDeduction(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     account_category = models.OneToOneField(Category, null=True, blank=True)
     description = models.CharField(max_length=256)
 
