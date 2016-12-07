@@ -947,7 +947,8 @@ def transact_entry(request, pk=None):
             # NeedUpdate
             emp_basic_salary_account = Account.objects.get(
                 category=PayrollConfig.get_solo().basic_salary_account_category,
-                employee_account__employee=employee
+                employee_account__employee=employee,
+                fy=FiscalYear.get()
             )
 
             # First ma slary and allowance transact grade_name
@@ -964,7 +965,8 @@ def transact_entry(request, pk=None):
             # Transact Pro Tempore
             protempore_account = Account.objects.get(
                 category=PayrollConfig.get_solo().pro_tempore_account_category,
-                employee_account__employee=employee
+                employee_account__employee=employee,
+                fy=FiscalYear.get()
             )
             pro_tempore_amount = entry.pro_tempore_amount()
 
@@ -987,8 +989,11 @@ def transact_entry(request, pk=None):
             )
 
             for allowance_details_item in entry.allowance_details.all():
-                a_account = Account.objects.get(category=allowance_details_item.allowance.account_category,
-                                                employee_account__employee=employee)
+                a_account = Account.objects.get(
+                    category=allowance_details_item.allowance.account_category,
+                    employee_account__employee=employee,
+                    fy=FiscalYear.get()
+                )
                 a_amount = allowance_details_item.amount
 
                 # Should be changed
@@ -1013,7 +1018,8 @@ def transact_entry(request, pk=None):
             for incentive_details_item in entry.incentive_details.all():
                 i_account = Account.objects.get(
                     category=incentive_details_item.incentive.account_category,
-                    employee_account__employee=employee
+                    employee_account__employee=employee,
+                    fy=FiscalYear.get()
                 )
                 i_amount = incentive_details_item.amount
 
@@ -1037,7 +1043,8 @@ def transact_entry(request, pk=None):
             for tax in entry.tax_details.all():
                 t_account = Account.objects.get(
                     category=tax.tax_deduction.account_category,
-                    employee_account__employee=employee
+                    employee_account__employee=employee,
+                    fy=FiscalYear.get()
                 )
                 t_amount = tax.amount
 
@@ -1062,7 +1069,8 @@ def transact_entry(request, pk=None):
                 deduction_obj = deduction_details_item.deduction
                 d_account = a_account = Account.objects.get(
                     category=deduction_obj.deduct_in_category,
-                    employee_account__employee=employee
+                    employee_account__employee=employee,
+                    fy=FiscalYear.get()
                 )
 
                 d_amount = deduction_details_item.amount
@@ -1079,7 +1087,8 @@ def transact_entry(request, pk=None):
                 if employee.type == 'PERMANENT' and deduction_details_item.deduction.first_add_to_salary:
                     add_before_deduction_account = Account.objects.get(
                         category=deduction_obj.deduct_in_category.children.all()[0],
-                        employee_account__employee=employee
+                        employee_account__employee=employee,
+                        fy=FiscalYear.get()
                     )
                     amount_added_before_deduction = deduction_details_item.amount_added_before_deduction
 
