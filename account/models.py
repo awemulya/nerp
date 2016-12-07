@@ -392,9 +392,8 @@ from django.db.models.signals import post_save
 @receiver(post_save, sender=FiscalYear)
 def fy_add(sender, instance, created, **kwargs):
     if created and model_exists_in_db(Account):
-        Account.objects.create(name='Ka-7-15', fy=instance)
-        Account.objects.create(name='Ka-7-17', fy=instance)
-
+        # TODO Create all employee account of that fiscal year
+        pass
 
 class Party(models.Model):
     name = models.CharField(max_length=254, verbose_name=_('Name'))
