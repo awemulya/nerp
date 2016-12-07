@@ -10,10 +10,14 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
+from django.db.models import Q
 
 from app.utils.helpers import zero_for_none, none_for_zero, model_exists_in_db
 from core.models import FiscalYear, Donor, Activity, BudgetHead, TaxScheme
 from django.db.models import F
+
+from hr.models import EmployeeAccount
+
 
 class Category(MPTTModel):
     name = models.CharField(max_length=50, unique=True)
@@ -392,8 +396,24 @@ from django.db.models.signals import post_save
 @receiver(post_save, sender=FiscalYear)
 def fy_add(sender, instance, created, **kwargs):
     if created and model_exists_in_db(Account):
-        # TODO Create all employee account of that fiscal year
-        pass
+        employee_accounts = Account.objects.filter(~Q(employee_account=None))
+        for emp_acc in employee_accounts:
+            EmployeeAccount.objects.get_or_create(
+                employee=emp_acc.employee_account.employee,
+                account=Account.objects.get_or_create(
+                    name=emp_acc.name,
+                    category=emp_acc.category,
+                    fy=FiscalYear.get()
+                )[0]
+            )
+
+        non_employee_accounts = Account.objects.filter(employee_account=None)
+        for non_emp_acc in non_employee_accounts:
+            Account.objects.get_or_create(
+                name=non_emp_acc.name,
+                category=non_emp_acc.category,
+                fy=FiscalYear.get()
+            )
 
 class Party(models.Model):
     name = models.CharField(max_length=254, verbose_name=_('Name'))
