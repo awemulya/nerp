@@ -365,11 +365,11 @@ class Node(object):
         return self.name
 
 
-@receiver(post_save, sender=FiscalYear)
-def fy_add(sender, instance, created, **kwargs):
-    if created:
-        Account.objects.create(name='Ka-7-15', fy=instance)
-        Account.objects.create(name='Ka-7-17', fy=instance)
+# @receiver(post_save, sender=FiscalYear)
+# def fy_add(sender, instance, created, **kwargs):
+#     if created:
+#         Account.objects.create(name='Ka-7-15', fy=instance)
+#         Account.objects.create(name='Ka-7-17', fy=instance)
 
 
 @receiver(pre_delete, sender=Transaction)
@@ -394,7 +394,7 @@ from django.db.models.signals import post_save
 @receiver(post_save, sender=FiscalYear)
 def fy_add(sender, instance, created, **kwargs):
     from hr.models import EmployeeAccount
-    if created and model_exists_in_db(Account):
+    if created and model_exists_in_db(Account) and model_exists_in_db(EmployeeAccount):
         employee_accounts = Account.objects.filter(~Q(employee_account=None))
         for emp_acc in employee_accounts:
             EmployeeAccount.objects.get_or_create(
@@ -402,7 +402,7 @@ def fy_add(sender, instance, created, **kwargs):
                 account=Account.objects.get_or_create(
                     name=emp_acc.name,
                     category=emp_acc.category,
-                    fy=FiscalYear.get()
+                    fy=instance
                 )[0]
             )
 
@@ -411,7 +411,7 @@ def fy_add(sender, instance, created, **kwargs):
             Account.objects.get_or_create(
                 name=non_emp_acc.name,
                 category=non_emp_acc.category,
-                fy=FiscalYear.get()
+                fy=instance
             )
 
 
