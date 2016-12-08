@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url, include
 from rest_framework.routers import DefaultRouter
 
 import views
-from hr import api
+import api
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()

@@ -18,9 +18,9 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import render, redirect
 from django.contrib.contenttypes.models import ContentType
 
-from hr.salary_gen_helpers import get_deduction, get_allowance, get_incentive, combine_deduction_details, \
+from .salary_gen_helpers import get_deduction, get_allowance, get_incentive, combine_deduction_details, \
     get_pro_tempore_data
-from hr.serializers import PayrollEntrySerializer
+from .serializers import PayrollEntrySerializer
 from users.models import group_required, all_group_required
 from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, \
@@ -45,7 +45,7 @@ from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_
     emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present, \
     user_is_branch_accountant, GroupRequiredMixin, IsBranchAccountantMixin, getattr_custom
 from account.models import set_transactions, JournalEntry
-from hr.filters import EmployeeFilter, PayrollEntryFilter
+from .filters import EmployeeFilter, PayrollEntryFilter
 from django.core import serializers
 
 from django.http.request import QueryDict
