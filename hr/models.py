@@ -1012,7 +1012,7 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
             add_before_deduction_cat = Category.objects.create(
                 name='%s addition in deduction' % instance.name,
                 parent=instance.deduct_in_category,
-                fy=FiscalYear.get()
+                # fy=FiscalYear.get()
             )
 
             if not instance.is_optional:
