@@ -414,6 +414,7 @@ def fy_add(sender, instance, created, **kwargs):
                 fy=FiscalYear.get()
             )
 
+
 class Party(models.Model):
     name = models.CharField(max_length=254, verbose_name=_('Name'))
     address = models.CharField(max_length=254, blank=True, null=True)
