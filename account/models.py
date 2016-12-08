@@ -16,8 +16,6 @@ from app.utils.helpers import zero_for_none, none_for_zero, model_exists_in_db
 from core.models import FiscalYear, Donor, Activity, BudgetHead, TaxScheme
 from django.db.models import F
 
-from hr.models import EmployeeAccount
-
 
 class Category(MPTTModel):
     name = models.CharField(max_length=50, unique=True)
@@ -395,6 +393,7 @@ from django.db.models.signals import post_save
 
 @receiver(post_save, sender=FiscalYear)
 def fy_add(sender, instance, created, **kwargs):
+    from hr.models import EmployeeAccount
     if created and model_exists_in_db(Account):
         employee_accounts = Account.objects.filter(~Q(employee_account=None))
         for emp_acc in employee_accounts:
