@@ -393,8 +393,9 @@ from django.db.models.signals import post_save
 
 @receiver(post_save, sender=FiscalYear)
 def fy_add(sender, instance, created, **kwargs):
+
     from hr.models import EmployeeAccount
-    if created and model_exists_in_db(Account):
+    if created and model_exists_in_db(Account) and model_exists_in_db(EmployeeAccount):
         employee_accounts = Account.objects.filter(~Q(employee_account=None))
         for emp_acc in employee_accounts:
             EmployeeAccount.objects.get_or_create(
