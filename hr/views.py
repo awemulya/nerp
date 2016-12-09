@@ -936,7 +936,8 @@ def transact_entry(request, pk=None):
 
     salary_giving_account = Account.objects.get(
         category=PayrollConfig.get_solo().salary_giving_account_category,
-        name='Salary Giving Account'
+        name='Salary Giving Account',
+        fy=FiscalYear.get()
     )
 
     with transaction.atomic():
