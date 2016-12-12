@@ -257,6 +257,8 @@ def set_transactions(submodel, date, *args):
                     zero_for_none(transaction.account.current_dr) + transaction.dr_amount)
                 alter(arg[1], date, float(arg[2]), 0)
             if arg[0] == 'cr':
+                # import ipdb
+                # ipdb.set_trace()
                 transaction.cr_amount = float(zero_for_none(arg[2]))
                 transaction.dr_amount = None
                 transaction.account.current_cr = none_for_zero(
@@ -283,6 +285,8 @@ def set_transactions(submodel, date, *args):
 
             # save new dr_amount and add it to current_dr/cr
             if arg[0] == 'dr':
+                # import ipdb
+                # ipdb.set_trace()
                 dr_difference = float(arg[2]) - zero_for_none(transaction.dr_amount)
                 cr_difference = zero_for_none(transaction.cr_amount) * -1
                 alter(arg[1], transaction.journal_entry.date, dr_difference, cr_difference)
