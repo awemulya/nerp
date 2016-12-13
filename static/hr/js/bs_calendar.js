@@ -2,19 +2,74 @@
  * Created by wrufesh on 12/13/16.
  */
 
-var ad_month_days = function(month,year) {
+var ad_month_days = function (month, year) {
     return new Date(year, month, 0).getDate();
 };
 
-var zfill = function(string, number){
+var zfill = function (string, number) {
     var left_padding = '';
-    if(string.length < number){
+    if (string.length < number) {
         var diff_in_length = number - string.length
-        for(var i=1; i<=diff_in_length; i++){
+        for (var i = 1; i <= diff_in_length; i++) {
             left_padding += '0';
         }
     }
     return left_padding + string;
+};
+
+var showProcessing = function (options) {
+    var options = $.extend(true, {}, options);
+    html = '<h5 class="loader"><img src="/static/img/loader.gif" />';
+
+    if (options.target) { // element blocking
+        var el = $(options.target);
+        if (el.height() <= ($(window).height())) {
+            options.cenrerY = true;
+        }
+        el.block({
+            message: html,
+            baseZ: options.zIndex ? options.zIndex : 1000,
+            centerY: options.cenrerY !== undefined ? options.cenrerY : false,
+            css: {
+                top: '10%',
+                border: '0',
+                padding: '0',
+                backgroundColor: 'none'
+            },
+            overlayCSS: {
+                backgroundColor: options.overlayColor ? options.overlayColor : '#555',
+                opacity: options.boxed ? 0.05 : 0.1,
+                cursor: 'wait'
+            }
+        });
+    } else { // page blocking
+        $.blockUI({
+            message: html,
+            baseZ: options.zIndex ? options.zIndex : 1000,
+            css: {
+                border: '0',
+                padding: '0',
+                backgroundColor: 'none'
+            },
+            overlayCSS: {
+                backgroundColor: options.overlayColor ? options.overlayColor : '#555',
+                opacity: options.boxed ? 0.05 : 0.1,
+                cursor: 'wait'
+            }
+        });
+    }
+};
+var hideProcessing = function (target) {
+    if (target) {
+        $(target).unblock({
+            onUnblock: function () {
+                $(target).css('position', '');
+                $(target).css('zoom', '');
+            }
+        });
+    } else {
+        $.unblockUI();
+    }
 };
 
 var bs_calendar = {
@@ -149,10 +204,10 @@ var bs_calendar = {
     get_month_days: function (year, month) {
         try {
             var month_days = bs_calendar.years[parseInt(year)][parseInt(month) - 1];
-            if (typeof(month_days) != 'undefined'){
+            if (typeof(month_days) != 'undefined') {
                 return month_days;
             }
-            else{
+            else {
                 return null;
             }
         } catch (e) {

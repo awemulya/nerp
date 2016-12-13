@@ -158,6 +158,7 @@ function PaymentEntryRow(emp_options) {
     // Make here a observable function dat will set other parameters with employee id and date range
     self.request_flag.subscribe(function () {
         if (vm.payroll_type() == "INDIVIDUAL") {
+            showProcessing();
             $.ajax({
                 url: '/payroll/get_employee_account/',
                 method: 'POST',
@@ -171,6 +172,7 @@ function PaymentEntryRow(emp_options) {
                 },
                 // async: true,
                 success: function (response) {
+                    hideProcessing();
                     if (response.errors) {
                         vm.entry_rows([new PaymentEntryRow()]);
                         if (response.errors.paid_from_date) {
@@ -206,6 +208,7 @@ function PaymentEntryRow(emp_options) {
 
                 },
                 error: function (errorThrown) {
+                    hideProcessing();
                     console.log(errorThrown);
                 }
             });
@@ -294,6 +297,7 @@ function PayrollEntry(employee_options, group_load) {
 
     self.approve_entry = function () {
         // debugger;
+        showProcessing();
         $.ajax({
             url: '/payroll/approve_entry/' + String(self.id()),
             method: 'GET',
@@ -301,10 +305,12 @@ function PayrollEntry(employee_options, group_load) {
             // data: post_data,
             // async: true,
             success: function (response) {
+                hideProcessing();
                 self.approved(response.entry_approved);
 
             },
             error: function (errorThrown) {
+                hideProcessing();
                 console.log(errorThrown);
             }
             //            self.budget_heads = ko.observableArray(data);
@@ -313,15 +319,18 @@ function PayrollEntry(employee_options, group_load) {
 
     };
     self.transact = function () {
+        showProcessing();
         $.ajax({
             url: '/payroll/transact_entry/' + String(self.id()),
             method: 'GET',
             dataType: 'json',
             success: function (response) {
+                hideProcessing();
                 self.transacted(true);
 
             },
             error: function (errorThrown) {
+                hideProcessing();
                 console.log(errorThrown);
             }
         });
@@ -399,6 +408,7 @@ function PayrollEntry(employee_options, group_load) {
             }
         }
         if (!has_error) {
+            showProcessing();
             $.ajax({
                 url: save_url,
                 method: 'POST',
@@ -406,6 +416,7 @@ function PayrollEntry(employee_options, group_load) {
                 data: ko.toJSON(self),
                 // async: true,
                 success: function (response) {
+                    hideProcessing();
                     console.log(response);
                     // debugger;
                     self.id(response.entry_id);
@@ -415,6 +426,7 @@ function PayrollEntry(employee_options, group_load) {
 
                 },
                 error: function (errorThrown) {
+                    hideProcessing();
                     console.log(errorThrown);
                 }
                 //            self.budget_heads = ko.observableArray(data);
@@ -467,7 +479,7 @@ function PayrollEntry(employee_options, group_load) {
             if (group_load) {
                 console.log(self.entry_rows());
                 // if (self.paid_from_date() != self.entry_rows()[0].paid_from_date() || self.paid_to_date() != self.entry_rows()[0].paid_to_date()) {
-
+                showProcessing();
                 $.ajax({
                     url: '/payroll/get_employees_account/',
                     method: 'POST',
@@ -482,6 +494,7 @@ function PayrollEntry(employee_options, group_load) {
                     },
                     // async: true,
                     success: function (response) {
+                        hideProcessing();
                         if (response.errors) {
                             self.entry_rows([]);
                             if (response.errors.paid_from_date) {
@@ -558,6 +571,7 @@ function PayrollEntry(employee_options, group_load) {
                         }
                     },
                     error: function (errorThrown) {
+                        hideProcessing();
                         notifyUser(errorThrown, 'error');
                     }
                 });
@@ -570,6 +584,7 @@ function PayrollEntry(employee_options, group_load) {
 
     // Set employee options
     self.update_employee_options = function () {
+        showProcessing();
         $.ajax({
             url: '/payroll/get_employee_options/',
             method: 'POST',
@@ -580,6 +595,7 @@ function PayrollEntry(employee_options, group_load) {
                 employee_type: self.employee_type()
             },
             success: function (response) {
+                hideProcessing();
                 // self.employee_options(response.opt_data);
 
 
@@ -598,6 +614,7 @@ function PayrollEntry(employee_options, group_load) {
 
             },
             error: function (errorThrown) {
+                hideProcessing();
                 console.log(errorThrown);
             }
         });
