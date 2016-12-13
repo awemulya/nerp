@@ -13,10 +13,10 @@ $(document).ready(function () {
             'entry_rows': {
                 create: function (options) {
                     var entry_row = ko.mapping.fromJS(options.data, {copy: []}, new PaymentEntryRow(ko_data.emp_options.slice(0)));
-                    if (typeof(options.parent.paid_from_date()) == 'undefined') {
-                        options.parent.paid_from_date(options.data.paid_from_date);
-                        options.parent.paid_to_date(options.data.paid_to_date);
-                    }
+                    // if (typeof(options.parent.paid_from_date_input()) == 'undefined') {
+                    //     options.parent.paid_from_date_input(options.data.paid_from_date);
+                    //     options.parent.paid_to_date_input(options.data.paid_to_date);
+                    // }
                     return entry_row;
                 }
             },

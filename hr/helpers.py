@@ -305,6 +305,8 @@ def emp_salary_eligibility(emp, p_from, p_to):
 
 
 def emp_salary_eligibility_on_edit(fromdate_request, todate_request, employee, edit_row):
+    # import ipdb
+    # ipdb.set_trace()
     error_msg = None
     fromdate_saved = edit_row.paid_from_date
     # if not isinstance(fromdate_saved, date):
@@ -316,10 +318,10 @@ def emp_salary_eligibility_on_edit(fromdate_request, todate_request, employee, e
 
     # find this employee last record
     last_payment_record = employee_last_payment_record(employee)
-    fromdate_last = last_payment_record.paid_from_date
+    # fromdate_last = last_payment_record.paid_from_date
     # if not isinstance(fromdate_last, date):
     #     fromdate_last = BSDate(*(bs_str2tuple(fromdate_last)))
-    todate_last = last_payment_record.paid_to_date
+    # todate_last = last_payment_record.paid_to_date
     # if not isinstance(todate_last, date):
     #     todate_last = BSDate(*(bs_str2tuple(todate_last)))
 

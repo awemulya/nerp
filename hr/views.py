@@ -296,6 +296,8 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
         )
 
     else:
+        # import ipdb
+        # ipdb.set_trace()
         eligible, error = emp_salary_eligibility_on_edit(
             paid_from_date,
             paid_to_date,
