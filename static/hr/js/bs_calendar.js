@@ -1,6 +1,22 @@
 /**
  * Created by wrufesh on 12/13/16.
  */
+
+var ad_month_days = function(month,year) {
+    return new Date(year, month, 0).getDate();
+};
+
+var zfill = function(string, number){
+    var left_padding = '';
+    if(string.length < number){
+        var diff_in_length = number - string.length
+        for(var i=1; i<=diff_in_length; i++){
+            left_padding += '0';
+        }
+    }
+    return left_padding + string;
+};
+
 var bs_calendar = {
 
     years: {
@@ -132,14 +148,15 @@ var bs_calendar = {
     },
     get_month_days: function (year, month) {
         try {
-            return bs_calendar.years[year][month - 1];
-        } catch (e) {
-            if (e instanceof TypeError) {
-                console.log("BS Calendar supports year from 1975 to 2090");
-                return null;
-            } else {
-                throw e; // let others bubble up
+            var month_days = bs_calendar.years[parseInt(year)][parseInt(month) - 1];
+            if (typeof(month_days) != 'undefined'){
+                return month_days;
             }
+            else{
+                return null;
+            }
+        } catch (e) {
+            return null;
         }
 
     }

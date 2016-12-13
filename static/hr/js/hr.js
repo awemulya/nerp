@@ -126,7 +126,7 @@ function PaymentEntryRow(emp_options) {
         self.incentive(total);
     });
 
-    self.pro_tempore_details_total = ko.computed(function(){
+    self.pro_tempore_details_total = ko.computed(function () {
         var total = 0;
         ko.utils.arrayForEach(self.pro_tempore_details(), function (obj) {
             total += parseFloat(obj.amount());
@@ -134,7 +134,7 @@ function PaymentEntryRow(emp_options) {
         self.pro_tempore_amount(total);
     });
 
-    self.tax_details_total = ko.computed(function(){
+    self.tax_details_total = ko.computed(function () {
         var total = 0;
         ko.utils.arrayForEach(self.tax_details(), function (obj) {
             total += parseFloat(obj.amount());
@@ -144,11 +144,11 @@ function PaymentEntryRow(emp_options) {
 
     self.compute_paid_amount = ko.computed(function () {
         // console.log(self.salary() - self.deduced_amount() - self.income_tax() + self.incentive() + self.allowance());
-        self.paid_amount(self.salary() + self.incentive() + self.allowance() + self.amount_added_before_deduction()  - self.deduced_amount() - self.total_tax() + self.pro_tempore_amount());
+        self.paid_amount(self.salary() + self.incentive() + self.allowance() + self.amount_added_before_deduction() - self.deduced_amount() - self.total_tax() + self.pro_tempore_amount());
     });
 
-    self.row_salary_detail = ko.computed(function(){
-        if (self.paid_employee() && self.paid_from_date() && self.paid_to_date()){
+    self.row_salary_detail = ko.computed(function () {
+        if (self.paid_employee() && self.paid_from_date() && self.paid_to_date()) {
             self.request_flag(self.paid_employee() + '-' + self.paid_from_date() + '-' + self.paid_to_date());
             console.log(self.request_flag());
         }
@@ -230,17 +230,53 @@ function PayrollEntry(employee_options, group_load) {
     self.paid_from_date_input = ko.observable();
     self.paid_to_date_input = ko.observable();
 
-    self.paid_from_date = ko.computed(function(){
-        return self.paid_from_date_input();
-    });
-    self.paid_to_date = ko.computed(function(){
-        return self.paid_to_date_input();
-    });
-
     self.paid_from_date_error = ko.observable();
     self.paid_to_date_error = ko.observable();
 
     self.is_monthly_payroll = ko.observable(true);
+
+    self.paid_from_date = ko.computed(function () {
+        var output = self.paid_from_date_input();
+        if (self.paid_from_date_input()) {
+            var splitted_date = output.split('-');
+            if (splitted_date.length == 3) {
+                if(self.is_monthly_payroll()){
+                    splitted_date[2] = zfill(String(1), 2);
+                }else{
+                    splitted_date[2] = zfill(splitted_date[2], 2);
+                }
+                splitted_date[1] = zfill(splitted_date[1], 2);
+                output = splitted_date.join('-');
+            }
+        }
+        return output;
+    });
+    self.paid_to_date = ko.computed(function () {
+        var output = self.paid_to_date_input();
+        if (self.paid_to_date_input()) {
+            var splitted_date = output.split('-');
+            if (splitted_date.length == 3) {
+                if (ko_data.calendar == 'AD') {
+                    var month_count = String(ad_month_days(parseInt(splitted_date[0]), parseInt(splitted_date[1])));
+                    if (self.is_monthly_payroll() && month_count) {
+                        splitted_date[2] = zfill(month_count, 2);
+                    }else{
+                        splitted_date[2] = zfill(splitted_date[2], 2);
+                    }
+                } else {
+                    var month_count = String(bs_calendar.get_month_days(splitted_date[0], splitted_date[1]));
+                    if (self.is_monthly_payroll() && month_count) {
+                        splitted_date[2] = zfill(month_count, 2);
+                    }else{
+                        splitted_date[2] = zfill(splitted_date[2], 2);
+                    }
+                }
+            }
+            splitted_date[1] = zfill(splitted_date[1], 2);
+            output = splitted_date.join('-');
+        }
+        return output;
+    });
 
     self.branch = ko.observable();
 
@@ -273,7 +309,7 @@ function PayrollEntry(employee_options, group_load) {
             }
             //            self.budget_heads = ko.observableArray(data);
         });
-        
+
 
     };
     self.transact = function () {
@@ -417,8 +453,8 @@ function PayrollEntry(employee_options, group_load) {
     // });
     self.request_flag = ko.observable();
 
-    self.group_req_compute = ko.computed(function(){
-        if (self.branch() && self.paid_from_date() && self.paid_to_date() && self.employee_type()){
+    self.group_req_compute = ko.computed(function () {
+        if (self.branch() && self.paid_from_date() && self.paid_to_date() && self.employee_type()) {
             self.request_flag(self.branch() + '-' + self.paid_from_date() + '-' + self.paid_to_date() + '-' + self.employee_type());
             // console.log(self.request_flag());
         }
@@ -569,8 +605,8 @@ function PayrollEntry(employee_options, group_load) {
     // self.update_employee_options();
 
     self.this_on_ch_update_emp = ko.observable();
-    self.branch_emp_type = ko.computed(function(){
-        if(self.branch() && self.employee_type()){
+    self.branch_emp_type = ko.computed(function () {
+        if (self.branch() && self.employee_type()) {
             self.this_on_ch_update_emp(self.branch() + '-' + self.employee_type());
         }
     });

@@ -81,6 +81,31 @@
         </table>
 
         <div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th><label>{% trans 'From Date' %}</label></th>
+                            <th>
+                                <strong data-bind="text: paid_from_date"></strong>
+                                <ul class="errorlist list-unstyled">
+                                    <li data-bind="text: paid_from_date_error"></li>
+                                </ul>
+                            </th>
+                            <th>{{ ko_data.calendar }}</th>
+                            <th><label>{% trans 'To Date' %}</label></th>
+                            <th>
+                                <strong  data-bind="text: paid_to_date"></strong>
+                                <ul class="errorlist list-unstyled">
+                                    <li data-bind="text: paid_to_date_error"></li>
+                                </ul>
+                            </th>
+                            <th>{{ ko_data.calendar }}</th>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
             <form data-bind="submit: saveAndAdd">
                 <table class="table table-striped table-bordered table-responsive payment-row-table">
                     <thead>

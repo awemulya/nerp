@@ -455,7 +455,8 @@ def payroll_entry(request, pk=None):
 
     ko_data = {
         'ctx_data': ctx_data,
-        'emp_options': emp_opt_list
+        'emp_options': emp_opt_list,
+        'calendar': PayrollConfig.get_solo().hr_calendar
     }
 
     return render(
