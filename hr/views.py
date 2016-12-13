@@ -125,42 +125,42 @@ def verify_request_date(request):
         if error:
             return error
         else:
-            monthly_payroll = request.POST.get(
-                'is_monthly_payroll',
-                None
-            )
-            if monthly_payroll == u'true':
-                if isinstance(paid_from_date, date):
-                    to_month_days = mr(
-                        paid_to_date.year,
-                        paid_to_date.month
-                    )[1]
-                    paid_from_date = date(
-                        paid_from_date.year,
-                        paid_from_date.month,
-                        1
-                    )
-                    paid_to_date = date(
-                        paid_to_date.year,
-                        paid_to_date.month,
-                        to_month_days
-                    )
-
-                else:
-                    to_month_days = bs[
-                        paid_to_date.year][
-                        paid_to_date.month - 1
-                        ]
-                    paid_from_date = BSDate(
-                        paid_from_date.year,
-                        paid_from_date.month,
-                        1
-                    )
-                    paid_to_date = BSDate(
-                        paid_to_date.year,
-                        paid_to_date.month,
-                        to_month_days
-                    )
+            # monthly_payroll = request.POST.get(
+            #     'is_monthly_payroll',
+            #     None
+            # )
+            # if monthly_payroll == u'true':
+            #     if isinstance(paid_from_date, date):
+            #         to_month_days = mr(
+            #             paid_to_date.year,
+            #             paid_to_date.month
+            #         )[1]
+            #         paid_from_date = date(
+            #             paid_from_date.year,
+            #             paid_from_date.month,
+            #             1
+            #         )
+            #         paid_to_date = date(
+            #             paid_to_date.year,
+            #             paid_to_date.month,
+            #             to_month_days
+            #         )
+            #
+            #     else:
+            #         to_month_days = bs[
+            #             paid_to_date.year][
+            #             paid_to_date.month - 1
+            #             ]
+            #         paid_from_date = BSDate(
+            #             paid_from_date.year,
+            #             paid_from_date.month,
+            #             1
+            #         )
+            #         paid_to_date = BSDate(
+            #             paid_to_date.year,
+            #             paid_to_date.month,
+            #             to_month_days
+            #         )
             return paid_from_date, paid_to_date
 
 
@@ -420,12 +420,12 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
                 employee_response[item] = 0
         employee_response['row_errors'] = row_errors
 
-    if isinstance(paid_from_date, date):
-        employee_response['paid_from_date'] = '{:%Y-%m-%d}'.format(paid_from_date)
-        employee_response['paid_to_date'] = '{:%Y-%m-%d}'.format(paid_to_date)
-    else:
-        employee_response['paid_from_date'] = paid_from_date.as_string()
-        employee_response['paid_to_date'] = paid_to_date.as_string()
+    # if isinstance(paid_from_date, date):
+    #     employee_response['paid_from_date'] = '{:%Y-%m-%d}'.format(paid_from_date)
+    #     employee_response['paid_to_date'] = '{:%Y-%m-%d}'.format(paid_to_date)
+    # else:
+        # employee_response['paid_from_date'] = paid_from_date.as_string()
+        # employee_response['paid_to_date'] = paid_to_date.as_string()
     employee_response['disable_input'] = True
     # employee_response['emp_options'] = []
     employee_response['emp_options'] = [{

@@ -102,7 +102,7 @@ class GroupPayrollForm(forms.Form):
 
     from_date = HRBSDateFormField(
         widget=HRBSFormField(attrs={
-            'data-bind': 'value: paid_from_date',
+            'data-bind': 'value: paid_from_date_input',
             'class': 'td-input-calendar',
             'placeholder': 'YYYY-MM-DD',
             'is_required': True
@@ -110,7 +110,7 @@ class GroupPayrollForm(forms.Form):
     )
     to_date = HRBSDateFormField(
         widget=HRBSFormField(attrs={
-            'data-bind': 'value: paid_to_date',
+            'data-bind': 'value: paid_to_date_input',
             'class': 'td-input-calendar',
             'placeholder': 'YYYY-MM-DD',
             'is_required': True

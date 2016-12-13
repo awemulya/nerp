@@ -200,11 +200,6 @@ function PaymentEntryRow(emp_options) {
                         if (typeof(response.data.row_errors) == 'undefined') {
                             self.row_errors([]);
                         }
-                        // self.request_flag(false);
-
-                        // if(vm.entry_rows.length == 1){
-                        vm.paid_from_date(response.data.paid_from_date);
-                        vm.paid_to_date(response.data.paid_to_date);
                         // self.date_set_by_server(true);
                         // };
                     }
@@ -232,8 +227,15 @@ function PayrollEntry(employee_options, group_load) {
     self.payroll_type = ko.observable();
     self.entry_rows = ko.observableArray([]);
     // self.id = ko.observable();
-    self.paid_from_date = ko.observable();
-    self.paid_to_date = ko.observable();
+    self.paid_from_date_input = ko.observable();
+    self.paid_to_date_input = ko.observable();
+
+    self.paid_from_date = ko.computed(function(){
+        return self.paid_from_date_input();
+    });
+    self.paid_to_date = ko.computed(function(){
+        return self.paid_to_date_input();
+    });
 
     self.paid_from_date_error = ko.observable();
     self.paid_to_date_error = ko.observable();
@@ -468,11 +470,9 @@ function PayrollEntry(employee_options, group_load) {
                             self.paid_from_date_error(null);
                             self.paid_to_date_error(null);
 
-                            var c = 0;
                             if (ko_data.ctx_data.edit) {
 
                                 ko.utils.arrayForEach(self.entry_rows(), function (row_vm) {
-                                    c += 1;
                                     var row_res = ko.utils.arrayFirst(response.data, function (res_row) {
                                         return res_row.paid_employee == row_vm.paid_employee();
                                     });
@@ -486,16 +486,10 @@ function PayrollEntry(employee_options, group_load) {
                                     if (typeof(row.row_errors) == 'undefined') {
                                         row.row_errors = ko.observableArray([]);
                                     }
-                                    if (c == 1) {
-                                        self.paid_from_date(row.paid_from_date());
-                                        self.paid_to_date(row.paid_to_date());
-                                    }
-
 
                                 });
+                                // FIXME check the usage of this block
                                 ko.utils.arrayMap(response.data, function (data) {
-
-                                    c += 1;
                                     var mapping = {
                                         'ignore': ["emp_options"]
                                     };
@@ -505,20 +499,14 @@ function PayrollEntry(employee_options, group_load) {
                                     row.request_flag(false);
                                     if (typeof(row.row_errors) == 'undefined') {
                                         row.row_errors = ko.observableArray([]);
-                                    }
-                                    if (c == 1) {
-                                        self.paid_from_date(row.paid_from_date());
-                                        self.paid_to_date(row.paid_to_date());
                                     }
                                     return row;
                                 });
                             } else {
                                 self.entry_rows([]);
 
-                                var c = 0;
                                 self.entry_rows(ko.utils.arrayMap(response.data, function (data) {
 
-                                    c += 1;
                                     var mapping = {
                                         'ignore': ["emp_options"]
                                     };
@@ -527,10 +515,6 @@ function PayrollEntry(employee_options, group_load) {
                                     row.request_flag(false);
                                     if (typeof(row.row_errors) == 'undefined') {
                                         row.row_errors = ko.observableArray([]);
-                                    }
-                                    if (c == 1) {
-                                        self.paid_from_date(row.paid_from_date());
-                                        self.paid_to_date(row.paid_to_date());
                                     }
                                     return row;
                                 }));
