@@ -599,9 +599,17 @@ def save_payroll_entry(request, pk=None):
         branch = None if request_branch == 'ALL' else int(request_branch)
 
         payment_records = []
-        paid_from_date_for_p_e = None
-        paid_to_date_for_p_e = None
-        p_e_date_range_set = False
+        # paid_from_date_for_p_e = params.get('paid_from_date')
+        # paid_to_date_for_p_e = params.get('paid_to_date')
+        if (CALENDAR == 'AD'):
+            paid_from_date_for_p_e = datetime.strptime(params.get('paid_from_date'), '%Y-%m-%d')
+            paid_to_date_for_p_e = datetime.strptime(params.get('paid_from_date'), '%Y-%m-%d')
+        else:
+            paid_from_date_for_p_e = params.get('paid_from_date')
+            paid_to_date_for_p_e = params.get('paid_to_date')
+        # p_e_date_range_set = False
+        # import ipdb
+        # ipdb.set_trace()
         with transaction.atomic():
             for row in params.get('entry_rows'):
 
@@ -663,18 +671,9 @@ def save_payroll_entry(request, pk=None):
                 # from_date = request.POST.get('form-%d-paid_from_date' % (i), None)
                 # to_date = request.POST.get('form-%d-paid_to_date' % (i), None)
 
-                if (CALENDAR == 'AD'):
-                    p_r.paid_from_date = datetime.strptime(row.get('paid_from_date'), '%Y-%m-%d')
-                    p_r.paid_to_date = datetime.strptime(row.get('paid_from_date'), '%Y-%m-%d')
-                else:
-                    p_r.paid_from_date = row.get('paid_from_date')
-                    p_r.paid_to_date = row.get('paid_to_date')
+                p_r.paid_from_date = paid_from_date_for_p_e
+                p_r.paid_to_date = paid_to_date_for_p_e
 
-                # set global variable paid_from_date_for_p_e and paid_to_date_for_p_e
-                if not p_e_date_range_set:
-                    paid_from_date_for_p_e = p_r.paid_from_date
-                    paid_to_date_for_p_e = p_r.paid_to_date
-                    p_e_date_range_set = True
 
                 p_r.absent_days = row.get('absent_days', 0)
                 p_r.deduced_amount = float(row.get('deduced_amount', None))
