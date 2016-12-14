@@ -1,12 +1,7 @@
 $(document).ready(function () {
     // ko.options.deferUpdates = true;
     // var main = this;
-    var group_load = true;
-    if (typeof(ko_data.ctx_data.id) != 'undefined') {
-        group_load = false;
-    }
-
-    vm = new PayrollEntry(ko_data.emp_options, group_load);
+    vm = new PayrollEntry(ko_data.emp_options);
     ko.applyBindings(vm);
     if (ko_data.ctx_data) {
         var mapping = {
@@ -219,7 +214,7 @@ function PaymentEntryRow(emp_options) {
     });
 }
 
-function PayrollEntry(employee_options, group_load) {
+function PayrollEntry(employee_options) {
     var self = this;
 
     self.id = ko.observable();
@@ -243,9 +238,9 @@ function PayrollEntry(employee_options, group_load) {
         if (self.paid_from_date_input()) {
             var splitted_date = output.split('-');
             if (splitted_date.length == 3) {
-                if(self.is_monthly_payroll()){
+                if (self.is_monthly_payroll()) {
                     splitted_date[2] = zfill(String(1), 2);
-                }else{
+                } else {
                     splitted_date[2] = zfill(splitted_date[2], 2);
                 }
                 splitted_date[1] = zfill(splitted_date[1], 2);
@@ -263,14 +258,14 @@ function PayrollEntry(employee_options, group_load) {
                     var month_count = String(ad_month_days(parseInt(splitted_date[0]), parseInt(splitted_date[1])));
                     if (self.is_monthly_payroll() && month_count) {
                         splitted_date[2] = zfill(month_count, 2);
-                    }else{
+                    } else {
                         splitted_date[2] = zfill(splitted_date[2], 2);
                     }
                 } else {
                     var month_count = String(bs_calendar.get_month_days(splitted_date[0], splitted_date[1]));
                     if (self.is_monthly_payroll() && month_count) {
                         splitted_date[2] = zfill(month_count, 2);
-                    }else{
+                    } else {
                         splitted_date[2] = zfill(splitted_date[2], 2);
                     }
                 }
@@ -468,117 +463,111 @@ function PayrollEntry(employee_options, group_load) {
     self.group_req_compute = ko.computed(function () {
         if (self.branch() && self.paid_from_date() && self.paid_to_date() && self.employee_type()) {
             self.request_flag(self.branch() + '-' + self.paid_from_date() + '-' + self.paid_to_date() + '-' + self.employee_type());
+            console.log(self.request_flag());
             // console.log(self.request_flag());
         }
     });
 
     self.request_flag.subscribe(function () {
-        console.log(group_load);
         if (self.payroll_type() == 'GROUP') {
-            console.log(self.id());
-            if (group_load) {
-                console.log(self.entry_rows());
-                // if (self.paid_from_date() != self.entry_rows()[0].paid_from_date() || self.paid_to_date() != self.entry_rows()[0].paid_to_date()) {
-                showProcessing();
-                $.ajax({
-                    url: '/payroll/get_employees_account/',
-                    method: 'POST',
-                    dataType: 'json',
-                    data: {
-                        branch: self.branch() ? self.branch() : 'ALL',
-                        paid_from_date: self.paid_from_date(),
-                        paid_to_date: self.paid_to_date(),
-                        is_monthly_payroll: self.is_monthly_payroll(),
-                        edit: ko_data.ctx_data.id,
-                        employee_type: self.employee_type()
-                    },
-                    // async: true,
-                    success: function (response) {
-                        hideProcessing();
-                        if (response.errors) {
-                            self.entry_rows([]);
-                            if (response.errors.paid_from_date) {
-                                self.paid_from_date_error(response.errors.paid_from_date);
-                            } else {
-                                self.paid_from_date_error(null);
-                            }
-
-                            if (response.errors.paid_to_date) {
-                                self.paid_to_date_error(response.errors.paid_to_date);
-                            } else {
-                                self.paid_to_date_error(null);
-                            }
-
-                            if (response.errors.global_errors) {
-                                for (var k in response.errors.global_errors)
-                                    notifyUser(response.errors.global_errors[k], 'error');
-                            }
-
-
+            showProcessing();
+            $.ajax({
+                url: '/payroll/get_employees_account/',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    branch: self.branch() ? self.branch() : 'ALL',
+                    paid_from_date: self.paid_from_date(),
+                    paid_to_date: self.paid_to_date(),
+                    is_monthly_payroll: self.is_monthly_payroll(),
+                    edit: ko_data.ctx_data.id,
+                    employee_type: self.employee_type()
+                },
+                // async: true,
+                success: function (response) {
+                    hideProcessing();
+                    if (response.errors) {
+                        self.entry_rows([]);
+                        if (response.errors.paid_from_date) {
+                            self.paid_from_date_error(response.errors.paid_from_date);
                         } else {
                             self.paid_from_date_error(null);
-                            self.paid_to_date_error(null);
-
-                            if (ko_data.ctx_data.edit) {
-
-                                ko.utils.arrayForEach(self.entry_rows(), function (row_vm) {
-                                    var row_res = ko.utils.arrayFirst(response.data, function (res_row) {
-                                        return res_row.paid_employee == row_vm.paid_employee();
-                                    });
-
-                                    var mapping = {
-                                        'ignore': ["emp_options"]
-                                    };
-                                    var row = ko.mapping.fromJS(row_res, mapping, row_vm);
-                                    // row.is_explicitly_added_row = false;
-                                    row.request_flag(false);
-                                    if (typeof(row.row_errors) == 'undefined') {
-                                        row.row_errors = ko.observableArray([]);
-                                    }
-
-                                });
-                                // FIXME check the usage of this block
-                                ko.utils.arrayMap(response.data, function (data) {
-                                    var mapping = {
-                                        'ignore': ["emp_options"]
-                                    };
-
-                                    var row = ko.mapping.fromJS(data, mapping, new PaymentEntryRow(employee_options.slice(0)));
-                                    // row.is_explicitly_added_row = false;
-                                    row.request_flag(false);
-                                    if (typeof(row.row_errors) == 'undefined') {
-                                        row.row_errors = ko.observableArray([]);
-                                    }
-                                    return row;
-                                });
-                            } else {
-                                self.entry_rows([]);
-
-                                self.entry_rows(ko.utils.arrayMap(response.data, function (data) {
-
-                                    var mapping = {
-                                        'ignore': ["emp_options"]
-                                    };
-                                    var row = ko.mapping.fromJS(data, mapping, new PaymentEntryRow(employee_options.slice(0)));
-                                    // row.is_explicitly_added_row = false;
-                                    row.request_flag(false);
-                                    if (typeof(row.row_errors) == 'undefined') {
-                                        row.row_errors = ko.observableArray([]);
-                                    }
-                                    return row;
-                                }));
-                            }
                         }
-                    },
-                    error: function (errorThrown) {
-                        hideProcessing();
-                        notifyUser(errorThrown, 'error');
+
+                        if (response.errors.paid_to_date) {
+                            self.paid_to_date_error(response.errors.paid_to_date);
+                        } else {
+                            self.paid_to_date_error(null);
+                        }
+
+                        if (response.errors.global_errors) {
+                            for (var k in response.errors.global_errors)
+                                notifyUser(response.errors.global_errors[k], 'error');
+                        }
+
+
+                    } else {
+                        self.paid_from_date_error(null);
+                        self.paid_to_date_error(null);
+
+                        if (ko_data.ctx_data.edit) {
+
+                            ko.utils.arrayForEach(self.entry_rows(), function (row_vm) {
+                                var row_res = ko.utils.arrayFirst(response.data, function (res_row) {
+                                    return res_row.paid_employee == row_vm.paid_employee();
+                                });
+
+                                var mapping = {
+                                    'ignore': ["emp_options"]
+                                };
+                                var row = ko.mapping.fromJS(row_res, mapping, row_vm);
+                                // row.is_explicitly_added_row = false;
+                                row.request_flag(false);
+                                if (typeof(row.row_errors) == 'undefined') {
+                                    row.row_errors = ko.observableArray([]);
+                                }
+
+                            });
+                            // FIXME check the usage of this block
+                            ko.utils.arrayMap(response.data, function (data) {
+                                var mapping = {
+                                    'ignore': ["emp_options"]
+                                };
+
+                                var row = ko.mapping.fromJS(data, mapping, new PaymentEntryRow(employee_options.slice(0)));
+                                // row.is_explicitly_added_row = false;
+                                row.request_flag(false);
+                                if (typeof(row.row_errors) == 'undefined') {
+                                    row.row_errors = ko.observableArray([]);
+                                }
+                                return row;
+                            });
+                        } else {
+                            self.entry_rows([]);
+
+                            self.entry_rows(ko.utils.arrayMap(response.data, function (data) {
+
+                                var mapping = {
+                                    'ignore': ["emp_options"]
+                                };
+                                var row = ko.mapping.fromJS(data, mapping, new PaymentEntryRow(employee_options.slice(0)));
+                                // row.is_explicitly_added_row = false;
+                                row.request_flag(false);
+                                if (typeof(row.row_errors) == 'undefined') {
+                                    row.row_errors = ko.observableArray([]);
+                                }
+                                return row;
+                            }));
+                        }
                     }
-                });
-                // }
-            } else {
-                group_load = true;
-            }
+                },
+                error: function (errorThrown) {
+                    hideProcessing();
+                    notifyUser(errorThrown, 'error');
+                }
+            });
+            // }
+
         }
     });
 
