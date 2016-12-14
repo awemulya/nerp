@@ -521,8 +521,6 @@ function PayrollEntry(employee_options) {
                                     'ignore': ["emp_options"]
                                 };
                                 var row = ko.mapping.fromJS(row_res, mapping, row_vm);
-                                // row.is_explicitly_added_row = false;
-                                row.request_flag(false);
                                 if (typeof(row.row_errors) == 'undefined') {
                                     row.row_errors = ko.observableArray([]);
                                 }
@@ -535,7 +533,6 @@ function PayrollEntry(employee_options) {
                                 };
 
                                 var row = ko.mapping.fromJS(data, mapping, new PaymentEntryRow(employee_options.slice(0)));
-                                // row.is_explicitly_added_row = false;
                                 row.request_flag(false);
                                 if (typeof(row.row_errors) == 'undefined') {
                                     row.row_errors = ko.observableArray([]);
