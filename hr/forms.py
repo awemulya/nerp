@@ -83,12 +83,12 @@ class GroupPayrollForm(forms.Form):
         choices=[
             ('INDIVIDUAL', _('Individual')),
             ('GROUP', _('Group'))],
-        widget=Select(attrs={'data-bind': 'value: payroll_type, selectize:{}, disable: disable_main_input'})
+        widget=Select(attrs={'data-bind': 'value: payroll_type, disable: disable_main_input, selectize:{}'})
     )
     branch = TreeNodeChoiceField(
         queryset=BranchOffice.objects.all(),
         empty_label=None,
-        widget=Select(attrs={'data-bind': 'value: branch, selectize:{}, disable: disable_main_input'})
+        widget=Select(attrs={'data-bind': 'value: branch, disable: disable_main_input, selectize:{}'})
     )
     employee_type_choices = (
         ('ALL', _('All Type')),
@@ -97,7 +97,7 @@ class GroupPayrollForm(forms.Form):
     )
     employee_type = forms.ChoiceField(
         choices=employee_type_choices,
-        widget=Select(attrs={'data-bind': 'value: employee_type, selectize:{}, disable: disable_main_input'})
+        widget=Select(attrs={'data-bind': 'value: employee_type, disable: disable_main_input, selectize:{}'})
     )
 
     from_date = HRBSDateFormField(
