@@ -86,17 +86,26 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
     entry_rows = PaymentRecordSerializer(many=True)
     edit = serializers.SerializerMethodField('get_scenario')
     branch = serializers.SerializerMethodField('get_branch_value')
+    paid_from_date_input = serializers.SerializerMethodField('get_from_date')
+    paid_to_date_input = serializers.SerializerMethodField('get_to_date')
+
 
     class Meta:
 
         model = PayrollEntry
         # fields = '__all__'
         exclude = ('paid_from_date', 'paid_to_date')
-        include = ('entry_saved',)
+        include = ('entry_saved', 'paid_from_date_input', 'paid_to_date_input')
 
     # either edit True or False
     def get_scenario(self, instance):
         return True
+
+    def get_from_date(self, instance):
+        return str(instance.paid_from_date)
+
+    def get_to_date(self, instance):
+        return str(instance.paid_to_date)
 
     def get_branch_value(self, instance):
         if not instance.branch:
