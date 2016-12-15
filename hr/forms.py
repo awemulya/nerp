@@ -83,7 +83,7 @@ class GroupPayrollForm(forms.Form):
         choices=[
             ('INDIVIDUAL', _('Individual')),
             ('GROUP', _('Group'))],
-        widget=Select(attrs={'data-bind': 'value: payroll_type, selectize:{}'})
+        widget=Select(attrs={'data-bind': 'value: payroll_type, selectize:{}, disable: disable_main_input'})
     )
     branch = TreeNodeChoiceField(
         queryset=BranchOffice.objects.all(),
@@ -102,7 +102,7 @@ class GroupPayrollForm(forms.Form):
 
     from_date = HRBSDateFormField(
         widget=HRBSFormField(attrs={
-            'data-bind': 'value: paid_from_date_input',
+            'data-bind': 'value: paid_from_date_input, disable: disable_main_input',
             'class': 'td-input-calendar',
             'placeholder': 'YYYY-MM-DD',
             'is_required': True
@@ -110,7 +110,7 @@ class GroupPayrollForm(forms.Form):
     )
     to_date = HRBSDateFormField(
         widget=HRBSFormField(attrs={
-            'data-bind': 'value: paid_to_date_input',
+            'data-bind': 'value: paid_to_date_input, disable: disable_main_input',
             'class': 'td-input-calendar',
             'placeholder': 'YYYY-MM-DD',
             'is_required': True

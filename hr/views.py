@@ -448,7 +448,7 @@ def payroll_entry(request, pk=None):
         serializer = PayrollEntrySerializer(entry)
         ctx_data = dict(serializer.data)
     else:
-        ctx_data = {'edit': False,}
+        ctx_data = {'scenario': 'CREATE',}
     main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'}, accountant_branch_id=accountant_branch_id)
 
     # Inititial employee options

@@ -84,7 +84,7 @@ class PaymentRecordSerializer(serializers.ModelSerializer):
 
 class PayrollEntrySerializer(serializers.ModelSerializer):
     entry_rows = PaymentRecordSerializer(many=True)
-    edit = serializers.SerializerMethodField('get_scenario')
+    scenario = serializers.SerializerMethodField('get_scenario')
     branch = serializers.SerializerMethodField('get_branch_value')
     paid_from_date_input = serializers.SerializerMethodField('get_from_date')
     paid_to_date_input = serializers.SerializerMethodField('get_to_date')
@@ -99,7 +99,7 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
 
     # either edit True or False
     def get_scenario(self, instance):
-        return True
+        return 'EDIT'
 
     def get_from_date(self, instance):
         return str(instance.paid_from_date)
