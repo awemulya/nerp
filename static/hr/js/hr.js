@@ -277,7 +277,7 @@ function PayrollEntry(employee_options) {
     });
 
     self.disable_main_input = ko.computed(function(){
-        if(ko_data.ctx_data.scenario == 'DETAIL-VIEW') {
+        if(ko_data.ctx_data.computed_scenario == 'DETAIL-VIEW') {
             return true;
         }else{
             return false;
@@ -518,7 +518,7 @@ function PayrollEntry(employee_options) {
                         self.paid_from_date_error(null);
                         self.paid_to_date_error(null);
 
-                        if (ko_data.ctx_data.scenario == 'EDIT') {
+                        if (ko_data.ctx_data.computed_scenario == 'EDIT') {
 
                             ko.utils.arrayForEach(self.entry_rows(), function (row_vm) {
                                 var row_res = ko.utils.arrayFirst(response.data, function (res_row) {

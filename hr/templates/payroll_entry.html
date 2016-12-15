@@ -10,7 +10,7 @@
 
 
     <script src="{% static 'hr/js/plugins/toastr/toastr.js' %}"></script>
-        <script src="{% static 'hr/js/plugins/blockUI/jquery.blockUI.js' %}"></script>
+    <script src="{% static 'hr/js/plugins/blockUI/jquery.blockUI.js' %}"></script>
     <script src="{% static 'hr/js/notify_user.js' %}"></script>
 
 
@@ -53,6 +53,7 @@
 {% endblock %}
 
 {% block  content %}
+    {{ ko_data.ctx_data.computed_scenario }}
     <div class="well">
 
 
@@ -95,7 +96,7 @@
                             <th>{{ ko_data.calendar }}</th>
                             <th><label>{% trans 'To Date' %}</label></th>
                             <th>
-                                <strong  data-bind="text: paid_to_date"></strong>
+                                <strong data-bind="text: paid_to_date"></strong>
                                 <ul class="errorlist list-unstyled">
                                     <li data-bind="text: paid_to_date_error"></li>
                                 </ul>
@@ -131,7 +132,9 @@
                         <th>{% trans 'Pro Tempore Amount' %}</th>
                         <th>{% trans 'Salary' %}</th>
                         <th>{% trans 'Paid Amount' %}</th>
-                        <th>{% trans 'Control' %}</th>
+                        {% if ko_data.ctx_data.computed_scenario != 'DETAIL-VIEW' %}
+                            <th>{% trans 'Control' %}</th>
+                        {% endif %}
                         <!-- <th>From xxxxxxxxxxxx</th>
                         <th>To xxxxxxxxxxxxxx</th> -->
 
@@ -244,7 +247,7 @@
                             </div>
                         </td>
 
-{#                        <td data-bind="editableText: income_tax, disable_content_editable: disable_input, numeric: true"></td>#}
+                        {#                        <td data-bind="editableText: income_tax, disable_content_editable: disable_input, numeric: true"></td>#}
 
                         <td>
                             <div class="dropdown">
@@ -314,8 +317,10 @@
 
                         <td data-bind="editableText: salary, disable_content_editable: disable_input, numeric: true"></td>
                         <td data-bind="editableText: paid_amount, disable_content_editable: disable_input, numeric: true"></td>
-                        <td><input class="btn btn-raised btn-danger" type="button" value="Remove"
-                                   data-bind="click: $parent.removeRow, visible: !$parent.entry_saved()"></td>
+                        {% if ko_data.ctx_data.computed_scenario != 'DETAIL-VIEW' %}
+                            <td><input class="btn btn-raised btn-danger" type="button" value="Remove"
+                                       data-bind="click: $parent.removeRow, visible: !$parent.entry_saved()"></td>
+                        {% endif %}
 
                     </tr>
                     <!-- /ko -->
@@ -323,18 +328,22 @@
                 </table>
                 <input type="button" class="btn btn-raised btn-primary" value="Add Another"
                        data-bind="visible: switch_p_type, click: addRow">
-                <input type="submit" class="btn btn-raised btn-primary" value="Save"
-                       data-bind="visible: entry_rows().length>0 && !entry_saved()">
+                {% if ko_data.ctx_data.computed_scenario != 'DETAIL-VIEW' %}
+                    <input type="submit" class="btn btn-raised btn-primary" value="Save"
+                           data-bind="visible: entry_rows().length>0 && !entry_saved()">
+                {% endif %}
             </form>
-            <input type="button" class="btn btn-raised btn-primary" value="Approve"
-                   data-bind="visible: entry_rows().length > 0 && !approved() && entry_saved(), click: approve_entry">
-            <input type="button" class="btn btn-raised btn-primary" value="Approved"
-                   data-bind="visible: entry_rows().length > 0 && approved()">
-            <input type="button" class="btn btn-raised btn-primary" value="Transact"
-                   data-bind="visible: entry_rows().length > 0 && approved() && !transacted(), click: transact">
-            <input type="button" class="btn btn-raised btn-primary" value="Transacted"
-                   data-bind="visible: entry_rows().length > 0 && approved() && transacted()">
-            <!-- <input type="button" class="#" value="Delete Entry" data-bind="click: entry_delete, visible: entry_saved()"> -->
+            {% if ko_data.ctx_data.computed_scenario != 'DETAIL-VIEW' %}
+                <input type="button" class="btn btn-raised btn-primary" value="Approve"
+                       data-bind="visible: entry_rows().length > 0 && !approved() && entry_saved(), click: approve_entry">
+                <input type="button" class="btn btn-raised btn-primary" value="Approved"
+                       data-bind="visible: entry_rows().length > 0 && approved()">
+                <input type="button" class="btn btn-raised btn-primary" value="Transact"
+                       data-bind="visible: entry_rows().length > 0 && approved() && !transacted(), click: transact">
+                <input type="button" class="btn btn-raised btn-primary" value="Transacted"
+                       data-bind="visible: entry_rows().length > 0 && approved() && transacted()">
+                <!-- <input type="button" class="#" value="Delete Entry" data-bind="click: entry_delete, visible: entry_saved()"> -->
+            {% endif %}
         </div>
     </div>
 

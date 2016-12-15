@@ -328,9 +328,9 @@ def emp_salary_eligibility_on_edit(fromdate_request, todate_request, employee, e
     # Calculate errors from logical operations
     if fromdate_request < fromdate_saved:
         error_msg = 'Overlapped with previous entries'
-    elif last_payment_record != edit_row:
-        if todate_request > todate_saved:
-            error_msg = 'Overlapped with next entry'
+    # elif last_payment_record != edit_row:
+    #     if todate_request > todate_saved:
+    #         error_msg = 'Overlapped with next entry'
 
     if error_msg:
         return False, error_msg

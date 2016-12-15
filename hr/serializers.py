@@ -28,6 +28,7 @@ class AllowanceDetailSerializer(serializers.ModelSerializer):
         model = AllowanceDetail
         fields = ('allowance', 'name', 'amount')
 
+
 class IncentiveDetailSerializer(serializers.ModelSerializer):
     editable = serializers.ReadOnlyField(source='incentive.amount_editable')
     name = serializers.ReadOnlyField(source='incentive.name')
@@ -51,6 +52,7 @@ class ProTemporeDetailSerializer(serializers.ModelSerializer):
     # dismiss_date = serializers.ReadOnlyField(source='dismiss_date')
     employee_name = serializers.ReadOnlyField(source='pro_tempore.employee.name')
     employee_designation = serializers.ReadOnlyField(source='pro_tempore.employee.designation.designation_name')
+
     class Meta:
         model = ProTemporeDetail
         fields = ('p_t_id', 'amount', 'appoint_date', 'dismiss_date', 'employee_name', 'employee_designation')
@@ -84,11 +86,10 @@ class PaymentRecordSerializer(serializers.ModelSerializer):
 
 class PayrollEntrySerializer(serializers.ModelSerializer):
     entry_rows = PaymentRecordSerializer(many=True)
-    scenario = serializers.SerializerMethodField('get_scenario')
+    computed_scenario = serializers.SerializerMethodField('get_scenario')
     branch = serializers.SerializerMethodField('get_branch_value')
     paid_from_date_input = serializers.SerializerMethodField('get_from_date')
     paid_to_date_input = serializers.SerializerMethodField('get_to_date')
-
 
     class Meta:
 
@@ -99,7 +100,10 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
 
     # either edit True or False
     def get_scenario(self, instance):
-        return 'EDIT'
+        if instance.id == PayrollEntry.objects.order_by('-id').values('id').first().get('id'):
+            return 'EDIT'
+        else:
+            return 'DETAIL-VIEW'
 
     def get_from_date(self, instance):
         return str(instance.paid_from_date)
@@ -155,12 +159,10 @@ class GradeScaleValiditySerializer(serializers.ModelSerializer):
         return data
 
 
-
-
 class EmployeeGradeScaleSerializer(serializers.ModelSerializer):
-
     grade_id = serializers.ReadOnlyField(source="grade.id")
     validity_id = serializers.ReadOnlyField(source="validity.id")
+
     # parent_grade_id = serializers.ReadOnlyField(source="grade.group.id")
     # # parent_grade_name = serializers.ReadOnlyField(source="grade.group.name")
 
@@ -240,7 +242,6 @@ class AllowanceValiditySerializer(serializers.ModelSerializer):
 
 
 class AllowanceNameSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = AllowanceName
         fields = '__all__'
@@ -250,6 +251,7 @@ class AllowanceSerializer(serializers.ModelSerializer):
     employee_grade_id = serializers.ReadOnlyField(source='employee_grade.id')
     validity_id = serializers.ReadOnlyField(source='validity.id')
     name_id = serializers.ReadOnlyField(source='name.id')
+
     class Meta:
         model = Allowance
         fields = (
@@ -263,12 +265,14 @@ class AllowanceSerializer(serializers.ModelSerializer):
             'validity_id'
         )
 
+
 # End Allowance
 
 
 # Deduction
 class DeductionValiditySerializer(serializers.ModelSerializer):
     valid_from = serializers.CharField()
+
     class Meta:
         model = DeductionValidity
         fields = ('id', 'valid_from', 'note')
@@ -306,7 +310,6 @@ class DeductionValiditySerializer(serializers.ModelSerializer):
         return data
 
 
-
 class DeductionNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeductionName
@@ -326,4 +329,4 @@ class DeductionSerializer(serializers.ModelSerializer):
             'value',
             'validity_id'
         )
-# End Deduction
+        # End Deduction
