@@ -451,6 +451,7 @@ class NPRExchange(models.Model):
     @staticmethod
     def get(date, currency='USD'):
         try:
+            # TODO fix for AD calendar
             return NPRExchange.objects.select_related('currency').get(currency__code=currency, date=date)
         except NPRExchange.DoesNotExist:
             if internet():
