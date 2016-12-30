@@ -58,7 +58,7 @@ class DisbursementDetailForm(HTML5BootstrapModelForm):
         exclude = ('project_fy',)
         widgets = {
             'aid': forms.Select(attrs={'class': 'selectize'}),
-            'party': forms.Select(attrs={'class': 'selectize'}),
+            'party': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('create_party')}),
             'category': forms.Select(attrs={'class': 'selectize'}),
             'disbursement_method': forms.Select(attrs={'class': 'selectize'}),
         }

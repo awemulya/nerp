@@ -290,6 +290,8 @@ class ExpenseView(ProjectMixin):
             project_id = context_data['project'].id
             form = context_data['form']
             form.fields['category'].queryset = ExpenseCategory.objects.filter(project_id=project_id)
+            form.fields['category'].widget.attrs.update(
+                {'data-url': reverse_lazy('expense_category_add', kwargs={'project_id': project_id})})
         return context_data
 
 
