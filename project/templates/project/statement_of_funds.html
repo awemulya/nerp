@@ -1,12 +1,18 @@
 {% extends '_project_base.html' %}
-{% load i18n %}
+{% load i18n staticfiles filters %}
 
 {% block title %}{{ scenario }} {% trans 'Note 2: Statement of Funds' %}{% endblock %}
 
+{% block head_end %}
+    <script src="{% static 'js/project/statement_of_funds.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}
+
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="#">{% trans 'Statement of Funds' %}</a></li>
-    <li><span>{% trans scenario %} {% trans 'Statement of Funds' %}</span></li>
+    <li>{% trans 'Statement of Funds' %}</li>
 {% endblock %}
 
 {% block content %}
@@ -26,50 +32,53 @@
                 </tr>
                 </thead>
                 <tbody>
+                <!-- ko with: budget_usage -->
                 <tr>
                     <td colspan="5"><b>{% trans "(A) Budget Release" %}</b></td>
                 </tr>
+                <!-- ko foreach: usages -->
                 <tr>
-                    <td>
-                        GON Fund
+                    <td class="text-right" data-bind="text: name">
                     </td>
                     <td></td>
                     <td></td>
-                    <td></td>
+                    <td data-bind="text: release"></td>
                     <td></td>
                 </tr>
-                <tr>
-                    <td>
-                        Reimbursable Fund
+                <!-- /ko -->
+                <tr class="total">
+                    <td class="text-right">
+                        {% trans 'Sub-total' %}
                     </td>
                     <td></td>
                     <td></td>
-                    <td></td>
+                    <td data-bind="text: release_total"></td>
                     <td></td>
                 </tr>
 
                 <tr>
-                    <td colspan="5"><b>{% trans "(B) Less" %}</b></td>
+                    <td colspan="5"><b>{% trans "(B) Less: Unspent Balance" %}</b></td>
                 </tr>
+                <!-- ko foreach: usages -->
                 <tr>
-                    <td>
-                        Unspent balance GON fund
+                    <td class="text-right" data-bind="text: name">
                     </td>
                     <td></td>
                     <td></td>
-                    <td></td>
+                    <td data-bind="text: parseFloat(release) - parseFloat(spent)"></td>
                     <td></td>
                 </tr>
-                <tr>
-                    <td>
-                        Unspent balance aand Reimbursable Fund
+                <!-- /ko -->
+                <tr class="total">
+                    <td class="text-right">
+                        {% trans 'Sub-total' %}
                     </td>
                     <td></td>
                     <td></td>
-                    <td></td>
+                    <td data-bind="text: unspent_total"></td>
                     <td></td>
                 </tr>
-
+                <!-- /ko -->
                 <tr>
                     <td colspan="5"><b>{% trans "(C) GON Fund Invloved" %}</b></td>
                 </tr>

@@ -25,7 +25,6 @@
         </span>
 
         <span class="col-sm-6 visible-print-inline pull-right text-right">
-                {% get_solo 'core.AppSetting' as app_setting %}
                 {% trans 'Fiscal Year' %}:
                 {{ app_setting.fiscal_year|fiscal_year|localize }}
         </span>

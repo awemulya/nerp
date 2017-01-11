@@ -1,0 +1,29 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block title %}{{ scenario }} {% trans 'Currency' %}{% endblock %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    <a href="{% url "currencies_list" %}">{% trans 'Currencies' %}</a>
+    <li><span>{% trans scenario %} {% trans 'Currency' %}</span></li>
+{% endblock %}
+
+{% block content %}
+    {{ form.non_field_errors }}
+    {{ form.errors }}
+    <form method="post">
+        {% csrf_token %}
+        <div class="well">
+        {{ form.as_p }}
+        </div>
+            <div class="span12">
+                <button type="submit" value="Submit" class="btn btn-info btn-raised">
+                    {% trans 'Submit' %}</button>
+                {% if scenario == 'Update' %}
+                    <a class="btn btn-danger btn-raised"
+                       href="{% url 'currency_delete' form.instance.id %}">{% trans 'Delete' %}!</a>
+                {% endif %}
+            </div>
+    </form>
+{% endblock %}

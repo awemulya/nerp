@@ -6,7 +6,7 @@ import importlib
 
 from django.core import serializers
 from django.db.models.query import QuerySet
-from django.template import Library
+from django.template import Library, TemplateSyntaxError, Node
 from django.utils.safestring import mark_safe
 from django.db.models import Model
 from django import template
@@ -18,6 +18,7 @@ from njango.utils import get_calendar
 from app import settings
 from app.utils.helpers import float_zero_for_none
 
+from django.apps import apps
 register = Library()
 
 
@@ -54,8 +55,8 @@ def bsdate(value, arg=None):
 def handler(obj):
     if hasattr(obj, 'isoformat'):
         return obj.isoformat()
-    # elif isinstance(obj, ...):
-    # return ...
+    elif isinstance(obj, QuerySet) and not obj:
+        return []
     else:
         raise TypeError, 'Object of type %s with value of %s is not JSON serializable' % (type(obj), repr(obj))
 
@@ -379,3 +380,26 @@ def refine_voucher_type(the_type):
     if the_type[-11:] == ' particular':
         the_type = the_type[:-10]
     return the_type.title()
+
+
+@register.filter
+def to_char(value):
+    return unichr(value + 64)
+
+
+@register.tag
+def get_obj(parser, token):
+    bits = token.split_contents()
+    if len(bits) is 4:
+        return ListObject(bits[1], bits[3])
+    else:
+        raise TemplateSyntaxError, "invalid number of arguments"
+
+class ListObject(Node):
+    def __init__(self, model, varname):
+        self.model = apps.get_model(*model.split('.'))
+        self.varname = varname
+
+    def render(self, context):
+        context[self.varname] = self.model._default_manager.all()
+        return ''

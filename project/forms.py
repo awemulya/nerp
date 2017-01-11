@@ -1,14 +1,16 @@
+from core.models import Currency
 from django.core.urlresolvers import reverse_lazy
 from django import forms
 
 from app.utils.forms import HTML5BootstrapModelForm, KOModelForm
-from models import Aid, Project, ExpenseCategory, Expense, ImprestJournalVoucher, Reimbursement, DisbursementDetail
+from models import Aid, Project, ExpenseCategory, Expense, ImprestJournalVoucher, Reimbursement, DisbursementDetail, \
+    NPRExchange
 
 
 class AidForm(HTML5BootstrapModelForm):
     class Meta:
         model = Aid
-        exclude = ('project',)
+        exclude = ('project', 'imprest_ledger')
         widgets = {
             'donor': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('donor_add')}),
             'project': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('project_add')}),
@@ -56,5 +58,21 @@ class DisbursementDetailForm(HTML5BootstrapModelForm):
         exclude = ('project_fy',)
         widgets = {
             'aid': forms.Select(attrs={'class': 'selectize'}),
+            'party': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('create_party')}),
+            'category': forms.Select(attrs={'class': 'selectize'}),
             'disbursement_method': forms.Select(attrs={'class': 'selectize'}),
         }
+
+class NPRExchangeForm(HTML5BootstrapModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(NPRExchangeForm, self).__init__(*args, **kwargs)
+        self.fields['currency'].queryset = Currency.objects.all().exclude(code="NPR")
+
+    class Meta:
+        model = NPRExchange
+        fields = '__all__'
+        widgets = {
+            'currency': forms.Select(attrs={'class': 'selectize', 'data-url': reverse_lazy('currency_add')}),
+        }
+

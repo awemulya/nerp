@@ -36,3 +36,5 @@ DATABASES = {
 ALLOWED_HOSTS = ['awecode.com', 'localhost', '127.0.0.1']
 
 SITE_ID = 1
+
+OPENEXCHANGERATES_APP_ID = '849ea94a3d574ad7a1191857c012cff3'

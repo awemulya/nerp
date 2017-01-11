@@ -1,12 +1,19 @@
 {% extends '_project_base.html' %}
-{% load i18n %}
+{% load i18n staticfiles filters %}
 
-{% block title %}{{ scenario }} {% trans 'AID Disbursement' %}{% endblock %}
+{% block title %}{{ aid }} {% trans 'Disbursement' %}{% endblock %}
+
+{% block head_end %}
+    <script src="{% static 'js/project/aid_disbursement.js' %}"></script>
+    <script>
+        ko_data = {{data|jsonify}};
+    </script>
+{% endblock %}
 
 {% block breadcrumbs %}
     {{ block.super }}
-    <li><a href="#">{% trans 'AID Disbursements' %}</a></li>
-    <li><span>{% trans scenario %} {% trans 'AID Disbursement' %}</span></li>
+    <li><a href="#">{% trans 'Aid Disbursements' %}</a></li>
+    <li><span>{% trans 'Note 3' %}{{ index|to_char }}: {{ aid }} {% trans ' Disbursement' %}</span></li>
 {% endblock %}
 
 {% block content %}
@@ -20,146 +27,102 @@
                 <tr>
                     <th rowspan="2">{% trans "Disbursement Procedure" %}</th>
                     <th rowspan="2">{% trans "No." %}</th>
-                    <th colspan="2">{% trans "Previous Year" %}</th>
-                    <th colspan="2">{% trans "Current Year" %}</th>
-                    <th colspan="2">{% trans "Cumulative up to Current Year" %}</th>
+                    <th colspan="3">{% trans "Previous Year" %}</th>
+                    <th colspan="3">{% trans "Current Year" %}</th>
+                    <th colspan="3">{% trans "Cumulative up to Current Year" %}</th>
                 </tr>
                 <tr>
                     <th>{% trans "NRs." %}</th>
-                    <th>{% trans "US $" %}</th>
+                    <th>{% trans "USD" %}</th>
+                    <th>{% trans "SDR" %}</th>
                     <th>{% trans "NRs." %}</th>
-                    <th>{% trans "US $" %}</th>
+                    <th>{% trans "USD" %}</th>
+                    <th>{% trans "SDR" %}</th>
                     <th>{% trans "NRs." %}</th>
-                    <th>{% trans "US $" %}</th>
+                    <th>{% trans "USD" %}</th>
+                    <th>{% trans "SDR" %}</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td colspan="8">
-                        <b>Replenishment</b>
+                <!-- ko foreach: modes -->
+                <tr class="total">
+                    <td colspan="11">
+                        <u data-bind="text: name"></u>
                     </td>
                 </tr>
+                <!-- ko foreach: disbursements -->
                 <tr>
-                    <td>Consulting Services</td>
-                    <td>3101</td>
+                    <td data-bind="text: category"></td>
+                    <td data-bind="text: code"></td>
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td data-bind="text: nrs"></td>
+                    <td data-bind="text: usd"></td>
+                    <td data-bind="text: sdr"></td>
                     <td></td>
                     <td></td>
                     <td></td>
                 </tr>
-                <tr>
-                    <td>Community Infrastructure</td>
-                    <td>3201</td>
+                <!-- /ko -->
+                <tr class="total">
+                    <td class="text-right">
+                        {% trans 'Sub-total' %}
+                    </td>
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
+                    <td data-bind="text: nrs_subtotal"></td>
+                    <td data-bind="text: usd_subtotal"></td>
+                    <td data-bind="text: sdr_subtotal"></td>
                     <td></td>
                     <td></td>
                     <td></td>
                 </tr>
-                <tr>
-                    <td>Incremental Recurring Cost</td>
-                    <td>3901</td>
+                <!-- /ko -->
+
+                <tr class="total">
+                    <td>
+                        {% trans 'TOTAL' %}
+                    </td>
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
+                    <td data-bind="text: nrs_total"></td>
+                    <td data-bind="text: usd_total"></td>
+                    <td data-bind="text: sdr_total"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-bind="with: initial_deposit">
+                    <td>
+                        {% trans 'Initial Deposit' %}
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td data-bind="text: nrs"></td>
+                    <td data-bind="text: usd"></td>
+                    <td data-bind="text: sdr"></td>
                     <td></td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td>
-                        <b>Sub Total</b>
+                        <b>{% trans 'Total Including Initial Deposit' %}</b>
                     </td>
                     <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td colspan="8">
-                        <b>Reimbursement</b>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Consulting Services</td>
-                    <td>3101</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Community Infrastructure</td>
-                    <td>3201</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Incremental Recurring Cost</td>
-                    <td>3901</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>
-                        <b>Sub Total</b>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>
-                        <b>Total ADB Grant</b>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>
-                        <b>Initial Deposit</b>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>
-                        <b>Total Including Initial Deposit</b>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td data-bind="text: parseFloat(initial_deposit.nrs) + parseFloat(nrs_total)"></td>
+                    <td data-bind="text: parseFloat(initial_deposit.usd) + parseFloat(usd_total)"></td>
+                    <td data-bind="text: parseFloat(initial_deposit.sdr) + parseFloat(sdr_total)"></td>
                     <td></td>
                     <td></td>
                     <td></td>

@@ -58,6 +58,11 @@ urlpatterns = [
     url(r'^budget_release/save/$', views.save_budget_release,
         name='save_budget_release'),
 
+    url(r'^(?P<project_fy_id>[0-9]+)/budget_balance/$', views.BudgetBalance.as_view(),
+        name='budget_balance'),
+    url(r'^budget_release/save/$', views.save_budget_release,
+        name='save_budget_release'),
+
     url(r'^(?P<project_fy_id>[0-9]+)/expenditure/$', views.BudgetExpenditure.as_view(),
         name='budget_expenditure'),
     url(r'^expenditure/save/$', views.save_expenditure,
@@ -71,22 +76,31 @@ urlpatterns = [
     url(r'^(?P<project_fy_id>[0-9]+)/reimbursement/delete/(?P<pk>[0-9]+)/$', views.ReimbursementDelete.as_view(),
         name='reimbursement_delete'),
 
-    url(r'^(?P<project_fy_id>[0-9]+)/statement_of_funds/$', views.statement_of_fund_template,
+    url(r'^(?P<project_fy_id>[0-9]+)/statement_of_funds/$', views.statement_of_fund,
         name='statement_of_funds'),
 
-    url(r'^(?P<project_fy_id>[0-9]+)/memorandum_statement/$', views.memorandum_statement,
+    url(r'^(?P<project_fy_id>[0-9]+)/memorandum_statement/(?P<aid_id>[0-9]+)/$', views.memorandum_statement,
         name='memorandum_statement'),
 
-    url(r'^(?P<project_fy_id>[0-9]+)/aid_disbursement/$', views.aid_disbursement,
+    url(r'^(?P<project_fy_id>[0-9]+)/aid_disbursement/(?P<aid_id>[0-9]+)/$', views.aid_disbursement,
         name='aid_disbursement'),
 
-    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_details/$', views.DisbursementDetailList.as_view(), name='disbursement_detail_list'),
-    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/$', views.DisbursementDetailCreate.as_view(), name='disbursement_detail_add'),
-    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/(?P<pk>\d+)/$', views.DisbursementDetailCreate.as_view(),
+    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_details/$', views.DisbursementList.as_view(), name='disbursement_detail_list'),
+    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/$', views.DisbursementCreate.as_view(), name='disbursement_detail_add'),
+    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/(?P<pk>\d+)/$', views.DisbursementUpdate.as_view(),
         name='disbursement_detail_edit'),
-    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/delete/(?P<pk>\d+)/$', views.DisbursementDetailDelete.as_view(),
+    url(r'^(?P<project_fy_id>[0-9]+)/disbursement_detail/delete/(?P<pk>\d+)/$', views.DisbursementDelete.as_view(),
         name='disbursement_detail_delete'),
     url(r'^disbursement_detail/save/$', views.save_disbursement_detail, name='save_save_disbursement_detail'),
 
+    url(r'^exchange/$', views.NPRExchangeList.as_view(), name='exchange_list'),
+    url(r'^exchange/add/$', views.NPRExchangeCreate.as_view(), name='exchange_add'),
+    url(r'^exchange/edit/(?P<pk>\d+)/$', views.NPRExchangeUpdate.as_view(), name='exchange_edit'),
+    url(r'^exchange/(?P<date>\d{4}-\d{2}-\d{2})/$', views.NPRExchangeUpdate.as_view(), name='exchange_with_date'),
+    url(r'^exchange/(?P<date>\d{4}-\d{2}-\d{2})/(?P<currency>\w+)/$', views.NPRExchangeUpdate.as_view(), name='exchange_with_date'),
+    url(r'^exchange/delete/(?P<pk>\d+)/$', views.NPRExchangeDelete.as_view(), name='exchange_delete'),
 
+    url(r'^(?P<project_fy_id>[0-9]+)/statement/$', views.statement,
+        name='statement'),
+    # url(r'^statement/$', views.statement, name='statement'),
 ]

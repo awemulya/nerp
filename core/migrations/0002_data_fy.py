@@ -10,11 +10,11 @@ def fiscal_years(apps, schema_editor):
     from core.models import FiscalYear
     # FiscalYear = apps.get_model('core', 'FiscalYear')
     post_save.disconnect(sender=FiscalYear)
-    FiscalYear.objects.create(year=2069)
-    FiscalYear.objects.create(year=2070)
-    FiscalYear.objects.create(year=2071)
-    FiscalYear.objects.create(year=2072)
-    FiscalYear.objects.create(year=2073)
+    FiscalYear.objects.get_or_create(year=2069)
+    FiscalYear.objects.get_or_create(year=2070)
+    FiscalYear.objects.get_or_create(year=2071)
+    FiscalYear.objects.get_or_create(year=2072)
+    FiscalYear.objects.get_or_create(year=2073)
 
 
 class Migration(migrations.Migration):

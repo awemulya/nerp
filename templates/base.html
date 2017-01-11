@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load staticfiles %}
 {% load solo_tags %}
-
+{% get_solo 'core.AppSetting' as app_setting %}
 <!DOCTYPE html>
 <!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
 <!--[if gt IE 8]><!-->
@@ -65,7 +65,7 @@
                 </div>
             </div>
             <ul class="nav navbar-nav">
-            {% get_solo 'core.AppSetting' as app_setting %}
+            
             <li><a href="/"><h3>{{ app_setting.site_name }}</h3></a></li>
                 
             </ul>

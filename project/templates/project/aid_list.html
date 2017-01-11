@@ -20,12 +20,24 @@
     <table class="table table-striped">
         <thead>
         <th>{% anchor name _('Name') %}</th>
+        <th>{% anchor type _('Type') %}</th>
+        <th>{% anchor key _('Key') %}</th>
+        <th>{% trans 'Active' %}</th>
         </thead>
         <tbody>
         {% for aid in paginated_objects %}
             <tr>
                 <td class="link">
                     <a href="{% url 'aid_edit' project.id aid.id %}">{{ aid }}</a>
+                </td>
+                <td>{{ aid.type }}</td>
+                <td>{{ aid.key }}</td>
+                <td>
+                    <div class="checkbox no-margin">
+                        <label>
+                            <input type="checkbox" {% if aid.active %}checked{% endif %} disabled>
+                        </label>
+                    </div>
                 </td>
             </tr>
         {% endfor %}

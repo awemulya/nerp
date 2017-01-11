@@ -21,7 +21,6 @@
     {% csrf_token %}
         {% trans 'New' %} {% trans 'Fiscal Year' %} :<br/>
         <select name="fiscal_year">
-            {% get_solo 'core.AppSetting' as app_setting %}
             {% for fiscal_year in fiscal_years %}
                 {% if not app_setting.fiscal_year|add:"0" == fiscal_year.0 %}
                     <option value="{{ fiscal_year.0 }}">{{ fiscal_year.1|localize }}</option>

@@ -1,8 +1,10 @@
+from datetime import date
 from rest_framework import serializers
+from rest_framework.fields import DateField
 
 from models import ImprestTransaction, ExpenseRow, ExpenseCategory, Expense, BudgetAllocationItem, Aid, \
     ImprestJournalVoucher, \
-    DisbursementDetail, DisbursementParticulars
+    DisbursementDetail, DisbursementParticulars, NPRExchange
 
 
 class ImprestTransactionSerializer(serializers.ModelSerializer):
@@ -18,10 +20,17 @@ class ExpenseRowSerializer(serializers.ModelSerializer):
 
 
 class ExpenseCategorySerializer(serializers.ModelSerializer):
+    subtotal = serializers.SerializerMethodField()
     url = serializers.ReadOnlyField(source='get_absolute_url')
 
     class Meta:
         model = ExpenseCategory
+
+    def get_subtotal(self, obj):
+        subtotal = 0
+        for o in obj.expense_row.all().only('amount'):
+            subtotal += o.amount
+        return subtotal
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
@@ -55,7 +64,18 @@ class BaseStatementSerializer(serializers.ModelSerializer):
         return name
 
 
+class BSSerializerField(DateField):
+    # TODO Port to njango as mixin
+    # TODO implement to_internal_value to enable saving to DB via API 
+    def to_representation(self, value):
+        if type(value) == date:
+            return super(BSSerializerField, self).to_representation(value)
+        return str(value)
+
+
 class ImprestJVSerializer(serializers.ModelSerializer):
+    date = BSSerializerField()
+
     class Meta:
         model = ImprestJournalVoucher
 
@@ -75,3 +95,10 @@ class DisbursementDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = DisbursementDetail
         exclude = ('aid',)
+
+
+class NPRExchangeSerializer(serializers.ModelSerializer):
+    url = serializers.ReadOnlyField(source='get_absolute_url')
+
+    class Meta:
+        model = NPRExchange

@@ -1,9 +1,12 @@
+from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
 from njango.fields import BSDateField, today
 
-from app.utils.helpers import model_exists_in_db
+from app.utils.helpers import model_exists_in_db, internet, fetch_npr_conversion
 from core.models import Currency, FiscalYear, validate_in_fy, Donor, BudgetHead
 from account.models import Account, Party
 
@@ -13,9 +16,12 @@ IMPREST_TRANSACTION_TYPES = (('initial_deposit', 'Initial Deposit'), ('gon_fund_
 
 AID_TYPES = (('loan', 'Loan'), ('grant', 'Grant'))
 
-DISBURSEMENT_METHOD = (
-    ('reimbursement', 'Reimbursement'), ('replenishment', 'Replenishment'), ('liquidation', 'Liquidation'),
-    ('direct_payment', 'Direct Payment'))
+DISBURSEMENT_METHODS = (
+    ('direct_payment', 'Direct Payment'),
+    ('reimbursement', 'Reimbursement'),
+    ('replenishment', 'Replenishment'),
+    ('liquidation', 'Liquidation'),
+)
 
 DEFAULT_LEDGERS = [
     'Initial Deposit',
@@ -55,7 +61,6 @@ class Project(models.Model):
 class ProjectFy(models.Model):
     project = models.ForeignKey(Project)
     fy = models.ForeignKey(FiscalYear)
-    imprest_ledger = models.ForeignKey(Account, related_name='imprest_for')
     initial_deposit = models.ForeignKey(Account, related_name='deposit_for')
     replenishments = models.ForeignKey(Account, related_name='replenishments_for')
     additional_advances = models.ForeignKey(Account, related_name='additional_advances_for')
@@ -64,9 +69,6 @@ class ProjectFy(models.Model):
         return str(self.project) + ' - ' + str(self.fy)
 
     def save(self, *args, **kwargs):
-        if not self.imprest_ledger_id:
-            self.imprest_ledger = Account.objects.create(name='Imprest Ledger (' + str(self.project.name) + ')',
-                                                         fy=self.fy)
         if not self.initial_deposit_id:
             self.initial_deposit = Account.objects.create(name='Initial Deposit (' + str(self.project.name) + ')',
                                                           fy=self.fy)
@@ -77,18 +79,45 @@ class ProjectFy(models.Model):
                                                               fy=self.fy)
         super(ProjectFy, self).save(*args, **kwargs)
 
+    def get_imprest_accounts(self):
+        return [aid.imprest_ledger for aid in self.project.aids.all()]
+
     def get_ledgers(self):
-        self_ledgers = [self.imprest_ledger, self.initial_deposit, self.replenishments, self.additional_advances]
+        self_ledgers = [self.initial_deposit, self.replenishments, self.additional_advances]
         party_ledgers = [party.account for party in Party.objects.all()]
-        return self_ledgers + party_ledgers
+        return self.get_imprest_accounts() + self_ledgers + party_ledgers
 
     def dr_ledgers(self):
         party_ledgers = [party.account for party in Party.objects.all()]
-        return [self.imprest_ledger, Account.objects.filter(name='Ka-7-15', fy=self.fy).first(),
-                Account.objects.filter(name='Ka-7-17', fy=self.fy).first()] + party_ledgers
+        return self.get_imprest_accounts() + [Account.objects.filter(name='Ka-7-15', fy=self.fy).first(),
+                                              Account.objects.filter(name='Ka-7-17', fy=self.fy).first()] + party_ledgers
 
     def cr_ledgers(self):
-        return [self.imprest_ledger, self.initial_deposit, self.replenishments, self.additional_advances]
+        return self.get_imprest_accounts() + [self.initial_deposit, self.replenishments, self.additional_advances]
+
+    def get_budget_usage(self):
+        aids = self.project.aids.all().select_related('project', 'donor')
+        lst = []
+        #  Add GON Budget/Fund
+        data = {
+            'id': None,
+            'name': str(_('GON Fund')),
+            'release': BudgetReleaseItem.objects.filter(aid=None, project_fy=self).aggregate(Sum('amount')).get(
+                'amount__sum') or 0,
+            'spent': Expenditure.objects.filter(aid=None, project_fy_id=self).aggregate(Sum('amount')).get('amount__sum') or 0,
+        }
+        lst.append(data)
+        # Add Donor Funds
+        for aid in aids:
+            data = {
+                'id': aid.id,
+                'name': str(aid),
+                'release': BudgetReleaseItem.objects.filter(aid=aid, project_fy=self).aggregate(Sum('amount')).get(
+                    'amount__sum') or 0,
+                'spent': Expenditure.objects.filter(aid=aid, project_fy_id=self).aggregate(Sum('amount')).get('amount__sum') or 0,
+            }
+            lst.append(data)
+        return lst
 
     class Meta:
         unique_together = ('project', 'fy')
@@ -117,7 +146,91 @@ class Aid(models.Model):
     type = models.CharField(choices=AID_TYPES, max_length=10)
     key = models.CharField(max_length=50)
     active = models.BooleanField(default=True)
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project, related_name='aids')
+    imprest_ledger = models.OneToOneField(Account, related_name='imprest_for')
+
+    def get_imprest_balance(self, dt):
+        """
+        returns (nrs_balance, usd_balance)
+        """
+        dr_amounts = self.imprest_ledger.debiting_vouchers.filter(date__lte=dt).aggregate(Sum('amount_nrs'),
+                                                                                          Sum('amount_usd')).values()
+        cr_amounts = self.imprest_ledger.crediting_vouchers.filter(date__lte=dt).aggregate(Sum('amount_nrs'),
+                                                                                           Sum('amount_usd')).values()
+        return tuple([round(dr - cr, 2) for dr, cr in zip(dr_amounts, cr_amounts)])
+
+    def get_imprest_disbursements(self, from_date, to_date):
+        """
+        returns ((party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd))
+        """
+        vouchers = self.imprest_ledger.crediting_vouchers.select_related('dr__party').filter(date__gte=from_date,
+                                                                                             date__lte=to_date)
+        party_payments_nrs = 0
+        party_payments_usd = 0
+        gon_transfer_nrs = 0
+        gon_transfer_usd = 0
+        for voucher in vouchers.all():
+            if hasattr(voucher.dr, 'party'):
+                party_payments_nrs += voucher.amount_nrs
+                party_payments_usd += voucher.amount_usd
+            else:
+                gon_transfer_nrs += voucher.amount_nrs
+                gon_transfer_usd += voucher.amount_usd
+        return (party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd)
+
+    def get_disbursements(self, project_fy):
+        return self.disbursements.filter(project_fy=project_fy).select_related('category')
+
+    def get_outstanding_old(self, project_fy, fy_start, fy_end):
+        """
+        returns ((party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd))
+        """
+        party_payments_nrs = 0
+        party_payments_usd = 0
+        gon_transfer_nrs = 0
+        gon_transfer_usd = 0
+        return (party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd)
+
+    def get_imprest_replenishments(self, project_fy):
+        """
+        returns ((party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd))
+        """
+        replenishments = self.disbursements.filter(project_fy=project_fy, disbursement_method='replenishment')
+        party_payments_nrs = 0
+        party_payments_usd = 0
+        gon_transfer_nrs = 0
+        gon_transfer_usd = 0
+        for replenishment in replenishments:
+            if replenishment.party_id:
+                party_payments_nrs += replenishment.response_nrs
+                party_payments_usd += replenishment.response_usd
+            else:
+                gon_transfer_nrs += replenishment.response_nrs
+                gon_transfer_usd += replenishment.response_usd
+        return (party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd)
+
+    def get_imprest_liquidations(self, project_fy):
+        """
+        returns ((party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd))
+        """
+        liquidations = self.disbursements.filter(project_fy=project_fy, disbursement_method='liquidation')
+        party_payments_nrs = 0
+        party_payments_usd = 0
+        gon_transfer_nrs = 0
+        gon_transfer_usd = 0
+        for liquidation in liquidations:
+            if liquidation.party_id:
+                party_payments_nrs += liquidation.response_nrs
+                party_payments_usd += liquidation.response_usd
+            else:
+                gon_transfer_nrs += liquidation.response_nrs
+                gon_transfer_usd += liquidation.response_usd
+        return (party_payments_nrs, party_payments_usd), (gon_transfer_nrs, gon_transfer_usd)
+
+    def save(self, *args, **kwargs):
+        if not self.imprest_ledger_id:
+            self.imprest_ledger = Account.objects.create(name='Imprest Ledger (' + str(self) + ')')
+        super(Aid, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(self.donor) + ' ' + str(self.get_type_display()) + ' ' + self.key
@@ -197,19 +310,20 @@ class Expense(models.Model):
 
 
 class ExpenseRow(models.Model):
-    category = models.ForeignKey(ExpenseCategory)
+    category = models.ForeignKey(ExpenseCategory, related_name="expense_row")
     expense = models.ForeignKey(Expense)
     amount = models.FloatField()
     project_fy = models.ForeignKey(ProjectFy)
 
     def __str__(self):
-        return str(self.fy) + '-' + str(self.category) + ' - ' + str(self.expense) + ' : ' + str(self.amount)
+
+        return str(self.project_fy) + '-' + str(self.category) + ' - ' + str(self.expense) + ' : ' + str(self.amount)
 
 
 class BudgetAllocationItem(models.Model):
     budget_head = models.ForeignKey(BudgetHead)
     aid = models.ForeignKey(Aid, blank=True, null=True)
-    amount = models.PositiveIntegerField(blank=True, null=True)
+    amount = models.FloatField(blank=True, null=True)
     project_fy = models.ForeignKey(ProjectFy)
 
     def __str__(self):
@@ -222,7 +336,7 @@ class BudgetAllocationItem(models.Model):
 class BudgetReleaseItem(models.Model):
     budget_head = models.ForeignKey(BudgetHead)
     aid = models.ForeignKey(Aid, blank=True, null=True)
-    amount = models.PositiveIntegerField(blank=True, null=True)
+    amount = models.FloatField(blank=True, null=True)
     project_fy = models.ForeignKey(ProjectFy)
 
     def __str__(self):
@@ -235,7 +349,7 @@ class BudgetReleaseItem(models.Model):
 class Expenditure(models.Model):
     budget_head = models.ForeignKey(BudgetHead)
     aid = models.ForeignKey(Aid, blank=True, null=True)
-    amount = models.PositiveIntegerField(blank=True, null=True)
+    amount = models.FloatField(blank=True, null=True)
     project_fy = models.ForeignKey(ProjectFy)
 
     def __str__(self):
@@ -247,8 +361,8 @@ class Expenditure(models.Model):
 
 class ImprestJournalVoucher(models.Model):
     voucher_no = models.PositiveIntegerField()
-    # date = BSDateField(default=today, validators=[validate_in_fy])
-    date = models.DateField()
+    date = BSDateField(default=today)
+    # date = models.DateField()
     dr = models.ForeignKey(Account, related_name='debiting_vouchers')
     cr = models.ForeignKey(Account, related_name='crediting_vouchers')
     amount_nrs = models.FloatField(blank=True, null=True)
@@ -274,6 +388,9 @@ class ImprestJournalVoucher(models.Model):
     def __str__(self):
         return str(self.voucher_no)
 
+    class Meta:
+        ordering = ('date', 'id')
+
 
 class Reimbursement(models.Model):
     date = BSDateField(null=True, blank=True, default=today, validators=[validate_in_fy])
@@ -288,14 +405,25 @@ class Reimbursement(models.Model):
 
 class DisbursementDetail(models.Model):
     wa_no = models.PositiveIntegerField(blank=True, null=True)
-    aid = models.ForeignKey(Aid)
+    aid = models.ForeignKey(Aid, related_name='disbursements')
     requested_date = BSDateField(null=True, blank=True, default=today, validators=[validate_in_fy])
-    disbursement_method = models.CharField(max_length=255, choices=DISBURSEMENT_METHOD)
+    disbursement_method = models.CharField(max_length=255, choices=DISBURSEMENT_METHODS)
     project_fy = models.ForeignKey(ProjectFy)
     remarks = models.TextField(blank=True, null=True)
+    party = models.ForeignKey(Party, blank=True, null=True)
+    category = models.ForeignKey(ExpenseCategory)
+    value_date = BSDateField(null=True, blank=True, default=today, validators=[validate_in_fy])
+    response_nrs = models.PositiveIntegerField(blank=True, null=True)
+    response_usd = models.PositiveIntegerField(blank=True, null=True)
+    response_sdr = models.PositiveIntegerField(blank=True, null=True)
+
+    def get_data(self):
+        return {'id': self.id, 'category': str(self.category), 'code': self.category.code, 'nrs': self.response_nrs,
+                'usd': self.response_usd,
+                'sdr': self.response_sdr}
 
     def __str__(self):
-        return str(self.aid) + ' - ' + self.disbursement_method
+        return str(self.aid) + ' - ' + self.get_disbursement_method_display()
 
 
 class DisbursementParticulars(models.Model):
@@ -310,3 +438,27 @@ class DisbursementParticulars(models.Model):
     with_held_usd = models.PositiveIntegerField(blank=True, null=True)
     with_held_sdr = models.PositiveIntegerField(blank=True, null=True)
     disbursement_detail = models.ForeignKey(DisbursementDetail, related_name="rows")
+
+
+class NPRExchange(models.Model):
+    currency = models.ForeignKey(Currency, related_name='npr_exchanges')
+    date = models.DateField(help_text='Date in AD')
+    rate = models.FloatField()
+
+    def get_absolute_url(self):
+        return reverse('exchange_with_date', kwargs={'date': str(self.date), 'currency': self.currency.code})
+
+    @staticmethod
+    def get(date, currency='USD'):
+        try:
+            # TODO fix for AD calendar
+            return NPRExchange.objects.select_related('currency').get(currency__code=currency, date=date)
+        except NPRExchange.DoesNotExist:
+            if internet():
+                # TODO date to AD
+                conversion = fetch_npr_conversion(date, currency=currency)
+                currency_obj, created = Currency.objects.get_or_create(code=currency, defaults={'name': currency})
+                return NPRExchange.objects.create(currency=currency_obj, date=date, rate=conversion.get('TargetBuy'))
+
+    def __str__(self):
+        return str(self.date) + ' : ' + str(self.currency) + ' : ' + str(self.rate)

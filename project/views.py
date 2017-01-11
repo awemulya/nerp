@@ -1,7 +1,7 @@
 import json
+from datetime import date, datetime
 
 from django.db.models import Q
-from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView as BaseCreateView
 from django.http.response import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -10,21 +10,27 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from django.utils.translation import ugettext_lazy as _
+from njango.middleware import get_calendar
+
+from njango.nepdate import bs2ad
+
 
 from account.models import Account
 from core.serializers import BudgetSerializer
 from account.serializers import AccountSerializer
-from app.utils.helpers import save_model, invalid, empty_to_none
-from core.models import BudgetHead
+from app.utils.helpers import save_model, invalid, empty_to_none, zero_for_none
+from core.models import BudgetHead, FiscalYear
 from inventory.models import delete_rows
 from models import Aid, ProjectFy, ImprestJournalVoucher, BudgetAllocationItem, BudgetReleaseItem, Expenditure, \
-    Reimbursement, DisbursementDetail, DisbursementParticulars
+    Reimbursement, DisbursementDetail, DisbursementParticulars, NPRExchange
 from project.forms import AidForm, ProjectForm, ExpenseCategoryForm, ExpenseForm, ImprestJVForm, ReimbursementForm, \
-    DisbursementDetailForm
+    DisbursementDetailForm, NPRExchangeForm
 from models import ExpenseRow, ExpenseCategory, Expense, Project
 from serializers import ExpenseRowSerializer, ExpenseCategorySerializer, \
-    ExpenseSerializer, AidSerializer, BaseStatementSerializer, ImprestJVSerializer, DisbursementDetailSerializer
-from app.utils.mixins import AjaxableResponseMixin, UpdateView, DeleteView, json_from_object
+    ExpenseSerializer, AidSerializer, BaseStatementSerializer, ImprestJVSerializer, DisbursementDetailSerializer, \
+    NPRExchangeSerializer
+
+from app.utils.mixins import AjaxableResponseMixin, UpdateView, DeleteView, json_from_object, CreateView
 
 
 class ProjectCreateView(BaseCreateView):
@@ -60,10 +66,10 @@ class ProjectFYView(object):
         context_data['project_fy'] = self.project_fy
         context_data['project'] = self.project
         context_data['fy'] = self.fy
-        if 'data' in context_data:
-            context_data['data']['project_fy_id'] = self.project_fy.id
-            context_data['data']['fy_id'] = self.fy.id
-            context_data['data']['project_id'] = self.project.id
+        context_data['data'] = context_data.get('data') or {}
+        context_data['data']['project_fy_id'] = self.project_fy.id
+        context_data['data']['fy_id'] = self.fy.id
+        context_data['data']['project_id'] = self.project.id
         return context_data
 
 
@@ -142,11 +148,12 @@ class Application(ProjectFYView, ListView):
         context_data = super(Application, self).get_context_data(**kwargs)
         categories = ExpenseCategory.objects.filter(enabled=True, project=self.project)
         expenses = Expense.objects.filter(enabled=True, project=self.project)
-        context_data['data'] = {
+        context_data['data'].update({
             'rows': ExpenseRowSerializer(context_data['object_list'], many=True).data,
             'categories': ExpenseCategorySerializer(categories, many=True).data,
             'expenses': ExpenseSerializer(expenses, many=True).data,
-        }
+        })
+
         return context_data
 
 
@@ -283,6 +290,8 @@ class ExpenseView(ProjectMixin):
             project_id = context_data['project'].id
             form = context_data['form']
             form.fields['category'].queryset = ExpenseCategory.objects.filter(project_id=project_id)
+            form.fields['category'].widget.attrs.update(
+                {'data-url': reverse_lazy('expense_category_add', kwargs={'project_id': project_id})})
         return context_data
 
 
@@ -448,13 +457,40 @@ class ImprestLedger(ImprestJVView, ListView):
     template_name = 'project/imprestledger_list.html'
 
     def get_queryset(self):
-        qs = super(ImprestLedger, self).get_queryset()
+        qs = super(ImprestLedger, self).get_queryset().select_related('dr', 'cr')
         return qs.filter(Q(dr_id=self.kwargs.get('account_id')) | Q(cr_id=self.kwargs.get('account_id')))
 
     def get_context_data(self, **kwargs):
         context = super(ImprestLedger, self).get_context_data()
-        account_id = self.kwargs.get('account_id')
+        account_id = int(self.kwargs.get('account_id'))
         context['account'] = Account.objects.get(id=account_id)
+        bal_nrs = 0
+        bal_usd = 0
+        dr_usd = 0
+        dr_nrs = 0
+        cr_usd = 0
+        cr_nrs = 0
+        for obj in context.get('object_list'):
+            if obj.dr_id == account_id:
+                bal_nrs += obj.amount_nrs
+                bal_usd += obj.amount_usd
+            elif obj.cr_id == account_id:
+                bal_nrs -= obj.amount_nrs
+                bal_usd -= obj.amount_usd
+            obj.bal_nrs = bal_nrs
+            obj.bal_usd = bal_usd
+            if obj.dr_id == account_id:
+                dr_nrs += zero_for_none(obj.amount_nrs)
+                dr_usd += zero_for_none(obj.amount_usd)
+            if obj.cr_id == account_id:
+                cr_nrs += zero_for_none(obj.amount_nrs)
+                cr_usd += zero_for_none(obj.amount_usd)
+        context.update({
+            'dr_nrs': dr_nrs,
+            'cr_nrs': cr_nrs,
+            'dr_usd': dr_usd,
+            'cr_usd': cr_usd,
+        })
         return context
 
 
@@ -491,12 +527,45 @@ class ReimbursementDelete(ReimbursementView, DeleteView):
     pass
 
 
-def statement_of_fund_template(request, project_fy_id):
-    return render(request, 'project/statement_of_funds.html')
+def statement_of_fund(request, project_fy_id):
+    project_fy = ProjectFy.objects.get(pk=project_fy_id)
+    budget_usage = project_fy.get_budget_usage()
+    data = {
+        'budget_usage': budget_usage,
+    }
+    return render(request, 'project/statement_of_funds.html', context={
+        'data': data,
+        'project_fy': project_fy,
+    })
 
 
-def memorandum_statement(request, project_fy_id):
-    return render(request, 'project/memorandum_statement.html')
+def memorandum_statement(request, project_fy_id, aid_id):
+    project_fy = ProjectFy.objects.get(pk=project_fy_id)
+    aid = Aid.objects.select_related('donor').get(pk=aid_id, project_id=project_fy.project_id)
+    fy_end = FiscalYear.end(project_fy.fy.year)
+    fy_end_ad = fy_end
+    fy_start = FiscalYear.start(project_fy.fy.year)
+    calendar = get_calendar()
+    if calendar != 'ad':
+        fy_end_ad = date(*bs2ad(fy_end))
+    fy_end_exchange = NPRExchange.get(fy_end_ad)
+    data = {
+        'fy_end_balance': aid.get_imprest_balance(fy_end),
+        'fy_end_exchange_data': NPRExchangeSerializer(fy_end_exchange).data,
+        'outstanding_old': aid.get_outstanding_old(project_fy, fy_start, fy_end),
+        'disbursements': aid.get_imprest_disbursements(fy_start, fy_end),
+        'replenishments': aid.get_imprest_replenishments(project_fy),
+        'liquidations': aid.get_imprest_liquidations(project_fy),
+    }
+
+    return render(request, 'project/memorandum_statement.html', context={
+        'data': data,
+        'project_fy': project_fy,
+        'aid': aid,
+        'index': list(Aid.objects.filter(project_id=project_fy.project_id).values_list('id', flat=True)).index(aid.id) + 1,
+        'fy_end_exchange': fy_end_exchange,
+        'fy_end': fy_end,
+    })
 
 
 def ledgers(request, project_fy_id):
@@ -505,11 +574,31 @@ def ledgers(request, project_fy_id):
     return render(request, 'project/ledger_list.html', context)
 
 
-def aid_disbursement(request, project_fy_id):
-    return render(request, 'project/aid_disbursement.html')
+def aid_disbursement(request, project_fy_id, aid_id):
+    project_fy = ProjectFy.objects.get(pk=project_fy_id)
+    aid = Aid.objects.get(pk=aid_id, project_id=project_fy.project_id)
+    disbursements = aid.get_disbursements(project_fy)
+    modes = {}
+    from .models import DISBURSEMENT_METHODS
+
+    for method in DISBURSEMENT_METHODS:
+        modes[method[0]] = {'name': method[1], 'disbursements': []}
+    for disbursement in disbursements:
+        modes[disbursement.disbursement_method]['disbursements'].append(disbursement.get_data())
+    data = {
+        'modes': modes,
+        # TODO Get real initial deposit
+        'initial_deposit': {'nrs': 12, 'usd': 13, 'sdr': 14}
+    }
+    return render(request, 'project/aid_disbursement.html', context={
+        'data': data,
+        'project_fy': project_fy,
+        'aid': aid,
+        'index': list(Aid.objects.filter(project_id=project_fy.project_id).values_list('id', flat=True)).index(aid.id) + 1,
+    })
 
 
-class DisbursementDetailView(ProjectFYView):
+class DisbursementView(ProjectFYView):
     model = DisbursementDetail
     form_class = DisbursementDetailForm
 
@@ -517,7 +606,7 @@ class DisbursementDetailView(ProjectFYView):
         return reverse_lazy('disbursement_detail_list', kwargs={'project_fy_id': self.project_fy.id})
 
     def get_context_data(self, **kwargs):
-        context = super(DisbursementDetailView, self).get_context_data(**kwargs)
+        context = super(DisbursementView, self).get_context_data(**kwargs)
         if 'form' in context:
             form = context['form']
             form.fields['aid'].widget.attrs.update(
@@ -525,39 +614,47 @@ class DisbursementDetailView(ProjectFYView):
         return context
 
 
-class DisbursementDetailList(DisbursementDetailView, ListView):
+class DisbursementCreate(DisbursementView, CreateView):
     pass
 
 
-class DisbursementDetailCreate(DisbursementDetailView, TemplateView):
-    serializer_class = DisbursementDetailSerializer
-    template_name = "project/disbursementdetail_form.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(DisbursementDetailCreate, self).get_context_data(**kwargs)
-        if 'pk' in self.kwargs:
-            pk = int(self.kwargs.get('pk'))
-            obj = get_object_or_404(self.model, pk=pk, project_fy=context['project_fy'])
-            scenario = 'Update'
-        else:
-            obj = self.model(project_fy=context['project_fy'])
-            scenario = 'Create'
-        data = self.serializer_class(obj).data
-        aids = Aid.objects.filter(active=True, project=context['project_fy'].project)
-        expense_category = ExpenseCategory.objects.all()
-        context['data'] = data
-        context['scenario'] = scenario
-        context['obj'] = obj
-        context['data']['aids'] = AidSerializer(aids, many=True).data
-        context['data']['expense_category'] = ExpenseCategorySerializer(expense_category, many=True).data
-        return context
-
-
-class DisbursementDetailUpdate(DisbursementDetailView, UpdateView):
+class DisbursementUpdate(DisbursementView, UpdateView):
     pass
 
 
-class DisbursementDetailDelete(DisbursementDetailView, DeleteView):
+class DisbursementList(DisbursementView, ListView):
+    pass
+
+
+# class DisbursementDetailCreate(DisbursementDetailView, TemplateView):
+#     serializer_class = DisbursementDetailSerializer
+#     template_name = "project/disbursementdetail_form.html"
+# 
+#     def get_context_data(self, **kwargs):
+#         context = super(DisbursementDetailCreate, self).get_context_data(**kwargs)
+#         if 'pk' in self.kwargs:
+#             pk = int(self.kwargs.get('pk'))
+#             obj = get_object_or_404(self.model, pk=pk, project_fy=context['project_fy'])
+#             scenario = 'Update'
+#         else:
+#             obj = self.model(project_fy=context['project_fy'])
+#             scenario = 'Create'
+#         data = self.serializer_class(obj).data
+#         aids = Aid.objects.filter(active=True, project=context['project_fy'].project)
+#         expense_category = ExpenseCategory.objects.all()
+#         context['data'] = data
+#         context['scenario'] = scenario
+#         context['obj'] = obj
+#         context['data']['aids'] = AidSerializer(aids, many=True).data
+#         context['data']['expense_category'] = ExpenseCategorySerializer(expense_category, many=True).data
+#         return context
+# 
+# 
+# class DisbursementDetailUpdate(DisbursementDetailView, UpdateView):
+#     pass
+# 
+
+class DisbursementDelete(DisbursementView, DeleteView):
     pass
 
 
@@ -603,3 +700,68 @@ def save_disbursement_detail(request):
         else:
             dct['error_message'] = 'Error in form data!'
     return JsonResponse(dct)
+
+
+class NPRExchangeView(object):
+    model = NPRExchange
+    success_url = reverse_lazy('exchange_list')
+    form_class = NPRExchangeForm
+
+
+class NPRExchangeList(NPRExchangeView, ListView):
+    pass
+
+
+class NPRExchangeCreate(AjaxableResponseMixin, NPRExchangeView, CreateView):
+    pass
+
+
+class NPRExchangeUpdate(NPRExchangeView, UpdateView):
+    def get_object(self, queryset=None):
+        if 'date' in self.kwargs:
+            _date = datetime.strptime(self.kwargs.get('date'), '%Y-%m-%d')
+            return NPRExchange.get(_date.date(), currency=self.kwargs.get('currency'))
+        obj = super(NPRExchangeUpdate, self).get_object()
+        return obj
+
+
+class NPRExchangeDelete(NPRExchangeView, DeleteView):
+    pass
+
+
+def statement(request, project_fy_id):
+    project_fy = ProjectFy.objects.get(pk=project_fy_id)
+    fy_end = FiscalYear.end(project_fy.fy.year)
+    calendar = get_calendar()
+    if calendar == 'ad':
+        fy_end = date(*fy_end)
+
+    categories = ExpenseCategory.objects.filter(project_id=project_fy.project_id)
+    return render(request, 'project/statement.html', context={
+        # 'data': data,
+        'project_fy': project_fy,
+        'data': {
+            'categories': ExpenseCategorySerializer(categories, many=True).data,
+        },
+        'fy_end': fy_end,
+    })
+    return render(request, 'project/statement.html')
+
+
+class BudgetBalance(ProjectFYView, ListView):
+    model = BudgetReleaseItem
+    fy = None
+    template_name = 'project/budgetbalance_list.html'
+
+    def get_context_data(self, **kwargs):
+        context_data = super(BudgetBalance, self).get_context_data(**kwargs)
+        budget_heads = BudgetHead.objects.all()
+        expenditure = Expenditure.objects.filter(project_fy=context_data['project_fy'])
+        aids = Aid.objects.filter(active=True, project=self.project)
+        context_data['data'] = {
+            'budget_heads': BudgetSerializer(budget_heads, many=True).data,
+            'aids': AidSerializer(aids, many=True).data,
+            'budget_release': BaseStatementSerializer(context_data['object_list'], many=True).data,
+            'expenditure': BaseStatementSerializer(expenditure, many=True).data,
+        }
+        return context_data

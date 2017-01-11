@@ -25,6 +25,9 @@
             <th>{% anchor date _('Date') %}</th>
             <th>{% anchor dr _('Dr') %}</th>
             <th>{% anchor cr _('Cr') %}</th>
+            <th>{% anchor amount_nrs _('NRS') %}</th>
+            <th>{% anchor amount_usd _('USD') %}</th>
+            <th>{% anchor exchage_rate _('Ex. Rate') %}</th>
             </thead>
             <tbody>
             {% for obj in paginated_objects %}
@@ -32,9 +35,14 @@
                     <td class="link">
                         <a href="{% url 'imprest_journal_voucher_edit' project_fy.id obj.id %}">{{ obj.voucher_no }}</a>
                     </td>
-                    <td>{{ obj.date }}</td>
-                    <td>{{ obj.dr }}</td>
-                    <td>{{ obj.cr }}</td>
+                    <td class="link">
+                        <a href="{% url 'imprest_journal_voucher_edit' project_fy.id obj.id %}">{{ obj.date }}</a>
+                    </td>
+                    <td><a href="{% url 'account_view' project_fy.id obj.dr_id %}">{{ obj.dr }}</a></td>
+                    <td><a href="{% url 'account_view' project_fy.id obj.cr_id %}">{{ obj.cr }}</a></td>
+                    <td>{{ obj.amount_nrs }}</td>
+                    <td>{{ obj.amount_usd }}</td>
+                    <td>{{ obj.exchange_rate }}</td>
                 </tr>
             {% endfor %}
             </tbody>

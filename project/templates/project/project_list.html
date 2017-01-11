@@ -20,12 +20,20 @@
     <table class="table table-striped">
         <thead>
         <th>{% anchor name _('Name') %}</th>
+        <th>{% trans 'Active' %}</th>
         </thead>
         <tbody>
         {% for project in paginated_objects %}
             <tr>
                 <td class="link">
                     <a href="{% url 'project_edit' project.id %}">{{ project }}</a>
+                </td>
+                <td>
+                    <div class="checkbox no-margin">
+                        <label>
+                            <input type="checkbox" {% if project.active %}checked{% endif %} disabled>
+                        </label>
+                    </div>
                 </td>
             </tr>
         {% endfor %}
