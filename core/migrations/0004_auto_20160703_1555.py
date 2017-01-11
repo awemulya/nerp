@@ -7,9 +7,9 @@ from django.db import migrations
 def initialize_currencies(apps, schema_editor):
     from core.models import Currency
 
-    Currency.objects.create(code="USD", name="United States, Dollar")
-    Currency.objects.create(code="EUR", name="Euro")
-    Currency.objects.create(code="NPR", name="Nepalese Rupee")
+    # Currency.objects.create(code="USD", name="United States, Dollar")
+    # Currency.objects.create(code="EUR", name="Euro")
+    # Currency.objects.create(code="NPR", name="Nepalese Rupee")
 
 
 class Migration(migrations.Migration):
