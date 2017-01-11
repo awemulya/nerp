@@ -441,7 +441,7 @@ class DisbursementParticulars(models.Model):
 
 
 class NPRExchange(models.Model):
-    currency = models.ForeignKey(Currency, related_name='npr_exchanges')
+    currency = models.ForeignKey(Currency, related_name='npr_exchanges', blank=True, null=True)
     date = models.DateField(help_text='Date in AD')
     rate = models.FloatField()
 
