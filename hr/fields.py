@@ -58,7 +58,11 @@ class HRBSFormField(widgets.TextInput):
                     npdYear: true,
                     ndpTriggerButton: true,
                     ndpTriggerButtonText: '<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>',
-                    ndpTriggerButtonClass: 'btn btn-primary btn-sm'
+                    ndpTriggerButtonClass: 'btn btn-primary btn-sm',
+                    onClose: function() {
+                        $(this).change(); // Forces re-validation
+                    }
+
                     });
                 });
             </script>""" % (el_id)
@@ -68,6 +72,9 @@ class HRBSFormField(widgets.TextInput):
                 $(function(){
                     $('#%s').datepicker({
                         format: 'yyyy-mm-dd',
+                        onClose: function() {
+                            $(this).change(); // Forces re-validation
+                        }
                     });
                 });
             </script>""" % (el_id)
@@ -104,7 +111,6 @@ class HRBSDateFormField(DateFormField):
 
 
 class HRBSDateField(DateField):
-
     def from_db_value(self, value, expression, connection, context):
         from hr.models import PayrollConfig
         CALENDAR = PayrollConfig.get_solo().hr_calendar
