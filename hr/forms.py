@@ -168,7 +168,7 @@ class EmployeeAccountInlineFormset(forms.BaseInlineFormSet):
                 account_category = employee_acc.category
                 if account_category in account_categories:
                     raise forms.ValidationError(
-                        _('All accont category should be unique to each other'))
+                        _('Account should be unique.'))
                 account_categories.append(
                     account_category
                 )
