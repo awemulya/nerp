@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url, include
+from django.views.i18n import javascript_catalog
 from rest_framework.routers import DefaultRouter
 
 import views
@@ -23,7 +24,12 @@ router.register(r'deduction', api.DeductionViewSet)
 router.register(r'deduction-name', api.DeductionNameViewSet)
 # End Deduction Routers
 
+js_info_dict = {
+    'packages': ('your.app.package',),
+}
+
 urlpatterns = patterns('',
+                       url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
                        url(r'^api/', include(router.urls)),
                        # url(r'^api/', include('rest_framework.urls', namespace='hr-api')),
                        url(r'^$', views.payroll_index, name='payroll_index'),
@@ -109,10 +115,14 @@ urlpatterns = patterns('',
                        # End Payroll Configuration
 
                        # Branch Accounant Crud
-                       url(r'^accountant/add/$', views.PayrollAccountantCreate.as_view(), name='payroll_accountant_add'),
-                       url(r'^accountant/edit/(?P<pk>[0-9]+)/$', views.PayrollAccountantUpdate.as_view(), name='payroll_accountant_edit'),
-                       url(r'^accountant/list/$', views.PayrollAccountantList.as_view(), name='payroll_accountant_list'),
-                       url(r'^accountant/delete/(?P<pk>[0-9]+)/$', views.PayrollAccountantDelete.as_view(), name='payroll_accountant_delete'),
+                       url(r'^accountant/add/$', views.PayrollAccountantCreate.as_view(),
+                           name='payroll_accountant_add'),
+                       url(r'^accountant/edit/(?P<pk>[0-9]+)/$', views.PayrollAccountantUpdate.as_view(),
+                           name='payroll_accountant_edit'),
+                       url(r'^accountant/list/$', views.PayrollAccountantList.as_view(),
+                           name='payroll_accountant_list'),
+                       url(r'^accountant/delete/(?P<pk>[0-9]+)/$', views.PayrollAccountantDelete.as_view(),
+                           name='payroll_accountant_delete'),
                        # End Branch Accounant Crud
 
                        # Branch Office Crud

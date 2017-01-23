@@ -85,7 +85,10 @@ LANGUAGES = (
     ('en', gettext('English')),
     ('ne', gettext('Nepali')),
 )
-LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+    os.path.join(BASE_DIR, 'hr', 'locale'),
+)
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
