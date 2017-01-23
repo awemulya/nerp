@@ -197,13 +197,16 @@ class EmployeeGradeNumberPauseInlineFormset(forms.BaseInlineFormSet):
         if any(self.errors):
             return
 
+        time_stamp_ranges = []
         for form in self.forms:
+            form_is_clean = True
             if form.cleaned_data:
                 from_date = form.cleaned_data.get("from_date")
                 to_date = form.cleaned_data.get("to_date")
                 employee = form.cleaned_data.get("employee")
 
                 if from_date > to_date:
+                    form_is_clean = False
                     form.add_error(
                         'from_date',
                         _('From date must be less than to date')
@@ -214,19 +217,21 @@ class EmployeeGradeNumberPauseInlineFormset(forms.BaseInlineFormSet):
                     last_paid = drc_1_day(employee.scale_start_date)
 
                 if from_date < last_paid:
+                    form_is_clean = False
                     form.add_error(
                         'from_date',
-                        _('From date cannot be less than employee last paid date. Last paid on %s' % str(last_paid))
+                        _('From date cannot be less than employee last paid date. Last paid on %(hrbs_date)s') % {'hrbs_date': str(last_paid)}
                     )
 
-                # FIXME new entry should not me smal or eqaul to previous same if edited
-                for gnp in EmployeeGradeNumberPause.objects.filter(employee=employee):
-                    if from_date <= gnp.to_date:
+                for gnp in time_stamp_ranges:
+                    if from_date <= gnp[1]:
                         form.add_error(
                             'from_date',
-                            _('From date cannot be less than previous to dates. Last paid on %s' % str(last_paid))
+                            _('This range overlaps with previous range entry.'),
                         )
                         break
+                if form_is_clean:
+                    time_stamp_ranges.append((from_date, to_date))
 
 
 class AllowanceInlineFormset(forms.BaseInlineFormSet):
