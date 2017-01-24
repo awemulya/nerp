@@ -149,9 +149,9 @@
                         optionsValue: 'value'"></select></td>
                     <td data-bind="editableText: value, numeric:true"></td>
                     <td><select class="form-control" data-bind="options: [
-                            {name: 'Monthly', value: 'M'},
-                            {name: 'Yearly', value: 'Y'},
-                            {name: 'Daily', value: 'D'}
+                            {name: gettext('Monthly'), value: 'M'},
+                            {name: gettext('Yearly'), value: 'Y'},
+                            {name: gettext('Daily'), value: 'D'}
                         ],
                         value: payment_cycle,
                         optionsText: 'name',
