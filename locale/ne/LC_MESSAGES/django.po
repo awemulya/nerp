@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-24 12:03+0545\n"
+"POT-Creation-Date: 2017-01-24 17:43+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,8 @@ msgstr "पान न."
 #: account/templates/list_parties.html:21
 #: core/templates/core/budgethead_list.html:22
 #: core/templates/core/donor_list.html:22 hr/templates/allowance.html.py:98
-#: hr/templates/allowance.html:119 hr/templates/employee_list.html.py:51
+#: hr/templates/allowance.html:119 hr/templates/deduction.html.py:82
+#: hr/templates/deduction_cu.html:19 hr/templates/employee_list.html.py:51
 #: hr/templates/hr/branchoffice_list.html:31
 #: hr/templates/hr/taxdeduction_list.html:31
 #: hr/templates/payroll_entry.html:263
@@ -130,7 +131,10 @@ msgstr "खाताहरु"
 
 #: account/templates/account/account_form.html:21
 #: account/templates/account/category_form.html:21
-#: account/templates/receipt.html:166 inventory/templates/demand_form.html:276
+#: account/templates/receipt.html:166 hr/templates/deduction.html.py:102
+#: hr/templates/employee_cu.html:136
+#: hr/templates/employee_designation_cu.html:75
+#: inventory/templates/demand_form.html:276
 #: inventory/templates/entry_report.html:120
 #: inventory/templates/handover.html:133
 #: inventory/templates/inventory/expense_form.html:20
@@ -183,7 +187,7 @@ msgstr "मेट्नुहोस"
 #: hr/templates/hr/branchoffice_list.html:32
 #: hr/templates/report_templates/sanchayakosh_katti.html:19
 msgid "Code"
-msgstr ""
+msgstr "कोड"
 
 #: account/templates/account/account_list.html:24
 #, fuzzy
@@ -954,17 +958,17 @@ msgstr "तिरेको जरिमाना"
 msgid "Account must be of Category BASIC SALARY or DEDUCTION"
 msgstr ""
 
-#: hr/models.py:937 hr/models.py:941
+#: hr/models.py:949 hr/models.py:953
 msgid "Remuneration tax discount for married employee on taxable amount."
 msgstr ""
 
-#: hr/models.py:947
+#: hr/models.py:959
 msgid ""
 "Remuneration tax additional discount for disabled employee on taxable amount."
 "(%)"
 msgstr ""
 
-#: hr/models.py:951
+#: hr/models.py:963
 msgid "Discount for female on evaluated remuneration tax. (%)"
 msgstr ""
 
@@ -1038,34 +1042,26 @@ msgstr ""
 msgid "Sum Type"
 msgstr "प्रकार"
 
-#: hr/templates/allowance.html:121
+#: hr/templates/allowance.html:121 hr/templates/deduction.html.py:84
 #: inventory/templates/depreciation_report.html:45
 msgid "Value"
 msgstr "मूल्य"
 
-#: hr/templates/allowance.html:122 hr/templates/allowance.html.py:123
-#: project/templates/imprest_ledger.html:37
+#: hr/templates/allowance.html:122 project/templates/imprest_ledger.html:37
 #: project/templates/imprest_ledger.html:157
 #: project/templates/imprest_ledger_old.html:140
 msgid "Payment"
 msgstr ""
 
-#: hr/templates/allowance.html:122 hr/templates/allowance.html.py:123
+#: hr/templates/allowance.html:122
 msgid "Cycle"
 msgstr ""
 
 #: hr/templates/allowance.html:123
-#: inventory/templates/view_inventory_account.html:82
-msgid "Year"
-msgstr "वर्ष"
+msgid "Year Payment Cycle Month"
+msgstr ""
 
-#: hr/templates/allowance.html:123
-#, fuzzy
-#| msgid "Month(s)"
-msgid "Month"
-msgstr "महिना(हरू)"
-
-#: hr/templates/deduction.html:27
+#: hr/templates/deduction.html:27 hr/templates/deduction_cu.html.py:19
 msgid "Add or Remove Deductions"
 msgstr ""
 
@@ -1100,9 +1096,21 @@ msgstr ""
 msgid "Entry List"
 msgstr "दाखिला मिति"
 
-#: hr/templates/deduction_cu.html:19
-msgid "Add or Remove Deductions Name"
-msgstr ""
+#: hr/templates/deduction.html:83
+#, fuzzy
+#| msgid "Auction"
+msgid "Deduction"
+msgstr "लिलाम"
+
+#: hr/templates/deduction.html:83 hr/templates/employee_list.html.py:57
+#: ils/templates/view_record.html:150 inventory/forms.py:36
+#: inventory/models.py:970 inventory/templates/depreciation_report.html.py:41
+#: inventory/templates/list_handovers.html:33
+#: inventory/templates/list_inventory_accounts.html:24
+#: inventory/templates/pdf/ledgers.html:16
+#: inventory/templates/view_inventory_account.html:69
+msgid "Type"
+msgstr "प्रकार"
 
 #: hr/templates/employee_cu.html:26 hr/templates/hr_index.html.py:55
 #, fuzzy
@@ -1171,16 +1179,6 @@ msgstr ""
 #| msgid "Status"
 msgid "Marital Status"
 msgstr "स्थिति"
-
-#: hr/templates/employee_list.html:57 ils/templates/view_record.html.py:150
-#: inventory/forms.py:36 inventory/models.py:970
-#: inventory/templates/depreciation_report.html:41
-#: inventory/templates/list_handovers.html:33
-#: inventory/templates/list_inventory_accounts.html:24
-#: inventory/templates/pdf/ledgers.html:16
-#: inventory/templates/view_inventory_account.html:69
-msgid "Type"
-msgstr "प्रकार"
 
 #: hr/templates/employee_list.html:59 hr/templates/hr/protempore_list.html:37
 #: inventory/templates/list_demand_forms.html:35
@@ -3302,6 +3300,10 @@ msgstr "खप्ने सामानको जिन्सी खाता"
 msgid "Inventory Account of Consumable Item"
 msgstr "खपत नहुने सामानको जिन्सी खाता"
 
+#: inventory/templates/view_inventory_account.html:82
+msgid "Year"
+msgstr "वर्ष"
+
 #: inventory/templates/view_inventory_account.html:85
 msgid "Fiscal Years"
 msgstr "आर्थिक बर्ष"
@@ -4289,6 +4291,11 @@ msgstr "तपाईंको प्रयोगकर्ता नाम र �
 #: users/templates/registration/login.html:58
 msgid "Remember Me"
 msgstr "मलाई यस कम्प्युटरमा सम्झिराख्नुहोस"
+
+#, fuzzy
+#~| msgid "Month(s)"
+#~ msgid "Month"
+#~ msgstr "महिना(हरू)"
 
 #~| msgid "Instances"
 #~ msgid "Item Instance"
