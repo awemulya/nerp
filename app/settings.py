@@ -87,7 +87,6 @@ LANGUAGES = (
 )
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
-    os.path.join(BASE_DIR, 'hr', 'locale'),
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'

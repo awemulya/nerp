@@ -25,7 +25,7 @@ router.register(r'deduction-name', api.DeductionNameViewSet)
 # End Deduction Routers
 
 js_info_dict = {
-    'packages': ('',),
+    'packages': ('locale',),
 }
 
 urlpatterns = patterns('',
