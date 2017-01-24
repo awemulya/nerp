@@ -79,9 +79,9 @@
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Deduction Type</th>
-                <th>Value</th>
+                <th>{% trans 'Name' %}</th>
+                <th>{% trans 'Deduction' %} {% trans 'Type' %}</th>
+                <th>{% trans 'Value' %}</th>
             </tr>
             </thead>
             <tbody>
@@ -99,7 +99,7 @@
         </table>
 
         <button class="btn btn-primary btn-raised"
-                data-bind="click: save, visible: typeof(selected_validity()) != 'undefined'">Save
+                data-bind="click: save, visible: typeof(selected_validity()) != 'undefined'">{% trans 'Save' %}
         </button>
 
 
