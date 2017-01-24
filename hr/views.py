@@ -244,9 +244,9 @@ def salary_taxation_unit(employee, f_y_item):
         taxable_amount -= (PayrollConfig.get_solo().disabled_remuneration_additional_discount / 100.0) * taxable_amount
 
     subtracted_allowance = get_allowance(employee, from_date=f_y_item['f_y'][0],
-                                        to_date=f_y_item['f_y'][1], role='tax_allowance')[0]
+                                         to_date=f_y_item['f_y'][1], role='tax_allowance')[0]
     subtracted_incentive = get_incentive(employee, from_date=f_y_item['f_y'][0],
-                                        to_date=f_y_item['f_y'][1], role='tax_incentive')[0]
+                                         to_date=f_y_item['f_y'][1], role='tax_incentive')[0]
     taxable_amount -= subtracted_allowance + subtracted_incentive
     if taxable_amount < 0:
         taxable_amount = 0
@@ -280,7 +280,8 @@ def salary_taxation_unit(employee, f_y_item):
         tax_amount -= (PayrollConfig.get_solo().female_remuneration_tax_discount / 100.0) * tax_amount
     remuneration_tax = tax_amount  # yearly
     social_security_tax  # yearly
-    return social_security_tax * (f_y_item['worked_days'] / f_y_item['year_days']), remuneration_tax * (f_y_item['worked_days'] / f_y_item['year_days']), taxation_unit_errors
+    return social_security_tax * (f_y_item['worked_days'] / f_y_item['year_days']), remuneration_tax * (
+    f_y_item['worked_days'] / f_y_item['year_days']), taxation_unit_errors
 
 
 # @login_required
@@ -422,10 +423,10 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
                 employee_response[item] = 0
         employee_response['row_errors'] = row_errors
 
-    # if isinstance(paid_from_date, date):
-    #     employee_response['paid_from_date'] = '{:%Y-%m-%d}'.format(paid_from_date)
-    #     employee_response['paid_to_date'] = '{:%Y-%m-%d}'.format(paid_to_date)
-    # else:
+        # if isinstance(paid_from_date, date):
+        #     employee_response['paid_from_date'] = '{:%Y-%m-%d}'.format(paid_from_date)
+        #     employee_response['paid_to_date'] = '{:%Y-%m-%d}'.format(paid_to_date)
+        # else:
         # employee_response['paid_from_date'] = paid_from_date.as_string()
         # employee_response['paid_to_date'] = paid_to_date.as_string()
     employee_response['disable_input'] = True
@@ -673,7 +674,6 @@ def save_payroll_entry(request, pk=None):
 
                 p_r.paid_from_date = paid_from_date_for_p_e
                 p_r.paid_to_date = paid_to_date_for_p_e
-
 
                 p_r.absent_days = row.get('absent_days', 0)
                 p_r.deduced_amount = float(row.get('deduced_amount', None))
@@ -953,7 +953,6 @@ def transact_entry(request, pk=None):
             emp_basic_salary_cr_amount = 0
             emp_basic_salary_dr_amount = 0
 
-
             # Here
             salary_giving_cr_amount += salary
             emp_basic_salary_dr_amount += salary
@@ -1154,7 +1153,6 @@ def transact_entry(request, pk=None):
                     ('dr', emp_basic_salary_account, emp_basic_salary_dr_amount - emp_basic_salary_cr_amount),
                 ]
             )
-
 
     p_e.transacted = True
     p_e.save()
@@ -1492,7 +1490,14 @@ def get_report(request):
             branch = report_request_query.cleaned_data.get('branch')
             from_date = report_request_query.cleaned_data.get('from_date')
             to_date = report_request_query.cleaned_data.get('to_date')
+
+            # Sometime we need to specify particular deduction or
+            # allowance or incentive to genererate particular type of report
+            # In that case we will need similar particular type specified in report setting model and can be null
+            # For now we only have deduction
             deduction = report.deduction
+            incentive = report.incentive
+            allowance = report.allowance
 
             branch_qry = {'paid_employee__working_branch': branch}
 
@@ -1523,7 +1528,8 @@ def get_report(request):
                     row = {}
 
                     for key in fields.keys():
-                        row[key] = getattr_custom(record, fields[key], deduction=deduction)
+                        row[key] = getattr_custom(record, fields[key], deduction=deduction, incentive=incentive,
+                                                  allowance=allowance)
                     data.append(row)
                 tables['_'.join(table.title.lower().split(' '))] = data
 

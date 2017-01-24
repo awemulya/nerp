@@ -614,16 +614,12 @@ class IsBranchAccountantMixin(AccessMixin):
 
 
 def getattr_custom(obj, attr_query, **kwargs):
-    value = None
     if isinstance(attr_query, list):
-        value = None
         filter_dict = {}
         filter_dict[attr_query[1]] = kwargs.get(attr_query[1])
-        attributes = attr_query[0].split('__')
-        value = None
-        m2m_related_obj = getattr_custom(obj, '__'.join(attributes[0:-1]))
+        m2m_related_obj = getattr_custom(obj,attr_query[0])
 
-        value = getattr(m2m_related_obj.filter(**filter_dict)[0], attributes[-1])
+        value = getattr(m2m_related_obj.filter(**filter_dict)[0], attr_query[-1])
         return value
 
     else:

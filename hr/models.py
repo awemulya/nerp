@@ -896,7 +896,19 @@ class ReportHR(models.Model):
     for_employee_type = models.CharField(max_length=50, choices=emp_type_choices)
     deduction = models.ForeignKey(
         DeductionName,
-        related_name='reports',
+        related_name='deduction_reports',
+        null=True,
+        blank=True
+    )
+    incentive = models.ForeignKey(
+        IncentiveName,
+        related_name='incentive_reports',
+        null=True,
+        blank=True
+    )
+    allowance = models.ForeignKey(
+        AllowanceName,
+        related_name='allowance_reports',
         null=True,
         blank=True
     )
