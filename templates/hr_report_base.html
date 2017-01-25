@@ -83,12 +83,12 @@
         {% endblock %}
     </ol>
 
-
-    {% block report_header %}{% endblock %}
-    {% block report_header_table %}{% endblock %}
-
     <div class="well">
-        {% block report_content %}{% endblock %}
+        {% block report_header %}{% endblock %}
+        {% block report_header_table %}{% endblock %}
+        {% block report_body %}{% endblock %}
+        {% block report_main_table %}{% endblock %}
+        {% block report_footer %}{% endblock %}
     </div>
 
 
@@ -104,6 +104,5 @@
 <script>
     $(document).foundation();
 </script-->
-    {% block report_footer %}{% endblock %}
 </body>
 </html>

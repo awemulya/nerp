@@ -37,13 +37,10 @@
         <thead>
         <tr>
             <td>{% trans 'SN' %}</td>
-            <td>{% trans 'Personal Number' %}</td>
             <td>{% trans 'Designation' %}</td>
-            <td>{% trans 'PF ID Number' %}</td>
             <td>{% trans 'Employee Name' %}</td>
-            <td>{% trans 'Total Deduction' %}</td>
-            <td>{% trans 'Compulsory Deduction' %}</td>
-            <td>{% trans 'Addition in deduction' %}</td>
+            <td>{% trans 'Social Security Tax' %}</td>
+            <td>{% trans 'Pan Number' %}</td>
         </tr>
         </thead>
 
@@ -55,17 +52,11 @@
                 <td>{{ row.designation }}</td>
                 <td>{{ row.pf_id_number }}</td>
                 <td>{{ row.employee_name }}</td>
-                <td>{{ row.total_deduction }}</td>
-                {% sub row.total_deduction row.addition_in_deduction as diff %}
-                <td>{{ diff }}</td>
-                <td>{{ row.addition_in_deduction }}</td>
             </tr>
         {% endfor %}
         <tr>
-            <td colspan="5">{% trans 'Total' %}</td>
+            <td colspan="2">{% trans 'Total' %}</td>
             <td>{{ tables.sanchaya_kosh_bibaran.totals.total_deduction }}</td>
-            {% sub tables.sanchaya_kosh_bibaran.totals.total_deduction tables.sanchaya_kosh_bibaran.totals.addition_in_deduction as total_diff %}
-            <td>{{ total_diff }}</td>
             <td>{{ tables.sanchaya_kosh_bibaran.totals.addition_in_deduction }}</td>
         </tr>
         </tbody>
