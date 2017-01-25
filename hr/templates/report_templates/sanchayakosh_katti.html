@@ -46,22 +46,32 @@
         </tr>
         </thead>
 
-        <tbody>
-        {% for row in tables.sanchaya_kosh_bibaran %}
+        {% with overall_total_deduction=0 total_compulsory_deduction=0 total_addition_in_deduction=0 %}
+            <tbody>
+            {% for row in tables.sanchaya_kosh_bibaran %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ row.personal_number }}</td>
+                    <td>{{ row.designation }}</td>
+                    <td>{{ row.pf_id_number }}</td>
+                    <td>{{ row.employee_name }}</td>
+                    <td>{{ row.total_deduction }}</td>
+                    {% add overall_total_deduction row.total_deduction as overall_total_deduction %}
+                    {% sub row.total_deduction row.addition_in_deduction as diff %}
+                    <td>{{ diff }}</td>
+                    {% add total_compulsory_deduction diff as total_compulsory_deduction %}
+                    <td>{{ row.addition_in_deduction }}</td>
+                    {% add total_addition_in_deduction row.addition_in_deduction as total_addition_in_deduction %}
+                </tr>
+            {% endfor %}
             <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ row.personal_number }}</td>
-                <td>{{ row.designation }}</td>
-                <td>{{ row.pf_id_number }}</td>
-                <td>{{ row.employee_name }}</td>
-                <td>{{ row.total_deduction }}</td>
-                {% sub row.total_deduction row.addition_in_deduction as diff %}
-                <td>{{ diff }}</td>
-                <td>{{ row.addition_in_deduction }}</td>
+                <td colspan="5">{% trans 'Total' %}</td>
+                <td>{{ overall_total_deduction }}</td>
+                <td>{{ total_compulsory_deduction }}</td>
+                <td>{{ total_addition_in_deduction }}</td>
             </tr>
-        {% endfor %}
-
-        </tbody>
+            </tbody>
+        {% endwith %}
 
     </table>
     {#    End Detail table here #}

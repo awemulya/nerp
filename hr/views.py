@@ -1534,6 +1534,8 @@ def get_report(request):
                 tables['_'.join(table.title.lower().split(' '))] = data
 
             context['tables'] = tables
+            import ipdb
+            ipdb.set_trace()
             return render(request, template_path, context)
 
         else:
