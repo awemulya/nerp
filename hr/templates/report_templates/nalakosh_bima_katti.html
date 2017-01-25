@@ -26,8 +26,6 @@
     {#    End Bank Detail Block#}
 
     {#    Message text#}
-    <h5>{% trans 'Dear PF' %}</h5>
-    <h5>{% trans 'Tridevi Marg, Thamel, Kathmandu' %}</h5>
     <p>{% trans 'PF deduction of this branch of this detail has been deposited to the speciified bank above' %}</p>
     {#    End Messege text#}
 {% endblock %}
@@ -37,36 +35,27 @@
         <thead>
         <tr>
             <td>{% trans 'SN' %}</td>
-            <td>{% trans 'Personal Number' %}</td>
             <td>{% trans 'Designation' %}</td>
-            <td>{% trans 'PF ID Number' %}</td>
             <td>{% trans 'Employee Name' %}</td>
-            <td>{% trans 'Total Deduction' %}</td>
-            <td>{% trans 'Compulsory Deduction' %}</td>
-            <td>{% trans 'Addition in deduction' %}</td>
+            <td>{% trans 'Social Security Tax' %}</td>
+            <td>{% trans 'Pan Number' %}</td>
         </tr>
         </thead>
 
         <tbody>
-        {% for row in tables.sanchaya_kosh_bibaran.data %}
+        {% for row in tables.social_security_tax_detail_table.data %}
             <tr>
                 <td>{{ forloop.counter }}</td>
-                <td>{{ row.personal_number }}</td>
                 <td>{{ row.designation }}</td>
-                <td>{{ row.pf_id_number }}</td>
                 <td>{{ row.employee_name }}</td>
-                <td>{{ row.total_deduction }}</td>
-                {% sub row.total_deduction row.addition_in_deduction as diff %}
-                <td>{{ diff }}</td>
-                <td>{{ row.addition_in_deduction }}</td>
+                <td>{{ row.tax_amount }}</td>
+                <td>{{ row.pan_number }}</td>
             </tr>
         {% endfor %}
         <tr>
-            <td colspan="5">{% trans 'Total' %}</td>
-            <td>{{ tables.sanchaya_kosh_bibaran.totals.total_deduction }}</td>
-            {% sub tables.sanchaya_kosh_bibaran.totals.total_deduction tables.sanchaya_kosh_bibaran.totals.addition_in_deduction as total_diff %}
-            <td>{{ total_diff }}</td>
-            <td>{{ tables.sanchaya_kosh_bibaran.totals.addition_in_deduction }}</td>
+            <td colspan="3">{% trans 'Total' %}</td>
+            <td>{{ tables.social_security_tax_detail_table.totals.tax_amount }}</td>
+            <td></td>
         </tr>
         </tbody>
 

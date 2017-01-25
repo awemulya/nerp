@@ -11,24 +11,22 @@
 
 {% block report_body %}
     <h1>{{ report_title }}</h1>
-    <h4>{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}</h4>
+    <h5>{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}</h5>
 
     {#    Office detail block#}
-    <h4>{% trans 'Office' %} {% trans 'Name' %} : {{ branch.name }}</h4>
-    <h4>{% trans 'Office' %} {% trans 'Address' %} : {{ branch.address }}</h4>
-    <h4>{% trans 'Office' %} {% trans 'Code' %} : {{ branch.code }}</h4>
+    <h5>{% trans 'Office' %} {% trans 'Name' %} : {{ branch.name }}</h5>
+    <h5>{% trans 'Office' %} {% trans 'Address' %} : {{ branch.address }}</h5>
+    <h5>{% trans 'Office' %} {% trans 'Code' %} : {{ branch.code }}</h5>
     {#    End Office detail block#}
 
     {#    Bank Detail Block#}
-    <h4>{% trans 'Amount' %} {% trans 'Deposit Bank Name' %} : _________</h4>
-    <h4>{% trans 'Amount' %} {% trans 'Deposit Bank Address' %} : _________</h4>
-    <h4>{% trans 'Amount' %} {% trans 'Deposited' %} : _________</h4>
+    <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Name' %} : _________</h5>
+    <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Address' %} : _________</h5>
+    <h5>{% trans 'Amount' %} {% trans 'Deposited' %} : _________</h5>
     {#    End Bank Detail Block#}
 
     {#    Message text#}
-    <h3>{% trans 'Dear PF' %}</h3>
-    <h4>{% trans 'Tridevi Marg, Thamel, Kathmandu' %}</h4>
-    <p>{% trans 'PF deduction of this branch of this detail has been deposited to the speciified bank above' %}</p>
+    <p>{% trans 'Social Security Tax details of employees working over this branch of above mentioned date range is shown in table below. ' %}</p>
     {#    End Messege text#}
 {% endblock %}
 {% block report_main_table %}
