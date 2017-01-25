@@ -281,7 +281,7 @@ def salary_taxation_unit(employee, f_y_item):
     remuneration_tax = tax_amount  # yearly
     social_security_tax  # yearly
     return social_security_tax * (f_y_item['worked_days'] / f_y_item['year_days']), remuneration_tax * (
-    f_y_item['worked_days'] / f_y_item['year_days']), taxation_unit_errors
+        f_y_item['worked_days'] / f_y_item['year_days']), taxation_unit_errors
 
 
 # @login_required
@@ -1522,20 +1522,30 @@ def get_report(request):
             report_tables = report.report_tables.all()
             tables = {}
             for table in report_tables:
-                fields = table.table_fields
+                fields = table.table_fields.get('fields')
+                total_fields = table.table_fields.get('totalling_fields')
                 data = []
+                totals = {}
+                for key in total_fields.keys():
+                    totals[key] = 0
                 for record in payment_records:
                     row = {}
-
                     for key in fields.keys():
-                        row[key] = getattr_custom(record, fields[key], deduction=deduction, incentive=incentive,
-                                                  allowance=allowance)
+                        row[key] = getattr_custom(
+                            record, fields[key], deduction=deduction, incentive=incentive,
+                            allowance=allowance)
+
+                    for key in total_fields.keys():
+                        totals[key] += getattr_custom(
+                            record, fields[key], deduction=deduction, incentive=incentive,
+                            allowance=allowance)
                     data.append(row)
-                tables['_'.join(table.title.lower().split(' '))] = data
+                tables['_'.join(table.title.lower().split(' '))] = {}
+                tables['_'.join(table.title.lower().split(' '))]['data'] = data
+                tables['_'.join(table.title.lower().split(' '))]['totals'] = totals
 
             context['tables'] = tables
-            import ipdb
-            ipdb.set_trace()
+
             return render(request, template_path, context)
 
         else:
