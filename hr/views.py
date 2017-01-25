@@ -1498,10 +1498,11 @@ def get_report(request):
             deduction = report.deduction
             incentive = report.incentive
             allowance = report.allowance
+            tax = report.tax
 
             branch_qry = {'paid_employee__working_branch': branch}
 
-            if report.for_employee_type is not 'ALL':
+            if report.for_employee_type != 'ALL':
                 branch_qry['paid_employee__type'] = report.for_employee_type
 
             context = {
@@ -1533,17 +1534,18 @@ def get_report(request):
                     for key in fields.keys():
                         row[key] = getattr_custom(
                             record, fields[key], deduction=deduction, incentive=incentive,
-                            allowance=allowance)
+                            allowance=allowance, tax_deduction=tax
+                        )
 
                     for key in total_fields.keys():
                         totals[key] += getattr_custom(
                             record, fields[key], deduction=deduction, incentive=incentive,
-                            allowance=allowance)
+                            allowance=allowance, tax_deduction=tax
+                        )
                     data.append(row)
                 tables['_'.join(table.title.lower().split(' '))] = {}
                 tables['_'.join(table.title.lower().split(' '))]['data'] = data
                 tables['_'.join(table.title.lower().split(' '))]['totals'] = totals
-
             context['tables'] = tables
 
             return render(request, template_path, context)

@@ -913,6 +913,13 @@ class ReportHR(models.Model):
         blank=True
     )
 
+    tax = models.ForeignKey(
+        TaxDeduction,
+        related_name='tax_reports',
+        null=True,
+        blank=True
+    )
+
     def __unicode__(self):
         return self.name
 
