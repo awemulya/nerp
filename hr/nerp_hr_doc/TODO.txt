@@ -1,2 +1,7 @@
 TODO List
-1.
+1. Report Distinguising Entry
+2. Make same look like given format
+3. Finalize nala and bima report
+3. Yearly and monthly Report of all employee and all entries
+4. Yearly and monthly Report of all entries of particular employee
+
