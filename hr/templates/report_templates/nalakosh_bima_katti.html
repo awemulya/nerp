@@ -37,25 +37,32 @@
             <td>{% trans 'SN' %}</td>
             <td>{% trans 'Designation' %}</td>
             <td>{% trans 'Employee Name' %}</td>
-            <td>{% trans 'Social Security Tax' %}</td>
-            <td>{% trans 'Pan Number' %}</td>
+            <td>{% trans 'Insurance ID' %}</td>
+            <td>{% trans 'Compulsory Deduction' %}</td>
+            <td>{% trans 'Addition in deduction' %}</td>
+            <td>{% trans 'Total Deduction' %}</td>
         </tr>
         </thead>
 
         <tbody>
-        {% for row in tables.social_security_tax_detail_table.data %}
+        {% for row in tables.nalakosh_bima_katti_bibaran.data %}
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ row.designation }}</td>
                 <td>{{ row.employee_name }}</td>
-                <td>{{ row.tax_amount }}</td>
-                <td>{{ row.pan_number }}</td>
+                <td></td>
+                {% sub row.total_deduction row.addition_in_deduction as diff %}
+                <td>{{ diff }}</td>
+                <td>{{ row.addition_in_deduction }}</td>
+                <td>{{ row.total_deduction }}</td>
             </tr>
         {% endfor %}
         <tr>
-            <td colspan="3">{% trans 'Total' %}</td>
-            <td>{{ tables.social_security_tax_detail_table.totals.tax_amount }}</td>
-            <td></td>
+            <td colspan="4">{% trans 'Total' %}</td>
+            {% sub tables.nalakosh_bima_katti_bibaran.totals.total_deduction tables.nalakosh_bima_katti_bibaran.totals.addition_in_deduction as total_diff %}
+            <td>{{ total_diff }}</td>
+            <td>{{ tables.nalakosh_bima_katti_bibaran.totals.addition_in_deduction }}</td>
+            <td>{{ tables.nalakosh_bima_katti_bibaran.totals.total_deduction }}</td>
         </tr>
         </tbody>
 
