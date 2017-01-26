@@ -612,6 +612,12 @@ def save_payroll_entry(request, pk=None):
         # import ipdb
         # ipdb.set_trace()
         with transaction.atomic():
+            p_e = PayrollEntry.objects.get_or_create(
+                branch_id=branch,
+                is_monthly_payroll=is_monthly_payroll,
+                paid_from_date=paid_to_date_for_p_e,
+                paid_to_date=paid_to_date_for_p_e
+            )
             for row in params.get('entry_rows'):
 
                 if row.get('id'):
@@ -623,46 +629,6 @@ def save_payroll_entry(request, pk=None):
                     p_r.tax_details.all().delete()
                 else:
                     p_r = PaymentRecord()
-
-                # Similar if we need all details of incentive and allowence
-                deductions = []
-                for ded in row.get('deduction_details', []):
-                    amount = float(ded['amount'])
-                    amount_added_before_deduction = float(ded['amount_added_before_deduction'])
-                    if amount:
-                        deductions.append(DeductionDetail.objects.create(
-                            deduction_id=ded['deduction'],
-                            amount=amount,
-                            amount_added_before_deduction=amount_added_before_deduction
-                        ))
-                allowances = []
-                for allowance_name in row.get('allowance_details', []):
-                    amount = float(allowance_name['amount'])
-                    if amount:
-                        allowances.append(
-                            AllowanceDetail.objects.create(allowance_id=allowance_name['allowance'], amount=amount))
-
-                incentives = []
-                for incentive_name in row.get('incentive_details', []):
-                    amount = float(incentive_name['amount'])
-                    if amount:
-                        incentives.append(
-                            IncentiveDetail.objects.create(incentive_id=incentive_name['incentive'], amount=amount))
-
-                pro_tempores = []
-                paid_pro_tempore_ids = []
-                for pro_tempore in row.get('pro_tempore_details', []):
-                    amount = float(pro_tempore['amount'])
-                    paid_pro_tempore_ids.append(pro_tempore['p_t_id'])
-                    pro_tempores.append(
-                        ProTemporeDetail.objects.create(pro_tempore_id=pro_tempore['p_t_id'], amount=amount))
-
-                taxes = []
-                for tax in row.get('tax_details', []):
-                    amount = float(tax['amount'])
-                    if amount:
-                        taxes.append(
-                            TaxDetail.objects.create(tax_deduction_id=tax['id'], amount=amount))
 
                 # p_r = PaymentRecord()
                 p_r.paid_employee_id = int(row.get('paid_employee', None))
@@ -683,12 +649,56 @@ def save_payroll_entry(request, pk=None):
                 p_r.pro_tempore_amount = float(row.get('pro_tempore_amount', None))
                 p_r.salary = float(row.get('salary', None))
                 p_r.paid_amount = float(row.get('paid_amount', None))
+                p_r.entry = p_e
                 p_r.save()
-                p_r.deduction_details.add(*deductions)
-                p_r.incentive_details.add(*incentives)
-                p_r.allowance_details.add(*allowances)
-                p_r.pro_tempore_details.add(*pro_tempores)
-                p_r.tax_details.add(*taxes)
+
+                # Similar if we need all details of incentive and allowence
+                for ded in row.get('deduction_details', []):
+                    amount = float(ded['amount'])
+                    amount_added_before_deduction = float(ded['amount_added_before_deduction'])
+                    if amount:
+                        DeductionDetail.objects.create(
+                            deduction_id=ded['deduction'],
+                            amount=amount,
+                            amount_added_before_deduction=amount_added_before_deduction,
+                            payment_record=p_r
+                        )
+                for allowance_name in row.get('allowance_details', []):
+                    amount = float(allowance_name['amount'])
+                    if amount:
+                        AllowanceDetail.objects.create(
+                            allowance_id=allowance_name['allowance'],
+                            amount=amount,
+                            payment_record=p_r
+                        )
+
+                for incentive_name in row.get('incentive_details', []):
+                    amount = float(incentive_name['amount'])
+                    if amount:
+                        IncentiveDetail.objects.create(
+                            incentive_id=incentive_name['incentive'],
+                            amount=amount,
+                            payment_record=p_r
+                        )
+
+                paid_pro_tempore_ids = []
+                for pro_tempore in row.get('pro_tempore_details', []):
+                    amount = float(pro_tempore['amount'])
+                    paid_pro_tempore_ids.append(pro_tempore['p_t_id'])
+                    ProTemporeDetail.objects.create(
+                        pro_tempore_id=pro_tempore['p_t_id'],
+                        amount=amount,
+                        payment_record=p_r
+                    )
+
+                for tax in row.get('tax_details', []):
+                    amount = float(tax['amount'])
+                    if amount:
+                        TaxDetail.objects.create(
+                            tax_deduction_id=tax['id'],
+                            amount=amount,
+                            payment_record=p_r
+                        )
 
                 # Set pro tempore status to paid
                 for pt in ProTempore.objects.filter(id__in=paid_pro_tempore_ids):
@@ -696,14 +706,9 @@ def save_payroll_entry(request, pk=None):
                     pt.save()
                 # End Set pro tempore status to paid
 
-                payment_records.append(p_r.id)
+                # payment_records.append(p_r.id)
             # p_e = PayrollEntry()
-            p_e.branch_id = branch
-            p_e.is_monthly_payroll = is_monthly_payroll
-            p_e.paid_from_date = paid_from_date_for_p_e
-            p_e.paid_to_date = paid_to_date_for_p_e
-            p_e.save()
-            p_e.entry_rows.add(*payment_records)
+
             # PayrollEntry.objects.create(
             #     entry_row=payment_records,
             # )
@@ -743,9 +748,6 @@ def delete_entry(request, pk=None):
     #     payment_records_rows,
     #     PaymentRecord
     # )
-
-    payroll_entry.delete()
-
     for pr_id in payment_recordid_set:
         p_r = PaymentRecord.objects.get(id=pr_id)
         record_deduction_details = [rdd.id for rdd in p_r.deduction_details.all()]
@@ -775,6 +777,8 @@ def delete_entry(request, pk=None):
             pt.status = 'READY_FOR_PAYMENT'
             pt.save()
             # End Change paid pro tempore status back to ready for payment
+
+    payroll_entry.delete()
 
     return redirect(reverse('entry_list'))
 
@@ -1513,41 +1517,51 @@ def get_report(request):
                 'to_date': to_date,
             }
 
-            payment_records = PaymentRecord.objects.filter(
-                paid_from_date__gte=from_date,
-                paid_to_date__lte=to_date,
-                **branch_qry)
+            if distinguish_entry:
+                payment_record_list = [p_e.entry_rows.filter(**branch_qry) for p_e in PayrollEntry.objects.filter(
+                    paid_from_date__gte=from_date,
+                    paid_to_date__lte=to_date,
+                )]
+
+            else:
+                payment_records = PaymentRecord.objects.filter(
+                    paid_from_date__gte=from_date,
+                    paid_to_date__lte=to_date,
+                    **branch_qry)
+                payment_record_list = [payment_records]
 
             template_path = '/'.join(report.template.split('/')[-2:])
 
-            # create table data here
-            report_tables = report.report_tables.all()
-            tables = {}
-            for table in report_tables:
-                table_fields = json_file_to_dict(table.table_json)
-                fields = table_fields.get('fields')
-                total_fields = table_fields.get('totalling_fields')
-                data = []
-                totals = {}
-                for key in total_fields.keys():
-                    totals[key] = 0
-                for record in payment_records:
-                    row = {}
-                    for key in fields.keys():
-                        row[key] = getattr_custom(
-                            record, fields[key], deduction=deduction, incentive=incentive,
-                            allowance=allowance, tax_deduction=tax
-                        )
-
+            for payment_record in payment_record_list:
+                # create table data here
+                report_tables = report.report_tables.all()
+                record_table = {}
+                for table in report_tables:
+                    table_fields = json_file_to_dict(table.table_json)
+                    fields = table_fields.get('fields')
+                    total_fields = table_fields.get('totalling_fields')
+                    data = []
+                    totals = {}
                     for key in total_fields.keys():
-                        totals[key] += getattr_custom(
-                            record, fields[key], deduction=deduction, incentive=incentive,
-                            allowance=allowance, tax_deduction=tax
-                        )
-                    data.append(row)
-                tables['_'.join(table.title.lower().split(' '))] = {}
-                tables['_'.join(table.title.lower().split(' '))]['data'] = data
-                tables['_'.join(table.title.lower().split(' '))]['totals'] = totals
+                        totals[key] = 0
+                    for record in payment_record:
+                        row = {}
+                        for key in fields.keys():
+                            row[key] = getattr_custom(
+                                record, fields[key], deduction=deduction, incentive=incentive,
+                                allowance=allowance, tax_deduction=tax
+                            )
+
+                        for key in total_fields.keys():
+                            totals[key] += getattr_custom(
+                                record, fields[key], deduction=deduction, incentive=incentive,
+                                allowance=allowance, tax_deduction=tax
+                            )
+                        data.append(row)
+                    record_table['_'.join(table.title.lower().split(' '))] = {}
+                    record_table['_'.join(table.title.lower().split(' '))]['data'] = data
+                    record_table['_'.join(table.title.lower().split(' '))]['totals'] = totals
+
             context['tables'] = tables
 
             return render(request, template_path, context)

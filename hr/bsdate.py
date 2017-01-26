@@ -125,7 +125,7 @@ class BSDate(object):
         raise TypeError('Cannot compare %s with BSDate type' % (str(type(other))))
 
     def __repr__(self):
-        return  'BSDate - ' + self.as_string()
+        return  'BSDate - ' + self.as_string(format='words')
 
     def __str__(self):
-        return self.as_string()
+        return self.as_string(format='words')

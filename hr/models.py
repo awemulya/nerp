@@ -738,88 +738,8 @@ class IncomeTaxCalcScheme(models.Model):
         )
 
 
-class DeductionDetail(models.Model):
-    deduction = models.ForeignKey(
-        DeductionName,
-        related_name='deduced_amount_detail'
-    )
-    amount = models.FloatField()
-    amount_added_before_deduction = models.FloatField(default=0.0)
-
-    def __unicode__(self):
-        return "%s-[%s]" % (self.deduction.name, str(self.amount))
-
-
-class IncentiveDetail(models.Model):
-    incentive = models.ForeignKey(
-        IncentiveName,
-        related_name='incentive_amount_detail'
-    )
-    amount = models.FloatField()
-
-
-class AllowanceDetail(models.Model):
-    allowance = models.ForeignKey(
-        AllowanceName,
-        related_name='allowance_amount_detail'
-    )
-    amount = models.FloatField()
-
-
-class ProTemporeDetail(models.Model):
-    pro_tempore = models.OneToOneField(ProTempore, related_name='pro_tempore_record')
-    amount = models.FloatField()
-
-    @property
-    def appoint_date(self):
-        return str(self.pro_tempore.appoint_date)
-
-    @property
-    def dismiss_date(self):
-        return str(self.pro_tempore.dismiss_date)
-
-
-class TaxDetail(models.Model):
-    tax_deduction = models.ForeignKey(TaxDeduction, related_name='tax_details')
-    amount = models.FloatField()
-
-
-class PaymentRecord(models.Model):
-    paid_employee = models.ForeignKey(Employee)
-    designation = models.ForeignKey(Designation)
-    paid_from_date = HRBSDateField()
-    paid_to_date = HRBSDateField()
-    absent_days = models.PositiveIntegerField()
-    allowance = models.FloatField(null=True, blank=True)
-    incentive = models.FloatField(null=True, blank=True)
-    deduced_amount = models.FloatField(null=True, blank=True)
-    deduction_details = models.ManyToManyField(DeductionDetail, blank=True)
-    incentive_details = models.ManyToManyField(IncentiveDetail, blank=True)
-    allowance_details = models.ManyToManyField(AllowanceDetail, blank=True)
-    pro_tempore_details = models.ManyToManyField(ProTemporeDetail, blank=True)
-    tax_details = models.ManyToManyField(TaxDetail, blank=True)
-    # pro_tempore_amount = models.FloatField(null=True, blank=True)
-    salary = models.FloatField(null=True, blank=True)
-    paid_amount = models.FloatField()
-
-    # Deducted amount fields
-    # How much incentive and how much allowance
-
-    def total_present_days(self):
-        return self.paid_to_date - self.paid_from_date - self.absent_days
-
-    def __unicode__(self):
-        return str(self.id)
-
-    def pro_tempore_amount(self):
-        total = 0
-        for pt in self.pro_tempore_details.all():
-            total += pt.amount
-        return total
-
-
 class PayrollEntry(models.Model):
-    entry_rows = models.ManyToManyField(PaymentRecord)
+    # entry_rows = models.ManyToManyField(PaymentRecord)
 
     paid_from_date = HRBSDateField()
     paid_to_date = HRBSDateField()
@@ -854,6 +774,87 @@ class PayrollEntry(models.Model):
         #         pass
         #     else:
         #         super(PayrollEntry, self).delete(*args, **kwargs)
+
+
+class PaymentRecord(models.Model):
+    entry = models.ForeignKey(PayrollEntry, related_name='entry_rows')
+    paid_employee = models.ForeignKey(Employee)
+    designation = models.ForeignKey(Designation)
+    paid_from_date = HRBSDateField()
+    paid_to_date = HRBSDateField()
+    absent_days = models.PositiveIntegerField()
+    allowance = models.FloatField(null=True, blank=True)
+    incentive = models.FloatField(null=True, blank=True)
+    deduced_amount = models.FloatField(null=True, blank=True)
+    salary = models.FloatField(null=True, blank=True)
+    paid_amount = models.FloatField()
+
+    # Deducted amount fields
+    # How much incentive and how much allowance
+
+    def total_present_days(self):
+        return self.paid_to_date - self.paid_from_date - self.absent_days
+
+    def __unicode__(self):
+        return str(self.id)
+
+    def pro_tempore_amount(self):
+        total = 0
+        for pt in self.pro_tempore_details.all():
+            total += pt.amount
+        return total
+
+
+class DeductionDetail(models.Model):
+    deduction = models.ForeignKey(
+        DeductionName,
+        related_name='deduced_amount_detail'
+    )
+    amount = models.FloatField()
+    amount_added_before_deduction = models.FloatField(default=0.0)
+    payment_record = models.ForeignKey(PaymentRecord, related_name='deduction_details')
+
+    def __unicode__(self):
+        return "%s-[%s]" % (self.deduction.name, str(self.amount))
+
+
+class IncentiveDetail(models.Model):
+    incentive = models.ForeignKey(
+        IncentiveName,
+        related_name='incentive_amount_detail'
+    )
+    amount = models.FloatField()
+    payment_record = models.ForeignKey(PaymentRecord, related_name='incentive_details')
+
+
+class AllowanceDetail(models.Model):
+    allowance = models.ForeignKey(
+        AllowanceName,
+        related_name='allowance_amount_detail'
+    )
+    amount = models.FloatField()
+    payment_record = models.ForeignKey(PaymentRecord, related_name='allowance_details')
+
+
+class ProTemporeDetail(models.Model):
+    pro_tempore = models.OneToOneField(ProTempore, related_name='pro_tempore_record')
+    amount = models.FloatField()
+    payment_record = models.ForeignKey(PaymentRecord, related_name='pro_tempore_details')
+
+    @property
+    def appoint_date(self):
+        return str(self.pro_tempore.appoint_date)
+
+    @property
+    def dismiss_date(self):
+        return str(self.pro_tempore.dismiss_date)
+
+
+class TaxDetail(models.Model):
+    tax_deduction = models.ForeignKey(TaxDeduction, related_name='tax_details')
+    amount = models.FloatField()
+    payment_record = models.ForeignKey(PaymentRecord, related_name='tax_details')
+
 
 
 def employee_account_validator(acc_id):
