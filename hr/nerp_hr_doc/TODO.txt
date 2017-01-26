@@ -16,4 +16,4 @@ TODO List
 
 
 27 Jan Thusday
-1.
+1.Check saving and deleting of entry according to the change made yesterday
