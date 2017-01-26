@@ -15,4 +15,8 @@ In report setting table should be restricted to above conditions.
 Branch:
 Branch option will appear according to accountant hierarchy.
 
+HR Required Groups:
+1. Accountant and Payroll Accountant
+2. Payroll Accountant for branch so (Payroll Accountant of which branch is to be specified)
+
 
