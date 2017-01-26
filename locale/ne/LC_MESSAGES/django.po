@@ -816,53 +816,55 @@ msgstr "कर्मचारीहरु"
 
 #: hr/bsdate.py:7
 msgid "Baisakh"
-msgstr ""
+msgstr "बैसाख"
 
 #: hr/bsdate.py:8
 msgid "Jestha"
-msgstr ""
+msgstr "जेस्ठ"
 
 #: hr/bsdate.py:9
-msgid "Aasad"
-msgstr ""
+msgid "Aasada"
+msgstr "असाड"
 
 #: hr/bsdate.py:10
-msgid "Shrawan"
-msgstr ""
+msgid "Shraawan"
+msgstr "श्रावन"
 
 #: hr/bsdate.py:11
 msgid "Bhadra"
-msgstr ""
+msgstr "भाद्र"
 
 #: hr/bsdate.py:12
 msgid "Asoj"
-msgstr ""
+msgstr "असोज"
 
 #: hr/bsdate.py:13
-#, fuzzy
-#| msgid "Parties"
-msgid "Kartik"
+
+msgid "Parties"
 msgstr "पार्टीहरु"
+
+msgid "Kartik"
+msgstr "कार्तिक"
 
 #: hr/bsdate.py:14
 msgid "Mansir"
-msgstr ""
+msgstr "मङ्सिर"
 
 #: hr/bsdate.py:15
-msgid "Push"
-msgstr ""
+msgid "Poush"
+msgstr "पौष"
 
 #: hr/bsdate.py:16
 msgid "Magh"
-msgstr ""
+msgstr "माघ"
 
 #: hr/bsdate.py:17
 msgid "Falgun"
-msgstr ""
+msgstr "फाल्गुन"
 
 #: hr/bsdate.py:18
 msgid "Chaitra"
-msgstr ""
+msgstr "चैत्र"
 
 #: hr/forms.py:84
 msgid "Individual"

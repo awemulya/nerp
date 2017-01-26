@@ -827,6 +827,7 @@ class PayrollEntry(models.Model):
     branch = TreeForeignKey(BranchOffice, related_name='payroll_entries')
     is_monthly_payroll = models.BooleanField(default=False)
     entry_datetime = models.DateTimeField(default=timezone.now)
+    entry_date = HRBSDateField(default=today)
     approved = models.BooleanField(default=False)
     transacted = models.BooleanField(default=False)
 
