@@ -11,3 +11,8 @@ Note: You should create these two types model with same name to record its detai
 
 Report caveat:
 In report setting table should be restricted to above conditions.
+
+Branch:
+Branch option will appear according to accountant hierarchy.
+
+

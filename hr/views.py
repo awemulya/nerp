@@ -1490,6 +1490,7 @@ def get_report(request):
             branch = report_request_query.cleaned_data.get('branch')
             from_date = report_request_query.cleaned_data.get('from_date')
             to_date = report_request_query.cleaned_data.get('to_date')
+            distinguish_entry = report_request_query.cleaned_data.get('distinguish_entry')
 
             # Sometime we need to specify particular deduction or
             # allowance or incentive to genererate particular type of report

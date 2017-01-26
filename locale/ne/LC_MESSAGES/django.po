@@ -1572,16 +1572,17 @@ msgstr "रकम"
 #: hr/templates/report_templates/nalakosh_bima_katti.html:14
 #: hr/templates/report_templates/sanchayakosh_katti.html:14
 #: hr/templates/report_templates/social_security_tax.html:14
-#, fuzzy
-#| msgid "Change"
-msgid "Range"
+msgid "Change"
 msgstr "परिवर्तन गर्नुहोस"
+
+msgid "Range"
+msgstr "श्रेणी"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:14
 #: hr/templates/report_templates/sanchayakosh_katti.html:14
 #: hr/templates/report_templates/social_security_tax.html:14
 msgid "to"
-msgstr ""
+msgstr "देखि"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:17
 #: hr/templates/report_templates/nalakosh_bima_katti.html:18

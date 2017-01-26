@@ -129,21 +129,31 @@ class GetReportForm(forms.Form):
             self.fields['branch'].queryset = BranchOffice.objects.filter(
                 id=accountant_branch_id)
 
-    report = forms.ModelChoiceField(queryset=ReportHR.objects.all())
+    report = forms.ModelChoiceField(
+        queryset=ReportHR.objects.all(),
+        label=_('Select Report')
+    )
     from_date = HRBSDateFormField(
         widget=HRBSFormField(attrs={
             'placeholder': 'YYYY-MM-DD',
         }),
+        label=_('From Date')
     )
     to_date = HRBSDateFormField(
         widget=HRBSFormField(attrs={
             'placeholder': 'YYYY-MM-DD',
         }),
+        label=_('To Date')
     )
     branch = TreeNodeChoiceField(
         queryset=BranchOffice.objects.all(),
-        empty_label=None
+        empty_label=None,
+        label=_('Select Branch')
     )
+
+    distinguish_entry = forms.BooleanField(label=_("Distinguish Entry"))
+
+    # distinguish
 
     def clean(self):
         cleaned_data = super(GetReportForm, self).clean()

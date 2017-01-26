@@ -4,6 +4,7 @@ TODO List
 3. Finalize nala and bima report
 3. Yearly and monthly Report of all employee and all entries
 4. Yearly and monthly Report of all entries of particular employee
+5. Knockout custom binding to catch change in calendar
 
 26 Jan Thusday
 1. Change table structure with stored json(DONE)
