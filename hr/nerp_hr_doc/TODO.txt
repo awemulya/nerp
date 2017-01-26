@@ -6,8 +6,9 @@ TODO List
 4. Yearly and monthly Report of all entries of particular employee
 
 26 Jan Thusday
-1. Change table structure with stored json
-2. Study about common data in all reports body and implement it
+1. Change table structure with stored json(DONE)
+2. Report according to entry (uncles instruction yesterday).
+2. Study about common data in all reports body and implement it. Think of entry date of sum and report creation date and how to bring them in nepali.
 3. Make existing two report look like actual format
 4. Add error to get report page
 5. Add bima and nala report

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-24 17:43+0545\n"
+"POT-Creation-Date: 2017-01-26 12:28+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: account/forms.py:20 account/templates/list_parties.html.py:22
+#: hr/templates/report_templates/nalakosh_bima_katti.html:18
 #: hr/templates/report_templates/sanchayakosh_katti.html:18
+#: hr/templates/report_templates/social_security_tax.html:18
 #: inventory/templates/pdf/purchase_order_pdf.html:20
 #: inventory/templates/purchase_order.html:41 inventory/views.py:217
 #: training/templates/list_organizations.html:23
@@ -47,7 +49,9 @@ msgstr "पान न."
 #: hr/templates/hr/branchoffice_list.html:31
 #: hr/templates/hr/taxdeduction_list.html:31
 #: hr/templates/payroll_entry.html:263
+#: hr/templates/report_templates/nalakosh_bima_katti.html:17
 #: hr/templates/report_templates/sanchayakosh_katti.html:17
+#: hr/templates/report_templates/social_security_tax.html:17
 #: inventory/forms.py:21 inventory/templates/demand_form.html.py:237
 #: inventory/templates/entry_report.html:167
 #: inventory/templates/entry_report.html:174
@@ -185,7 +189,9 @@ msgstr "मेट्नुहोस"
 #: account/templates/account/account_list.html:22
 #: account/templates/view_ledger.html:32
 #: hr/templates/hr/branchoffice_list.html:32
+#: hr/templates/report_templates/nalakosh_bima_katti.html:19
 #: hr/templates/report_templates/sanchayakosh_katti.html:19
+#: hr/templates/report_templates/social_security_tax.html:19
 msgid "Code"
 msgstr "कोड"
 
@@ -371,10 +377,18 @@ msgid "No."
 msgstr "न."
 
 #: account/templates/receipt.html:36 account/templates/view_ledger.html:70
+#: hr/templates/report_templates/nalakosh_bima_katti.html:14
+#: hr/templates/report_templates/nalakosh_bima_katti.html:80
+#: hr/templates/report_templates/nalakosh_bima_katti.html:84
+#: hr/templates/report_templates/nalakosh_bima_katti.html:88
 #: hr/templates/report_templates/sanchayakosh_katti.html:14
-#: hr/templates/report_templates/sanchayakosh_katti.html:73
-#: hr/templates/report_templates/sanchayakosh_katti.html:77
-#: hr/templates/report_templates/sanchayakosh_katti.html:81
+#: hr/templates/report_templates/sanchayakosh_katti.html:84
+#: hr/templates/report_templates/sanchayakosh_katti.html:88
+#: hr/templates/report_templates/sanchayakosh_katti.html:92
+#: hr/templates/report_templates/social_security_tax.html:14
+#: hr/templates/report_templates/social_security_tax.html:73
+#: hr/templates/report_templates/social_security_tax.html:77
+#: hr/templates/report_templates/social_security_tax.html:81
 #: inventory/models.py:936 inventory/models.py:967
 #: inventory/templates/demand_form.html:247
 #: inventory/templates/demand_form.html:261
@@ -447,7 +461,9 @@ msgid "Date"
 msgstr "मिति"
 
 #: account/templates/receipt.html:45
-#: hr/templates/report_templates/sanchayakosh_katti.html:38
+#: hr/templates/report_templates/nalakosh_bima_katti.html:37
+#: hr/templates/report_templates/sanchayakosh_katti.html:39
+#: hr/templates/report_templates/social_security_tax.html:37
 #: inventory/templates/demand_form.html:73
 #: inventory/templates/depreciation_report.html:29
 #: inventory/templates/entry_report.html:60
@@ -496,9 +512,15 @@ msgstr "इन्भ्वाइस न."
 #: account/templates/receipt.html:49 hr/models.py:35
 #: hr/templates/payroll_entry.html:171 hr/templates/payroll_entry.html:201
 #: hr/templates/payroll_entry.html:264 hr/templates/payroll_entry.html:297
+#: hr/templates/report_templates/nalakosh_bima_katti.html:23
+#: hr/templates/report_templates/nalakosh_bima_katti.html:24
+#: hr/templates/report_templates/nalakosh_bima_katti.html:25
 #: hr/templates/report_templates/sanchayakosh_katti.html:23
 #: hr/templates/report_templates/sanchayakosh_katti.html:24
 #: hr/templates/report_templates/sanchayakosh_katti.html:25
+#: hr/templates/report_templates/social_security_tax.html:23
+#: hr/templates/report_templates/social_security_tax.html:24
+#: hr/templates/report_templates/social_security_tax.html:25
 #: project/templates/imprest_ledger_old.html:46
 #: project/templates/project/reimbursement_list.html:27
 msgid "Amount"
@@ -792,6 +814,56 @@ msgstr "कर्मचारी"
 msgid "Employees"
 msgstr "कर्मचारीहरु"
 
+#: hr/bsdate.py:7
+msgid "Baisakh"
+msgstr ""
+
+#: hr/bsdate.py:8
+msgid "Jestha"
+msgstr ""
+
+#: hr/bsdate.py:9
+msgid "Aasad"
+msgstr ""
+
+#: hr/bsdate.py:10
+msgid "Shrawan"
+msgstr ""
+
+#: hr/bsdate.py:11
+msgid "Bhadra"
+msgstr ""
+
+#: hr/bsdate.py:12
+msgid "Asoj"
+msgstr ""
+
+#: hr/bsdate.py:13
+#, fuzzy
+#| msgid "Parties"
+msgid "Kartik"
+msgstr "पार्टीहरु"
+
+#: hr/bsdate.py:14
+msgid "Mansir"
+msgstr ""
+
+#: hr/bsdate.py:15
+msgid "Push"
+msgstr ""
+
+#: hr/bsdate.py:16
+msgid "Magh"
+msgstr ""
+
+#: hr/bsdate.py:17
+msgid "Falgun"
+msgstr ""
+
+#: hr/bsdate.py:18
+msgid "Chaitra"
+msgstr ""
+
 #: hr/forms.py:84
 msgid "Individual"
 msgstr ""
@@ -958,17 +1030,41 @@ msgstr "तिरेको जरिमाना"
 msgid "Account must be of Category BASIC SALARY or DEDUCTION"
 msgstr ""
 
-#: hr/models.py:949 hr/models.py:953
+#: hr/models.py:902
+msgid ""
+"Select if deduction amount data in this report only belongs to particular "
+"deduction."
+msgstr ""
+
+#: hr/models.py:909
+msgid ""
+"Select if incentive amount data in this report only belongs to particular "
+"incentive."
+msgstr ""
+
+#: hr/models.py:916
+msgid ""
+"Select if allowance amount data in this report only belogs to particular "
+"allowance."
+msgstr ""
+
+#: hr/models.py:924
+msgid ""
+"Select if tax amount data in this report only belogs to particular tax "
+"deduction."
+msgstr ""
+
+#: hr/models.py:962 hr/models.py:966
 msgid "Remuneration tax discount for married employee on taxable amount."
 msgstr ""
 
-#: hr/models.py:959
+#: hr/models.py:972
 msgid ""
 "Remuneration tax additional discount for disabled employee on taxable amount."
 "(%)"
 msgstr ""
 
-#: hr/models.py:963
+#: hr/models.py:976
 msgid "Discount for female on evaluated remuneration tax. (%)"
 msgstr ""
 
@@ -1143,7 +1239,9 @@ msgid "Add or Remove Employee Grade Group"
 msgstr ""
 
 #: hr/templates/employee_list.html:52 hr/templates/payroll_entry.html.py:117
-#: hr/templates/report_templates/sanchayakosh_katti.html:40
+#: hr/templates/report_templates/nalakosh_bima_katti.html:38
+#: hr/templates/report_templates/sanchayakosh_katti.html:41
+#: hr/templates/report_templates/social_security_tax.html:38
 #: inventory/templates/entry_report.html:168
 #: inventory/templates/entry_report.html:175
 #: inventory/templates/entry_report.html:182
@@ -1469,38 +1567,145 @@ msgstr ""
 msgid "Deduced Amount"
 msgstr "रकम"
 
+#: hr/templates/report_templates/nalakosh_bima_katti.html:14
 #: hr/templates/report_templates/sanchayakosh_katti.html:14
+#: hr/templates/report_templates/social_security_tax.html:14
 #, fuzzy
 #| msgid "Change"
 msgid "Range"
 msgstr "परिवर्तन गर्नुहोस"
 
+#: hr/templates/report_templates/nalakosh_bima_katti.html:14
 #: hr/templates/report_templates/sanchayakosh_katti.html:14
+#: hr/templates/report_templates/social_security_tax.html:14
 msgid "to"
 msgstr ""
 
+#: hr/templates/report_templates/nalakosh_bima_katti.html:17
+#: hr/templates/report_templates/nalakosh_bima_katti.html:18
+#: hr/templates/report_templates/nalakosh_bima_katti.html:19
 #: hr/templates/report_templates/sanchayakosh_katti.html:17
 #: hr/templates/report_templates/sanchayakosh_katti.html:18
 #: hr/templates/report_templates/sanchayakosh_katti.html:19
+#: hr/templates/report_templates/social_security_tax.html:17
+#: hr/templates/report_templates/social_security_tax.html:18
+#: hr/templates/report_templates/social_security_tax.html:19
 #: inventory/templates/handover.html:165 inventory/templates/handover.html:183
 #: inventory/templates/pdf/handover_pdf.html:99
 #: inventory/templates/pdf/handover_pdf.html:117
 msgid "Office"
 msgstr "कार्यालय"
 
+#: hr/templates/report_templates/nalakosh_bima_katti.html:23
 #: hr/templates/report_templates/sanchayakosh_katti.html:23
+#: hr/templates/report_templates/social_security_tax.html:23
 msgid "Deposit Bank Name"
 msgstr ""
 
+#: hr/templates/report_templates/nalakosh_bima_katti.html:24
 #: hr/templates/report_templates/sanchayakosh_katti.html:24
+#: hr/templates/report_templates/social_security_tax.html:24
 msgid "Deposit Bank Address"
 msgstr ""
 
+#: hr/templates/report_templates/nalakosh_bima_katti.html:25
 #: hr/templates/report_templates/sanchayakosh_katti.html:25
+#: hr/templates/report_templates/social_security_tax.html:25
 #, fuzzy
 #| msgid "Website"
 msgid "Deposited"
 msgstr "वेबसाइट"
+
+#: hr/templates/report_templates/nalakosh_bima_katti.html:29
+#: hr/templates/report_templates/sanchayakosh_katti.html:31
+msgid ""
+"PF deduction of this branch of this detail has been deposited to the "
+"speciified bank above"
+msgstr ""
+
+#: hr/templates/report_templates/nalakosh_bima_katti.html:39
+#: hr/templates/report_templates/sanchayakosh_katti.html:43
+#: hr/templates/report_templates/social_security_tax.html:39
+#, fuzzy
+#| msgid "Employee"
+msgid "Employee Name"
+msgstr "कर्मचारी"
+
+#: hr/templates/report_templates/nalakosh_bima_katti.html:40
+#, fuzzy
+#| msgid "Instances"
+msgid "Insurance ID"
+msgstr "इकाइहरु"
+
+#: hr/templates/report_templates/nalakosh_bima_katti.html:41
+#: hr/templates/report_templates/sanchayakosh_katti.html:45
+msgid "Compulsory Deduction"
+msgstr ""
+
+#: hr/templates/report_templates/nalakosh_bima_katti.html:42
+#: hr/templates/report_templates/sanchayakosh_katti.html:46
+msgid "Addition in deduction"
+msgstr ""
+
+#: hr/templates/report_templates/nalakosh_bima_katti.html:43
+#: hr/templates/report_templates/sanchayakosh_katti.html:44
+#, fuzzy
+#| msgid "Total Fine"
+msgid "Total Deduction"
+msgstr "जम्मा जरिमाना"
+
+#: hr/templates/report_templates/nalakosh_bima_katti.html:61
+#: hr/templates/report_templates/sanchayakosh_katti.html:65
+#: hr/templates/report_templates/social_security_tax.html:56
+#: ils/templates/view_record.html:189 inventory/templates/entry_report.html:77
+#: inventory/templates/inventory/itemlocation_detail.html:28
+#: inventory/templates/inventory/itemlocation_detail.html:36
+#: inventory/templates/inventory/itemlocation_detail.html:54
+#: inventory/templates/inventory/itemlocation_detail.html:62
+#: inventory/templates/inventory/itemlocation_detail.html:76
+#: inventory/templates/inventory/itemlocation_detail.html:136
+#: inventory/templates/inventory/itemlocation_detail.html:144
+#: inventory/templates/inventory/itemlocation_detail.html:156
+#: inventory/templates/pdf/entry_report_pdf.html:44
+#: inventory/templates/pdf/purchase_order_pdf.html:78
+#: inventory/templates/purchase_order.html:133
+#: inventory/templates/user_ledger_detail.html:25
+#: inventory/templates/user_ledger_detail.html:33
+#: inventory/templates/user_ledger_detail.html:47
+#: inventory/templates/user_ledger_detail.html:100
+#: inventory/templates/user_ledger_detail.html:108
+#: inventory/templates/user_ledger_detail.html:120 inventory/views.py:248
+#: inventory/views.py:314
+#: project/templates/project/budgetallocationitem_list.html:38
+#: project/templates/project/budgetallocationitem_list.html:86
+#: project/templates/project/budgetreleaseitem_list.html:37
+#: project/templates/project/budgetreleaseitem_list.html:84
+#: project/templates/project/expenditure_list.html:37
+#: project/templates/project/expenditure_list.html:84
+msgid "Total"
+msgstr "जम्मा"
+
+#: hr/templates/report_templates/nalakosh_bima_katti.html:79
+#: hr/templates/report_templates/sanchayakosh_katti.html:83
+#: hr/templates/report_templates/social_security_tax.html:72
+#, fuzzy
+#| msgid "Signature"
+msgid "Creator Signatute"
+msgstr "दस्तखत"
+
+#: hr/templates/report_templates/nalakosh_bima_katti.html:83
+#: hr/templates/report_templates/sanchayakosh_katti.html:87
+#: hr/templates/report_templates/social_security_tax.html:76
+msgid "Head Accountant Signature"
+msgstr ""
+
+#: hr/templates/report_templates/nalakosh_bima_katti.html:87
+#: hr/templates/report_templates/sanchayakosh_katti.html:91
+#: hr/templates/report_templates/social_security_tax.html:80
+#, fuzzy
+#| msgid "Signature"
+msgid "Approved by Signature"
+msgstr "दस्तखत"
 
 #: hr/templates/report_templates/sanchayakosh_katti.html:29
 msgid "Dear PF"
@@ -1510,49 +1715,27 @@ msgstr ""
 msgid "Tridevi Marg, Thamel, Kathmandu"
 msgstr ""
 
-#: hr/templates/report_templates/sanchayakosh_katti.html:39
+#: hr/templates/report_templates/sanchayakosh_katti.html:40
 msgid "Personal Number"
 msgstr ""
 
-#: hr/templates/report_templates/sanchayakosh_katti.html:41
+#: hr/templates/report_templates/sanchayakosh_katti.html:42
 msgid "PF ID Number"
 msgstr ""
 
-#: hr/templates/report_templates/sanchayakosh_katti.html:42
-#, fuzzy
-#| msgid "Employee"
-msgid "Employee Name"
-msgstr "कर्मचारी"
-
-#: hr/templates/report_templates/sanchayakosh_katti.html:43
-#, fuzzy
-#| msgid "Total Fine"
-msgid "Total Deduction"
-msgstr "जम्मा जरिमाना"
-
-#: hr/templates/report_templates/sanchayakosh_katti.html:44
-msgid "Compulsory Deduction"
+#: hr/templates/report_templates/social_security_tax.html:29
+msgid ""
+"Social Security Tax details of employees working over this branch of above "
+"mentioned date range is shown in table below. "
 msgstr ""
 
-#: hr/templates/report_templates/sanchayakosh_katti.html:45
-msgid "Addition in deduction"
+#: hr/templates/report_templates/social_security_tax.html:40
+msgid "Social Security Tax"
 msgstr ""
 
-#: hr/templates/report_templates/sanchayakosh_katti.html:72
-#, fuzzy
-#| msgid "Signature"
-msgid "Creator Signatute"
-msgstr "दस्तखत"
-
-#: hr/templates/report_templates/sanchayakosh_katti.html:76
-msgid "Head Accountant Signature"
+#: hr/templates/report_templates/social_security_tax.html:41
+msgid "Pan Number"
 msgstr ""
-
-#: hr/templates/report_templates/sanchayakosh_katti.html:80
-#, fuzzy
-#| msgid "Signature"
-msgid "Approved by Signature"
-msgstr "दस्तखत"
 
 #: ils/forms.py:63
 msgid "Publisher"
@@ -1854,34 +2037,6 @@ msgstr ""
 #: ils/templates/view_record.html:179
 msgid "Dewey Decimal Class"
 msgstr ""
-
-#: ils/templates/view_record.html:189 inventory/templates/entry_report.html:77
-#: inventory/templates/inventory/itemlocation_detail.html:28
-#: inventory/templates/inventory/itemlocation_detail.html:36
-#: inventory/templates/inventory/itemlocation_detail.html:54
-#: inventory/templates/inventory/itemlocation_detail.html:62
-#: inventory/templates/inventory/itemlocation_detail.html:76
-#: inventory/templates/inventory/itemlocation_detail.html:136
-#: inventory/templates/inventory/itemlocation_detail.html:144
-#: inventory/templates/inventory/itemlocation_detail.html:156
-#: inventory/templates/pdf/entry_report_pdf.html:44
-#: inventory/templates/pdf/purchase_order_pdf.html:78
-#: inventory/templates/purchase_order.html:133
-#: inventory/templates/user_ledger_detail.html:25
-#: inventory/templates/user_ledger_detail.html:33
-#: inventory/templates/user_ledger_detail.html:47
-#: inventory/templates/user_ledger_detail.html:100
-#: inventory/templates/user_ledger_detail.html:108
-#: inventory/templates/user_ledger_detail.html:120 inventory/views.py:248
-#: inventory/views.py:314
-#: project/templates/project/budgetallocationitem_list.html:38
-#: project/templates/project/budgetallocationitem_list.html:86
-#: project/templates/project/budgetreleaseitem_list.html:37
-#: project/templates/project/budgetreleaseitem_list.html:84
-#: project/templates/project/expenditure_list.html:37
-#: project/templates/project/expenditure_list.html:84
-msgid "Total"
-msgstr "जम्मा"
 
 #: ils/templates/view_record.html:193
 msgid "In Circulation"
@@ -4040,10 +4195,6 @@ msgstr "दर्ता गर्नु"
 #| msgid "Accounts"
 msgid "Project Accounts"
 msgstr "खाताहरु"
-
-#: templates/hr_report_base.html:86
-msgid "This is ministry title"
-msgstr ""
 
 #: training/templates/category_form.html:39
 msgid "No trainings under this category!"

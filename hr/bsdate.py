@@ -1,7 +1,21 @@
 # This module uses njango module for Bikram Sambat Calendar
+from django.utils.translation import gettext
 from njango.nepdate import bs, bs2ad
 from datetime import date
 
+month = {}
+month[1] = [gettext('Baisakh')]
+month[2] = [gettext('Jestha')]
+month[3] = [gettext('Aasad')]
+month[4] = [gettext('Shrawan')]
+month[5] = [gettext('Bhadra')]
+month[6] = [gettext('Asoj')]
+month[7] = [gettext('Kartik')]
+month[8] = [gettext('Mansir')]
+month[9] = [gettext('Push')]
+month[10] = [gettext('Magh')]
+month[11] = [gettext('Falgun')]
+month[12] = [gettext('Chaitra')]
 
 class BsDelta(object):
 
@@ -29,7 +43,13 @@ class BSDate(object):
     def date_tuple(self):
         return (self._year, self._month, self._day)
 
-    def as_string(self):
+    def as_string(self, format=None):
+        if format == 'words':
+            return '%s, %s, %s' % (
+                str(self._day).zfill(2),
+                month[self._month],
+                str(self.year)
+            )
         return '%s-%s-%s' % (
             str(self._year),
             str(self._month).zfill(2),
