@@ -5,3 +5,9 @@ TODO List
 3. Yearly and monthly Report of all employee and all entries
 4. Yearly and monthly Report of all entries of particular employee
 
+26 Jan Thusday
+1. Change table structure with stored json
+2. Study about common data in all reports body and implement it
+3. Make existing two report look like actual format
+4. Add error to get report page
+5. Add bima and nala report

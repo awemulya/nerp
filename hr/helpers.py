@@ -628,3 +628,9 @@ def getattr_custom(obj, attr_query, **kwargs):
     for attr in attributes:
         value = getattr(value, attr)
     return value
+
+
+def json_file_to_dict(json_path):
+    import json
+    data_file = open(json_path)
+    return json.load(data_file)

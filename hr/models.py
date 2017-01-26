@@ -931,7 +931,9 @@ class ReportHR(models.Model):
 class ReportTable(models.Model):
     title = models.CharField(max_length=100)
     # field_tiltle and field loopup sored as Json
-    table_fields = JSONField()
+    report_table_json_folder = BASE_DIR + '/hr/templates/report_templates/report_table_jsons'
+    table_json = models.FilePathField(path=report_table_json_folder, match=".*\.json$")
+    # table_fields = JSONField()
     report = models.ForeignKey(ReportHR, related_name='report_tables')
 
 

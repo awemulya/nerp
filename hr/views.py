@@ -43,7 +43,7 @@ from .bsdate import BSDate
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
     emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present, \
-    user_is_branch_accountant, GroupRequiredMixin, IsBranchAccountantMixin, getattr_custom
+    user_is_branch_accountant, GroupRequiredMixin, IsBranchAccountantMixin, getattr_custom, json_file_to_dict
 from account.models import set_transactions, JournalEntry
 from .filters import EmployeeFilter, PayrollEntryFilter
 from django.core import serializers
@@ -1523,8 +1523,9 @@ def get_report(request):
             report_tables = report.report_tables.all()
             tables = {}
             for table in report_tables:
-                fields = table.table_fields.get('fields')
-                total_fields = table.table_fields.get('totalling_fields')
+                table_fields = json_file_to_dict(table.table_json)
+                fields = table_fields.get('fields')
+                total_fields = table_fields.get('totalling_fields')
                 data = []
                 totals = {}
                 for key in total_fields.keys():
