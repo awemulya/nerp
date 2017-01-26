@@ -13,3 +13,7 @@ TODO List
 3. Make existing two report look like actual format
 4. Add error to get report page
 5. Add bima and nala report
+
+
+27 Jan Thusday
+1.
