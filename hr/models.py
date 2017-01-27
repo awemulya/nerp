@@ -132,8 +132,15 @@ class Designation(models.Model):
 
 
 class AllowanceName(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    description = models.CharField(max_length=250)
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        verbose_name=_('Name')
+    )
+    description = models.CharField(
+        max_length=250,
+        verbose_name=_('Description')
+    )
     is_tax_free = models.BooleanField(default=False)
     account_category = models.OneToOneField(Category, null=True, blank=True)
 

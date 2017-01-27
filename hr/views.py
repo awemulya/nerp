@@ -1235,12 +1235,14 @@ def list_employee(request):
 def allowance(request, pk=None):
     CALENDAR = PayrollConfig.get_solo().hr_calendar
     allowance_validity_form = AllowanceValidityForm()
+    allowance_name_form = AllowanceNameForm()
     return render(
         request,
         'allowance.html',
         {
             'calendar': CALENDAR,
-            'av_form': allowance_validity_form
+            'av_form': allowance_validity_form,
+            'allowance_name_form': allowance_name_form
         }
     )
 
