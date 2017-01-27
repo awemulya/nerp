@@ -19,3 +19,4 @@ TODO List
 1.Check saving and deleting of entry according to the change made yesterday
  ==> check for account category creation and its use working properly or not
  ==> That is from creation to transaction
+ ==> Check the effect of translation on our overall process
