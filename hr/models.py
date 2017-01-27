@@ -978,7 +978,6 @@ class PayrollConfig(SingletonModel):
         verbose_name=_('Discount for female on evaluated remuneration tax. (%)')
     )
 
-
     def __unicode__(self):
         return "Payroll Configuration"
 
