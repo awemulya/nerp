@@ -341,6 +341,7 @@ class Employee(models.Model):
     type = models.CharField(max_length=128, choices=employee_type_choices)
     marital_statuses = [('M', _('Married')), ('U', _('Unmarried'))]
     name = models.CharField(max_length=128)
+    code_name = models.CharField(max_length=100, unique=True)
     sex = models.CharField(choices=sex_choice, max_length=1)
     marital_status = models.CharField(
         default='U',
@@ -1005,13 +1006,13 @@ class PayrollConfig(SingletonModel):
 def allowance_account_category_add(sender, instance, created, **kwargs):
     if created:
         instance.account_category = Category.objects.create(
-            name=instance.name,
+            name=instance.code_name,
             parent=PayrollConfig.get_solo().allowance_account_category
         )
         instance.save()
     else:
         if instance.account_category:
-            instance.account_category.name = instance.name
+            instance.account_category.name = instance.code_name
             instance.account_category.save()
 
 
@@ -1019,13 +1020,13 @@ def allowance_account_category_add(sender, instance, created, **kwargs):
 def incentive_account_category_add(sender, instance, created, **kwargs):
     if created:
         instance.account_category = Category.objects.create(
-            name=instance.name,
+            name=instance.code_name,
             parent=PayrollConfig.get_solo().incentive_account_category
         )
         instance.save()
     else:
         if instance.account_category:
-            instance.account_category.name = instance.name,
+            instance.account_category.name = instance.code_name,
             instance.account_category.save()
 
 
@@ -1033,14 +1034,14 @@ def incentive_account_category_add(sender, instance, created, **kwargs):
 def deduct_in_category_add(sender, instance, created, **kwargs):
     if created:
         instance.deduct_in_category = Category.objects.create(
-            name=instance.name,
+            name=instance.code_name,
             parent=PayrollConfig.get_solo().deduction_account_category
         )
         # Add newly created deduction accout for existing user
         if not instance.is_optional:
             for emp in Employee.objects.all():
                 acc = Account.objects.create(
-                    name='%s-%s' % (emp.name, instance.name),
+                    name='%s-%s' % (emp.name, instance.code_name),
                     category=instance.deduct_in_category,
                     fy=FiscalYear.get()
                 )
@@ -1051,7 +1052,7 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
 
         if instance.first_add_to_salary:
             add_before_deduction_cat = Category.objects.create(
-                name='%s addition in deduction' % instance.name,
+                name='%s addition in deduction' % instance.code_name,
                 parent=instance.deduct_in_category,
                 # fy=FiscalYear.get()
             )
@@ -1059,7 +1060,7 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
             if not instance.is_optional:
                 for emp in Employee.objects.filter(type='PERMANENT'):
                     acc = Account.objects.create(
-                        name='%s-AddBeforeDedution-%s' % (emp.name, instance.name),
+                        name='%s-AddBeforeDedution-%s' % (emp.code_name, instance.code_name),
                         category=add_before_deduction_cat,
                         fy=FiscalYear.get()
                     )
@@ -1071,14 +1072,14 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
 
     else:
         if instance.deduct_in_category:
-            instance.deduct_in_category.name = instance.name
+            instance.deduct_in_category.name = instance.code_name
             instance.deduct_in_category.save()
 
             # Add newly created deduction accout for existing user
             if not instance.is_optional:
                 for emp in Employee.objects.all():
                     acc = Account.objects.get_or_create(
-                        name='%s-%s' % (emp.name, instance.name),
+                        name='%s-%s' % (emp.code_name, instance.code_name),
                         category=instance.deduct_in_category,
                         fy=FiscalYear.get(),
                         employee_account__employee=emp
@@ -1092,18 +1093,18 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
             if instance.first_add_to_salary:
                 if not addition_from_deduction_cats:
                     addition_from_deduction_cat = Category.objects.create(
-                        name='%s addition in deduction' % instance.name,
+                        name='%s addition in deduction' % instance.code_name,
                         parent=instance.deduct_in_category
                     )
                 else:
-                    addition_from_deduction_cats[0].name = '%s addition in deduction' % instance.name
+                    addition_from_deduction_cats[0].name = '%s addition in deduction' % instance.code_name
                     addition_from_deduction_cats[0].save()
                     addition_from_deduction_cat = addition_from_deduction_cats[0]
 
                 if not instance.is_optional:
                     for emp in Employee.objects.filter(type='PERMANENT'):
                         acc, created = Account.objects.get_or_create(
-                            name='%s-AddBeforeDedution-%s' % (emp.name, instance.name),
+                            name='%s-AddBeforeDedution-%s' % (emp.code_name, instance.code_name),
                             category=addition_from_deduction_cat,
                             fy=FiscalYear.get(),
                             employee_account__employee=emp
@@ -1121,14 +1122,14 @@ def on_optional_deductions_change(sender, instance, action, **kwargs):
     if action == 'post_add':
         for this_deduction in instance.optional_deductions.all():
             this_deduction_emp_accs = EmployeeAccount.objects.filter(
-                account__name='%s-%s' % (instance.name, this_deduction.name),
+                account__name='%s-%s' % (instance.code_name, this_deduction.code_name),
                 account__category=this_deduction.deduct_in_category,
                 account__fy=FiscalYear.get(),
                 employee=instance
             )
             if not this_deduction_emp_accs:
                 opt_deduction_account = Account.objects.create(
-                    name='%s-%s' % (instance.name, this_deduction.name),
+                    name='%s-%s' % (instance.code_name, this_deduction.code_name),
                     category=this_deduction.deduct_in_category,
                     fy=FiscalYear.get()
                 )
@@ -1139,14 +1140,14 @@ def on_optional_deductions_change(sender, instance, action, **kwargs):
         if instance.type == 'PERMANENT':
             for this_deduction in instance.optional_deductions.filter(first_add_to_salary=True):
                 add_before_deduction_emp_acc = EmployeeAccount.objects.filter(
-                    account__name='%s-AddBeforeDedution-%s' % (instance.name, this_deduction.name),
+                    account__name='%s-AddBeforeDedution-%s' % (instance.code_name, this_deduction.code_name),
                     account__category=this_deduction.deduct_in_category.children.all()[0],
                     account__fy=FiscalYear.get(),
                     employee=instance
                 )
                 if not add_before_deduction_emp_acc:
                     add_before_deduction_account = Account.objects.create(
-                        name='%s-AddBeforeDedution-%s' % (instance.name, this_deduction.name),
+                        name='%s-AddBeforeDedution-%s' % (instance.code_name, this_deduction.code_name),
                         category=this_deduction.deduct_in_category.children.all()[0],
                         fy=FiscalYear.get()
                     )
@@ -1161,14 +1162,14 @@ def on_allowances_change(sender, instance, action, **kwargs):
     if action == 'post_add':
         for this_allowance in instance.allowances.all():
             this_allowance_emp_accs = EmployeeAccount.objects.filter(
-                account__name='%s-%s' % (instance.name, this_allowance.name),
+                account__name='%s-%s' % (instance.code_name, this_allowance.code_name),
                 account__fy=FiscalYear.get(),
                 account__category=this_allowance.account_category,
                 employee=instance
             )
             if not this_allowance_emp_accs:
                 all_account = Account.objects.create(
-                    name='%s-%s' % (instance.name, this_allowance.name),
+                    name='%s-%s' % (instance.code_name, this_allowance.code_name),
                     category=this_allowance.account_category,
                     fy=FiscalYear.get()
                 )
@@ -1183,7 +1184,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
     if created:
         # Add salary Account
         salary_account = Account.objects.create(
-            name="%s-Salary Account" % instance.name,
+            name="%s-Salary Account" % instance.code_name,
             category=PayrollConfig.get_solo().basic_salary_account_category,
             fy=FiscalYear.get()
         )
@@ -1195,7 +1196,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
         # Add tax deduction account
         for tax_deduction in TaxDeduction.objects.all():
             td_account = Account.objects.create(
-                name='%s-%s' % (instance.name, tax_deduction.name),
+                name='%s-%s' % (instance.code_name, tax_deduction.code_name),
                 category=tax_deduction.account_category,
                 fy=FiscalYear.get()
             )
@@ -1207,7 +1208,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
 
         # Add pro tempore account
         pro_tempore_account = Account.objects.create(
-            name="%s-ProTempore" % instance.name,
+            name="%s-ProTempore" % instance.code_name,
             category=PayrollConfig.get_solo().pro_tempore_account_category,
             fy=FiscalYear.get()
         )
@@ -1219,8 +1220,8 @@ def add_employee_accounts(sender, instance, created, **kwargs):
         for deduction in DeductionName.objects.filter(is_optional=False):
             deduction_account = Account.objects.create(
                 name="%s-%s" % (
-                    instance.name,
-                    deduction.name
+                    instance.code_name,
+                    deduction.code_name
                 ),
                 category=deduction.deduct_in_category,
                 fy=FiscalYear.get()
@@ -1232,7 +1233,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
         if instance.type == 'PERMANENT':
             for deduction in DeductionName.objects.filter(is_optional=False, first_add_to_salary=True):
                 add_before_deduction_account = Account.objects.create(
-                    name='%s-AddBeforeDedution-%s' % (instance.name, deduction.name),
+                    name='%s-AddBeforeDedution-%s' % (instance.code_name, deduction.code_name),
                     category=deduction.deduct_in_category.children.all()[0],
                     fy=FiscalYear.get()
                 )
@@ -1244,7 +1245,7 @@ def add_employee_accounts(sender, instance, created, **kwargs):
         if instance.type == 'PERMANENT':
             for deduction in DeductionName.objects.filter(is_optional=False, first_add_to_salary=True):
                 add_before_deduction_account, created = Account.objects.get_or_create(
-                    name='%s-AddBeforeDedution-%s' % (instance.name, deduction.name),
+                    name='%s-AddBeforeDedution-%s' % (instance.code_name, deduction.code_name),
                     category=deduction.deduct_in_category.children.all()[0],
                     fy=FiscalYear.get(),
                     employee_account__employee=instance
@@ -1259,14 +1260,14 @@ def add_employee_accounts(sender, instance, created, **kwargs):
 def add_emloyee_incentive_account(sender, instance, created, **kwargs):
     if created:
         this_incentive_emp_accs = EmployeeAccount.objects.filter(
-            account__name='%s-%s' % (instance.employee.name, instance.name.name),
+            account__name='%s-%s' % (instance.employee.code_name, instance.name.code_name),
             account__fy=FiscalYear.get(),
             account__category=instance.name.account_category,
             employee=instance.employee
         )
         if not this_incentive_emp_accs:
             incent_account = Account.objects.create(
-                name='%s-%s' % (instance.employee.name, instance.name.name),
+                name='%s-%s' % (instance.employee.code_name, instance.name.code_name),
                 category=instance.name.account_category,
                 fy=FiscalYear.get()
             )
@@ -1280,13 +1281,13 @@ def add_emloyee_incentive_account(sender, instance, created, **kwargs):
 def account_category_add(sender, instance, created, **kwargs):
     if created:
         instance.account_category = Category.objects.create(
-            name=instance.name,
+            name=instance.code_name,
             parent=PayrollConfig.get_solo().tax_account_category
         )
 
         for emp in Employee.objects.all():
             acc = Account.objects.create(
-                name='%s-%s' % (emp.name, instance.name),
+                name='%s-%s' % (emp.code_name, instance.code_name),
                 category=instance.account_category,
                 fy=FiscalYear.get()
             )

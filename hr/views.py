@@ -393,13 +393,13 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
     tax_details = []
     for tax_deduction in TaxDeduction.objects.all():
 
-        if tax_deduction.name == "Social Security Tax":
+        if tax_deduction.code_name == "Social Security Tax":
             tax_details.append({
                 'id': tax_deduction.id,
                 'name': tax_deduction.name,
                 'amount': social_security_tax
             })
-        elif tax_deduction.name == "Remuneration Tax":
+        elif tax_deduction.code_name == "Remuneration Tax":
             tax_details.append({
                 'id': tax_deduction.id,
                 'name': tax_deduction.name,
