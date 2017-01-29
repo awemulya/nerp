@@ -1026,7 +1026,7 @@ def incentive_account_category_add(sender, instance, created, **kwargs):
         instance.save()
     else:
         if instance.account_category:
-            instance.account_category.name = instance.code_name,
+            instance.account_category.name = instance.code_name
             instance.account_category.save()
 
 
