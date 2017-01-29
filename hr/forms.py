@@ -518,6 +518,7 @@ class AllowanceNameForm(HTML5BootstrapModelForm):
         exclude = ('account_category',)
         widgets = {
             'name': TextInput(attrs={'data-bind': "value: name",}),
+            'code_name': TextInput(attrs={'data-bind': "value: code_name",}),
             'name_en': TextInput(attrs={'data-bind': "value: name_en",}),
             'name_ne': TextInput(attrs={'data-bind': "value: name_ne",}),
             'description': TextInput(attrs={'data-bind': "value: description",}),
