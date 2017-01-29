@@ -134,9 +134,9 @@ class Designation(models.Model):
 class AllowanceName(models.Model):
     name = models.CharField(
         max_length=100,
-        unique=True,
         verbose_name=_('Name')
     )
+    code_name = models.CharField(max_length=100, unique=True)
     description = models.CharField(
         max_length=250,
         verbose_name=_('Description')
@@ -217,7 +217,8 @@ class Allowance(models.Model):
 
 
 class IncentiveName(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
+    code_name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=250)
     account_category = models.OneToOneField(Category, null=True, blank=True)
     with_scale = models.BooleanField(default=False)
@@ -272,7 +273,9 @@ class DeductionName(models.Model):
     #     ('ACTIVE', _('Active')),
     #     ('INACTIVE', _('Inactive'))
     # )
-    name = models.CharField(max_length=150, unique=True)
+    name = models.CharField(max_length=150)
+    code_name = models.CharField(max_length=100, unique=True)
+
     deduct_in_category = models.OneToOneField(Category, null=True, blank=True)
     description = models.CharField(max_length=150)
     priority = models.IntegerField(unique=True)
@@ -699,7 +702,12 @@ class MaritalStatus(models.Model):
 
 
 class TaxDeduction(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    code_name_choices = [
+        ('Remuneration Tax', _('Remuneration Tax')),
+        ('Social Security Tax', _('Social Security Tax'))
+    ]
+    name = models.CharField(max_length=100)
+    code_name = models.CharField(max_length=100, choices=code_name_choices, unique=True)
     account_category = models.OneToOneField(Category, null=True, blank=True)
     description = models.CharField(max_length=256)
 
