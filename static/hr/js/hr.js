@@ -26,6 +26,7 @@ $(document).ready(function () {
             // }
         };
         ko.mapping.fromJS(ko_data.ctx_data, mapping, vm);
+
     }
 });
 
@@ -145,7 +146,7 @@ function PaymentEntryRow(emp_options) {
     self.row_salary_detail = ko.computed(function () {
         if (self.paid_employee() && self.paid_from_date() && self.paid_to_date()) {
             self.request_flag(self.paid_employee() + '-' + self.paid_from_date() + '-' + self.paid_to_date());
-            console.log(self.request_flag());
+             console.log(self.request_flag());
         }
     });
 
@@ -276,6 +277,11 @@ function PayrollEntry(employee_options) {
         return output;
     });
 
+    self.entry_rows.subscribe(function () {
+        console.log(self.entry_rows());
+
+    });
+
     self.disable_main_input = ko.computed(function(){
         if(ko_data.ctx_data.computed_scenario == 'DETAIL-VIEW') {
             return true;
@@ -285,6 +291,15 @@ function PayrollEntry(employee_options) {
     });
 
     self.branch = ko.observable();
+    //
+    // self.branch.subscribe(function () {
+    //     if(self.branch()==2){
+    //         console.log('this is branch', self.branch())
+    //         debugger;
+    //     }else{
+    //         debugger;
+    //     }
+    // })
 
     self.employee_type = ko.observable();
 
@@ -548,7 +563,6 @@ function PayrollEntry(employee_options) {
                             });
                         } else {
                             self.entry_rows([]);
-
                             self.entry_rows(ko.utils.arrayMap(response.data, function (data) {
 
                                 var mapping = {
@@ -556,7 +570,7 @@ function PayrollEntry(employee_options) {
                                 };
                                 var row = ko.mapping.fromJS(data, mapping, new PaymentEntryRow(employee_options.slice(0)));
                                 // row.is_explicitly_added_row = false;
-                                row.request_flag(false);
+                                // row.request_flag(false);
                                 if (typeof(row.row_errors) == 'undefined') {
                                     row.row_errors = ko.observableArray([]);
                                 }
@@ -585,6 +599,8 @@ function PayrollEntry(employee_options) {
             // async: false,
             data: {
                 branch: self.branch() ? self.branch() : 'ALL',
+                // branch: self.branch() ? self.branch() : 'ALL',
+                // branch: 'ALL',
                 employee_type: self.employee_type()
             },
             success: function (response) {
@@ -621,6 +637,7 @@ function PayrollEntry(employee_options) {
         }
     });
     self.this_on_ch_update_emp.subscribe(function () {
+        // console.log(self.this_on_ch_update_emp());
         self.update_employee_options();
     });
 

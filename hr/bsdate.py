@@ -128,4 +128,4 @@ class BSDate(object):
         return  'BSDate - ' + self.as_string(format='words')
 
     def __str__(self):
-        return self.as_string(format='words')
+        return self.as_string()

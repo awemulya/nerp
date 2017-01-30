@@ -446,11 +446,13 @@ def payroll_entry(request, pk=None):
     accountant_branch_id = request.user.payroll_accountant.branch.id
     if pk:
         entry = PayrollEntry.objects.get(pk=pk)
+        form_initial = {'payroll_type': 'GROUP', 'branch': entry.branch}
         serializer = PayrollEntrySerializer(entry)
         ctx_data = dict(serializer.data)
     else:
+        form_initial = {'payroll_type': 'GROUP'}
         ctx_data = {'computed_scenario': 'CREATE',}
-    main_form = GroupPayrollForm(initial={'payroll_type': 'GROUP'}, accountant_branch_id=accountant_branch_id)
+    main_form = GroupPayrollForm(initial=form_initial, accountant_branch_id=accountant_branch_id)
 
     # Inititial employee options
     employees = Employee.objects.all()
@@ -615,7 +617,7 @@ def save_payroll_entry(request, pk=None):
             p_e = PayrollEntry.objects.get_or_create(
                 branch_id=branch,
                 is_monthly_payroll=is_monthly_payroll,
-                paid_from_date=paid_to_date_for_p_e,
+                paid_from_date=paid_from_date_for_p_e,
                 paid_to_date=paid_to_date_for_p_e
             )
             for row in params.get('entry_rows'):
@@ -649,7 +651,7 @@ def save_payroll_entry(request, pk=None):
                 p_r.pro_tempore_amount = float(row.get('pro_tempore_amount', None))
                 p_r.salary = float(row.get('salary', None))
                 p_r.paid_amount = float(row.get('paid_amount', None))
-                p_r.entry = p_e
+                p_r.entry = p_e[0]
                 p_r.save()
 
                 # Similar if we need all details of incentive and allowence
@@ -712,7 +714,7 @@ def save_payroll_entry(request, pk=None):
             # PayrollEntry.objects.create(
             #     entry_row=payment_records,
             # )
-            save_response['entry_id'] = p_e.id
+            save_response['entry_id'] = p_e[0].id
             save_response['entry_saved'] = True
             save_response['entry_approved'] = False
             save_response['entry_transacted'] = False

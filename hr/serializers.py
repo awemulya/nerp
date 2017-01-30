@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from njango.middleware import get_calendar
 from rest_framework import serializers
 
@@ -90,13 +90,14 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
     branch = serializers.SerializerMethodField('get_branch_value')
     paid_from_date_input = serializers.SerializerMethodField('get_from_date')
     paid_to_date_input = serializers.SerializerMethodField('get_to_date')
+    entry_date = serializers.SerializerMethodField()
 
     class Meta:
 
         model = PayrollEntry
         # fields = '__all__'
         exclude = ('paid_from_date', 'paid_to_date')
-        include = ('entry_saved', 'paid_from_date_input', 'paid_to_date_input')
+        include = ('entry_saved', 'paid_from_date_input', 'paid_to_date_input', 'entry_date', 'entry_rows')
 
     # either edit True or False
     def get_scenario(self, instance):
@@ -106,10 +107,22 @@ class PayrollEntrySerializer(serializers.ModelSerializer):
             return 'DETAIL-VIEW'
 
     def get_from_date(self, instance):
-        return str(instance.paid_from_date)
+        if isinstance(instance.paid_from_date, date):
+            return str(instance.paid_from_date)
+        else:
+            return instance.paid_from_date.as_string()
 
     def get_to_date(self, instance):
-        return str(instance.paid_to_date)
+        if isinstance(instance.paid_to_date, date):
+            return str(instance.paid_to_date)
+        else:
+            return instance.paid_to_date.as_string()
+
+    def get_entry_date(self, instance):
+        if isinstance(instance.entry_date, date):
+            return str(instance.entry_date)
+        else:
+            return instance.entry_date.as_string()
 
     def get_branch_value(self, instance):
         if not instance.branch:
