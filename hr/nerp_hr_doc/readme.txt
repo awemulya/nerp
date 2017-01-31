@@ -26,6 +26,11 @@ Branch option will appear according to payroll accountant hierarchy.
 1. Accountant and Payroll Accountant
 2. Payroll Accountant for branch so (Payroll Accountant of which branch is to be specified)
 
+#Fiscal Year Notes (HR)
+1. Employee Accounts are created with respect to current FiscalYear only.
+2. Existing employee accounts are raplicated only when new FiscalYear is created.
+3. Initial FiscalYear is created upto 2073/74.
+4. Employee Account will be created correctly only when if we are creating Employee Accounts with latest entered FiscalYear.
 
 # Employee model grade_number note
 * grade_number field in Employee model represents the max grade the employee can use.
