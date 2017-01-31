@@ -79,6 +79,9 @@ urlpatterns = patterns('',
                        # incentivenames crud
                        url(r'^incentives/$', views.incentivename_curd, name='incentivename_curd'),
 
+                       # facility crud
+                       url(r'^employee-facilities/$', views.facility_curd, name='facility_curd'),
+
                        # taxation crud
                        # url(r'^tax/scheme/$', views.tax_scheme, name='tax_scheme'),
 

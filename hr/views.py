@@ -28,12 +28,13 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameDetailFormSet, GetReportForm, \
     EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet, \
     DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm, PayrollConfigForm, \
-    PayrollAccountantForm, BranchOfficeForm, ProTemporeForm, EmployeeGradeNumberPauseFormset, TaxDeductionForm
+    PayrollAccountantForm, BranchOfficeForm, ProTemporeForm, EmployeeGradeNumberPauseFormset, TaxDeductionForm, \
+    EmployeeFacilityFormSet
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
     AllowanceValidity, DeductionValidity, GradeScaleValidity, PayrollConfig, PayrollAccountant, ProTemporeDetail, \
-    TaxDeduction, TaxDetail
+    TaxDeduction, TaxDetail, EmployeeFacility
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -1483,6 +1484,30 @@ def incentivename_curd(request):
         'incentivename_curd.html',
         {
             'incentivename_formset': incentivename_formset,
+        })
+
+@login_required
+@group_required('Accountant')
+def facility_curd(request):
+    if request.method == "POST":
+
+        employee_facility_formset = EmployeeFacilityFormSet(
+            request.POST,
+            queryset=EmployeeFacility.objects.all(),
+        )
+        if employee_facility_formset.is_valid():
+            employee_facility_formset.save()
+            return redirect(reverse('facility_curd'))
+    else:
+        employee_facility_formset = EmployeeFacilityFormSet(
+            queryset=EmployeeFacility.objects.all(),
+        )
+
+    return render(
+        request,
+        'employeefacility_curd.html',
+        {
+            'employee_facility_formset': employee_facility_formset,
         })
 
 

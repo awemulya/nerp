@@ -10,7 +10,7 @@ from hr.helpers import bs_str2tuple, employee_last_payment_record, inc_1_day, dr
 from users.models import User
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
-    PayrollAccountant, ProTempore, EmployeeGradeNumberPause, TaxDeduction
+    PayrollAccountant, ProTempore, EmployeeGradeNumberPause, TaxDeduction, EmployeeFacility
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -629,6 +629,14 @@ IncentiveNameDetailFormSet = forms.modelformset_factory(
     extra=1,
     can_delete=True,
     exclude=('account_category',),
+)
+
+EmployeeFacilityFormSet = forms.modelformset_factory(
+    EmployeeFacility,
+    extra=1,
+    can_delete=True,
+    fields='__all__'
+    # exclude=('account_category',),
 )
 
 IncomeTaxSchemeFormSet = forms.inlineformset_factory(
