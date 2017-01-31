@@ -7,7 +7,7 @@ from hr.bsdate import BSDate
 from hr.helpers import bs_str2tuple
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
     GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup, AllowanceValidity, AllowanceName, \
-    Allowance, DeductionValidity, Deduction, DeductionName, PayrollConfig, ProTemporeDetail
+    Allowance, DeductionValidity, Deduction, DeductionName, PayrollConfig, ProTemporeDetail, TaxDetail
 
 from django.utils.translation import ugettext as _
 
@@ -39,10 +39,10 @@ class IncentiveDetailSerializer(serializers.ModelSerializer):
 
 
 class TaxDetailSerializer(serializers.ModelSerializer):
-    name = serializers.ReadOnlyField(source='tax_dedution.name')
+    name = serializers.ReadOnlyField(source='tax_deduction.name')
 
     class Meta:
-        model = IncentiveDetail
+        model = TaxDetail
         fields = ('id', 'name', 'amount')
 
 

@@ -5,7 +5,7 @@ from .models import EmployeeAccount, EmployeeGrade, Employee, Designation, Incen
     BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry, IncentiveName, AllowanceName, DeductionDetail, \
     IncentiveDetail, AllowanceDetail, MaritalStatus, \
     ReportTable, ReportHR, GradeScaleValidity, EmployeeGradeScale, DeductionValidity, AllowanceValidity, \
-    PayrollAccountant, PayrollConfig, DeductionName
+    PayrollAccountant, PayrollConfig, DeductionName, TaxDetail
 from .forms import EmployeeAccountInlineFormset, AllowanceForm, IncentiveForm, DeductionForm, EmployeeForm, \
     IncentiveInlineFormset
 from solo.admin import SingletonModelAdmin
@@ -71,6 +71,7 @@ admin.site.register(AllowanceName)
 admin.site.register(DeductionDetail)
 admin.site.register(IncentiveDetail)
 admin.site.register(AllowanceDetail)
+admin.site.register(TaxDetail)
 
 # admin.site.register(AllowanceAccount)
 # admin.site.register(IncentiveAccount)
