@@ -421,10 +421,11 @@ class Employee(models.Model):
             )[0]
             # slot_scale = rate_obj.salary_scale
             slot_rate = rate_obj.grade_rate
-            slot_initial_number = math.ceil(float(current_addition)/float(slot_rate))
+            slot_initial_number = math.ceil(float(current_addition) / float(slot_rate))
 
             days_worked = slot.to_date - slot.from_date
-            years_worked = ((days_worked.days + 1) - self.excluded_days_for_grade_pause(slot.from_date, slot.to_date)) / 365
+            years_worked = ((days_worked.days + 1) - self.excluded_days_for_grade_pause(slot.from_date,
+                                                                                        slot.to_date)) / 365
             current_grade_number += years_worked + slot_initial_number
             current_addition += current_grade_number * slot_rate
         return current_grade_number
@@ -454,7 +455,8 @@ class Employee(models.Model):
                         raise TypeError('Internal and external setting mismatch')
                     else:
                         # TODO think whether it is upto beggining of month or last of month
-                        days_worked = date(*bs2ad(date(year, month, 1))) - date(*bs2ad((self.scale_start_date.as_string())))
+                        days_worked = date(*bs2ad(date(year, month, 1))) - date(
+                            *bs2ad((self.scale_start_date.as_string())))
                         upto_date = BSDate(year, month, 1)
 
             # years_worked = (days_worked.days - self.excluded_days_for_grade_pause(scale_start_date, upto_date)) / 365
@@ -616,7 +618,7 @@ class EmployeeGradeNumberPause(models.Model):
         if not employee_last_paid:
             employee_last_paid = drc_1_day(self.employee.scale_start_date)
         if (
-                employee_last_paid >= self.from_date and employee_last_paid <= self.to_date) or employee_last_paid > self.to_date:
+                        employee_last_paid >= self.from_date and employee_last_paid <= self.to_date) or employee_last_paid > self.to_date:
             pass
         else:
             super(EmployeeGradeNumberPause, self).delete()
@@ -872,7 +874,6 @@ class TaxDetail(models.Model):
     payment_record = models.ForeignKey(PaymentRecord, related_name='tax_details')
 
 
-
 def employee_account_validator(acc_id):
     category = Account.objects.get(id=acc_id).category
     if category == PayrollConfig.get_solo().basic_salary_account_category or category.parent.parent == PayrollConfig.get_solo().pay_head_account_category or category.parent == PayrollConfig.get_solo().pay_head_account_category:
@@ -881,6 +882,7 @@ def employee_account_validator(acc_id):
         raise ValidationError(
             _('Account must be of Category BASIC SALARY or DEDUCTION'),
         )
+
 
 class EmployeeAccount(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.PROTECT)
@@ -1117,6 +1119,7 @@ def deduct_in_category_add(sender, instance, created, **kwargs):
                         #     if addition_from_deduction_cats:
                         #         addition_from_deduction_cats[0].delete()
 
+
 @receiver(m2m_changed, sender=Employee.optional_deductions.through)
 def on_optional_deductions_change(sender, instance, action, **kwargs):
     if action == 'post_add':
@@ -1242,6 +1245,53 @@ def add_employee_accounts(sender, instance, created, **kwargs):
                     employee=instance,
                 )
     else:
+        employee_accounts = EmployeeAccount.objects.filter(employee=instance)
+        for emp_account in employee_accounts:
+            if emp_account.account.category == PayrollConfig.get_solo().basic_salary_account_category:
+                emp_account.account.name = "%s-Salary Account" % instance.code_name
+                emp_account.account.save()
+
+            if emp_account.account.category == PayrollConfig.get_solo().pro_tempore_account_category:
+                emp_account.account.name = "%s-ProTempore" % instance.code_name
+                emp_account.account.save()
+
+            for tax_deduction in TaxDeduction.objects.all():
+                if emp_account.account.category == tax_deduction.account_category:
+                    emp_account.account.name = '%s-%s' % (instance.code_name, tax_deduction.code_name)
+                    emp_account.account.save()
+
+            for deduction in DeductionName.objects.filter(is_optional=False):
+                if emp_account.account.category == deduction.deduct_in_category:
+                    emp_account.account.name = "%s-%s" % (
+                        instance.code_name,
+                        deduction.code_name
+                    )
+                    emp_account.account.save()
+            for this_deduction in instance.optional_deductions.all():
+                if emp_account.account.category == this_deduction.deduct_in_category:
+                    emp_account.account.name = "%s-%s" % (
+                        instance.code_name,
+                        this_deduction.code_name
+                    )
+                    emp_account.account.save()
+
+            for this_allowance in instance.allowances.all():
+                if emp_account.account.category == this_allowance.account_category:
+                    emp_account.account.name = "%s-%s" % (
+                        instance.code_name,
+                        this_allowance.code_name
+                    )
+                    emp_account.account.save()
+
+            for incentive in instance.incentives.all():
+                if emp_account.account.category == incentive.account_category:
+                    emp_account.account.name = "%s-%s" % (
+                        instance.code_name,
+                        incentive.code_name
+                    )
+                    emp_account.account.save()
+
+
         if instance.type == 'PERMANENT':
             for deduction in DeductionName.objects.filter(is_optional=False, first_add_to_salary=True):
                 add_before_deduction_account, created = Account.objects.get_or_create(
