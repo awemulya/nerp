@@ -1529,10 +1529,10 @@ def get_report(request):
             # allowance or incentive to genererate particular type of report
             # In that case we will need similar particular type specified in report setting model and can be null
             # For now we only have deduction
-            deduction = report.deduction
-            incentive = report.incentive
-            allowance = report.allowance
-            tax = report.tax
+            deductions = report.deductions
+            incentives = report.incentives
+            allowances = report.allowances
+            taxes = report.taxes
 
             branch_qry = {'paid_employee__working_branch': branch}
 
@@ -1587,15 +1587,16 @@ def get_report(request):
                     for record in payment_record[0]:
                         row = {}
                         for key in fields.keys():
+                            # Try not changing get_attr method
                             row[key] = getattr_custom(
-                                record, fields[key], deduction=deduction, incentive=incentive,
-                                allowance=allowance, tax_deduction=tax
+                                record, fields[key], deductions=deductions, incentives=incentives,
+                                allowances=allowances, tax_deductions=taxes
                             )
 
                         for key in total_fields.keys():
                             totals[key] += getattr_custom(
-                                record, fields[key], deduction=deduction, incentive=incentive,
-                                allowance=allowance, tax_deduction=tax
+                                record, fields[key], deductions=deductions, incentives=incentives,
+                                allowances=allowance, tax_deductions=taxes
                             )
                         data.append(row)
                     record_table['_'.join(table.title.lower().split(' '))] = {}

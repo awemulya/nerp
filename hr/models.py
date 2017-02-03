@@ -914,32 +914,28 @@ class ReportHR(models.Model):
     code = models.CharField(max_length=100)
     template = models.FilePathField(path=hr_report_template_folder, match=".*\.html$")
     for_employee_type = models.CharField(max_length=50, choices=emp_type_choices)
-    deduction = models.ForeignKey(
+    deductions = models.ManyToManyField(
         DeductionName,
         related_name='deduction_reports',
-        null=True,
         blank=True,
         help_text=_('Select if deduction amount data in this report only belongs to particular deduction.')
     )
-    incentive = models.ForeignKey(
+    incentives = models.ManyToManyField(
         IncentiveName,
         related_name='incentive_reports',
-        null=True,
         blank=True,
         help_text=_('Select if incentive amount data in this report only belongs to particular incentive.')
     )
-    allowance = models.ForeignKey(
+    allowances = models.ManyToManyField(
         AllowanceName,
         related_name='allowance_reports',
-        null=True,
         blank=True,
         help_text=_('Select if allowance amount data in this report only belogs to particular allowance.')
     )
 
-    tax = models.ForeignKey(
+    taxes = models.ManyToManyField(
         TaxDeduction,
         related_name='tax_reports',
-        null=True,
         blank=True,
         help_text=_('Select if tax amount data in this report only belogs to particular tax deduction.')
     )
