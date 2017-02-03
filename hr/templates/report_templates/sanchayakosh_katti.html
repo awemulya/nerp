@@ -33,8 +33,14 @@
 {% endblock %}
 {% block report_main_table %}
     {#    Detail table here #}
-    <table class="table table-bordered">
+    {% for table in tables %}
+        <table class="table table-bordered">
         <thead>
+        {% if distinguish_entry %}
+            <tr>
+            <td colspan="8">{% trans 'Entry' %} {% trans 'Date' %}: {{ table.sanchaya_kosh_bibaran.datetime.0 }}, {% trans 'Entry' %} {% trans 'Time' %}: {{ table.sanchaya_kosh_bibaran.datetime.1 }}</td>
+            </tr>
+        {% endif %}
         <tr>
             <td>{% trans 'SN' %}</td>
             <td>{% trans 'Personal Number' %}</td>
@@ -48,7 +54,8 @@
         </thead>
 
         <tbody>
-        {% for row in tables.sanchaya_kosh_bibaran.data %}
+
+        {% for row in table.sanchaya_kosh_bibaran.data %}
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ row.personal_number }}</td>
@@ -61,17 +68,19 @@
                 <td>{{ row.addition_in_deduction }}</td>
             </tr>
         {% endfor %}
+
         <tr>
             <td colspan="5">{% trans 'Total' %}</td>
-            <td>{{ tables.sanchaya_kosh_bibaran.totals.total_deduction }}</td>
-            {% sub tables.sanchaya_kosh_bibaran.totals.total_deduction tables.sanchaya_kosh_bibaran.totals.addition_in_deduction as total_diff %}
+            <td>{{ table.sanchaya_kosh_bibaran.totals.total_deduction }}</td>
+            {% sub table.sanchaya_kosh_bibaran.totals.total_deduction table.sanchaya_kosh_bibaran.totals.addition_in_deduction as total_diff %}
             <td>{{ total_diff }}</td>
-            <td>{{ tables.sanchaya_kosh_bibaran.totals.addition_in_deduction }}</td>
+            <td>{{ table.sanchaya_kosh_bibaran.totals.addition_in_deduction }}</td>
         </tr>
         </tbody>
+    {% endfor %}
 
 
-    </table>
+</table>
 
     {#    End Detail table here #}
 {% endblock %}

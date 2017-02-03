@@ -17,12 +17,24 @@ month[10] = ugettext('Magh')
 month[11] = ugettext('Falgun')
 month[12] = ugettext('Chaitra')
 
-class BsDelta(object):
 
+def get_bs_datetime(ad_datetime, bs_date, format=None):
+    time = ad_datetime.strftime('%X')
+    if format=='AD':
+        return ad_datetime.strftime('%d, %B, %Y'), time
+    elif format=='BS':
+        return bs_date.as_string(format='words'), time
+
+    return str(bs_date), time
+
+
+
+class BsDelta(object):
     def __init__(self, days):
         self.days = days
 
 # TODO add time support to this module with tz info
+
 
 class BSDate(object):
 
@@ -125,7 +137,7 @@ class BSDate(object):
         raise TypeError('Cannot compare %s with BSDate type' % (str(type(other))))
 
     def __repr__(self):
-        return  'BSDate - ' + self.as_string(format='words')
+        return  'BSDate - ' + self.as_string()
 
     def __str__(self):
         return self.as_string()

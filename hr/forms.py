@@ -151,7 +151,10 @@ class GetReportForm(forms.Form):
         label=_('Select Branch')
     )
 
-    distinguish_entry = forms.BooleanField(label=_("Distinguish Entry"))
+    distinguish_entry = forms.BooleanField(
+        label=_("Distinguish Entry"),
+        required=False
+    )
 
     # distinguish
 

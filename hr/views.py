@@ -40,7 +40,7 @@ from datetime import datetime, date
 from calendar import monthrange as mr
 from njango.nepdate import bs
 from .models import get_y_m_tuple_list
-from .bsdate import BSDate
+from .bsdate import BSDate, get_bs_datetime
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
     emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present, \
@@ -589,10 +589,6 @@ def get_employees_account(request):
 @user_passes_test(user_is_branch_accountant)
 def save_payroll_entry(request, pk=None):
     CALENDAR = PayrollConfig.get_solo().hr_calendar
-    if pk:
-        p_e = PayrollEntry.objects.get(id=pk)
-    else:
-        p_e = PayrollEntry()
     if request.POST:
         params = json.loads(request.body)
         save_response = {}
@@ -615,12 +611,15 @@ def save_payroll_entry(request, pk=None):
         # import ipdb
         # ipdb.set_trace()
         with transaction.atomic():
-            p_e = PayrollEntry.objects.get_or_create(
-                branch_id=branch,
-                is_monthly_payroll=is_monthly_payroll,
-                paid_from_date=paid_from_date_for_p_e,
-                paid_to_date=paid_to_date_for_p_e
-            )
+            if pk:
+                p_e = PayrollEntry.objects.get(id=pk)
+            else:
+                p_e = PayrollEntry.objects.create(
+                    branch_id=branch,
+                    is_monthly_payroll=is_monthly_payroll,
+                    paid_from_date=paid_from_date_for_p_e,
+                    paid_to_date=paid_to_date_for_p_e
+                )
             for row in params.get('entry_rows'):
 
                 if row.get('id'):
@@ -707,9 +706,9 @@ def save_payroll_entry(request, pk=None):
                 for pt in ProTempore.objects.filter(id__in=paid_pro_tempore_ids):
                     pt.status = 'PAID'
                     pt.save()
-                # End Set pro tempore status to paid
+                    # End Set pro tempore status to paid
 
-                # payment_records.append(p_r.id)
+                    # payment_records.append(p_r.id)
             # p_e = PayrollEntry()
 
             # PayrollEntry.objects.create(
@@ -1486,6 +1485,7 @@ def incentivename_curd(request):
             'incentivename_formset': incentivename_formset,
         })
 
+
 @login_required
 @group_required('Accountant')
 def facility_curd(request):
@@ -1544,10 +1544,16 @@ def get_report(request):
                 'branch': branch,
                 'from_date': from_date,
                 'to_date': to_date,
+                'distinguish_entry': distinguish_entry
             }
 
             if distinguish_entry:
-                payment_record_list = [p_e.entry_rows.filter(**branch_qry) for p_e in PayrollEntry.objects.filter(
+                payment_record_list = [(
+                                           p_e.entry_rows.filter(**branch_qry), get_bs_datetime(
+                                               p_e.entry_datetime,
+                                               p_e.entry_date,
+                                               format=PayrollConfig.get_solo().hr_calendar
+                                           )) for p_e in PayrollEntry.objects.filter(
                     paid_from_date__gte=from_date,
                     paid_to_date__lte=to_date,
                 )]
@@ -1557,10 +1563,11 @@ def get_report(request):
                     paid_from_date__gte=from_date,
                     paid_to_date__lte=to_date,
                     **branch_qry)
-                payment_record_list = [payment_records]
+                payment_record_list = [payment_records, None]
 
             template_path = '/'.join(report.template.split('/')[-2:])
 
+            record_table_list = []
             for payment_record in payment_record_list:
                 # create table data here
                 report_tables = report.report_tables.all()
@@ -1573,7 +1580,7 @@ def get_report(request):
                     totals = {}
                     for key in total_fields.keys():
                         totals[key] = 0
-                    for record in payment_record:
+                    for record in payment_record[0]:
                         row = {}
                         for key in fields.keys():
                             row[key] = getattr_custom(
@@ -1590,8 +1597,13 @@ def get_report(request):
                     record_table['_'.join(table.title.lower().split(' '))] = {}
                     record_table['_'.join(table.title.lower().split(' '))]['data'] = data
                     record_table['_'.join(table.title.lower().split(' '))]['totals'] = totals
+                    if distinguish_entry:
+                        record_table['_'.join(table.title.lower().split(' '))]['datetime'] = payment_record[1]
 
-            context['tables'] = tables
+
+                record_table_list.append(record_table)
+
+            context['tables'] = record_table_list
 
             return render(request, template_path, context)
 
