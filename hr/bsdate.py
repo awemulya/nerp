@@ -28,6 +28,14 @@ def get_bs_datetime(ad_datetime, bs_date, format=None):
     return str(bs_date), time
 
 
+def date_str_repr(date_obj, format=None):
+    if format == 'AD':
+        return date_obj.strftime('%d, %B, %Y'),
+    elif format == 'BS':
+        return date_obj.as_string(format='words')
+
+    return str(date_obj)
+
 
 class BsDelta(object):
     def __init__(self, days):

@@ -31,36 +31,44 @@
 {% endblock %}
 {% block report_main_table %}
     {#    Detail table here #}
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <td>{% trans 'SN' %}</td>
-            <td>{% trans 'Designation' %}</td>
-            <td>{% trans 'Employee Name' %}</td>
-            <td>{% trans 'Social Security Tax' %}</td>
-            <td>{% trans 'Pan Number' %}</td>
-        </tr>
-        </thead>
-
-        <tbody>
-        {% for row in tables.social_security_tax_detail_table.data %}
+    {% for table in tables %}
+        <table class="table table-bordered">
+            <thead>
+            {% if distinguish_entry %}
+                <tr>
+                    <td colspan="4">{% trans 'Range' %}: {{ table.social_security_tax_detail_table.date_range.0 }} {% trans 'To' %} {{ table.social_Security_tax_detail_table.date_range.1 }}</td>
+                    <td colspan="4">{% trans 'Entry' %} {% trans 'Date' %}: {{ table.social_security_tax_detail_table.entry_datetime.0 }}, {% trans 'Entry' %} {% trans 'Time' %}: {{ table.social_security_tax_detail_table.entry_datetime.1 }}</td>
+                </tr>
+            {% endif %}
             <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ row.designation }}</td>
-                <td>{{ row.employee_name }}</td>
-                <td>{{ row.tax_amount }}</td>
-                <td>{{ row.pan_number }}</td>
+                <td>{% trans 'SN' %}</td>
+                <td>{% trans 'Designation' %}</td>
+                <td>{% trans 'Employee Name' %}</td>
+                <td>{% trans 'Social Security Tax' %}</td>
+                <td>{% trans 'Pan Number' %}</td>
             </tr>
-        {% endfor %}
-        <tr>
-            <td colspan="3">{% trans 'Total' %}</td>
-            <td>{{ tables.social_security_tax_detail_table.totals.tax_amount }}</td>
-            <td></td>
-        </tr>
-        </tbody>
+            </thead>
+
+            <tbody>
+            {% for row in table.social_security_tax_detail_table.data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ row.designation }}</td>
+                    <td>{{ row.employee_name }}</td>
+                    <td>{{ row.tax_amount }}</td>
+                    <td>{{ row.pan_number }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="3">{% trans 'Total' %}</td>
+                <td>{{ table.social_security_tax_detail_table.totals.tax_amount }}</td>
+                <td></td>
+            </tr>
+            </tbody>
 
 
-    </table>
+        </table>
+    {% endfor %}
 
     {#    End Detail table here #}
 {% endblock %}

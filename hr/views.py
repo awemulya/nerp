@@ -40,7 +40,7 @@ from datetime import datetime, date
 from calendar import monthrange as mr
 from njango.nepdate import bs
 from .models import get_y_m_tuple_list
-from .bsdate import BSDate, get_bs_datetime
+from .bsdate import BSDate, get_bs_datetime, date_str_repr
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
     emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present, \
@@ -1553,7 +1553,11 @@ def get_report(request):
                                                p_e.entry_datetime,
                                                p_e.entry_date,
                                                format=PayrollConfig.get_solo().hr_calendar
-                                           )) for p_e in PayrollEntry.objects.filter(
+                                           ), (
+                                               date_str_repr(p_e.paid_from_date, format=PayrollConfig.get_solo().hr_calendar),
+                                               date_str_repr(p_e.paid_to_date, format=PayrollConfig.get_solo().hr_calendar),
+                                           )
+                                       ) for p_e in PayrollEntry.objects.filter(
                     paid_from_date__gte=from_date,
                     paid_to_date__lte=to_date,
                 )]
@@ -1563,7 +1567,7 @@ def get_report(request):
                     paid_from_date__gte=from_date,
                     paid_to_date__lte=to_date,
                     **branch_qry)
-                payment_record_list = [payment_records, None]
+                payment_record_list = [(payment_records, None)]
 
             template_path = '/'.join(report.template.split('/')[-2:])
 
@@ -1598,8 +1602,8 @@ def get_report(request):
                     record_table['_'.join(table.title.lower().split(' '))]['data'] = data
                     record_table['_'.join(table.title.lower().split(' '))]['totals'] = totals
                     if distinguish_entry:
-                        record_table['_'.join(table.title.lower().split(' '))]['datetime'] = payment_record[1]
-
+                        record_table['_'.join(table.title.lower().split(' '))]['entry_datetime'] = payment_record[1]  # Tuple date, time
+                        record_table['_'.join(table.title.lower().split(' '))]['date_range'] = payment_record[2]  # Tuple from, to
 
                 record_table_list.append(record_table)
 

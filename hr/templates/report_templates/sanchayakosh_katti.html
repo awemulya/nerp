@@ -38,7 +38,8 @@
         <thead>
         {% if distinguish_entry %}
             <tr>
-            <td colspan="8">{% trans 'Entry' %} {% trans 'Date' %}: {{ table.sanchaya_kosh_bibaran.datetime.0 }}, {% trans 'Entry' %} {% trans 'Time' %}: {{ table.sanchaya_kosh_bibaran.datetime.1 }}</td>
+            <td colspan="4">{% trans 'Range' %}: {{ table.sanchaya_kosh_bibaran.date_range.0 }} {% trans 'To' %} {{ table.sanchaya_kosh_bibaran.date_range.1 }}</td>
+            <td colspan="8">{% trans 'Entry' %} {% trans 'Date' %}: {{ table.sanchaya_kosh_bibaran.entry_datetime.0 }}, {% trans 'Entry' %} {% trans 'Time' %}: {{ table.sanchaya_kosh_bibaran.entry_datetime.1 }}</td>
             </tr>
         {% endif %}
         <tr>
