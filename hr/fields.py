@@ -1,6 +1,6 @@
 import datetime
 
-from django.db.models.fields import DateField
+from django.db.models.fields import DateField, CharField
 from django.forms.fields import DateField as DateFormField
 from django.core.exceptions import ValidationError
 
@@ -197,3 +197,7 @@ def today():
     if CALENDAR == 'AD':
         return datetime.date.today()
     return nepdate.today_as_str()
+
+
+
+class ReportTableField(CharField):
