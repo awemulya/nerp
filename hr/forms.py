@@ -5,12 +5,12 @@ from mptt.forms import TreeNodeChoiceField
 from njango.nepdate import bs2ad
 
 from hr.bsdate import BSDate
-from hr.fields import HRBSFormField, HRBSDateFormField
+from hr.fields import HRBSFormField, HRBSDateFormField, ReportModelFieldSelect
 from hr.helpers import bs_str2tuple, employee_last_payment_record, inc_1_day, drc_1_day
 from users.models import User
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
-    PayrollAccountant, ProTempore, EmployeeGradeNumberPause, TaxDeduction, EmployeeFacility
+    PayrollAccountant, ProTempore, EmployeeGradeNumberPause, TaxDeduction, EmployeeFacility, ReportTableField
 from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -20,6 +20,15 @@ from account.models import Account
 from app.utils.forms import HTML5BootstrapModelForm
 import datetime
 
+
+class ReportTableFieldForm(forms.ModelForm):
+    class Meta:
+        model = ReportTableField
+        fields = '__all__'
+
+        widgets = {
+            'field_query': ReportModelFieldSelect(report_model=PaymentRecord)
+        }
 
 # Start Validity Forms
 class GradeScaleValidityForm(HTML5BootstrapModelForm):

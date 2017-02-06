@@ -5,9 +5,9 @@ from .models import EmployeeAccount, EmployeeGrade, Employee, Designation, Incen
     BranchOffice, Deduction, ProTempore, PaymentRecord, PayrollEntry, IncentiveName, AllowanceName, DeductionDetail, \
     IncentiveDetail, AllowanceDetail, MaritalStatus, \
     ReportTable, ReportHR, GradeScaleValidity, EmployeeGradeScale, DeductionValidity, AllowanceValidity, \
-    PayrollAccountant, PayrollConfig, DeductionName, TaxDetail
+    PayrollAccountant, PayrollConfig, DeductionName, TaxDetail, ReportTableField
 from .forms import EmployeeAccountInlineFormset, AllowanceForm, IncentiveForm, DeductionForm, EmployeeForm, \
-    IncentiveInlineFormset
+    IncentiveInlineFormset, ReportTableFieldForm
 from solo.admin import SingletonModelAdmin
 
 class EmployeeAccountInline(admin.TabularInline):
@@ -38,6 +38,10 @@ class IncentiveAdmin(admin.ModelAdmin):
 
 class DeductionAdmin(admin.ModelAdmin):
     form = DeductionForm
+
+
+class ReportTableFieldAdmin(admin.ModelAdmin):
+    form = ReportTableFieldForm
 
 
 # Django Import Export Resource Class
@@ -72,6 +76,8 @@ admin.site.register(DeductionDetail)
 admin.site.register(IncentiveDetail)
 admin.site.register(AllowanceDetail)
 admin.site.register(TaxDetail)
+
+admin.site.register(ReportTableField, ReportTableFieldAdmin)
 
 # admin.site.register(AllowanceAccount)
 # admin.site.register(IncentiveAccount)

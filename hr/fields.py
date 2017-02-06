@@ -199,5 +199,127 @@ def today():
     return nepdate.today_as_str()
 
 
+# class ReportTableField(CharField):
+#
+#     def from_db_value(self, value, expression, connection, context):
+#         if value is None:
+#             return value
+#         return parse_hand(value)
+#
+#     # to_python() is called by deserialization and during the clean() method used from forms.
+#     def to_python(self, value):
+#         if isinstance(value, Hand):
+#             return value
+#
+#         if value is None:
+#             return value
+#
+#         return parse_hand(value)
+#
+#     # Converting python object to query values
+#     def get_prep_value(self, value):
+#         return ''.join([''.join(l) for l in (value.north,
+#                                              value.east, value.south, value.west)])
+#
+#     # In
+#     # case
+#     # your
+#     # custom
+#     # field
+#     # needs
+#     # a
+#     # special
+#     # conversion
+#     # when
+#     # being
+#     # saved
+#     # that is not the
+#     # same as the
+#     # conversion
+#     # used
+#     # for normal query parameters, you can override get_db_prep_save().
+#     def get_db_prep_value(self, value, connection, prepared=False):
+#         value = super(BinaryField, self).get_db_prep_value(value, connection, prepared)
+#         if value is not None:
+#             return connection.Database.Binary(value)
+#         return value
 
-class ReportTableField(CharField):
+
+class ReportModelFieldSelect(widgets.Select):
+    def __init__(self, attrs=None, report_model=None):
+        super(ReportModelFieldSelect, self).__init__(attrs)
+        self.choices = self.get_choices_from_report_model(report_model)
+
+    def get_choices_from_report_model(self, report_model):
+        return tuple([(field.name, field.name) for field in report_model._meta.get_fields()])
+
+    def _media(self):
+        from hr.models import PayrollConfig
+        CALENDAR = PayrollConfig.get_solo().hr_calendar
+        if CALENDAR == 'BS':
+
+            # TODO place CSS in proper path
+            css = {
+                'all': ('hr/njango/css/nepali.datepicker.v2.1.min.css',)
+            }
+            js = ('hr/njango/js/nepali.datepicker.v2.1.min.js',)
+        else:
+            css = {}
+            js = ()
+
+        return Media(css=css, js=js)
+
+    def render(self, name, value, attrs=None, choices=()):
+        html = super(ReportModelFieldSelect, self).render(name, value, attrs, choices)
+        el_id = self.build_attrs(attrs).get('id')
+        # html += self.trigger_picker(el_id)
+        return mark_safe(html)
+
+    # def render(self, name, value, attrs=None, choices=()):
+    #     if value is None:
+    #         value = ''
+    #     final_attrs = self.build_attrs(attrs, name=name)
+    #     output = [format_html('<select{}>', flatatt(final_attrs))]
+    #     options = self.render_options(choices, [value])
+    #     if options:
+    #         output.append(options)
+    #     output.append('</select>')
+    #     return mark_safe('\n'.join(output))
+
+    def trigger_picker(self, el_id):
+        from hr.models import PayrollConfig
+        CALENDAR = PayrollConfig.get_solo().hr_calendar
+
+        if CALENDAR == 'BS':
+            str = """
+            <script>
+                $(function(){
+                    $('#%s').nepaliDatePicker({
+                    onFocus: false,
+                    npdMonth: true,
+                    npdYear: true,
+                    ndpTriggerButton: true,
+                    ndpTriggerButtonText: '<span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>',
+                    ndpTriggerButtonClass: 'btn btn-primary btn-sm',
+                    onClose: function() {
+                        $(this).change(); // Forces re-validation
+                    }
+
+                    });
+                });
+            </script>""" % (el_id)
+        else:
+            str = """
+            <script>
+                $(function(){
+                    $('#%s').datepicker({
+                        format: 'yyyy-mm-dd',
+                        onClose: function() {
+                            $(this).change(); // Forces re-validation
+                        }
+                    });
+                });
+            </script>""" % (el_id)
+        return str
+
+    media = property(_media)

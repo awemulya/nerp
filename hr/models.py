@@ -832,6 +832,9 @@ class DeductionDetail(models.Model):
     amount_added_before_deduction = models.FloatField(default=0.0)
     payment_record = models.ForeignKey(PaymentRecord, related_name='deduction_details')
 
+    class Meta:
+        unique_together = ('deduction', 'payment_record')
+
     def __unicode__(self):
         return "%s-[%s]" % (self.deduction.name, str(self.amount))
 
@@ -844,6 +847,9 @@ class IncentiveDetail(models.Model):
     amount = models.FloatField()
     payment_record = models.ForeignKey(PaymentRecord, related_name='incentive_details')
 
+    class Meta:
+        unique_together = ('incentive', 'payment_record')
+
 
 class AllowanceDetail(models.Model):
     allowance = models.ForeignKey(
@@ -852,6 +858,9 @@ class AllowanceDetail(models.Model):
     )
     amount = models.FloatField()
     payment_record = models.ForeignKey(PaymentRecord, related_name='allowance_details')
+
+    class Meta:
+        unique_together = ('allowance', 'payment_record')
 
 
 class ProTemporeDetail(models.Model):
@@ -872,6 +881,9 @@ class TaxDetail(models.Model):
     tax_deduction = models.ForeignKey(TaxDeduction, related_name='tax_details')
     amount = models.FloatField()
     payment_record = models.ForeignKey(PaymentRecord, related_name='tax_details')
+
+    class Meta:
+        unique_together = ('tax_deduction', 'payment_record')
 
 
 def employee_account_validator(acc_id):
@@ -914,31 +926,6 @@ class ReportHR(models.Model):
     code = models.CharField(max_length=100)
     template = models.FilePathField(path=hr_report_template_folder, match=".*\.html$")
     for_employee_type = models.CharField(max_length=50, choices=emp_type_choices)
-    # deductions = models.ManyToManyField(
-    #     DeductionName,
-    #     related_name='deduction_reports',
-    #     blank=True,
-    #     help_text=_('Select if deduction amount data in this report only belongs to particular deduction.')
-    # )
-    # incentives = models.ManyToManyField(
-    #     IncentiveName,
-    #     related_name='incentive_reports',
-    #     blank=True,
-    #     help_text=_('Select if incentive amount data in this report only belongs to particular incentive.')
-    # )
-    # allowances = models.ManyToManyField(
-    #     AllowanceName,
-    #     related_name='allowance_reports',
-    #     blank=True,
-    #     help_text=_('Select if allowance amount data in this report only belogs to particular allowance.')
-    # )
-    #
-    # taxes = models.ManyToManyField(
-    #     TaxDeduction,
-    #     related_name='tax_reports',
-    #     blank=True,
-    #     help_text=_('Select if tax amount data in this report only belogs to particular tax deduction.')
-    # )
 
     def __unicode__(self):
         return self.name
@@ -946,15 +933,12 @@ class ReportHR(models.Model):
 
 class ReportTable(models.Model):
     title = models.CharField(max_length=100)
-    # # field_tiltle and field loopup sored as Json
-    # report_table_json_folder = BASE_DIR + '/hr/templates/report_templates/report_table_jsons'
-    # table_json = models.FilePathField(path=report_table_json_folder, match=".*\.json$")
-    # # table_fields = JSONField()
     report = models.ForeignKey(ReportHR, related_name='report_tables')
 
 
 class ReportTableField(models.Model):
     field_name = models.CharField(max_length=100)
+    field_query = models.CharField(max_length=500)
     report_table = models.ForeignKey(ReportTable, related_name='table_fields')
 
 
