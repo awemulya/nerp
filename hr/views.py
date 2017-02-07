@@ -651,7 +651,7 @@ def save_payroll_entry(request, pk=None):
                 p_r.pro_tempore_amount = float(row.get('pro_tempore_amount', None))
                 p_r.salary = float(row.get('salary', None))
                 p_r.paid_amount = float(row.get('paid_amount', None))
-                p_r.entry = p_e[0]
+                p_r.entry = p_e
                 p_r.save()
 
                 # Similar if we need all details of incentive and allowence
