@@ -714,7 +714,7 @@ def save_payroll_entry(request, pk=None):
             # PayrollEntry.objects.create(
             #     entry_row=payment_records,
             # )
-            save_response['entry_id'] = p_e[0].id
+            save_response['entry_id'] = p_e.id
             save_response['entry_saved'] = True
             save_response['entry_approved'] = False
             save_response['entry_transacted'] = False
