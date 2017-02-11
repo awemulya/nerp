@@ -20,6 +20,9 @@
         <table class="table table-striped">
             <thead>
             <th>{% anchor name _('Name') %}</th>
+            <th>{% anchor name _('Total Items') %}</th>
+            <th>{% anchor name _('Total Distinct Items') %}</th>
+            <th>{% anchor name _('Total Worth') %}</th>
             <th>{% trans 'Remarks' %}</th>
             <th></th>
             </thead>
@@ -29,6 +32,9 @@
                     <td class="link">
                         <a href="{% url 'itemlocation_detail' item.id %}">{{ item }}</a>
                     </td>
+                    <td>{{ item.total_items |default:'' }}</td>
+                    <td>{{ item.distinct_items |default:'' }}</td>
+                    <td>{{ item.total_worth |default:'' }}</td>
                     <td>{{ item.remarks |default:'' }}</td>
                     <td><a href="{% url "update_item_location" item.id %}">{% trans 'Edit' %}</a></td>
                 </tr>

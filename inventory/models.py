@@ -7,7 +7,7 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import pre_delete, post_delete
 from django.dispatch.dispatcher import receiver
-from django.db.models import F
+from django.db.models import F, Sum, Count
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import ugettext_lazy as _
 from jsonfield import JSONField
@@ -250,6 +250,23 @@ class ItemLocation(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def total_items(self):
+        all_instances = ItemInstance.objects.filter(location=self)
+        return all_instances.count()
+
+    def distinct_items(self):
+        all_instances = ItemInstance.objects.filter(location=self)
+        instances = all_instances.values('item', 'item__name').annotate(
+            total_count=Count('item')).annotate(total_value=Sum('item_rate')).order_by('total_value')
+        return instances.count()
+
+    def total_worth(self):
+        all_instances = ItemInstance.objects.filter(location=self)
+        instances = all_instances.values('item', 'item__name').annotate(
+            total_count=Count('item')).annotate(total_value=Sum('item_rate')).order_by('total_value')
+        grand_total = sum(item['total_value'] for item in instances)
+        return grand_total
 
 
 class JournalEntry(models.Model):
