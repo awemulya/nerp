@@ -180,7 +180,7 @@ def delta_month_date_impure(p_from, p_to):
 
             y_m_tuple = get_y_m_tuple_list(p_from_m, p_to_m)
             total_month = len(y_m_tuple) + (lhs_month_work_days / lhs_month_days) + (
-            rhs_month_work_days / rhs_month_days)
+                rhs_month_work_days / rhs_month_days)
             total_days = (p_to - p_from).days + 1
     return (total_month, total_days)
 
@@ -264,6 +264,7 @@ def employee_last_payment_record(employee):
     else:
         return None
 
+
 def emp_salary_eligibility(emp, p_from, p_to):
     error_msg = None
     never_paid = None
@@ -280,24 +281,24 @@ def emp_salary_eligibility(emp, p_from, p_to):
         if isinstance(p_from, date):
             if never_paid:
                 error_msg = 'Employee has not worked yet for %s. Appointed on %s' % (
-                '{:%Y-%m-%d}'.format(p_from), '{:%Y-%m-%d}'.format(emp.appoint_date))
+                    '{:%Y-%m-%d}'.format(p_from), '{:%Y-%m-%d}'.format(emp.appoint_date))
             else:
                 error_msg = 'Already paid for/upto date %s. Last paid upto %s' % (
-                '{:%Y-%m-%d}'.format(p_from), '{:%Y-%m-%d}'.format(last_paid))
+                    '{:%Y-%m-%d}'.format(p_from), '{:%Y-%m-%d}'.format(last_paid))
         else:
             if never_paid:
                 error_msg = 'Employee has not worked yet for %s. Appointed on %s' % (
-                bsdate2str(p_from), emp.scale_start_date)
+                    bsdate2str(p_from), emp.scale_start_date)
             else:
                 error_msg = 'Already paid for/upto date %s. Last paid upto %s' % (
-                bsdate2str(p_from), bsdate2str(last_paid))
+                    bsdate2str(p_from), bsdate2str(last_paid))
     elif p_from > inc_1_day(last_paid):
         if isinstance(p_from, date):
             error_msg = 'Missed payment from %s to %s' % (
-            '{:%Y/%m/%d}'.format(inc_1_day(last_paid)), '{:%Y-%m-%d}'.format(drc_1_day(p_from)))
+                '{:%Y/%m/%d}'.format(inc_1_day(last_paid)), '{:%Y-%m-%d}'.format(drc_1_day(p_from)))
         else:
             error_msg = 'Missed payment from %s to %s' % (
-            bsdate2str(inc_1_day(last_paid)), bsdate2str(drc_1_day(p_from)))
+                bsdate2str(inc_1_day(last_paid)), bsdate2str(drc_1_day(p_from)))
     if error_msg:
         return False, error_msg
     else:
@@ -599,7 +600,6 @@ class GroupRequiredMixin(AccessMixin):
 
 
 class IsBranchAccountantMixin(AccessMixin):
-
     def user_is_branch_accountant(self, user):
         try:
             return True if user.payroll_accountant else self.handle_no_permission()
@@ -613,21 +613,45 @@ class IsBranchAccountantMixin(AccessMixin):
                 request, *args, **kwargs)
 
 
-def getattr_custom(obj, attr_query, **kwargs):
-    if isinstance(attr_query, list):
-        filter_dict = {}
-        filter_dict[attr_query[1]] = kwargs.get(attr_query[1])
-        m2m_related_obj = getattr_custom(obj,attr_query[0])
-
-        value = getattr(m2m_related_obj.filter(**filter_dict)[0], attr_query[-1])
-        return value
-
+def get_attr_121(obj, qry):
+    attributes = qry.split('__')
+    value = obj
+    if value:
+        for attr in attributes:
+            if attr:
+                value = getattr(value, attr)
     else:
-        attributes = attr_query.split('__')
-        value = obj
-    for attr in attributes:
-        value = getattr(value, attr)
+        value = 0
     return value
+
+
+def get_attr_12m(obj, filter_qry):
+    filter_qry_list = filter_qry.split('=')
+    filter_dict = {}
+    filter_dict[filter_qry_list[0]]=filter_qry_list[1]
+
+    value = obj.filter(**filter_dict)
+    return value[0] if value else None
+
+
+def getattr_custom(obj, attr_query, **kwargs):
+    # query_example 'tax_details___tax__id=1;__attr___fattr__id=2;__attr2'
+    attr_query = attr_query.split(';')
+    value = obj
+    for query in attr_query:
+        queries = query.split('___')
+        queries_length = len(queries)
+        if queries_length > 1:
+            for i, qry in enumerate(queries):
+                if i != queries_length-1:
+                    value = get_attr_121(value, qry)
+                else:
+                    value = get_attr_12m(value, qry)
+        else:
+            value = get_attr_121(value, query)
+
+    return value
+
 
 
 def json_file_to_dict(json_path):

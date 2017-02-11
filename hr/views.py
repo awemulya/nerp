@@ -1525,15 +1525,6 @@ def get_report(request):
             to_date = report_request_query.cleaned_data.get('to_date')
             distinguish_entry = report_request_query.cleaned_data.get('distinguish_entry')
 
-            # Sometime we need to specify particular deduction or
-            # allowance or incentive to genererate particular type of report
-            # In that case we will need similar particular type specified in report setting model and can be null
-            # For now we only have deduction
-            deduction = report.deduction
-            incentive = report.incentive
-            allowance = report.allowance
-            tax = report.tax
-
             branch_qry = {'paid_employee__working_branch': branch}
 
             if report.for_employee_type != 'ALL':
@@ -1554,8 +1545,10 @@ def get_report(request):
                                                p_e.entry_date,
                                                format=PayrollConfig.get_solo().hr_calendar
                                            ), (
-                                               date_str_repr(p_e.paid_from_date, format=PayrollConfig.get_solo().hr_calendar),
-                                               date_str_repr(p_e.paid_to_date, format=PayrollConfig.get_solo().hr_calendar),
+                                               date_str_repr(p_e.paid_from_date,
+                                                             format=PayrollConfig.get_solo().hr_calendar),
+                                               date_str_repr(p_e.paid_to_date,
+                                                             format=PayrollConfig.get_solo().hr_calendar),
                                            )
                                        ) for p_e in PayrollEntry.objects.filter(
                     paid_from_date__gte=from_date,
@@ -1588,22 +1581,22 @@ def get_report(request):
                         row = {}
                         for key in fields.keys():
                             row[key] = getattr_custom(
-                                record, fields[key], deduction=deduction, incentive=incentive,
-                                allowance=allowance, tax_deduction=tax
+                                record, fields[key]
                             )
 
                         for key in total_fields.keys():
                             totals[key] += getattr_custom(
-                                record, fields[key], deduction=deduction, incentive=incentive,
-                                allowance=allowance, tax_deduction=tax
+                                record, fields[key]
                             )
                         data.append(row)
                     record_table['_'.join(table.title.lower().split(' '))] = {}
                     record_table['_'.join(table.title.lower().split(' '))]['data'] = data
                     record_table['_'.join(table.title.lower().split(' '))]['totals'] = totals
                     if distinguish_entry:
-                        record_table['_'.join(table.title.lower().split(' '))]['entry_datetime'] = payment_record[1]  # Tuple date, time
-                        record_table['_'.join(table.title.lower().split(' '))]['date_range'] = payment_record[2]  # Tuple from, to
+                        record_table['_'.join(table.title.lower().split(' '))]['entry_datetime'] = payment_record[
+                            1]  # Tuple date, time
+                        record_table['_'.join(table.title.lower().split(' '))]['date_range'] = payment_record[
+                            2]  # Tuple from, to
 
                 record_table_list.append(record_table)
 
