@@ -142,13 +142,13 @@
             {% endif %}
 
 
-            <td data-bind="text: income_quantity(), localize: 2"></td>
+            <td data-bind="text: income_quantity(), localize: 0"></td>
             <td data-bind="text: income_rate(), localize: 2"></td>
             <td data-bind="text: income_total(), localize: 2"></td>
 
-            <td data-bind="text: expense_quantity(), localize: 2"></td>
+            <td data-bind="text: expense_quantity(), localize: 0"></td>
             <td data-bind="editableText: expense_total, localize: 2, disable_content_editable: income_quantity()"></td>
-            <td data-bind="text: current_balance(), localize: 2"></td>
+            <td data-bind="text: current_balance(), localize: 0"></td>
             <td data-bind="editableText: wrapper.remaining_total($root, $index), localize: 2"></td>
             <td data-bind="editableText: remarks"></td>
         </tr>
