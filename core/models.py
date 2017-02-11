@@ -81,9 +81,11 @@ class FiscalYear(models.Model):
 
 class FYManager(models.Manager):
     def fiscal_year(self, year=None):
+        app_setting = AppSetting.get_solo()
         if year:
             original_fiscal_year = AppSetting.get_solo().fiscal_year
-            AppSetting.get_solo().fiscal_year = year  # bypasses validation
+            app_setting.fiscal_year = year  # bypasses validation
+            app_setting.save()
             lookup_year = year
         else:
             lookup_year = AppSetting.get_solo().fiscal_year
@@ -91,7 +93,8 @@ class FYManager(models.Manager):
                                                               date__lte=FiscalYear.end(lookup_year))
         # return super(FYManager, self).get_queryset().filter(Q(date__year__range=(FiscalYear.start(year)[0], FiscalYear.end(year)[0])))
         if year:
-            AppSetting.get_solo().fiscal_year = original_fiscal_year
+            app_setting.fiscal_year = original_fiscal_year
+            app_setting.save()
         return result
 
 
