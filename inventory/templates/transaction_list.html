@@ -51,9 +51,9 @@
                 <td>{{ o.account.item.unit }}</td>
                 <td>
                     {% if o.dr_amount == None %}
-                        {{ o.cr_amount|floatformat:2 |localize }}
+                        {{ o.cr_amount|floatformat:0 |localize }}
                     {% else %}
-                        {{ o.dr_amount|floatformat:2 |localize }}
+                        {{ o.dr_amount|floatformat:0 |localize }}
                     {% endif %}
                 </td>
                 <td>{{ o.journal_entry.creator.rate|floatformat:2 |localize }}</td>
