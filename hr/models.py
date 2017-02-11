@@ -441,6 +441,7 @@ class Employee(models.Model):
         grade_number = self.grade_number if self.grade_number < rate_obj.grade_number else rate_obj.grade_number
         grade_rate = rate_obj.grade_rate
         salary = 0
+        grade_amount = 0
         for year, month in get_y_m_tuple_list(from_date, to_date):
             if type(from_date) == type(to_date):
                 # scale_start_date = self.get_scale_start_date(from_date)
@@ -466,11 +467,13 @@ class Employee(models.Model):
             if kwargs.get('apply_grade_rate'):
                 if computed_grade_number <= grade_number:
                     salary += grade_salary + int(computed_grade_number) * grade_rate
+                    grade_amount += int(computed_grade_number) * grade_rate
                 elif computed_grade_number > grade_number:
                     salary += grade_salary + grade_number * grade_rate
+                    grade_amount += grade_number * grade_rate
             else:
                 salary += grade_salary
-        return salary
+        return salary, grade_amount
 
     def get_date_range_salary(self, from_date, to_date, **kwargs):
         try:
@@ -478,15 +481,23 @@ class Employee(models.Model):
         except IOError:
             raise
         salary = 0
+        grade_amount = 0
         for slot in validity_slots:
             kwargs['validity_id'] = slot.validity_id
-            salary += self.current_salary_by_day(slot.from_date, slot.to_date, **kwargs)
+            sal, gra = self.current_salary_by_day(slot.from_date, slot.to_date, **kwargs)
+            salary += sal
+            grade_amount += gra
+
+        if kwargs.get('get_grade_number'):
+            return grade_amount
         return salary
 
     def current_salary_by_day(self, from_date, to_date, **kwargs):
         if from_date.year == to_date.year and from_date.month == to_date.month:
             salary_pure_months = 0
+            pure_month_grade_amount = 0
             lhs_month_salary = 0
+            lhs_month_grade_amount = 0
             lhs_days = 0
             if type(from_date) == type(to_date):
                 if isinstance(from_date, date):
@@ -505,7 +516,7 @@ class Employee(models.Model):
                     to_date_month_days = from_date_month_days
                     # pdb.set_trace()
 
-            rhs_month_salary = self.current_salary_by_month(
+            rhs_month_salary, rhs_month_grade_amount = self.current_salary_by_month(
                 month,
                 month,
                 **kwargs
@@ -513,6 +524,7 @@ class Employee(models.Model):
 
         elif are_side_months(from_date, to_date):
             salary_pure_months = 0
+            pure_month_grade_amount = 0
             if type(from_date) == type(to_date):
                 if isinstance(from_date, date):
                     lhs_month = date(from_date.year, from_date.month, 1)
@@ -531,12 +543,12 @@ class Employee(models.Model):
 
                     from_date_month_days = bs[lhs_month.year][lhs_month.month - 1]
                     to_date_month_days = bs[rhs_month.year][rhs_month.month - 1]
-            lhs_month_salary = self.current_salary_by_month(
+            lhs_month_salary, lhs_month_grade_amount = self.current_salary_by_month(
                 lhs_month,
                 lhs_month,
                 **kwargs
             )
-            rhs_month_salary = self.current_salary_by_month(
+            rhs_month_salary, rhs_month_grade_amount = self.current_salary_by_month(
                 rhs_month,
                 rhs_month,
                 **kwargs
@@ -578,17 +590,17 @@ class Employee(models.Model):
                     from_date_month_days = bs[lhs_month.year][lhs_month.month - 1]
                     to_date_month_days = bs[rhs_month.year][rhs_month.month - 1]
 
-            salary_pure_months = self.current_salary_by_month(
+            salary_pure_months, pure_month_grade_amount = self.current_salary_by_month(
                 from_date_m,
                 to_date_m,
                 **kwargs
             )
-            lhs_month_salary = self.current_salary_by_month(
+            lhs_month_salary, lhs_month_grade_amount = self.current_salary_by_month(
                 lhs_month,
                 lhs_month,
                 **kwargs
             )
-            rhs_month_salary = self.current_salary_by_month(
+            rhs_month_salary, rhs_month_grade_amount = self.current_salary_by_month(
                 rhs_month,
                 rhs_month,
                 **kwargs
@@ -596,7 +608,12 @@ class Employee(models.Model):
         lhs_salary = lhs_month_salary / float(from_date_month_days) * lhs_days
         rhs_salary = rhs_month_salary / float(to_date_month_days) * rhs_days
         salary = salary_pure_months + lhs_salary + rhs_salary
-        return salary
+
+        lhs_grade_amount = lhs_month_grade_amount / float(from_date_month_days) * lhs_days
+        rhs_grade_amount = rhs_month_grade_amount / float(to_date_month_days) * rhs_days
+        total_grade_amount = pure_month_grade_amount + lhs_grade_amount + rhs_grade_amount
+
+        return salary, total_grade_amount
 
     def has_account(self, account_type):
         for i in self.accounts.all():
@@ -821,6 +838,16 @@ class PaymentRecord(models.Model):
         for pt in self.pro_tempore_details.all():
             total += pt.amount
         return total
+
+    @property
+    def grade_amount(self):
+        amount = self.paid_employee.get_date_range_salary(
+            self.paid_from_date,
+            self.paid_to_date,
+            get_grade_number=True,
+            apply_grade_rate=True
+        )
+        return amount
 
 
 class DeductionDetail(models.Model):

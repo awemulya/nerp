@@ -1,0 +1,107 @@
+{% extends 'hr_report_base.html' %}
+{% load staticfiles %}
+
+{% load filters %}
+{% load i18n %}
+{% load arithmatic %}
+
+{% block report_header %}{% endblock %}
+
+{% block report_header_table %}{% endblock %}
+
+{% block report_body %}
+    <h1>{{ report_title }}</h1>
+    <h5>{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}</h5>
+
+    {#    Office detail block#}
+    <h5>{% trans 'Office' %} {% trans 'Name' %} : {{ branch.name }}</h5>
+    <h5>{% trans 'Office' %} {% trans 'Address' %} : {{ branch.address }}</h5>
+    <h5>{% trans 'Office' %} {% trans 'Code' %} : {{ branch.code }}</h5>
+    {#    End Office detail block#}
+
+    {#    Bank Detail Block#}
+    <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Name' %} : _________</h5>
+    <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Address' %} : _________</h5>
+    <h5>{% trans 'Amount' %} {% trans 'Deposited' %} : _________</h5>
+    {#    End Bank Detail Block#}
+
+    {#    Message text#}
+    <p>{% trans 'Social Security Tax details of employees working over this branch of above mentioned date range is shown in table below. ' %}</p>
+    {#    End Messege text#}
+{% endblock %}
+{% block report_main_table %}
+    {#    Detail table here #}
+    {% for table in tables %}
+        <table class="table table-bordered">
+            <thead>
+            {% if distinguish_entry %}
+                <tr>
+                    <td colspan="4">{% trans 'Range' %}: {{ table.social_security_tax_detail_table.date_range.0 }} {% trans 'To' %} {{ table.social_Security_tax_detail_table.date_range.1 }}</td>
+                    <td colspan="4">{% trans 'Entry' %} {% trans 'Date' %}: {{ table.social_security_tax_detail_table.entry_datetime.0 }}, {% trans 'Entry' %} {% trans 'Time' %}: {{ table.social_security_tax_detail_table.entry_datetime.1 }}</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>{% trans 'SN' %}</td>
+                <td>{% trans 'Designation' %}</td>
+                <td>{% trans 'Employee Name' %}</td>
+                <td>{% trans 'Salary Scale' %}</td>
+                <td>{% trans 'Grade' %}</td>
+                <td>{% trans 'PF Addition' %}</td>
+                <td>{% trans 'Bima Addition' %}</td>
+                <td>{% trans 'Chad Kharcha' %}</td>
+                <td>{% trans 'Total Salary' %}</td>
+                <td>{% trans 'Total Allowance' %}</td>
+                <td>{% trans 'Salary Including Allowance' %}</td>
+                <td>{% trans 'PF Deduction' %}</td>
+                <td>{% trans 'Na La Kosh Deduction' %}</td>
+                <td>{% trans 'Bima Deduction' %}</td>
+                <td>{% trans 'PF Loan Deduction' %}</td>
+                <td>{% trans 'Social Security Tax' %}</td>
+                <td>{% trans 'Remuneration Tax' %}</td>
+                <td>{% trans 'Total Deduction' %}</td>
+                <td>{% trans 'Total Income' %}</td>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for row in table.social_security_tax_detail_table.data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ row.designation }}</td>
+                    <td>{{ row.employee_name }}</td>
+                    <td>{{ row.tax_amount }}</td>
+                    <td>{{ row.pan_number }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="3">{% trans 'Total' %}</td>
+                <td>{{ table.social_security_tax_detail_table.totals.tax_amount }}</td>
+                <td></td>
+            </tr>
+            </tbody>
+
+
+        </table>
+    {% endfor %}
+
+    {#    End Detail table here #}
+{% endblock %}
+{% block report_footer %}
+
+    {#    This is report footer#}
+    <div class="row">
+        <div class="col-lg-4">
+            <p>{% trans 'Creator Signatute' %}</p>
+            <p>{% trans 'Date' %}: ________</p>
+        </div>
+        <div class="col-lg-4">
+            <p>{% trans 'Head Accountant Signature' %}</p>
+            <p>{% trans 'Date' %}: _________</p>
+        </div>
+        <div class="col-lg-4">
+            <p>{% trans 'Approved by Signature' %}</p>
+            <p>{% trans 'Date' %}: __________</p>
+        </div>
+    </div>
+    {#    End This is report footer#}
+{% endblock %}
