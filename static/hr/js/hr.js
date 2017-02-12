@@ -607,8 +607,8 @@ function PayrollEntry(employee_options) {
                 hideProcessing();
                 // self.employee_options(response.opt_data);
 
-
-                // dont delete just trim emp_options (ie either push or pop)
+                // FIXME
+                // dont delete just trim emp_options (ie either push or pop)(used when response is subset of existing employee_options)
                 if (self.employee_options().length > response.opt_data.length) {
                     // debugger;
                     self.employee_options.removeAll(diffByID(self.employee_options(), response.opt_data));
@@ -619,6 +619,8 @@ function PayrollEntry(employee_options) {
                     self.employee_options.removeAll(diffByID(self.employee_options(), response.opt_data));
                     ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()));
                 }
+
+                // below is used when response is totally different from existing employee options
                 self.employee_options(response.opt_data);
 
             },
