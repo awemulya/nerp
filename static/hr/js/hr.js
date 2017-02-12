@@ -30,6 +30,18 @@ $(document).ready(function () {
     }
 });
 
+function has_no_common_emp(list1, list2){
+    var has_no_commom = true;
+    for (var i = 0; i < list1.length; i++){
+        for(var j = 0; j < list2.length; j++){
+            if (list1[i].id == list2[j].id){
+                has_no_commom = false;
+            }
+        }
+    }
+    return has_no_commom;
+}
+
 // Subtract list not by type but by id
 function diffByID(list1, list2, pdb) {
     if (list1.length >= list2.length) {
@@ -146,7 +158,7 @@ function PaymentEntryRow(emp_options) {
     self.row_salary_detail = ko.computed(function () {
         if (self.paid_employee() && self.paid_from_date() && self.paid_to_date()) {
             self.request_flag(self.paid_employee() + '-' + self.paid_from_date() + '-' + self.paid_to_date());
-             console.log(self.request_flag());
+            console.log(self.request_flag());
         }
     });
 
@@ -282,10 +294,10 @@ function PayrollEntry(employee_options) {
 
     });
 
-    self.disable_main_input = ko.computed(function(){
-        if(ko_data.ctx_data.computed_scenario == 'DETAIL-VIEW') {
+    self.disable_main_input = ko.computed(function () {
+        if (ko_data.ctx_data.computed_scenario == 'DETAIL-VIEW') {
             return true;
-        }else{
+        } else {
             return false;
         }
     });
@@ -606,22 +618,28 @@ function PayrollEntry(employee_options) {
             success: function (response) {
                 hideProcessing();
                 // self.employee_options(response.opt_data);
-
                 // FIXME
                 // dont delete just trim emp_options (ie either push or pop)(used when response is subset of existing employee_options)
-                if (self.employee_options().length > response.opt_data.length) {
-                    // debugger;
-                    self.employee_options.removeAll(diffByID(self.employee_options(), response.opt_data));
-                } else if (self.employee_options().length < response.opt_data.length) {
-                    ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()));
+                // debugger;
+                if (!has_no_common_emp(self.employee_options(), response.opt_data)) {
+                    if (self.employee_options().length > response.opt_data.length) {
+                        // debugger;
+                        self.employee_options.removeAll(diffByID(self.employee_options(), response.opt_data));
+                    } else if (self.employee_options().length < response.opt_data.length) {
+                        ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()));
+                    } else {
+                        // self.employee_options(response.opt_data);
+                        self.employee_options.removeAll(diffByID(self.employee_options(), response.opt_data));
+                        ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()));
+                    }
                 } else {
-                    // self.employee_options(response.opt_data);
-                    self.employee_options.removeAll(diffByID(self.employee_options(), response.opt_data));
-                    ko.utils.arrayPushAll(self.employee_options, diffByID(response.opt_data, self.employee_options()));
+                    // console.log('hey');
+                    self.employee_options(response.opt_data);
                 }
 
+
                 // below is used when response is totally different from existing employee options
-                self.employee_options(response.opt_data);
+                // self.employee_options(response.opt_data);
 
             },
             error: function (errorThrown) {
