@@ -29,7 +29,7 @@ from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     EmployeeGradeFormSet, EmployeeGradeGroupFormSet, DesignationFormSet, ReportHrForm, ReportHrTableFormSet, \
     DeductionNameFormSet, GradeScaleValidityForm, AllowanceValidityForm, DeductionValidityForm, PayrollConfigForm, \
     PayrollAccountantForm, BranchOfficeForm, ProTemporeForm, EmployeeGradeNumberPauseFormset, TaxDeductionForm, \
-    EmployeeFacilityFormSet
+    EmployeeFacilityFormSet, ReportTableForm, ReportTableDeatailForm
 from .models import Employee, Deduction, EmployeeAccount, IncomeTaxScheme, ProTempore, IncentiveName, AllowanceName, \
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
@@ -1617,33 +1617,28 @@ def report_setting(request, pk=None):
     ko_data = {}
 
     if pk:
-        obj_id = pk
+        ko_data['obj_id'] = pk
         hr_report = ReportHR.objects.get(id=pk)
     else:
-        obj_id = None
+        ko_data['obj_id'] = None
         hr_report = ReportHR()
 
     if request.method == "POST":
-        hr_report_form = ReportHrForm(request.POST, instance=hr_report)
-        hr_report_table_formset = ReportHrTableFormSet(request.POST, instance=hr_report)
-        if hr_report_form.is_valid() and hr_report_table_formset.is_valid():
-            hr_report_form.save()
-            hr_report_table_formset.save()
-            return redirect(reverse('list_report_setting'))
+        hr_report_form = ReportHrForm(request.POST)
+        return redirect(reverse('list_report_setting'))
     else:
-        hr_report_form = ReportHrForm(instance=hr_report)
-        hr_report_table_formset = ReportHrTableFormSet(instance=hr_report)
-    # import ipdb
-    # ipdb.set_trace()
-
+        hr_report_form = ReportHrForm()
+        report_table_form = ReportTableForm()
+        report_table_detail_form = ReportTableDeatailForm()
+        
     return render(
         request,
         'hr_report_cu.html',
         {
             'hr_report_form': hr_report_form,
-            'hr_report_table_formset': hr_report_table_formset,
+            'report_table_form': report_table_form,
+            'report_table_detail_form': report_table_detail_form,
             'ko_data': ko_data,
-            'obj_id': obj_id,
         })
 
 

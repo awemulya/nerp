@@ -941,17 +941,26 @@ class ReportHR(models.Model):
     code = models.CharField(max_length=100)
     template = models.FilePathField(path=hr_report_template_folder, match=".*\.html$")
     for_employee_type = models.CharField(max_length=50, choices=emp_type_choices)
+    
     def __unicode__(self):
         return self.name
 
 
 class ReportTable(models.Model):
     title = models.CharField(max_length=100)
-    # field_tiltle and field loopup sored as Json
-    report_table_json_folder = BASE_DIR + '/hr/templates/report_templates/report_table_jsons'
-    table_json = models.FilePathField(path=report_table_json_folder, match=".*\.json$")
-    # table_fields = JSONField()
+    # # field_tiltle and field loopup sored as Json
+    # report_table_json_folder = BASE_DIR + '/hr/templates/report_templates/report_table_jsons'
+    # table_json = models.FilePathField(path=report_table_json_folder, match=".*\.json$")
+    # # table_fields = JSONField()
     report = models.ForeignKey(ReportHR, related_name='report_tables')
+
+
+class ReportTableDetail(models.Model):
+    field_name = models.CharField(max_length=250)
+    field_description = models.CharField(max_length=500)
+    order = models.PositiveIntegerField()
+    need_total = models.BooleanField(default=False)
+    table = models.ForeignKey(ReportTable, related_name='table_details')
 
 
 class PayrollConfig(SingletonModel):
