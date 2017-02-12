@@ -5,14 +5,14 @@
 {% load i18n %}
 
 {% block head_end %}
-    <script src="{% static 'js/vendors/jquery-formset.js' %}"></script>
-    <script type="text/javascript">
-        $(function () {
-            $('.hr-report-form').formset({
-                prefix: '{{ hr_report_table_formset.prefix }}'
-            });
-        });
+    <script src="{% static 'hr/js/hr_report_cu.js' %}"></script>
+    <script>
+        ko_data = {{ko_data|jsonify}}
+                $(document).on('click', '.dropdown-menu', function (e) {
+                    e.stopPropagation();
+                });
     </script>
+    
 {% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
@@ -36,46 +36,41 @@
 {% endblock %}
 
 {% block content %}
-    {% if obj_id %}
-        <form method="POST" action="{% url 'edit_report_setting' obj_id %}">
-    {% else %}
-        <form method="POST" action="{% url 'add_report_setting' %}">
-    {% endif %}
-        {% csrf_token %}
-        <div class="well">
-            {{ hr_report_form.as_p }}
+<div class="well">
+<form>
+    {{ hr_report_form }}
+    
+    <h3>{% trans 'Report Tables' %}</h3>
+    <!-- ko foreach: report_tables -->
+    <div>
+          {{ report_table_form }}
+        <!-- ko foreach: table_details -->
+            <div class="row">
+              <div class="col-lg-2">
+                  {{ report_table_detail_form.field_name.label }}
+                  {{ report_table_detail_form.field_name }}
+              </div>
+              <div class="col-lg-4">
+                  {{ report_table_detail_form.field_description.label }}
+                  {{ report_table_detail_form.field_description }}
+              </div>
+              <div class="col-lg-3">
+                  {{ report_table_detail_form.order.label }}
+                  {{ report_table_detail_form.order }}
+              </div>
+              <div class="col-lg-3">
+                  {{ report_table_detail_form.need_total.label }}
+                  {{ report_table_detail_form.need_total }}
+              </div>
+            </div>
+        <!-- /ko -->
+        <div>
+            <button class='btn btn-primary' data-bind="click: add_new_field">{% trans 'Add New Table Field' %}</button>
         </div>
-
-    <div class="well">
-        {{ hr_report_table_formset.non_form_errors.as_ul }}
-        <table id="formset" class="form table table-striped">
-        {% for form in hr_report_table_formset.forms %}
-          {% if forloop.first %}
-          <thead><tr>
-            {% for field in form.visible_fields %}
-            <th>{{ field.label|capfirst }}</th>
-            {% endfor %}
-          </tr></thead>
-          {% endif %}
-          <tr class="{% cycle row1,row2 %} hr-report-form">
-          {% for field in form.visible_fields %}
-            <td>
-            {# Include the hidden fields in the form #}
-            {% if forloop.first %}
-              {% for hidden in form.hidden_fields %}
-              {{ hidden }}
-              {% endfor %}
-            {% endif %}
-              {{ field.errors.as_ul }}
-              {{ field }}
-            </td>
-          {% endfor %}
-          </tr>
-        {% endfor %}
-        </table>
     </div>
-        {{ hr_report_table_formset.management_form }}
-        <input class="btn btn-raised btn-primary" type="submit" value="Save">
 
-    </form>
+    <!-- /ko -->
+    <button class='btn btn-primary' data-bind="click: add_new_table">{% trans 'Add New Table' %}</button>
+</form>
+</div>
 {% endblock %}

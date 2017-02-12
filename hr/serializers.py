@@ -7,7 +7,7 @@ from hr.bsdate import BSDate
 from hr.helpers import bs_str2tuple
 from hr.models import PayrollEntry, PaymentRecord, DeductionDetail, AllowanceDetail, IncentiveDetail, \
     GradeScaleValidity, EmployeeGrade, EmployeeGradeScale, EmployeeGradeGroup, AllowanceValidity, AllowanceName, \
-    Allowance, DeductionValidity, Deduction, DeductionName, PayrollConfig, ProTemporeDetail, TaxDetail
+    Allowance, DeductionValidity, Deduction, DeductionName, PayrollConfig, ProTemporeDetail, TaxDetail, ReportHR, ReportTable, ReportTableDetail
 
 from django.utils.translation import ugettext as _
 
@@ -343,3 +343,42 @@ class DeductionSerializer(serializers.ModelSerializer):
             'validity_id'
         )
         # End Deduction
+
+
+class ReportTableDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReportTableDetail
+        fields = (
+            'id',
+            'field_name',
+            'field_description',
+            'order'
+            )
+
+
+class ReportTableSerializer(serializers.ModelSerializer):
+    table_details = ReportTableDetailSerializer(many=True)
+
+    class Meta:
+        model = ReportTable
+        fields = (
+            'id',
+            'title',
+            'table_details'
+            )
+
+
+class ReportHRSerializer(serializers.ModelSerializer):
+
+    report_tables = ReportTableSerializer(many=True)
+
+    class Meta:
+        model = ReportHR
+        fields = (
+            'id',
+            'name',
+            'code',
+            'template'
+            'for_employee_type',
+            'report_tables'
+            )

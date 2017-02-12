@@ -8,10 +8,10 @@ from hr.bsdate import BSDate
 from hr.fields import HRBSFormField, HRBSDateFormField
 from hr.helpers import bs_str2tuple, employee_last_payment_record, inc_1_day, drc_1_day
 from users.models import User
-from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, EmployeeGrade, EmployeeGradeGroup, \
+from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, ReportTableDetail, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
     PayrollAccountant, ProTempore, EmployeeGradeNumberPause, TaxDeduction, EmployeeFacility
-from django.forms.widgets import Select, DateInput, NumberInput, DateTimeInput, TextInput  # , MultiWidget
+from django.forms.widgets import Select, DateInput, NumberInput, CheckboxInput, DateTimeInput, TextInput  # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
 from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, IncomeTaxScheme, \
@@ -551,6 +551,39 @@ class ReportHrForm(HTML5BootstrapModelForm):
     class Meta:
         model = ReportHR
         fields = '__all__'
+
+        widgets = {
+         'name': TextInput(attrs={'data-bind': "value: name"}),
+         'code': TextInput(attrs={'data-bind': "value: code"}),
+         'template': Select(attrs={'data-bind': "value: template"}),
+         'for_employee_type': Select(attrs={'data-bind': "value: for_employee_type"}),
+
+        }
+
+
+class ReportTableForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = ReportTable
+        fields = ('title',)
+
+        widgets = {
+            'title': TextInput(attrs={'data-bind': "value: title"}),
+        }
+
+
+class ReportTableDeatailForm(HTML5BootstrapModelForm):
+    class Meta:
+        model = ReportTableDetail
+        fields = '__all__'
+
+        widgets = {
+            'field_name': TextInput(attrs={'data-bind': "value: field_name"}),
+            'field_description': TextInput(attrs={'data-bind': "value: field_description"}),
+            'order': NumberInput(attrs={'data-bind': "value: order"}),
+            'need_total': CheckboxInput(attrs={'data-bind': "checked: need_total"}),
+
+        }
+
 
 
 # These are crud formset
