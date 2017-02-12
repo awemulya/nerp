@@ -19,15 +19,7 @@
     <h5>{% trans 'Office' %} {% trans 'Code' %} : {{ branch.code }}</h5>
     {#    End Office detail block#}
 
-    {#    Bank Detail Block#}
-    <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Name' %} : _________</h5>
-    <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Address' %} : _________</h5>
-    <h5>{% trans 'Amount' %} {% trans 'Deposited' %} : _________</h5>
-    {#    End Bank Detail Block#}
-
-    {#    Message text#}
-    <p>{% trans 'Social Security Tax details of employees working over this branch of above mentioned date range is shown in table below. ' %}</p>
-    {#    End Messege text#}
+    
 {% endblock %}
 {% block report_main_table %}
     {#    Detail table here #}
@@ -36,8 +28,8 @@
             <thead>
             {% if distinguish_entry %}
                 <tr>
-                    <td colspan="4">{% trans 'Range' %}: {{ table.social_security_tax_detail_table.date_range.0 }} {% trans 'To' %} {{ table.social_Security_tax_detail_table.date_range.1 }}</td>
-                    <td colspan="4">{% trans 'Entry' %} {% trans 'Date' %}: {{ table.social_security_tax_detail_table.entry_datetime.0 }}, {% trans 'Entry' %} {% trans 'Time' %}: {{ table.social_security_tax_detail_table.entry_datetime.1 }}</td>
+                    <td colspan="4">{% trans 'Range' %}: {{ table.payment_detail.date_range.0 }} {% trans 'To' %} {{ table.payment_detail.date_range.1 }}</td>
+                    <td colspan="4">{% trans 'Entry' %} {% trans 'Date' %}: {{ table.payment_detail.entry_datetime.0 }}, {% trans 'Entry' %} {% trans 'Time' %}: {{ table.payment_detail.entry_datetime.1 }}</td>
                 </tr>
             {% endif %}
             <tr>
@@ -64,19 +56,47 @@
             </thead>
 
             <tbody>
-            {% for row in table.social_security_tax_detail_table.data %}
+            {% for row in table.payment_detail.data %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ row.designation }}</td>
                     <td>{{ row.employee_name }}</td>
-                    <td>{{ row.tax_amount }}</td>
-                    <td>{{ row.pan_number }}</td>
+                    <td>{{ row.salary_scale }}</td>
+                    <td>{{ row.grade_amount }}</td>
+                    <td>{{ row.pf_addition_in_deduction }}</td>
+                    <td>{{ row.bima_addition_in_deduction }}</td>
+                    <td>{{ row.festival_expenditure_amount }}</td>
+                    <td>{{ row.total_after_addition }}</td>
+                    <td>{{ row.total_allowance }}</td>
+                    <td>{{ row.total_after_allowance_addition }}</td>
+                    <td>{{ row.pf_deduction }}</td>
+                    <td>{{ row.na_la_ko }}</td>
+                    <td>{{ row.bima }}</td>
+                    <td>{{ row.pf_loan }}</td>
+                    <td>{{ row.social_security_tax }}</td>
+                    <td>{{ row.remuneration_tax }}</td>
+                    <td>{{ row.total_deduction_inc_tax }}</td>
+                    <td>{{ row.paid_amount }}</td>
                 </tr>
             {% endfor %}
             <tr>
                 <td colspan="3">{% trans 'Total' %}</td>
-                <td>{{ table.social_security_tax_detail_table.totals.tax_amount }}</td>
-                <td></td>
+                <td>{{ table.payment_detail.totals.salary_scale }}</td>
+                <td>{{ table.payment_detail.totals.grade_amount }}</td>
+                <td>{{ table.payment_detail.totals.pf_addition_in_deduction }}</td>
+                <td>{{ table.payment_detail.totals.bima_addition_in_deduction }}</td>
+                <td>{{ table.payment_detail.totals.festival_expenditure_amount }}</td>
+                <td>{{ table.payment_detail.totals.total_after_addition }}</td>
+                <td>{{ table.payment_detail.totals.total_allowance }}</td>
+                <td>{{ table.payment_detail.totals.total_after_allowance_addition }}</td>
+                <td>{{ table.payment_detail.totals.pf_deduction }}</td>
+                <td>{{ table.payment_detail.totals.na_la_ko }}</td>
+                <td>{{ table.payment_detail.totals.bima }}</td>
+                <td>{{ table.payment_detail.totals.pf_loan }}</td>
+                <td>{{ table.payment_detail.totals.social_security_tax }}</td>
+                <td>{{ table.payment_detail.totals.remuneration_tax }}</td>
+                <td>{{ table.payment_detail.totals.total_deduction_inc_tax }}</td>
+                <td>{{ table.payment_detail.totals.paid_amount }}</td>
             </tr>
             </tbody>
 

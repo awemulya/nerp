@@ -1668,7 +1668,7 @@ def delete_report_setting(request, pk=None):
     obj.delete()
     # for alw in alw_details():
     #     alw.delete()
-    return redirect(reverse('list_allowance'))
+    return redirect(reverse('list_report_setting'))
 
 
 @login_required

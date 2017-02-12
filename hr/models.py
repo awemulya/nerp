@@ -849,6 +849,29 @@ class PaymentRecord(models.Model):
         )
         return amount
 
+    @property
+    def total_after_addition(self):
+        total_addition_in_deduction = 0
+        for deduction_detail in self.deduction_details.all():
+            total_addition_in_deduction += deduction_detail.amount_added_before_deduction
+        return self.salary + total_addition_in_deduction
+
+    @property
+    def total_after_allowance_addition(self):
+        return self.total_after_addition + self.allowance
+
+    @property
+    def total_tax(self):
+        total_tax = 0
+        for tax_detail in self.tax_details.all():
+            total_tax += tax_detail.amount
+        return total_tax
+
+    @property
+    def total_deduction_inc_tax(self):
+        return self.deduced_amount + self.total_tax
+
+
 
 class DeductionDetail(models.Model):
     deduction = models.ForeignKey(
