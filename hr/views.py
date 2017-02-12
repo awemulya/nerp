@@ -212,6 +212,7 @@ def salary_taxation_unit(employee, f_y_item):
 
     salary += allowance + incentive + facility_value
 
+
     total_deduction, d_errors = get_deduction(
         employee,
         role='deduction',
@@ -221,7 +222,8 @@ def salary_taxation_unit(employee, f_y_item):
     )
 
     # 1/3 of total deduction
-    deductable_limit = (1 / 3.0) * salary if (1 / 3.0) * salary < 300000 else 300000
+    # FIXME previously it was 300000 i kept 30000 for now (later find the truth and fix)
+    deductable_limit = (1 / 3.0) * salary if (1 / 3.0) * salary < 30000 else 30000
     deductatble_from_deduction = 0
     if total_deduction <= deductable_limit:
         deductatble_from_deduction = total_deduction
@@ -234,6 +236,9 @@ def salary_taxation_unit(employee, f_y_item):
 
     taxable_amount = (salary - deductatble_from_deduction - deduction_from_yearly_insurance_premium)
 
+    # import ipdb
+    # ipdb.set_trace()
+
     if employee.marital_status == 'M':
         taxable_amount -= PayrollConfig.get_solo().married_remuneration_discount
         social_security_tax = PayrollConfig.get_solo().married_remuneration_discount / 100.0
@@ -244,11 +249,15 @@ def salary_taxation_unit(employee, f_y_item):
     if employee.is_disabled_person:
         taxable_amount -= (PayrollConfig.get_solo().disabled_remuneration_additional_discount / 100.0) * taxable_amount
 
+
+
     subtracted_allowance = get_allowance(employee, from_date=f_y_item['f_y'][0],
                                          to_date=f_y_item['f_y'][1], role='tax_allowance')[0]
     subtracted_incentive = get_incentive(employee, from_date=f_y_item['f_y'][0],
                                          to_date=f_y_item['f_y'][1], role='tax_incentive')[0]
     taxable_amount -= subtracted_allowance + subtracted_incentive
+
+
     if taxable_amount < 0:
         taxable_amount = 0
 
@@ -277,6 +286,10 @@ def salary_taxation_unit(employee, f_y_item):
                     break
         if main_loop_break_flag:
             break
+
+    if tax_amount < 0:
+        tax_amount = 0
+
     if employee.sex == 'F' and tax_amount > 0:
         tax_amount -= (PayrollConfig.get_solo().female_remuneration_tax_discount / 100.0) * tax_amount
     remuneration_tax = tax_amount  # yearly
