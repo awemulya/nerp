@@ -154,7 +154,7 @@ function PaymentEntryRow(emp_options) {
     // Make here a observable function dat will set other parameters with employee id and date range
     self.request_flag.subscribe(function () {
         if (vm.payroll_type() == "INDIVIDUAL") {
-            showProcessing();
+            App.showProcessing();
             $.ajax({
                 url: '/payroll/get_employee_account/',
                 method: 'POST',
@@ -168,7 +168,7 @@ function PaymentEntryRow(emp_options) {
                 },
                 // async: true,
                 success: function (response) {
-                    hideProcessing();
+                    App.hideProcessing();
                     if (response.errors) {
                         vm.entry_rows([new PaymentEntryRow()]);
                         if (response.errors.paid_from_date) {
@@ -184,7 +184,7 @@ function PaymentEntryRow(emp_options) {
                         }
                         if (response.errors.global_errors) {
                             for (var k in response.errors.global_errors)
-                                notifyUser(response.errors.global_errors[k], 'error');
+                                App.notifyUser(response.errors.global_errors[k], 'error');
                         }
                     } else {
                         vm.paid_from_date_error(null);
@@ -204,7 +204,7 @@ function PaymentEntryRow(emp_options) {
 
                 },
                 error: function (errorThrown) {
-                    hideProcessing();
+                    App.hideProcessing();
                     console.log(errorThrown);
                 }
             });
@@ -315,7 +315,7 @@ function PayrollEntry(employee_options) {
 
     self.approve_entry = function () {
         // debugger;
-        showProcessing();
+        App.showProcessing();
         $.ajax({
             url: '/payroll/approve_entry/' + String(self.id()),
             method: 'GET',
@@ -323,12 +323,12 @@ function PayrollEntry(employee_options) {
             // data: post_data,
             // async: true,
             success: function (response) {
-                hideProcessing();
+                App.hideProcessing();
                 self.approved(response.entry_approved);
 
             },
             error: function (errorThrown) {
-                hideProcessing();
+                App.hideProcessing();
                 console.log(errorThrown);
             }
             //            self.budget_heads = ko.observableArray(data);
@@ -337,18 +337,18 @@ function PayrollEntry(employee_options) {
 
     };
     self.transact = function () {
-        showProcessing();
+        App.showProcessing();
         $.ajax({
             url: '/payroll/transact_entry/' + String(self.id()),
             method: 'GET',
             dataType: 'json',
             success: function (response) {
-                hideProcessing();
+                App.hideProcessing();
                 self.transacted(true);
 
             },
             error: function (errorThrown) {
-                hideProcessing();
+                App.hideProcessing();
                 console.log(errorThrown);
             }
         });
@@ -422,11 +422,11 @@ function PayrollEntry(employee_options) {
             if (row.row_errors().length > 0) {
                 // here has true should be true 
                 has_error = true;
-                notifyUser('Remove rows with warnings to Save the entry', 'error');
+                App.notifyUser('Remove rows with warnings to Save the entry', 'error');
             }
         }
         if (!has_error) {
-            showProcessing();
+            App.showProcessing();
             $.ajax({
                 url: save_url,
                 method: 'POST',
@@ -434,7 +434,7 @@ function PayrollEntry(employee_options) {
                 data: ko.toJSON(self),
                 // async: true,
                 success: function (response) {
-                    hideProcessing();
+                    App.hideProcessing();
                     console.log(response);
                     // debugger;
                     self.id(response.entry_id);
@@ -444,7 +444,7 @@ function PayrollEntry(employee_options) {
 
                 },
                 error: function (errorThrown) {
-                    hideProcessing();
+                    App.hideProcessing();
                     console.log(errorThrown);
                 }
                 //            self.budget_heads = ko.observableArray(data);
@@ -493,7 +493,7 @@ function PayrollEntry(employee_options) {
 
     self.request_flag.subscribe(function () {
         if (self.payroll_type() == 'GROUP') {
-            showProcessing();
+            App.showProcessing();
             $.ajax({
                 url: '/payroll/get_employees_account/',
                 method: 'POST',
@@ -508,7 +508,7 @@ function PayrollEntry(employee_options) {
                 },
                 // async: true,
                 success: function (response) {
-                    hideProcessing();
+                    App.hideProcessing();
                     if (response.errors) {
                         self.entry_rows([]);
                         if (response.errors.paid_from_date) {
@@ -525,7 +525,7 @@ function PayrollEntry(employee_options) {
 
                         if (response.errors.global_errors) {
                             for (var k in response.errors.global_errors)
-                                notifyUser(response.errors.global_errors[k], 'error');
+                                App.notifyUser(response.errors.global_errors[k], 'error');
                         }
 
 
@@ -580,8 +580,8 @@ function PayrollEntry(employee_options) {
                     }
                 },
                 error: function (errorThrown) {
-                    hideProcessing();
-                    notifyUser(errorThrown, 'error');
+                    App.hideProcessing();
+                    App.notifyUser(errorThrown, 'error');
                 }
             });
             // }
@@ -591,7 +591,7 @@ function PayrollEntry(employee_options) {
 
     // Set employee options
     self.update_employee_options = function () {
-        showProcessing();
+        App.showProcessing();
         $.ajax({
             url: '/payroll/get_employee_options/',
             method: 'POST',
@@ -604,7 +604,7 @@ function PayrollEntry(employee_options) {
                 employee_type: self.employee_type()
             },
             success: function (response) {
-                hideProcessing();
+                App.hideProcessing();
                 // self.employee_options(response.opt_data);
 
 
@@ -623,7 +623,7 @@ function PayrollEntry(employee_options) {
 
             },
             error: function (errorThrown) {
-                hideProcessing();
+                App.hideProcessing();
                 console.log(errorThrown);
             }
         });

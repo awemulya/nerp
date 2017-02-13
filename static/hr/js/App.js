@@ -178,20 +178,24 @@ var App = (function () {
             };
             ko.validation.init(validationSettings, true);
         },
+         /**
+         * Created by wrufesh on 11/24/16.
+         */
+         // Dependencies:
+         //     <link rel="stylesheet" href="{% static 'hr/css/plugins/toastr/toastr.css' %}">
+         //     <script src="{% static 'hr/js/plugins/toastr/toastr.js' %}"></script>
         notifyUser: function (message, type, layout) {
-            // var layout = layout || 'top';
-            toastr.clear();
             toastr.options = {
                 "closeButton": true,
                 "debug": false,
-                "newestOnTop": false,
-                "progressBar": false,
+                "newestOnTop": true,
+                "progressBar": true,
                 "positionClass": "toast-bottom-right",
                 "preventDuplicates": false,
                 "onclick": null,
                 "showDuration": "300",
                 "hideDuration": "1000",
-                "timeOut": "5000",
+                "timeOut": "20000",
                 "extendedTimeOut": "1000",
                 "showEasing": "swing",
                 "hideEasing": "linear",
@@ -210,7 +214,7 @@ var App = (function () {
         },
         confirmAlert: function (message, okCallback) {
             var r = confirm(message);
-            if(r==true){
+            if (r == true) {
                 okCallback()
             }
 

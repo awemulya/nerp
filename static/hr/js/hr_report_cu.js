@@ -72,7 +72,7 @@ function ReportHR(obj_id){
         var save_url = '/payroll/report_setting/';
         save_url = (obj_id ? save_url + 'edit/' + String(obj_id) + '/' : save_url + 'add/' );
 
-        showProcessing();
+        App.showProcessing();
             $.ajax({
                 url: save_url,
                 method: 'POST',
@@ -80,13 +80,13 @@ function ReportHR(obj_id){
                 data: ko.toJSON(self),
                 // async: true,
                 success: function (response) {
-                    hideProcessing();
+                    App.hideProcessing();
                     console.log(response);
                     // debugger;
                     self.id(response.entry_id);
                 },
                 error: function (errorThrown) {
-                    hideProcessing();
+                    App.hideProcessing();
                     console.log(errorThrown);
                 }
             });
