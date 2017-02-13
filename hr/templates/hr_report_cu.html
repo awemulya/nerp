@@ -5,6 +5,12 @@
 {% load i18n %}
 
 {% block head_end %}
+<link rel="stylesheet" href="{% static 'hr/css/plugins/toastr/toastr.css' %}">
+
+
+    <script src="{% static 'hr/js/plugins/toastr/toastr.js' %}"></script>
+    <script src="{% static 'hr/js/plugins/blockUI/jquery.blockUI.js' %}"></script>
+    <script src="{% static 'hr/js/notify_user.js' %}"></script>
     <script src="{% static 'hr/js/hr_report_cu.js' %}"></script>
     <script>
         ko_data = {{ko_data|jsonify}}
@@ -72,5 +78,6 @@
     <!-- /ko -->
     <button class='btn btn-primary' data-bind="click: add_new_table">{% trans 'Add New Table' %}</button>
 </form>
+<button class="btn btn-primary btn-raised" data-bind="click: save_report">{% trans 'Save' %}</button>
 </div>
 {% endblock %}
