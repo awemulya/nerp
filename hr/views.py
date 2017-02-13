@@ -1624,7 +1624,13 @@ def report_setting(request, pk=None):
         hr_report = ReportHR()
 
     if request.method == "POST":
-        hr_report_form = ReportHrForm(request.POST)
+        import ipdb
+        ipdb.set_trace()
+        if pk:
+            report_hr = ReportHR.objects.get(id=pk)
+        else:
+            report_hr = ReportHR()
+        # hr_report_form = ReportHrForm(request.POST)
         return redirect(reverse('list_report_setting'))
     else:
         hr_report_form = ReportHrForm()

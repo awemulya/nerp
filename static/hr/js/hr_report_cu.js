@@ -67,4 +67,28 @@ function ReportHR(obj_id){
     self.add_new_table = function(){
         self.report_tables.push(new ReportTable(obj_id));
     };
+
+    self.save_report = function(){
+        var save_url = '/payroll/report_setting/';
+        save_url = (obj_id ? save_url + 'edit/' + String(obj_id) + '/' : save_url + 'add/' );
+
+        showProcessing();
+            $.ajax({
+                url: save_url,
+                method: 'POST',
+                dataType: 'json',
+                data: ko.toJSON(self),
+                // async: true,
+                success: function (response) {
+                    hideProcessing();
+                    console.log(response);
+                    // debugger;
+                    self.id(response.entry_id);
+                },
+                error: function (errorThrown) {
+                    hideProcessing();
+                    console.log(errorThrown);
+                }
+            });
+    };
 }
