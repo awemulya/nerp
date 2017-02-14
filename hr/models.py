@@ -833,6 +833,7 @@ class PaymentRecord(models.Model):
     def __unicode__(self):
         return str(self.id)
 
+    @property
     def pro_tempore_amount(self):
         total = 0
         for pt in self.pro_tempore_details.all():

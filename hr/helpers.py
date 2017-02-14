@@ -649,12 +649,20 @@ def getattr_custom(obj, attr_query, **kwargs):
                     value = get_attr_12m(value, qry)
         else:
             value = get_attr_121(value, query)
-
     return value
-
 
 
 def json_file_to_dict(json_path):
     import json
     data_file = open(json_path)
     return json.load(data_file)
+
+
+# Report Selector
+def get_property_methods(cls):
+    property_fields = []
+    for field in cls.__dict__.keys():
+        if isinstance(cls.__dict__.get(field), property):
+            property_fields.append(field)
+    return property_fields
+

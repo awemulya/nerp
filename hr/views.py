@@ -648,7 +648,7 @@ def save_payroll_entry(request, pk=None):
 
                 p_r.allowance = float(row.get('allowance', None))
                 p_r.incentive = float(row.get('incentive', None))
-                p_r.pro_tempore_amount = float(row.get('pro_tempore_amount', None))
+                # p_r.pro_tempore_amount = float(row.get('pro_tempore_amount', None))
                 p_r.salary = float(row.get('salary', None))
                 p_r.paid_amount = float(row.get('paid_amount', None))
                 p_r.entry = p_e
@@ -785,6 +785,7 @@ def delete_entry(request, pk=None):
     return redirect(reverse('entry_list'))
 
 
+# depreciated
 @login_required
 @group_required('Accountant', 'Payroll Accountant')
 @user_passes_test(user_is_branch_accountant)
@@ -969,7 +970,7 @@ def transact_entry(request, pk=None):
                 employee_account__employee=employee,
                 fy=FiscalYear.get()
             )
-            pro_tempore_amount = entry.pro_tempore_amount()
+            pro_tempore_amount = entry.pro_tempore_amount
 
             set_transactions(
                 entry,
@@ -1682,6 +1683,17 @@ def report_setting(request, pk=None):
                 'report_table_detail_form': report_table_detail_form,
                 'ko_data': ko_data,
             })
+
+
+
+@login_required
+@group_required('Accountant')
+def get_report_field_options(request):
+    # deduction_details___deduction__code_name = pf - deduction;__amount
+    report_model = PaymentRecord
+    params = json.loads(request.body)
+
+    pass
 
 
 @login_required
