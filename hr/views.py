@@ -1692,6 +1692,9 @@ def get_report_field_options(request):
     # deduction_details___deduction__code_name = pf - deduction;__amount
     report_model = PaymentRecord
     params = json.loads(request.body)
+    query = params.get('query')
+    # if not query:
+    #     for fields in
 
     pass
 
