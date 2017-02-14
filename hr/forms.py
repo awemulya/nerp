@@ -550,7 +550,8 @@ class IncomeTaxSchemeForm(HTML5BootstrapModelForm):
 class ReportHrForm(HTML5BootstrapModelForm):
     class Meta:
         model = ReportHR
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('name_en', 'name_ne')
 
         widgets = {
          'name': TextInput(attrs={'data-bind': "value: name"}),

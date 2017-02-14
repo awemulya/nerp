@@ -991,6 +991,9 @@ class ReportTableDetail(models.Model):
     def __unicode__(self):
         return self.field_name
 
+    class Meta:
+        unique_together = ('order', 'table',)
+
 
 class PayrollConfig(SingletonModel):
     calendar_choices = (

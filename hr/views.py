@@ -1633,50 +1633,55 @@ def report_setting(request, pk=None):
             report_hr = ReportHR()
         params = json.loads(request.body)
 
-        with transaction.atomic():
-            report_hr.name = params.get('name')
-            report_hr.code = params.get('code')
-            report_hr.template = params.get('template')
-            report_hr.for_employee_type = params.get('for_employee_type')
-            report_hr.save()
+        try:
+            with transaction.atomic():
+                report_hr.name = params.get('name')
+                report_hr.code = params.get('code')
+                report_hr.template = params.get('template')
+                report_hr.for_employee_type = params.get('for_employee_type')
+                report_hr.save()
 
-            for report_table_data in params.get('report_tables'):
-                if report_table_data.get('id'):
-                    report_table = ReportTable.objects.get(id=report_table_data.get('id'))
-                else:
-                    report_table = ReportTable()
-                report_table.title = report_table_data.get('title')
-                report_table.report = report_hr
-                report_table.save()
-
-                for table_details_data in report_table_data.get('table_details'):
-                    if table_details_data.get('id'):
-                        table_detail = ReportTableDetail.objects.get(id=table_details_data.get('id'))
+                for report_table_data in params.get('report_tables'):
+                    if report_table_data.get('id'):
+                        report_table = ReportTable.objects.get(id=report_table_data.get('id'))
                     else:
-                        table_detail = ReportTableDetail()
+                        report_table = ReportTable()
+                    report_table.title = report_table_data.get('title')
+                    report_table.report = report_hr
+                    report_table.save()
 
-                    table_detail.field_name = table_details_data.get('field_name')
-                    table_detail.field_description = table_details_data.get('field_description')
-                    table_detail.order = table_details_data.get('order')
-                    table_detail.need_total = table_details_data.get('need_total')
-                    table_detail.table = report_table
-                    table_detail.save()
+                    for table_details_data in report_table_data.get('table_details'):
+                        if table_details_data.get('id'):
+                            table_detail = ReportTableDetail.objects.get(id=table_details_data.get('id'))
+                        else:
+                            table_detail = ReportTableDetail()
 
-        return JsonResponse({"success": True})
+                        table_detail.field_name = table_details_data.get('field_name')
+                        table_detail.field_description = table_details_data.get('field_description')
+                        table_detail.order = table_details_data.get('order')
+                        table_detail.need_total = table_details_data.get('need_total')
+                        table_detail.table = report_table
+                        table_detail.save()
+
+            return JsonResponse({"success": True})
+
+        except Exception, e:
+            return JsonResponse({"success": False, "message": str(e)})
+
     else:
         hr_report_form = ReportHrForm()
         report_table_form = ReportTableForm()
         report_table_detail_form = ReportTableDeatailForm()
-        
-    return render(
-        request,
-        'hr_report_cu.html',
-        {
-            'hr_report_form': hr_report_form,
-            'report_table_form': report_table_form,
-            'report_table_detail_form': report_table_detail_form,
-            'ko_data': ko_data,
-        })
+
+        return render(
+            request,
+            'hr_report_cu.html',
+            {
+                'hr_report_form': hr_report_form,
+                'report_table_form': report_table_form,
+                'report_table_detail_form': report_table_detail_form,
+                'ko_data': ko_data,
+            })
 
 
 @login_required

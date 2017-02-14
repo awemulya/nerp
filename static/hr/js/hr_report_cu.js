@@ -7,7 +7,7 @@ $(document).ready(function () {
                 create: function (options) {
                     var table_mapping = {
                         'table_details': {
-                            create: function(options){
+                            create: function (options) {
                                 var report_table_detail = ko.mapping.fromJS(options.data, {}, new ReportTableDetail());
                                 return report_table_detail;
                             }
@@ -71,11 +71,15 @@ function ReportHR(obj_id) {
 
         App.remotePost(save_url, ko.toJS(self), function (response) {
             App.hideProcessing();
-            console.log(response);
-            self.id(response.id);
+            if(response.success){
+                App.redirectTo('/payroll/report-setting/list/', 0);
+            }else{
+                App.notifyUser(response.message, 'error');
+            }
         }, function () {
             App.hideProcessing();
             console.log(errorThrown);
         });
     };
+
 }
