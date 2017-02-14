@@ -565,7 +565,7 @@ class ReportHrForm(HTML5BootstrapModelForm):
 class ReportTableForm(HTML5BootstrapModelForm):
     class Meta:
         model = ReportTable
-        fields = ('title',)
+        exclude = ('title_en', 'title_ne', 'report')
 
         widgets = {
             'title': TextInput(attrs={'data-bind': "value: title"}),
@@ -575,7 +575,7 @@ class ReportTableForm(HTML5BootstrapModelForm):
 class ReportTableDeatailForm(HTML5BootstrapModelForm):
     class Meta:
         model = ReportTableDetail
-        fields = '__all__'
+        exclude = ('field_name_en', 'field_name_ne', 'table')
 
         widgets = {
             'field_name': TextInput(attrs={'data-bind': "value: field_name"}),

@@ -1,7 +1,7 @@
 from modeltranslation.translator import translator, TranslationOptions
 from app.utils.translation import NameTranslationOptions
 from hr.models import Employee, DeductionName, BranchOffice, IncentiveName, AllowanceName, Designation, \
-    EmployeeGradeGroup, EmployeeGrade, TaxDeduction, ReportHR, EmployeeFacility
+    EmployeeGradeGroup, EmployeeGrade, TaxDeduction, ReportHR, EmployeeFacility, ReportTableDetail, ReportTable
 
 
 class DesignationTranslationOptions(TranslationOptions):
@@ -10,6 +10,14 @@ class DesignationTranslationOptions(TranslationOptions):
 
 class EmployeeGradeTranslationOptions(TranslationOptions):
     fields = ('grade_name',)
+
+
+class ReportTableTranslationOption(TranslationOptions):
+    fields = ('title',)
+
+
+class ReportTableDetailTranslationOption(TranslationOptions):
+    fields = ('field_name',)
 
 
 translator.register(Employee, NameTranslationOptions)
@@ -23,3 +31,6 @@ translator.register(EmployeeGrade, EmployeeGradeTranslationOptions)
 translator.register(TaxDeduction, NameTranslationOptions)
 translator.register(ReportHR, NameTranslationOptions)
 translator.register(EmployeeFacility, NameTranslationOptions)
+
+translator.register(ReportTable, ReportTableTranslationOption)
+translator.register(ReportTableDetail, ReportTableDetailTranslationOption)
