@@ -34,7 +34,7 @@ from .models import Employee, Deduction, EmployeeAccount, IncomeTaxScheme, ProTe
     DeductionDetail, AllowanceDetail, IncentiveDetail, PaymentRecord, PayrollEntry, Account, Incentive, Allowance, \
     MaritalStatus, ReportHR, BranchOffice, EmployeeGrade, EmployeeGradeGroup, Designation, DeductionName, \
     AllowanceValidity, DeductionValidity, GradeScaleValidity, PayrollConfig, PayrollAccountant, ProTemporeDetail, \
-    TaxDeduction, TaxDetail, EmployeeFacility
+    TaxDeduction, TaxDetail, EmployeeFacility, ReportTable, ReportTableDetail
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
@@ -1624,14 +1624,42 @@ def report_setting(request, pk=None):
         hr_report = ReportHR()
 
     if request.method == "POST":
-        import ipdb
-        ipdb.set_trace()
         if pk:
             report_hr = ReportHR.objects.get(id=pk)
         else:
             report_hr = ReportHR()
-        # hr_report_form = ReportHrForm(request.POST)
-        return redirect(reverse('list_report_setting'))
+        params = json.loads(request.body)
+
+        with transaction.atomic():
+            report_hr.name = params.get('name')
+            report_hr.code = params.get('code')
+            report_hr.template = params.get('template')
+            report_hr.for_employee_type = params.get('for_employee_type')
+            report_hr.save()
+
+            for report_table_data in params.get('report_tables'):
+                if report_table_data.get('id'):
+                    report_table = ReportTable.objects.get(id=report_table_data.get('id'))
+                else:
+                    report_table = ReportTable()
+                report_table.title = report_table_data.get('title')
+                report_table.report = report_hr
+                report_table.save()
+
+                for table_details_data in report_table_data.get('table_details'):
+                    if table_details_data.get('id'):
+                        table_detail = ReportTableDetail.objects.get(id=table_details_data.get('id'))
+                    else:
+                        table_detail = ReportTableDetail()
+
+                    table_detail.field_name = table_details_data.get('field_name')
+                    table_detail.field_description = table_details_data.get('field_description')
+                    table_detail.order = table_details_data.get('order')
+                    table_detail.need_total = table_details_data.get('order')
+                    table_detail.table = report_table
+                    table_detail.save()
+
+        return JsonResponse({"success": True})
     else:
         hr_report_form = ReportHrForm()
         report_table_form = ReportTableForm()

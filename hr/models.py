@@ -977,6 +977,9 @@ class ReportTable(models.Model):
     # # table_fields = JSONField()
     report = models.ForeignKey(ReportHR, related_name='report_tables')
 
+    def __unicode__(self):
+        return self.title
+
 
 class ReportTableDetail(models.Model):
     field_name = models.CharField(max_length=250)
@@ -984,6 +987,9 @@ class ReportTableDetail(models.Model):
     order = models.PositiveIntegerField()
     need_total = models.BooleanField(default=False)
     table = models.ForeignKey(ReportTable, related_name='table_details')
+
+    def __unicode__(self):
+        return self.field_name
 
 
 class PayrollConfig(SingletonModel):

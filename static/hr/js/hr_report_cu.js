@@ -28,7 +28,7 @@ $(document).ready(function () {
     // }
 });
 
-function ReportTableDetail(){
+function ReportTableDetail() {
     var self = this;
     self.id = ko.observable();
     self.field_name = ko.observable();
@@ -37,22 +37,22 @@ function ReportTableDetail(){
     self.need_total = ko.observable();
 }
 
-function ReportTable(obj_id){
+function ReportTable(obj_id) {
     var self = this;
     self.id = ko.observable();
     self.title = ko.observable();
     self.table_details = ko.observableArray();
-    if (!obj_id){
+    if (!obj_id) {
         self.table_details.push(new ReportTableDetail());
     }
 
-    self.add_new_field = function(){
-        self.table_details.push(new ReportTableDetail());   
+    self.add_new_field = function () {
+        self.table_details.push(new ReportTableDetail());
     };
 }
 
 
-function ReportHR(obj_id){
+function ReportHR(obj_id) {
     var self = this;
     self.id = ko.observable();
     self.name = ko.observable();
@@ -60,35 +60,26 @@ function ReportHR(obj_id){
     self.template = ko.observable();
     self.for_employee_type = ko.observable();
     self.report_tables = ko.observableArray();
-    if (!obj_id){
+    if (!obj_id) {
         self.report_tables.push(new ReportTable(obj_id));
     }
 
-    self.add_new_table = function(){
+    self.add_new_table = function () {
         self.report_tables.push(new ReportTable(obj_id));
     };
 
-    self.save_report = function(){
-        var save_url = '/payroll/report_setting/';
+    self.save_report = function () {
+        var save_url = '/payroll/report-setting/';
         save_url = (obj_id ? save_url + 'edit/' + String(obj_id) + '/' : save_url + 'add/' );
-
         App.showProcessing();
-            $.ajax({
-                url: save_url,
-                method: 'POST',
-                dataType: 'json',
-                data: ko.toJSON(self),
-                // async: true,
-                success: function (response) {
-                    App.hideProcessing();
-                    console.log(response);
-                    // debugger;
-                    self.id(response.entry_id);
-                },
-                error: function (errorThrown) {
-                    App.hideProcessing();
-                    console.log(errorThrown);
-                }
-            });
+
+        App.remotePost(save_url, ko.toJS(self), function (response) {
+            App.hideProcessing();
+            console.log(response);
+            self.id(response.id);
+        }, function () {
+            App.hideProcessing();
+            console.log(errorThrown);
+        });
     };
 }
