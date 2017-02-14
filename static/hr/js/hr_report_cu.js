@@ -1,31 +1,27 @@
 $(document).ready(function () {
     vm = new ReportHR(ko_data.obj_id);
     ko.applyBindings(vm);
-    // if (ko_data.ctx_data) {
-    //     var mapping = {
-    //         'entry_rows': {
-    //             create: function (options) {
-    //                 var entry_row = ko.mapping.fromJS(options.data, {copy: []}, new PaymentEntryRow(ko_data.emp_options.slice(0)));
-    //                 // if (typeof(options.parent.paid_from_date_input()) == 'undefined') {
-    //                 //     options.parent.paid_from_date_input(options.data.paid_from_date);
-    //                 //     options.parent.paid_to_date_input(options.data.paid_to_date);
-    //                 // }
-    //                 return entry_row;
-    //             }
-    //         },
-    //         // 'branch': {
-    //         //     create: function(options){
-    //         //         console.log(options.data)
-    //         //         if(options.data == null){
-    //         //             return 'ALL'
-    //         //         }
-    //         //         return options.data
-    //         //     }
-    //         // }
-    //     };
-    //     ko.mapping.fromJS(ko_data.ctx_data, mapping, vm);
+    if (ko_data.ctx_data) {
+        var mapping = {
+            'report_tables': {
+                create: function (options) {
+                    var table_mapping = {
+                        'table_details': {
+                            create: function(options){
+                                var report_table_detail = ko.mapping.fromJS(options.data, {}, new ReportTableDetail());
+                                return report_table_detail;
+                            }
+                        }
+                    };
+                    var report_table = ko.mapping.fromJS(options.data, table_mapping, new ReportTable());
 
-    // }
+                    return report_table;
+                }
+            }
+        };
+        ko.mapping.fromJS(ko_data.ctx_data, mapping, vm);
+
+    }
 });
 
 function ReportTableDetail() {

@@ -20,7 +20,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from .salary_gen_helpers import get_deduction, get_allowance, get_incentive, combine_deduction_details, \
     get_pro_tempore_data
-from .serializers import PayrollEntrySerializer
+from .serializers import PayrollEntrySerializer, ReportHRSerializer
 from users.models import group_required, all_group_required
 from .forms import GroupPayrollForm, EmployeeIncentiveFormSet, EmployeeForm, \
     IncentiveNameForm, IncentiveNameFormSet, AllowanceNameForm, AllowanceNameFormSet, \
@@ -1619,8 +1619,11 @@ def report_setting(request, pk=None):
     if pk:
         ko_data['obj_id'] = pk
         hr_report = ReportHR.objects.get(id=pk)
+        serializer = ReportHRSerializer(hr_report)
+        ko_data['ctx_data'] = dict(serializer.data)
     else:
         ko_data['obj_id'] = None
+        ko_data['ctx_data'] = None
         hr_report = ReportHR()
 
     if request.method == "POST":
@@ -1655,7 +1658,7 @@ def report_setting(request, pk=None):
                     table_detail.field_name = table_details_data.get('field_name')
                     table_detail.field_description = table_details_data.get('field_description')
                     table_detail.order = table_details_data.get('order')
-                    table_detail.need_total = table_details_data.get('order')
+                    table_detail.need_total = table_details_data.get('need_total')
                     table_detail.table = report_table
                     table_detail.save()
 

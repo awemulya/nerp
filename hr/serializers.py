@@ -352,7 +352,8 @@ class ReportTableDetailSerializer(serializers.ModelSerializer):
             'id',
             'field_name',
             'field_description',
-            'order'
+            'order',
+            'need_total'
             )
 
 
@@ -378,7 +379,7 @@ class ReportHRSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'code',
-            'template'
+            'template',
             'for_employee_type',
             'report_tables'
             )
