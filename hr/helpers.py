@@ -664,5 +664,5 @@ def get_property_methods(cls):
     for field in cls.__dict__.keys():
         if isinstance(cls.__dict__.get(field), property):
             property_fields.append(field)
-    return property_fields
+    return tuple(property_fields)
 
