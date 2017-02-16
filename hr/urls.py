@@ -161,4 +161,7 @@ urlpatterns = patterns('',
                            name='taxdeduction_delete'),
                        # End ProTempore Crud
 
+                       url(r'^get-report-field/$', views.get_report_field_options,
+                           name='get-report-field')
+                       # End ProTempore Crud
                        )

@@ -1687,15 +1687,17 @@ def report_setting(request, pk=None):
 
 
 
-# @login_required
-# @group_required('Accountant')
-def get_report_field_options(query):
+@login_required
+@group_required('Accountant')
+def get_report_field_options(request):
     # deduction_details___deduction__code_name = pf - deduction;__amount
+    res = {}
     report_model = PaymentRecord
-    # params = json.loads(request.body)
-    # query = params.get('query')
+    params = json.loads(request.body)
+    query = params.get('query')
     if not query:
-        return get_all_field_options(report_model)
+         res['options'] = get_all_field_options(report_model)
+         return JsonResponse(res)
     else:
         model = report_model
         for qi, qry in enumerate(query.split(';')):
@@ -1706,21 +1708,16 @@ def get_report_field_options(query):
                     if field_obj.many_to_one or field_obj.one_to_one or field_obj.one_to_many or field_obj.many_to_many:
                         model = field_obj.related_model
                 if not qr and i == len(splitted_12m_qry[0].split('__')) - 1:
-                    return get_all_field_options(model)
+                    res['options'] = get_all_field_options(model)
+                    return JsonResponse(res)
 
             if len(splitted_12m_qry) == 2:
                 if not splitted_12m_qry[1]:
                     # filter generating options here
-                    return get_m2m_filter_options(model)
-                # else:
-                #     return get_all_field_options(model)
+                    res['options'] = get_m2m_filter_options(model)
+                    return JsonResponse(res)
 
-
-                    
-
-
-
-
+    return JsonResponse(res)
 
 
 
