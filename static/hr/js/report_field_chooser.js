@@ -62,7 +62,7 @@ ko.components.register('report-field-chooser', {
     template: '<div class="row">'
 
     + '<!-- ko foreach: option_vms -->'
-    + '<select data-bind="options: options, optionsText: function(item){return item[1];}, optionsValue: function(item){ return item[0];},  value: selected">'
+    + '<select data-bind="options: options, optionsText: function(item){return item[1];}, optionsValue: function(item){ return item[0];}, optionsCaption: \'Choose...\', value: selected">'
     + '<select>'
     + '<!-- /ko -->'
     + '</div>'
