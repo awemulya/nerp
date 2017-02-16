@@ -628,7 +628,7 @@ def get_attr_121(obj, qry):
 def get_attr_12m(obj, filter_qry):
     filter_qry_list = filter_qry.split('=')
     filter_dict = {}
-    filter_dict[filter_qry_list[0]]=filter_qry_list[1]
+    filter_dict[filter_qry_list[0]] = filter_qry_list[1]
 
     value = obj.filter(**filter_dict)
     return value[0] if value else None
@@ -643,7 +643,7 @@ def getattr_custom(obj, attr_query, **kwargs):
         queries_length = len(queries)
         if queries_length > 1:
             for i, qry in enumerate(queries):
-                if i != queries_length-1:
+                if i != queries_length - 1:
                     value = get_attr_121(value, qry)
                 else:
                     value = get_attr_12m(value, qry)
@@ -666,3 +666,36 @@ def get_property_methods(cls):
             property_fields.append(field)
     return tuple(property_fields)
 
+
+# Returns base options of model class fields
+def get_all_field_options(cls):
+    options = []
+    for field in cls._meta.get_fields():
+
+        if field.one_to_many or field.many_to_many:
+            options.append(
+                ('%s___' % (field.name), field.name)
+            )
+        elif field.many_to_one or field.one_to_one:
+            options.append(
+                ('%s__' % (field.name), field.name)
+            )
+        else:
+            options.append(
+                ('%s' % (field.name), field.name)
+            )
+    for field in get_property_methods(cls):
+        options.append(
+            ('%s' % (field), field)
+        )
+    return tuple(options)
+
+def get_m2m_filter_options(cls):
+    options = []
+    for field in cls._meta.get_fields():
+        if field.many_to_one:
+            # TODO ignore main related model
+            # TODO (example here is ignore PaymentRecord related  field in case DeductionDetails)
+            for obj in field.related_model.objects.all():
+                options.append((('%s__id=%s;__') % (field.name, obj.id), (str(obj))))
+    return options

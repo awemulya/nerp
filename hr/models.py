@@ -831,7 +831,7 @@ class PaymentRecord(models.Model):
         return self.paid_to_date - self.paid_from_date - self.absent_days
 
     def __unicode__(self):
-        return str(self.id)
+        return 'payment-record-#%s' % (self.id)
 
     @property
     def pro_tempore_amount(self):

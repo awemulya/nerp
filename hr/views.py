@@ -45,7 +45,7 @@ from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
     emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present, \
     user_is_branch_accountant, GroupRequiredMixin, IsBranchAccountantMixin, getattr_custom, json_file_to_dict, \
-    get_property_methods
+    get_property_methods, get_all_field_options, get_m2m_filter_options
 from account.models import set_transactions, JournalEntry
 from .filters import EmployeeFilter, PayrollEntryFilter
 from django.core import serializers
@@ -1687,42 +1687,35 @@ def report_setting(request, pk=None):
 
 
 
-@login_required
-@group_required('Accountant')
-def get_report_field_options(request):
+# @login_required
+# @group_required('Accountant')
+def get_report_field_options(query):
     # deduction_details___deduction__code_name = pf - deduction;__amount
     report_model = PaymentRecord
-    params = json.loads(request.body)
-    query = params.get('query')
-    options = []
+    # params = json.loads(request.body)
+    # query = params.get('query')
     if not query:
-        # get_property_methods(report_model)
-        for field in report_model._meta.get_field():
-
-            if field.one_to_many or field.many_to_many:
-                options.append(
-                    ('%s___' % (field.name), field.name)
-                )
-            elif field.many_to_one or field.one_to_one:
-                options.append(
-                    ('%s__' % (field.name), field.name)
-                )
-            else:
-                options.append(
-                    ('%s' % (field.name), field.name)
-                )
-        for field in get_property_methods(report_model):
-            options.append(
-                ('%s' % (field), field)
-            )
+        return get_all_field_options(report_model)
     else:
         model = report_model
-        for qry in query.split(';'):
+        for qi, qry in enumerate(query.split(';')):
             splitted_12m_qry = qry.split('___')
-            for qr in splitted_12m_qry[0].split('__'):
-                field_obj = model._meta.get_field(qr)
-                if field_obj.mant_to_one or field_obj.one_to_one or field_obj.one_to_many or field_obj.many_to_many:
-                    model = field_obj.model
+            for i, qr in enumerate(splitted_12m_qry[0].split('__')):
+                if qr:
+                    field_obj = model._meta.get_field(qr)
+                    if field_obj.many_to_one or field_obj.one_to_one or field_obj.one_to_many or field_obj.many_to_many:
+                        model = field_obj.related_model
+                if not qr and i == len(splitted_12m_qry[0].split('__')) - 1:
+                    return get_all_field_options(model)
+
+            if len(splitted_12m_qry) == 2:
+                if not splitted_12m_qry[1]:
+                    # filter generating options here
+                    return get_m2m_filter_options(model)
+                # else:
+                #     return get_all_field_options(model)
+
+
                     
 
 
