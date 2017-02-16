@@ -3,15 +3,29 @@
 // App.js
 // End Dependencies
 
+// TODO loading initial query
 
-var optionVM = function (options, selected, main_vm) {
+var optionVM = function (options, selected, order, main_vm) {
     var self = this;
     self.options = ko.observableArray(options);
     self.selected = ko.observable(selected);
+    self.order = ko.observable(order);
+
+    self.remove_forward_opt_vm = function () {
+        var to_remove = [];
+        ko.utils.arrayForEach(main_vm.option_vms(), function (option_vm) {
+            if(option_vm.order() > self.order()){
+                to_remove.push(option_vm);
+            }
+        });
+        main_vm.option_vms.removeAll(to_remove);
+        main_vm.option_vm_count(self.order());
+    };
     
     self.selected.subscribe(function () {
         console.log(self.selected());
-        main_vm.compute_query()
+        self.remove_forward_opt_vm();
+        main_vm.compute_query();
         
     })
 };
@@ -21,6 +35,7 @@ var mainVM = function (params) {
     var self = this;
     // if params.query populate optionvm
     self.option_vms = ko.observableArray();
+    self.option_vm_count = ko.observable(0);
     self.query = params.value_obs;
 
     self.get_child_options = function () {
@@ -29,12 +44,13 @@ var mainVM = function (params) {
 
         App.remotePost(url, {'query': self.query()}, function (response) {
             App.hideProcessing();
-            self.option_vms.push(new optionVM(response.options, null, self));
+            self.option_vm_count(self.option_vm_count() + 1);
+            self.option_vms.push(new optionVM(response.options, null, self.option_vm_count(), self));
             console.log('success');
         }, function () {
             App.hideProcessing();
             console.log(errorThrown);
-        });
+        }, false);
     };
     self.compute_query = function(){
         var total_qry = '';

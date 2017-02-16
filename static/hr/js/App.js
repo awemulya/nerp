@@ -2,11 +2,12 @@
  * Created by wrufesh on 10/3/16.
  */
 var App = (function () {
-    var remotePostProcessing = function (url, data, defaultCallback, failureCallback) {
+    var remotePostProcessing = function (url, data, defaultCallback, failureCallback, is_async) {
         data['csrfmiddlewaretoken'] = $('[name = "csrfmiddlewaretoken"]').val();
         $.ajax({
             url: url,
             type: 'POST',
+            async: is_async,
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8",
             beforeSend: function (xhr, settings) {
@@ -88,8 +89,8 @@ var App = (function () {
     };
 
     return {
-        remotePost: function (url, data, defaultCallback, failureCallback) {
-            return remotePostProcessing(url, data, defaultCallback, failureCallback);
+        remotePost: function (url, data, defaultCallback, failureCallback, is_async) {
+            return remotePostProcessing(url, data, defaultCallback, failureCallback, is_async);
         },
         remoteMultipartPost: function (url, data, defaultCallback, failureCallback) {
             return remoteMultipartPostProcessing(url, data, defaultCallback, failureCallback);
