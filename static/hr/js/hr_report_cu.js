@@ -28,7 +28,7 @@ function ReportTableDetail() {
     var self = this;
     self.id = ko.observable();
     self.field_name = ko.observable();
-    self.field_description = ko.observable();
+    self.field_description = ko.observable('');
     self.order = ko.observable();
     self.need_total = ko.observable();
 }
