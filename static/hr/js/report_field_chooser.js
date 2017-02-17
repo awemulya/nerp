@@ -50,7 +50,7 @@ var mainVM = function (params) {
         }, function () {
             App.hideProcessing();
             console.log(errorThrown);
-        }, false);
+        }, true);
     };
     self.compute_query = function(){
         var total_qry = '';
@@ -62,6 +62,27 @@ var mainVM = function (params) {
 
     if (!self.query()){
         self.get_child_options();
+    }else{
+        // var query is ';' splitted(outer)
+        // var qry is '___' splitted(inner1)
+        // var qr is '__' splitted(inner)
+
+        
+        self.query().split(';').forEach(function(query, i){
+            query.split('___').forEach(function(qry){
+                qry.split('__').forEach(function(qr){
+
+                });
+            });
+        });
+
+
+
+        // ko.utils.arrayForEach(self.query().split(';'), function(qry){
+        //     ko.utils.arrayForEach(qry.split('___'),function(qr){
+        //         k
+        //     });
+        // });
     }
 
     self.query.subscribe(function () {
