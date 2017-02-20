@@ -58,22 +58,22 @@
                 <!-- ko foreach: report_tables -->
                 <thead>
                 <tr>
-                    <th colspan="2">{{ report_table_form.title.label }}</th>
-                    <th data-bind="editableText: title" colspan="2"></th>
+                    <th colspan="1">{{ report_table_form.title.label }}</th>
+                    <th data-bind="editableText: title" colspan="3"></th>
                 </tr>
                 <tr>
-                    <td>
+                    <th>
                         {{ report_table_detail_form.field_name.label }}
-                    </td>
-                    <td>
+                    </th>
+                    <th>
                         {{ report_table_detail_form.field_description.label }}
-                    </td>
-                    <td>
+                    </th>
+                    <th>
                         {{ report_table_detail_form.order.label }}
-                    </td>
-                    <td>
+                    </th>
+                    <th>
                         {{ report_table_detail_form.need_total.label }}
-                    </td>
+                    </th>
                 </tr>
                 </thead>
 
