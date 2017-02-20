@@ -97,7 +97,7 @@ var mainVM = function (params) {
 
 ko.components.register('report-field-chooser', {
     viewModel: mainVM,
-    template: '<div class="row">'
+    template: '<div class="">'
 
     + '<!-- ko foreach: option_vms -->'
     + '<select data-bind="options: options, optionsText: function(item){return item[1];}, optionsValue: function(item){ return item[0];}, optionsCaption: \'Choose...\', value: selected">'

@@ -1661,7 +1661,7 @@ def report_setting(request, pk=None):
                         table_detail.field_name = table_details_data.get('field_name')
                         table_detail.field_description = table_details_data.get('field_description')
                         table_detail.order = table_details_data.get('order')
-                        table_detail.need_total = table_details_data.get('need_total')
+                        table_detail.need_total = table_details_data.get('need_total', False)
                         table_detail.table = report_table
                         table_detail.save()
 

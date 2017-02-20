@@ -54,41 +54,54 @@
             {{ hr_report_form }}
 
             <h3>{% trans 'Report Tables' %}</h3>
-            <!-- ko foreach: report_tables -->
-            <div>
-                {{ report_table_form }}
-                <!-- ko foreach: table_details -->
-                <div class="row">
-                    <div class="col-lg-2">
+            <table class="table table-stripped table-bordered">
+                <!-- ko foreach: report_tables -->
+                <thead>
+                <tr>
+                    <th colspan="2">{{ report_table_form.title.label }}</th>
+                    <th data-bind="editableText: title" colspan="2"></th>
+                </tr>
+                <tr>
+                    <td>
                         {{ report_table_detail_form.field_name.label }}
-                        {{ report_table_detail_form.field_name }}
-                    </div>
-                    <div class="col-lg-4">
+                    </td>
+                    <td>
                         {{ report_table_detail_form.field_description.label }}
-{#                        {{ report_table_detail_form.field_description }}#}
+                    </td>
+                    <td>
+                        {{ report_table_detail_form.order.label }}
+                    </td>
+                    <td>
+                        {{ report_table_detail_form.need_total.label }}
+                    </td>
+                </tr>
+                </thead>
+
+                <tbody>
+                <!-- ko foreach: table_details -->
+                <tr>
+                    <td data-bind="editableText: field_name"></td>
+                    <td>
                         <report-field-chooser params="{
                             value_obs : field_description
                         }"></report-field-chooser>
-                    </div>
-                    <div class="col-lg-3">
-                        {{ report_table_detail_form.order.label }}
-                        {{ report_table_detail_form.order }}
-                    </div>
-                    <div class="col-lg-3">
-                        {{ report_table_detail_form.need_total.label }}
-                        {{ report_table_detail_form.need_total }}
-                    </div>
-                </div>
+                    </td>
+                    <td data-bind="editableText: order, numeric: true"></td>
+                    <td>{{ report_table_detail_form.need_total }}</td>
+                </tr>
                 <!-- /ko -->
-                <div>
-                    <button class='btn btn-primary'
-                            data-bind="click: add_new_field">{% trans 'Add New Table Field' %}</button>
-                </div>
-            </div>
+                <tr>
+                    <td colspan="4">
+                        <button class='btn btn-primary btn-raised'
+                                data-bind="click: add_new_field">{% trans 'Add New Table Field' %}</button>
+                    </td>
+                </tr>
+                </tbody>
+                <!-- /ko -->
+            </table>
 
-            <!-- /ko -->
-            <button class='btn btn-primary' data-bind="click: add_new_table">{% trans 'Add New Table' %}</button>
-            <input type="submit" class="btn btn-primary btn-raised" vlaue="Save">
+            <button class='btn btn-primary btn-raised' data-bind="click: add_new_table">{% trans 'Add New Table' %}</button>
+            <input type="submit" class="btn btn-primary btn-raised" value="Save">
         </form>
     </div>
 {% endblock %}
