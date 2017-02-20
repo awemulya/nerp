@@ -79,7 +79,7 @@ function ReportHR(obj_id) {
         }, function () {
             App.hideProcessing();
             console.log(errorThrown);
-        }, true);
+        });
     };
 
 }

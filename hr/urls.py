@@ -162,6 +162,7 @@ urlpatterns = patterns('',
                        # End ProTempore Crud
 
                        url(r'^get-report-field/$', views.get_report_field_options,
-                           name='get-report-field')
-                       # End ProTempore Crud
+                           name='get-report-field'),
+                       url(r'^get-selected-options/$', views.load_selected_options,
+                           name='get-selected-options'),
                        )

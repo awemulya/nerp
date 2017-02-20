@@ -1686,6 +1686,63 @@ def report_setting(request, pk=None):
             })
 
 
+@login_required
+@group_required('Accountant')
+def load_selected_options(request):
+    # deduction_details___deduction__code_name = pf - deduction;__amount
+    res = {}
+    selected_options = []
+
+    report_model = PaymentRecord
+    params = json.loads(request.body)
+    query = params.get('query')
+    if not query:
+         res['options'] = get_all_field_options(report_model)
+         return JsonResponse(res)
+    else:
+        model = report_model
+        for qi, qry in enumerate(query.split(';')):
+            splitted_12m_qry = qry.split('___')
+            for i, qr in enumerate(splitted_12m_qry[0].split('__')):
+                if qr:
+                    field_obj = model._meta.get_field(qr)
+                    if field_obj.many_to_one or field_obj.one_to_one or field_obj.one_to_many or field_obj.many_to_many:
+
+                        if len(splitted_12m_qry) == 2 and i == len(splitted_12m_qry[0].split('__')) - 1:
+                            selected_options.append(
+                                {
+                                    'options': get_all_field_options(model),
+                                    'selected': ('%s___') % qr
+                                }
+                            )
+                        else:
+                            selected_options.append(
+                                {
+                                    'options': get_all_field_options(model),
+                                    'selected': ('%s__') % qr
+                                }
+                            )
+                        model = field_obj.related_model
+                    else:
+                        selected_options.append(
+                            {
+                                'options': get_all_field_options(model),
+                                'selected': ('%s') % qr
+                            }
+                        )
+            if len(splitted_12m_qry) == 2:
+                if splitted_12m_qry[1]:
+                    # filter generating options here
+                    selected_options.append(
+                        {
+                            'options': get_m2m_filter_options(model),
+                            'selected': ('%s;__') % (splitted_12m_qry[1])
+                        }
+                    )
+    res['selected_options'] = selected_options
+    return JsonResponse(res)
+
+
 
 @login_required
 @group_required('Accountant')
