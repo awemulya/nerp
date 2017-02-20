@@ -1735,9 +1735,8 @@ def load_selected_options(request):
                         'selected': ('%s;__') % (splitted_12m_qry[1])
                     }
                 )
-res['selected_options'] = selected_options
-return JsonResponse(res)
-
+    res['selected_options'] = selected_options
+    return JsonResponse(res)
 
 
 @login_required
