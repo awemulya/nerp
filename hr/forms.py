@@ -11,7 +11,7 @@ from users.models import User
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, ReportTableDetail, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
     PayrollAccountant, ProTempore, EmployeeGradeNumberPause, TaxDeduction, EmployeeFacility
-from django.forms.widgets import Select, DateInput, NumberInput, CheckboxInput, DateTimeInput, TextInput  # , MultiWidget
+from django.forms.widgets import Select, DateInput, NumberInput, CheckboxInput, DateTimeInput, TextInput   # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
 from .models import Deduction, IncentiveName, AllowanceName, Incentive, Allowance, EmployeeAccount, IncomeTaxScheme, \
@@ -506,7 +506,7 @@ class EmployeeForm(HTML5BootstrapModelForm):
 
     class Meta:
         model = Employee
-        exclude = ('accounts', 'incentives')
+        exclude = ('accounts', 'incentives', 'name_en', 'name_ne')
 
 
 class IncentiveNameForm(HTML5BootstrapModelForm):
@@ -518,13 +518,12 @@ class IncentiveNameForm(HTML5BootstrapModelForm):
 class AllowanceNameForm(HTML5BootstrapModelForm):
     class Meta:
         model = AllowanceName
-        exclude = ('account_category',)
+        fields = ('name', 'code_name', 'description', 'is_tax_free')
         widgets = {
             'name': TextInput(attrs={'data-bind': "value: name",}),
             'code_name': TextInput(attrs={'data-bind': "value: code_name",}),
-            'name_en': TextInput(attrs={'data-bind': "value: name_en",}),
-            'name_ne': TextInput(attrs={'data-bind': "value: name_ne",}),
             'description': TextInput(attrs={'data-bind': "value: description",}),
+            'is_tax_free': CheckboxInput(attrs={'data-bind': "checked: is_tax_free",}),
         }
 
 
