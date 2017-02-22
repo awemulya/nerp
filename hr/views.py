@@ -1567,42 +1567,55 @@ def get_report(request):
             template_path = '/'.join(report.template.split('/')[-2:])
 
             record_table_list = []
+
+            tables = []
             for payment_record in payment_record_list:
+
                 # create table data here
                 report_tables = report.report_tables.all()
                 record_table = {}
                 for table in report_tables:
-                    table_fields = json_file_to_dict(table.table_json)
-                    fields = table_fields.get('fields')
-                    total_fields = table_fields.get('totalling_fields')
-                    data = []
-                    totals = {}
-                    for key in total_fields.keys():
-                        totals[key] = 0
+                    fields = table.table_details.order_by('order')
+
+                    # TODO in future: make table using multiple rowspan and colspan of heading by assigning field parent text
+                    # TODO above is my first approach also think of other approach
+
+                    # Table field data is composed of (actual data, rowspan, colsapan)
+                    record_table['name'] = table.title
+                    record_table['data'] = [[(field.field_name, 1, 1) for field in fields]]
+                    # TODO check fields order by ipdb
+
+                    total_fields = [[_('Total'), 1, 1]]
+                    for i, fld in enumerate(fields):
+                        if fld.need_total:
+                            total_fields.append([0, 1, 1])
+                        else:
+                            total_fields.append(['', 1, 1])
+
                     for record in payment_record[0]:
-                        row = {}
-                        for key in fields.keys():
-                            row[key] = getattr_custom(
-                                record, fields[key]
+                        field_data = []
+                        for i, field in enumerate(fields):
+                            value = getattr_custom(
+                                record, field.field_description
                             )
+                            field_data.append(
+                                (value, 1, 1)
+                            )
+                            if field.need_total:
+                                total_fields[i + 1][0] += value
+                        record_table['data'].append(field_data)
+                    record_table['data'].append(total_fields)
 
-                        for key in total_fields.keys():
-                            totals[key] += getattr_custom(
-                                record, fields[key]
-                            )
-                        data.append(row)
-                    record_table['_'.join(table.title.lower().split(' '))] = {}
-                    record_table['_'.join(table.title.lower().split(' '))]['data'] = data
-                    record_table['_'.join(table.title.lower().split(' '))]['totals'] = totals
+                    # TODO manage rowspan and colspan of total fields here and push it to record_table[data]
                     if distinguish_entry:
-                        record_table['_'.join(table.title.lower().split(' '))]['entry_datetime'] = payment_record[
+                        record_table['entry_datetime'] = payment_record[
                             1]  # Tuple date, time
-                        record_table['_'.join(table.title.lower().split(' '))]['date_range'] = payment_record[
+                        record_table['date_range'] = payment_record[
                             2]  # Tuple from, to
+                    tables.append(record_table)
 
-                record_table_list.append(record_table)
 
-            context['tables'] = record_table_list
+            context['tables'] = tables
 
             return render(request, template_path, context)
 
@@ -1748,8 +1761,8 @@ def get_report_field_options(request):
     params = json.loads(request.body)
     query = params.get('query')
     if not query:
-         res['options'] = get_all_field_options(report_model)
-         return JsonResponse(res)
+        res['options'] = get_all_field_options(report_model)
+        return JsonResponse(res)
     else:
         model = report_model
         for qi, qry in enumerate(query.split(';')):
@@ -1770,7 +1783,6 @@ def get_report_field_options(request):
                     return JsonResponse(res)
 
     return JsonResponse(res)
-
 
 
 @login_required

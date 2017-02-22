@@ -7,8 +7,6 @@
 
 {% block report_header %}{% endblock %}
 
-{% block report_header_table %}{% endblock %}
-
 {% block report_body %}
     <h1>{{ report_title }}</h1>
     <h5>{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}</h5>
@@ -31,60 +29,7 @@
     <p>{% trans 'PF deduction of this branch of this detail has been deposited to the speciified bank above' %}</p>
     {#    End Messege text#}
 {% endblock %}
-{% block report_main_table %}
-    {#    Detail table here #}
-    {% for table in tables %}
-        <table class="table table-bordered">
-        <thead>
-        {% if distinguish_entry %}
-            <tr>
-            <td colspan="4">{% trans 'Range' %}: {{ table.sanchaya_kosh_bibaran.date_range.0 }} {% trans 'To' %} {{ table.sanchaya_kosh_bibaran.date_range.1 }}</td>
-            <td colspan="8">{% trans 'Entry' %} {% trans 'Date' %}: {{ table.sanchaya_kosh_bibaran.entry_datetime.0 }}, {% trans 'Entry' %} {% trans 'Time' %}: {{ table.sanchaya_kosh_bibaran.entry_datetime.1 }}</td>
-            </tr>
-        {% endif %}
-        <tr>
-            <td>{% trans 'SN' %}</td>
-            <td>{% trans 'Personal Number' %}</td>
-            <td>{% trans 'Designation' %}</td>
-            <td>{% trans 'PF ID Number' %}</td>
-            <td>{% trans 'Employee Name' %}</td>
-            <td>{% trans 'Total Deduction' %}</td>
-            <td>{% trans 'Compulsory Deduction' %}</td>
-            <td>{% trans 'Addition in deduction' %}</td>
-        </tr>
-        </thead>
 
-        <tbody>
-
-        {% for row in table.sanchaya_kosh_bibaran.data %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ row.personal_number }}</td>
-                <td>{{ row.designation }}</td>
-                <td>{{ row.pf_id_number }}</td>
-                <td>{{ row.employee_name }}</td>
-                <td>{{ row.total_deduction }}</td>
-                {% sub row.total_deduction row.addition_in_deduction as diff %}
-                <td>{{ diff }}</td>
-                <td>{{ row.addition_in_deduction }}</td>
-            </tr>
-        {% endfor %}
-
-        <tr>
-            <td colspan="5">{% trans 'Total' %}</td>
-            <td>{{ table.sanchaya_kosh_bibaran.totals.total_deduction }}</td>
-            {% sub table.sanchaya_kosh_bibaran.totals.total_deduction table.sanchaya_kosh_bibaran.totals.addition_in_deduction as total_diff %}
-            <td>{{ total_diff }}</td>
-            <td>{{ table.sanchaya_kosh_bibaran.totals.addition_in_deduction }}</td>
-        </tr>
-        </tbody>
-    {% endfor %}
-
-
-</table>
-
-    {#    End Detail table here #}
-{% endblock %}
 {% block report_footer %}
 
     {#    This is report footer#}
