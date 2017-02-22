@@ -1656,6 +1656,10 @@ def report_setting(request, pk=None):
                 report_hr.for_employee_type = params.get('for_employee_type')
                 report_hr.save()
 
+                for table_to_dlt in params.get('to_remove'):
+                    if table_to_dlt.get('id'):
+                        ReportTable.objects.get(id=table_to_dlt.get('id')).delete()
+
                 for report_table_data in params.get('report_tables'):
                     if report_table_data.get('id'):
                         report_table = ReportTable.objects.get(id=report_table_data.get('id'))
@@ -1664,6 +1668,10 @@ def report_setting(request, pk=None):
                     report_table.title = report_table_data.get('title')
                     report_table.report = report_hr
                     report_table.save()
+
+                    for field_to_dlt in report_table_data.get('to_remove'):
+                        if field_to_dlt.get('id'):
+                            ReportTableDetail.objects.get(id=field_to_dlt.get('id')).delete()
 
                     for table_details_data in report_table_data.get('table_details'):
                         if table_details_data.get('id'):

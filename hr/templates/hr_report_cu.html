@@ -54,12 +54,13 @@
             {{ hr_report_form }}
 
             <h3>{% trans 'Report Tables' %}</h3>
+            <!-- ko foreach: report_tables -->
+            <button class="btn btn-raised btn-danger" data-bind="click: $root.remove_table">{% trans 'Remove Table' %}</button>
             <table class="table table-stripped table-bordered">
-                <!-- ko foreach: report_tables -->
                 <thead>
                 <tr>
                     <th colspan="1">{{ report_table_form.title.label }}</th>
-                    <th data-bind="editableText: title" colspan="3"></th>
+                    <th data-bind="editableText: title" colspan="4"></th>
                 </tr>
                 <tr>
                     <th>
@@ -73,6 +74,9 @@
                     </th>
                     <th>
                         {{ report_table_detail_form.need_total.label }}
+                    </th>
+                    <th>
+                        {% trans 'Remove' %}
                     </th>
                 </tr>
                 </thead>
@@ -88,17 +92,18 @@
                     </td>
                     <td data-bind="editableText: order, numeric: true"></td>
                     <td>{{ report_table_detail_form.need_total }}</td>
+                    <td><button class="btn btn-raised btn-danger" data-bind="click: $parent.remove_field">{% trans 'Remove' %}</button></td>
                 </tr>
                 <!-- /ko -->
                 <tr>
-                    <td colspan="4">
+                    <td colspan="5">
                         <button class='btn btn-primary btn-raised'
                                 data-bind="click: add_new_field">{% trans 'Add New Table Field' %}</button>
                     </td>
                 </tr>
                 </tbody>
-                <!-- /ko -->
             </table>
+            <!-- /ko -->
 
             <button class='btn btn-primary btn-raised' data-bind="click: add_new_table">{% trans 'Add New Table' %}</button>
             <input type="submit" class="btn btn-primary btn-raised" value="Save">

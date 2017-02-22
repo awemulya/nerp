@@ -38,12 +38,18 @@ function ReportTable(obj_id) {
     self.id = ko.observable();
     self.title = ko.observable();
     self.table_details = ko.observableArray();
+    self.to_remove = ko.observableArray();
     if (!obj_id) {
         self.table_details.push(new ReportTableDetail());
     }
 
     self.add_new_field = function () {
         self.table_details.push(new ReportTableDetail());
+    };
+
+    self.remove_field = function(field){
+        self.table_details.remove(field);
+        self.to_remove.push(field);
     };
 }
 
@@ -56,12 +62,19 @@ function ReportHR(obj_id) {
     self.template = ko.observable();
     self.for_employee_type = ko.observable();
     self.report_tables = ko.observableArray();
+    self.to_remove = ko.observableArray();
     if (!obj_id) {
         self.report_tables.push(new ReportTable(obj_id));
     }
 
     self.add_new_table = function () {
         self.report_tables.push(new ReportTable(obj_id));
+    };
+
+    self.remove_table = function(table){
+        self.report_tables.remove(table);
+        self.to_remove.push(table);
+        table.to_remove([]);
     };
 
     self.save_report = function () {
