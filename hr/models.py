@@ -911,6 +911,11 @@ class DeductionDetail(models.Model):
         return "%s-[%s]" % (self.deduction.name, str(self.amount))
 
 
+    @property
+    def compulsory_deduction(self):
+        return self.amount - self.amount_added_before_deduction
+
+
 class IncentiveDetail(models.Model):
     incentive = models.ForeignKey(
         IncentiveName,

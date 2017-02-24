@@ -924,7 +924,7 @@ msgstr "पुर्खा साखा"
 
 #: hr/forms.py:155
 msgid "Distinguish Entry"
-msgstr "पद"
+msgstr "दाखिला छुटाउनुहोस"
 
 #: hr/forms.py:169 hr/forms.py:225
 msgid "From date must be less than to date"
