@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-26 12:28+0545\n"
+"POT-Creation-Date: 2017-02-24 14:45+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,8 @@ msgstr ""
 
 #: account/forms.py:20 account/templates/list_parties.html.py:22
 #: hr/templates/report_templates/nalakosh_bima_katti.html:18
-#: hr/templates/report_templates/sanchayakosh_katti.html:18
+#: hr/templates/report_templates/payment_detail_report.html:18
+#: hr/templates/report_templates/sanchayakosh_katti.html:24
 #: hr/templates/report_templates/social_security_tax.html:18
 #: inventory/templates/pdf/purchase_order_pdf.html:20
 #: inventory/templates/purchase_order.html:41 inventory/views.py:217
@@ -43,14 +44,15 @@ msgstr "पान न."
 #: account/templates/account/category_list_paginated.html:22
 #: account/templates/list_parties.html:21
 #: core/templates/core/budgethead_list.html:22
-#: core/templates/core/donor_list.html:22 hr/templates/allowance.html.py:98
-#: hr/templates/allowance.html:119 hr/templates/deduction.html.py:82
+#: core/templates/core/donor_list.html:22 hr/models.py:151
+#: hr/templates/allowance.html:115 hr/templates/deduction.html.py:82
 #: hr/templates/deduction_cu.html:19 hr/templates/employee_list.html.py:51
 #: hr/templates/hr/branchoffice_list.html:31
 #: hr/templates/hr/taxdeduction_list.html:31
-#: hr/templates/payroll_entry.html:263
+#: hr/templates/payroll_entry.html:261
 #: hr/templates/report_templates/nalakosh_bima_katti.html:17
-#: hr/templates/report_templates/sanchayakosh_katti.html:17
+#: hr/templates/report_templates/payment_detail_report.html:17
+#: hr/templates/report_templates/sanchayakosh_katti.html:23
 #: hr/templates/report_templates/social_security_tax.html:17
 #: inventory/forms.py:21 inventory/templates/demand_form.html.py:237
 #: inventory/templates/entry_report.html:167
@@ -190,7 +192,8 @@ msgstr "मेट्नुहोस"
 #: account/templates/view_ledger.html:32
 #: hr/templates/hr/branchoffice_list.html:32
 #: hr/templates/report_templates/nalakosh_bima_katti.html:19
-#: hr/templates/report_templates/sanchayakosh_katti.html:19
+#: hr/templates/report_templates/payment_detail_report.html:19
+#: hr/templates/report_templates/sanchayakosh_katti.html:25
 #: hr/templates/report_templates/social_security_tax.html:19
 msgid "Code"
 msgstr "कोड"
@@ -318,8 +321,8 @@ msgstr "नयाँ"
 msgid "Categories"
 msgstr "वर्गहरु"
 
-#: account/templates/account/category_list_paginated.html:23
-#: hr/templates/allowance.html:105 hr/templates/hr/taxdeduction_list.html:32
+#: account/templates/account/category_list_paginated.html:23 hr/models.py:156
+#: hr/templates/hr/taxdeduction_list.html.py:32
 #: inventory/templates/depreciation_report.html:31
 #: inventory/templates/partials/inventory_account_page.html:47
 #: inventory/templates/stock_entry.html:41
@@ -381,14 +384,20 @@ msgstr "न."
 #: hr/templates/report_templates/nalakosh_bima_katti.html:80
 #: hr/templates/report_templates/nalakosh_bima_katti.html:84
 #: hr/templates/report_templates/nalakosh_bima_katti.html:88
-#: hr/templates/report_templates/sanchayakosh_katti.html:14
-#: hr/templates/report_templates/sanchayakosh_katti.html:84
-#: hr/templates/report_templates/sanchayakosh_katti.html:88
-#: hr/templates/report_templates/sanchayakosh_katti.html:92
+#: hr/templates/report_templates/payment_detail_report.html:14
+#: hr/templates/report_templates/payment_detail_report.html:32
+#: hr/templates/report_templates/payment_detail_report.html:115
+#: hr/templates/report_templates/payment_detail_report.html:119
+#: hr/templates/report_templates/payment_detail_report.html:123
+#: hr/templates/report_templates/sanchayakosh_katti.html:20
+#: hr/templates/report_templates/sanchayakosh_katti.html:115
+#: hr/templates/report_templates/sanchayakosh_katti.html:119
+#: hr/templates/report_templates/sanchayakosh_katti.html:123
 #: hr/templates/report_templates/social_security_tax.html:14
-#: hr/templates/report_templates/social_security_tax.html:73
-#: hr/templates/report_templates/social_security_tax.html:77
+#: hr/templates/report_templates/social_security_tax.html:40
 #: hr/templates/report_templates/social_security_tax.html:81
+#: hr/templates/report_templates/social_security_tax.html:85
+#: hr/templates/report_templates/social_security_tax.html:89
 #: inventory/models.py:936 inventory/models.py:967
 #: inventory/templates/demand_form.html:247
 #: inventory/templates/demand_form.html:261
@@ -457,13 +466,14 @@ msgstr "न."
 #: project/templates/project/imprestjournalvoucher_list.html:25
 #: project/templates/project/imprestledger_list.html:25
 #: project/templates/project/reimbursement_list.html:24
+#: templates/hr_report_base.html:96
 msgid "Date"
 msgstr "मिति"
 
 #: account/templates/receipt.html:45
 #: hr/templates/report_templates/nalakosh_bima_katti.html:37
-#: hr/templates/report_templates/sanchayakosh_katti.html:39
-#: hr/templates/report_templates/social_security_tax.html:37
+#: hr/templates/report_templates/payment_detail_report.html:36
+#: hr/templates/report_templates/social_security_tax.html:44
 #: inventory/templates/demand_form.html:73
 #: inventory/templates/depreciation_report.html:29
 #: inventory/templates/entry_report.html:60
@@ -483,6 +493,7 @@ msgstr "मिति"
 #: inventory/templates/yearly_report.html:34
 #: inventory/templates/yearly_report_detail.html:40 inventory/views.py:155
 #: inventory/views.py:233 inventory/views.py:307
+#: templates/hr_report_base.html:103
 msgid "SN"
 msgstr "क. स."
 
@@ -510,14 +521,14 @@ msgid "Invoice No."
 msgstr "इन्भ्वाइस न."
 
 #: account/templates/receipt.html:49 hr/models.py:35
-#: hr/templates/payroll_entry.html:171 hr/templates/payroll_entry.html:201
-#: hr/templates/payroll_entry.html:264 hr/templates/payroll_entry.html:297
+#: hr/templates/payroll_entry.html:169 hr/templates/payroll_entry.html:199
+#: hr/templates/payroll_entry.html:262 hr/templates/payroll_entry.html:295
 #: hr/templates/report_templates/nalakosh_bima_katti.html:23
 #: hr/templates/report_templates/nalakosh_bima_katti.html:24
 #: hr/templates/report_templates/nalakosh_bima_katti.html:25
-#: hr/templates/report_templates/sanchayakosh_katti.html:23
-#: hr/templates/report_templates/sanchayakosh_katti.html:24
-#: hr/templates/report_templates/sanchayakosh_katti.html:25
+#: hr/templates/report_templates/sanchayakosh_katti.html:29
+#: hr/templates/report_templates/sanchayakosh_katti.html:30
+#: hr/templates/report_templates/sanchayakosh_katti.html:31
 #: hr/templates/report_templates/social_security_tax.html:23
 #: hr/templates/report_templates/social_security_tax.html:24
 #: hr/templates/report_templates/social_security_tax.html:25
@@ -715,8 +726,8 @@ msgstr "नेपाली"
 msgid "Update"
 msgstr "अपडेट"
 
-#: app/utils/mixins.py:114 hr/templates/hr_index.html.py:129
-#: hr/templates/hr_index.html:139 project/views.py:33
+#: app/utils/mixins.py:114 hr/templates/hr_index.html.py:135
+#: hr/templates/hr_index.html:145 project/views.py:33
 #: training/templates/training_form.html:132
 msgid "Add"
 msgstr "थप्नुहोस"
@@ -803,14 +814,16 @@ msgid "Donors"
 msgstr ""
 
 #: core/templates/employee_form.html:4 core/templates/employee_form.html:9
-#: core/templates/list_employees.html:50
+#: core/templates/list_employees.html:50 hr/models.py:406
 #: hr/templates/hr/protempore_list.html:31 hr/templates/hr_index.html.py:31
-#: hr/templates/payroll_entry.html:114 hr/templates/payroll_entry.html:293
+#: hr/templates/payroll_entry.html:112 hr/templates/payroll_entry.html:291
 msgid "Employee"
 msgstr "कर्मचारी"
 
 #: core/templates/employee_form.html:8 core/templates/list_employees.html:4
 #: core/templates/list_employees.html:8
+msgid "Employees"
+msgstr "कर्मचारीहरु"
 
 #: hr/bsdate.py:7
 msgid "Baisakh"
@@ -821,11 +834,15 @@ msgid "Jestha"
 msgstr "जेस्ठ"
 
 #: hr/bsdate.py:9
-msgid "Aasada"
+#, fuzzy
+#| msgid "Aasada"
+msgid "Aasad"
 msgstr "असाड"
 
 #: hr/bsdate.py:10
-msgid "Shraawan"
+#, fuzzy
+#| msgid "Shraawan"
+msgid "Shrawan"
 msgstr "श्रावन"
 
 #: hr/bsdate.py:11
@@ -837,7 +854,6 @@ msgid "Asoj"
 msgstr "असोज"
 
 #: hr/bsdate.py:13
-
 msgid "Kartik"
 msgstr "कार्तिक"
 
@@ -846,8 +862,8 @@ msgid "Mansir"
 msgstr "मङ्सिर"
 
 #: hr/bsdate.py:15
-msgid "Poush"
-msgstr "पौष"
+msgid "Push"
+msgstr ""
 
 #: hr/bsdate.py:16
 msgid "Magh"
@@ -869,47 +885,75 @@ msgstr ""
 msgid "Group"
 msgstr "समूह"
 
-#: hr/forms.py:94 hr/models.py:890
+#: hr/forms.py:94 hr/models.py:985
 #, fuzzy
 msgid "All Type"
 msgstr "सबै प्रकार"
 
-#: hr/forms.py:95 hr/models.py:312 hr/models.py:888
+#: hr/forms.py:95 hr/models.py:336 hr/models.py:983
 msgid "Permanent"
 msgstr ""
 
-#: hr/forms.py:96 hr/models.py:313 hr/models.py:889
+#: hr/forms.py:96 hr/models.py:337 hr/models.py:984
 msgid "Temporary"
 msgstr ""
 
-#: hr/forms.py:156 hr/forms.py:212
+#: hr/forms.py:134
+#, fuzzy
+#| msgid "Yearly Report"
+msgid "Select Report"
+msgstr "वार्षिक प्रतिवेदन"
+
+#: hr/forms.py:140 hr/templates/payroll_entry.html.py:87
+#, fuzzy
+#| msgid "Borrow Date"
+msgid "From Date"
+msgstr "लिएको मिति"
+
+#: hr/forms.py:146 hr/templates/payroll_entry.html.py:95
+#, fuzzy
+#| msgid "Date"
+msgid "To Date"
+msgstr "मिति"
+
+#: hr/forms.py:151
+#, fuzzy
+#| msgid "Parent Branch"
+msgid "Select Branch"
+msgstr "पुर्खा साखा"
+
+#: hr/forms.py:155
+msgid "Distinguish Entry"
+msgstr "पद"
+
+#: hr/forms.py:169 hr/forms.py:225
 msgid "From date must be less than to date"
 msgstr ""
 
-#: hr/forms.py:171
+#: hr/forms.py:184
 msgid "Account should be unique."
 msgstr ""
 
-#: hr/forms.py:191
+#: hr/forms.py:204
 msgid "This field is needed if it is a yearly allowance"
 msgstr ""
 
-#: hr/forms.py:223
+#: hr/forms.py:236
 #, python-format
 msgid ""
 "From date cannot be less than employee last paid date. Last paid on "
 "%(hrbs_date)s"
 msgstr ""
 
-#: hr/forms.py:230
+#: hr/forms.py:243
 msgid "This range overlaps with previous range entry."
 msgstr ""
 
-#: hr/forms.py:674
+#: hr/forms.py:735
 msgid "Same employee cannot be assigned as pro tempore."
 msgstr ""
 
-#: hr/forms.py:676
+#: hr/forms.py:737
 msgid "Dismiss date must be greater than appoint date"
 msgstr ""
 
@@ -952,128 +996,113 @@ msgstr "वार्षिक"
 msgid "Daily"
 msgstr ""
 
-#: hr/models.py:72
+#: hr/models.py:86
 msgid "Grade Scale Validities"
 msgstr ""
 
-#: hr/models.py:165
+#: hr/models.py:186
 msgid "Allowance Validities"
 msgstr ""
 
-#: hr/models.py:240
+#: hr/models.py:262
 #, fuzzy
 #| msgid "Officer's"
 msgid "Office Branch"
 msgstr "अधिकृतको"
 
-#: hr/models.py:241
+#: hr/models.py:263
 #, fuzzy
 #| msgid "Officer's"
 msgid "Office Branches"
 msgstr "अधिकृतको"
 
-#: hr/models.py:260
+#: hr/models.py:282
 msgid "Deduction Validities"
 msgstr ""
 
-#: hr/models.py:316
+#: hr/models.py:340
 #, fuzzy
 #| msgid "Activities"
 msgid "Active"
 msgstr "क्रियाकलापहरु"
 
-#: hr/models.py:317
+#: hr/models.py:341
 msgid "Inactive"
 msgstr ""
 
-#: hr/models.py:318
+#: hr/models.py:342
 msgid "Salary Paused"
 msgstr ""
 
-#: hr/models.py:330
+#: hr/models.py:354
 msgid "Male"
 msgstr ""
 
-#: hr/models.py:330
+#: hr/models.py:354
 msgid "Female"
 msgstr ""
 
-#: hr/models.py:332 hr/models.py:682
+#: hr/models.py:356 hr/models.py:736
 msgid "Married"
 msgstr ""
 
-#: hr/models.py:332 hr/models.py:682
+#: hr/models.py:356 hr/models.py:736
 msgid "Unmarried"
 msgstr ""
 
-#: hr/models.py:665
+#: hr/models.py:719
 #, fuzzy
 #| msgid "Register"
 msgid "Registered"
 msgstr "दर्ता गर्नु"
 
-#: hr/models.py:666
+#: hr/models.py:720
 msgid "Ready for Payment"
 msgstr ""
 
-#: hr/models.py:667
+#: hr/models.py:721
 #, fuzzy
 #| msgid "Fine Paid"
 msgid "Paid"
 msgstr "तिरेको जरिमाना"
 
-#: hr/models.py:864
+#: hr/models.py:750 hr/templates/report_templates/payment_detail_report.html:52
+msgid "Remuneration Tax"
+msgstr ""
+
+#: hr/models.py:751 hr/templates/report_templates/payment_detail_report.html:51
+#: hr/templates/report_templates/social_security_tax.html:47
+msgid "Social Security Tax"
+msgstr ""
+
+#: hr/models.py:958
 msgid "Account must be of Category BASIC SALARY or DEDUCTION"
 msgstr ""
 
-#: hr/models.py:902
-msgid ""
-"Select if deduction amount data in this report only belongs to particular "
-"deduction."
-msgstr ""
-
-#: hr/models.py:909
-msgid ""
-"Select if incentive amount data in this report only belongs to particular "
-"incentive."
-msgstr ""
-
-#: hr/models.py:916
-msgid ""
-"Select if allowance amount data in this report only belogs to particular "
-"allowance."
-msgstr ""
-
-#: hr/models.py:924
-msgid ""
-"Select if tax amount data in this report only belogs to particular tax "
-"deduction."
-msgstr ""
-
-#: hr/models.py:962 hr/models.py:966
+#: hr/models.py:1045 hr/models.py:1049
 msgid "Remuneration tax discount for married employee on taxable amount."
 msgstr ""
 
-#: hr/models.py:972
+#: hr/models.py:1055
 msgid ""
 "Remuneration tax additional discount for disabled employee on taxable amount."
 "(%)"
 msgstr ""
 
-#: hr/models.py:976
+#: hr/models.py:1059
 msgid "Discount for female on evaluated remuneration tax. (%)"
 msgstr ""
 
-#: hr/serializers.py:135 hr/serializers.py:217 hr/serializers.py:286
+#: hr/serializers.py:148 hr/serializers.py:230 hr/serializers.py:299
 msgid "Invalid AD date. Date format: YYYY-MM-DD "
 msgstr ""
 
-#: hr/serializers.py:140 hr/serializers.py:222 hr/serializers.py:291
+#: hr/serializers.py:153 hr/serializers.py:235 hr/serializers.py:304
 msgid "Invalid BS date. Date format: YYYY-MM-DD "
 msgstr ""
 
-#: hr/serializers.py:153 hr/serializers.py:158 hr/serializers.py:235
-#: hr/serializers.py:240 hr/serializers.py:304 hr/serializers.py:309
+#: hr/serializers.py:166 hr/serializers.py:171 hr/serializers.py:248
+#: hr/serializers.py:253 hr/serializers.py:317 hr/serializers.py:322
 msgid "New validity must be greater than previous validity"
 msgstr ""
 
@@ -1085,71 +1114,66 @@ msgstr ""
 msgid "Configure"
 msgstr ""
 
-#: hr/templates/allowance.html:28 hr/templates/hr_base.html.py:23
-#: hr/templates/hr_index.html:17 hr/templates/hr_index.html.py:139
-#: hr/templates/hr_index.html:144 hr/templates/hr_index.html.py:159
-#: hr/templates/hr_index.html:164
+#: hr/templates/allowance.html:34 hr/templates/hr_base.html.py:19
+#: hr/templates/hr_index.html:17 hr/templates/hr_index.html.py:145
+#: hr/templates/hr_index.html:150 hr/templates/hr_index.html.py:165
+#: hr/templates/hr_index.html:170
 msgid "Payroll"
 msgstr "तलबी विवरण"
 
-#: hr/templates/allowance.html:28 hr/templates/allowance.html.py:29
+#: hr/templates/allowance.html:34 hr/templates/allowance.html.py:35
+#: hr/templates/report_templates/payment_detail_report.html:32
+#: hr/templates/report_templates/social_security_tax.html:40
 #: inventory/templates/entry_report.html:10
 #: inventory/templates/list_entry_reports.html:4
 #: inventory/templates/list_entry_reports.html:8
 #: inventory/templates/transaction_list.html:64
+#: templates/hr_report_base.html:96
 msgid "Entry"
 msgstr "दाखिला"
 
-#: hr/templates/allowance.html:29 hr/templates/hr_index.html.py:120
-#: hr/templates/hr_index.html:134 hr/templates/hr_index.html.py:144
-#: hr/templates/hr_index.html:154
+#: hr/templates/allowance.html:35 hr/templates/hr_index.html.py:126
+#: hr/templates/hr_index.html:140 hr/templates/hr_index.html.py:150
+#: hr/templates/hr_index.html:160
 #: inventory/templates/inventory/stockentry_list.html:4
 msgid "List"
 msgstr "सुची "
 
-#: hr/templates/allowance.html:49 ils/templates/view_record.html.py:197
+#: hr/templates/allowance.html:55 ils/templates/view_record.html.py:197
 msgid "Available"
 msgstr "उपलब्ध"
 
-#: hr/templates/allowance.html:49
+#: hr/templates/allowance.html:55
 #, fuzzy
-
 msgid "Allowances"
 msgstr "भत्ताहरू"
 
-#: hr/templates/allowance.html:98
-
-msgid "Allowance"
-msgstr "भत्ता"
-
-
-#: hr/templates/allowance.html:119 hr/templates/employee_list.html.py:53
-#: hr/templates/payroll_entry.html:116
+#: hr/templates/allowance.html:115 hr/templates/employee_list.html.py:53
+#: hr/templates/payroll_entry.html:114
+#: hr/templates/report_templates/payment_detail_report.html:40
 msgid "Grade"
 msgstr "तह"
 
-#: hr/templates/allowance.html:120
-
+#: hr/templates/allowance.html:116
 msgid "Sum Type"
 msgstr "प्रकार"
 
-
-#: hr/templates/allowance.html:121 hr/templates/deduction.html.py:84
+#: hr/templates/allowance.html:117 hr/templates/deduction.html.py:84
 #: inventory/templates/depreciation_report.html:45
 msgid "Value"
 msgstr "मूल्य"
 
-#: hr/templates/allowance.html:122 project/templates/imprest_ledger.html:37
+#: hr/templates/allowance.html:118 project/templates/imprest_ledger.html:37
 #: project/templates/imprest_ledger.html:157
 #: project/templates/imprest_ledger_old.html:140
 msgid "Payment"
 msgstr "भुक्तानी"
 
-#: hr/templates/allowance.html:122
+#: hr/templates/allowance.html:118
 msgid "Cycle"
 msgstr "चक्र"
 
-#: hr/templates/allowance.html:123
+#: hr/templates/allowance.html:119
 msgid "Year Payment Cycle Month"
 msgstr "बार्षिक भुक्तानी चक्र महीना"
 
@@ -1162,10 +1186,11 @@ msgstr "कट्टी प्रकार थप्नु वा हटाउ�
 #: hr/templates/employee_designation_cu.html:22
 #: hr/templates/employee_grade_cu.html:22
 #: hr/templates/employee_grade_group_cu.html:22
-#: hr/templates/employee_list.html:12 hr/templates/entry_detail.html.py:16
-#: hr/templates/entry_list.html:13 hr/templates/get_report.html.py:16
-#: hr/templates/grades_scale.html:28 hr/templates/hr_report_cu.html.py:19
-#: hr/templates/hr_report_list.html:15 hr/templates/incentive_list.html:12
+#: hr/templates/employee_list.html:12
+#: hr/templates/employeefacility_curd.html:19 hr/templates/entry_detail.html:16
+#: hr/templates/entry_list.html.py:13 hr/templates/get_report.html:16
+#: hr/templates/grades_scale.html.py:28 hr/templates/hr_report_cu.html:31
+#: hr/templates/hr_report_list.html.py:15 hr/templates/incentive_list.html:12
 #: hr/templates/incentivename_curd.html:19
 #: hr/templates/tax_detail_scheme_cu.html:24 hr/templates/tax_scheme_cu.html:19
 #: hr/templates/tax_scheme_list.html:12
@@ -1177,10 +1202,11 @@ msgstr "नया तलबी विवरण "
 #: hr/templates/employee_designation_cu.html:23
 #: hr/templates/employee_grade_cu.html:23
 #: hr/templates/employee_grade_group_cu.html:23
-#: hr/templates/employee_list.html:13 hr/templates/entry_detail.html.py:17
-#: hr/templates/get_report.html:17 hr/templates/grades_scale.html.py:29
-#: hr/templates/hr_report_cu.html:20 hr/templates/hr_report_list.html.py:16
-#: hr/templates/incentivename_curd.html:20 hr/templates/payroll_entry.html:36
+#: hr/templates/employee_list.html:13
+#: hr/templates/employeefacility_curd.html:20 hr/templates/entry_detail.html:17
+#: hr/templates/get_report.html.py:17 hr/templates/grades_scale.html:29
+#: hr/templates/hr_report_cu.html.py:32 hr/templates/hr_report_list.html:16
+#: hr/templates/incentivename_curd.html:20 hr/templates/payroll_entry.html:34
 #: hr/templates/tax_detail_scheme_cu.html:25 hr/templates/tax_scheme_cu.html:20
 #: hr/templates/tax_scheme_list.html:13
 #, fuzzy
@@ -1205,9 +1231,6 @@ msgid "Type"
 msgstr "प्रकार"
 
 #: hr/templates/employee_cu.html:26 hr/templates/hr_index.html.py:55
-msgid "Employees"
-msgstr "कर्मचारीहरु"
-
 msgid "Employee List"
 msgstr "कर्मचारी सुची"
 
@@ -1220,23 +1243,21 @@ msgid "Grade number pause date range"
 msgstr ""
 
 #: hr/templates/employee_designation_cu.html:18
-#, fuzzy
-#| msgid "Designation"
 msgid "Add or Remove Designation"
-msgstr "पद"
+msgstr "पद थप्नुहोस वा हटाउनुहोस"
 
 #: hr/templates/employee_grade_cu.html:18
 msgid "Add or Remove Employee Grade"
-msgstr ""
+msgstr "कर्मचारी ग्रेड थप्नुहोस वा हटाउनुहोस"
 
 #: hr/templates/employee_grade_group_cu.html:18
 msgid "Add or Remove Employee Grade Group"
-msgstr ""
+msgstr "कर्मचारी ग्रेड समूह थप्नुहोस वा हटाउनुहोस"
 
-#: hr/templates/employee_list.html:52 hr/templates/payroll_entry.html.py:117
+#: hr/templates/employee_list.html:52 hr/templates/payroll_entry.html.py:115
 #: hr/templates/report_templates/nalakosh_bima_katti.html:38
-#: hr/templates/report_templates/sanchayakosh_katti.html:41
-#: hr/templates/report_templates/social_security_tax.html:38
+#: hr/templates/report_templates/payment_detail_report.html:37
+#: hr/templates/report_templates/social_security_tax.html:45
 #: inventory/templates/entry_report.html:168
 #: inventory/templates/entry_report.html:175
 #: inventory/templates/entry_report.html:182
@@ -1258,8 +1279,8 @@ msgstr "पद"
 
 #: hr/templates/employee_list.html:54 hr/templates/hr/branchoffice_list.html:61
 #: hr/templates/hr/payrollaccountant_list.html:32
-#: hr/templates/hr_index.html:124 hr/templates/hr_index.html.py:129
-#: hr/templates/hr_index.html:134
+#: hr/templates/hr_index.html:130 hr/templates/hr_index.html.py:135
+#: hr/templates/hr_index.html:140
 msgid "Branch"
 msgstr ""
 
@@ -1302,37 +1323,33 @@ msgid "Payroll Accountant"
 msgstr "देय रकम"
 
 #: hr/templates/hr/payrollaccountant_list.html:33
-#: hr/templates/payroll_entry.html:136
+#: hr/templates/payroll_entry.html:134
 #, fuzzy
 #| msgid "Control Panel"
 msgid "Control"
 msgstr "कन्ट्रोल प्यानल"
 
-#: hr/templates/hr/protempore_list.html:32 hr/templates/payroll_entry.html:294
-#, fuzzy
-#| msgid "Designation"
+#: hr/templates/hr/protempore_list.html:32 hr/templates/payroll_entry.html:292
 msgid "Employee Designation"
 msgstr "पद"
 
 #: hr/templates/hr/protempore_list.html:33
-#: hr/templates/hr/protempore_list.html:77 hr/templates/hr_index.html.py:149
-#: hr/templates/hr_index.html:154
+#: hr/templates/hr/protempore_list.html:77 hr/templates/hr_index.html.py:155
+#: hr/templates/hr_index.html:160
 msgid "Pro Tempore"
 msgstr ""
 
 #: hr/templates/hr/protempore_list.html:34
-#, fuzzy
-#| msgid "Designation"
 msgid "Pro Tempore Designation"
 msgstr "पद"
 
-#: hr/templates/hr/protempore_list.html:35 hr/templates/payroll_entry.html:295
+#: hr/templates/hr/protempore_list.html:35 hr/templates/payroll_entry.html:293
 #, fuzzy
 #| msgid "Entry Date"
 msgid "Appoint Date"
 msgstr "दाखिला मिति"
 
-#: hr/templates/hr/protempore_list.html:36 hr/templates/payroll_entry.html:296
+#: hr/templates/hr/protempore_list.html:36 hr/templates/payroll_entry.html:294
 msgid "Dismiss Date"
 msgstr ""
 
@@ -1365,64 +1382,67 @@ msgid "Employee Grade"
 msgstr "कर्मचारी"
 
 #: hr/templates/hr_index.html:45
-#, fuzzy
-#| msgid "Designation"
 msgid "Designation Entry"
-msgstr "पद"
+msgstr "पद दाखिला"
 
 #: hr/templates/hr_index.html:50
 #, fuzzy
-#| msgid "Employee"
 msgid "Employee Add"
-msgstr "कर्मचारी"
+msgstr "कर्मचारी थप"
 
 #: hr/templates/hr_index.html:60
 msgid "Grade Scale Entry"
-msgstr ""
+msgstr "ग्रेड स्केल दाखिला"
 
 #: hr/templates/hr_index.html:66
 msgid "Import Existing Employee"
-msgstr ""
+msgstr "भएका कर्मचारी आयात गर्नु"
 
-#: hr/templates/hr_index.html:71
+#: hr/templates/hr_index.html:72
+#, fuzzy
+#| msgid "Employee List"
+msgid "Add Employee Facility"
+msgstr "कर्मचारी सुची"
+
+#: hr/templates/hr_index.html:77
 msgid "Allowances/ Incentives and Deductions"
 msgstr ""
 
-#: hr/templates/hr_index.html:76
+#: hr/templates/hr_index.html:82
 msgid "Allowance Add"
 msgstr ""
 
-#: hr/templates/hr_index.html:82
+#: hr/templates/hr_index.html:88
 msgid "Incentive Name Entry"
 msgstr ""
 
-#: hr/templates/hr_index.html:87
+#: hr/templates/hr_index.html:93
 msgid "Deduction Name Entry"
 msgstr ""
 
-#: hr/templates/hr_index.html:92
+#: hr/templates/hr_index.html:98
 msgid "Deduction Detail Entry"
 msgstr ""
 
-#: hr/templates/hr_index.html:96
+#: hr/templates/hr_index.html:102
 #, fuzzy
 #| msgid "Fax"
 msgid "Tax"
 msgstr "फ्याक्स"
 
-#: hr/templates/hr_index.html:100
+#: hr/templates/hr_index.html:106
 msgid "Tax Deduction List"
 msgstr ""
 
-#: hr/templates/hr_index.html:105 hr/templates/tax_detail_scheme_cu.html:26
+#: hr/templates/hr_index.html:111 hr/templates/tax_detail_scheme_cu.html:26
 #: hr/templates/tax_scheme_cu.html:21
 #, fuzzy
 #| msgid "Tax Scheme"
 msgid "Tax Scheme List"
 msgstr "करको किसिम"
 
-#: hr/templates/hr_index.html:110 hr/templates/hr_index.html.py:115
-#: hr/templates/hr_index.html:120
+#: hr/templates/hr_index.html:116 hr/templates/hr_index.html.py:121
+#: hr/templates/hr_index.html:126
 #: inventory/templates/_dashboard_inventory.html:59
 #: inventory/templates/depreciation_report.html:22
 #: inventory/templates/inspection_detail.html:19
@@ -1437,38 +1457,62 @@ msgstr "करको किसिम"
 msgid "Report"
 msgstr "प्रतिवेदन"
 
-#: hr/templates/hr_index.html:115
+#: hr/templates/hr_index.html:121
 msgid "Generate"
 msgstr ""
 
-#: hr/templates/hr_index.html:120
+#: hr/templates/hr_index.html:126
 msgid "Settings"
 msgstr "सेटिङ"
 
-#: hr/templates/hr_index.html:124
+#: hr/templates/hr_index.html:130
 #, fuzzy
 #| msgid "Bad"
 msgid "and"
 msgstr "खराब"
 
-#: hr/templates/hr_index.html:124 hr/templates/hr_index.html.py:139
-#: hr/templates/hr_index.html:144
+#: hr/templates/hr_index.html:130 hr/templates/hr_index.html.py:145
+#: hr/templates/hr_index.html:150
 #, fuzzy
 #| msgid "Accounting"
 msgid "Accountant"
 msgstr "लेखा"
 
-#: hr/templates/hr_index.html:159 hr/templates/hr_index.html.py:164
+#: hr/templates/hr_index.html:165 hr/templates/hr_index.html.py:170
 #, fuzzy
 #| msgid "Duration"
 msgid "Configuration"
 msgstr "अवधि"
 
-#: hr/templates/hr_report_cu.html:21
+#: hr/templates/hr_report_cu.html:33
 #, fuzzy
 #| msgid "Edit Settings"
 msgid "Report Setting List"
 msgstr "सेटिङ परिवर्तन"
+
+#: hr/templates/hr_report_cu.html:56
+#, fuzzy
+#| msgid "Reports"
+msgid "Report Tables"
+msgstr "प्रतिवेदनहरु"
+
+#: hr/templates/hr_report_cu.html:58
+msgid "Remove Table"
+msgstr ""
+
+#: hr/templates/hr_report_cu.html:79 hr/templates/hr_report_cu.html.py:95
+msgid "Remove"
+msgstr ""
+
+#: hr/templates/hr_report_cu.html:101
+msgid "Add New Table Field"
+msgstr ""
+
+#: hr/templates/hr_report_cu.html:108
+#, fuzzy
+#| msgid "Add New"
+msgid "Add New Table"
+msgstr "नया"
 
 #: hr/templates/hr_report_list.html:11
 #, fuzzy
@@ -1480,94 +1524,85 @@ msgstr "प्रतिवेदनहरु"
 msgid "No report Added Yet"
 msgstr ""
 
-#: hr/templates/payroll_entry.html:89
-#, fuzzy
-#| msgid "Borrow Date"
-msgid "From Date"
-msgstr "लिएको मिति"
-
-#: hr/templates/payroll_entry.html:97
-#, fuzzy
-#| msgid "Date"
-msgid "To Date"
-msgstr "मिति"
-
-#: hr/templates/payroll_entry.html:120
+#: hr/templates/payroll_entry.html:118
+#: hr/templates/report_templates/payment_detail_report.html:45
 #, fuzzy
 #| msgid "Total Amount"
 msgid "Total Allowance"
 msgstr "जम्मा रकम"
 
-#: hr/templates/payroll_entry.html:123
+#: hr/templates/payroll_entry.html:121
 #, fuzzy
 #| msgid "Total Fine"
 msgid "Total Incentive"
 msgstr "जम्मा जरिमाना"
 
-#: hr/templates/payroll_entry.html:129
+#: hr/templates/payroll_entry.html:127
 #, fuzzy
 #| msgid "Total Amount"
 msgid "Total Deduced Amount"
 msgstr "जम्मा रकम"
 
-#: hr/templates/payroll_entry.html:131
+#: hr/templates/payroll_entry.html:129
 #, fuzzy
 #| msgid "Detail"
 msgid "Tax Details"
 msgstr "मौज्दात विवरण"
 
-#: hr/templates/payroll_entry.html:132
+#: hr/templates/payroll_entry.html:130
 #, fuzzy
 #| msgid "Total Amount"
 msgid "Pro Tempore Amount"
 msgstr "जम्मा रकम"
 
-#: hr/templates/payroll_entry.html:133
+#: hr/templates/payroll_entry.html:131
 msgid "Salary"
 msgstr ""
 
-#: hr/templates/payroll_entry.html:134
+#: hr/templates/payroll_entry.html:132
 #, fuzzy
 #| msgid "Tax Amount"
 msgid "Paid Amount"
 msgstr "Tax रकम"
 
-#: hr/templates/payroll_entry.html:170
-#: hr/templates/payroll_entry.html:170
+#: hr/templates/payroll_entry.html:168
 msgid "Allowance Name"
 msgstr "भत्ता नाम"
 
-#: hr/templates/payroll_entry.html:200
+#: hr/templates/payroll_entry.html:198
 #, fuzzy
 #| msgid "Item Name"
 msgid "Incentive Name"
 msgstr "सामानको नाम"
 
-#: hr/templates/payroll_entry.html:230
+#: hr/templates/payroll_entry.html:228
 #, fuzzy
 #| msgid "Depreciation Rate"
 msgid "Deduction Name"
 msgstr "विमूल्यन दर"
 
-#: hr/templates/payroll_entry.html:231
+#: hr/templates/payroll_entry.html:229
 msgid "Amount Added Before Deduction"
 msgstr ""
 
-#: hr/templates/payroll_entry.html:232
+#: hr/templates/payroll_entry.html:230
 #, fuzzy
 #| msgid "Amount"
 msgid "Deduced Amount"
 msgstr "रकम"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:14
-#: hr/templates/report_templates/sanchayakosh_katti.html:14
+#: hr/templates/report_templates/payment_detail_report.html:14
+#: hr/templates/report_templates/payment_detail_report.html:31
+#: hr/templates/report_templates/sanchayakosh_katti.html:20
 #: hr/templates/report_templates/social_security_tax.html:14
-
+#: hr/templates/report_templates/social_security_tax.html:39
 msgid "Range"
 msgstr "श्रेणी"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:14
-#: hr/templates/report_templates/sanchayakosh_katti.html:14
+#: hr/templates/report_templates/payment_detail_report.html:14
+#: hr/templates/report_templates/sanchayakosh_katti.html:20
 #: hr/templates/report_templates/social_security_tax.html:14
 msgid "to"
 msgstr "देखि"
@@ -1575,9 +1610,12 @@ msgstr "देखि"
 #: hr/templates/report_templates/nalakosh_bima_katti.html:17
 #: hr/templates/report_templates/nalakosh_bima_katti.html:18
 #: hr/templates/report_templates/nalakosh_bima_katti.html:19
-#: hr/templates/report_templates/sanchayakosh_katti.html:17
-#: hr/templates/report_templates/sanchayakosh_katti.html:18
-#: hr/templates/report_templates/sanchayakosh_katti.html:19
+#: hr/templates/report_templates/payment_detail_report.html:17
+#: hr/templates/report_templates/payment_detail_report.html:18
+#: hr/templates/report_templates/payment_detail_report.html:19
+#: hr/templates/report_templates/sanchayakosh_katti.html:23
+#: hr/templates/report_templates/sanchayakosh_katti.html:24
+#: hr/templates/report_templates/sanchayakosh_katti.html:25
 #: hr/templates/report_templates/social_security_tax.html:17
 #: hr/templates/report_templates/social_security_tax.html:18
 #: hr/templates/report_templates/social_security_tax.html:19
@@ -1588,39 +1626,34 @@ msgid "Office"
 msgstr "कार्यालय"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:23
-#: hr/templates/report_templates/sanchayakosh_katti.html:23
+#: hr/templates/report_templates/sanchayakosh_katti.html:29
 #: hr/templates/report_templates/social_security_tax.html:23
 msgid "Deposit Bank Name"
-msgstr ""
+msgstr "जम्मा गरिएको बैंक"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:24
-#: hr/templates/report_templates/sanchayakosh_katti.html:24
+#: hr/templates/report_templates/sanchayakosh_katti.html:30
 #: hr/templates/report_templates/social_security_tax.html:24
 msgid "Deposit Bank Address"
-msgstr ""
+msgstr "जम्मा गरिएको ठेगाना"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:25
-#: hr/templates/report_templates/sanchayakosh_katti.html:25
+#: hr/templates/report_templates/sanchayakosh_katti.html:31
 #: hr/templates/report_templates/social_security_tax.html:25
-#, fuzzy
-#| msgid "Website"
 msgid "Deposited"
-msgstr "वेबसाइट"
+msgstr "जम्मा गरिएको"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:29
-#: hr/templates/report_templates/sanchayakosh_katti.html:31
 msgid ""
 "PF deduction of this branch of this detail has been deposited to the "
 "speciified bank above"
 msgstr ""
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:39
-#: hr/templates/report_templates/sanchayakosh_katti.html:43
-#: hr/templates/report_templates/social_security_tax.html:39
-#, fuzzy
-#| msgid "Employee"
+#: hr/templates/report_templates/payment_detail_report.html:38
+#: hr/templates/report_templates/social_security_tax.html:46
 msgid "Employee Name"
-msgstr "कर्मचारी"
+msgstr "कर्मचारीको नाम"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:40
 #, fuzzy
@@ -1629,26 +1662,25 @@ msgid "Insurance ID"
 msgstr "इकाइहरु"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:41
-#: hr/templates/report_templates/sanchayakosh_katti.html:45
 msgid "Compulsory Deduction"
 msgstr ""
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:42
-#: hr/templates/report_templates/sanchayakosh_katti.html:46
 msgid "Addition in deduction"
 msgstr ""
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:43
-#: hr/templates/report_templates/sanchayakosh_katti.html:44
+#: hr/templates/report_templates/payment_detail_report.html:53
 #, fuzzy
 #| msgid "Total Fine"
 msgid "Total Deduction"
 msgstr "जम्मा जरिमाना"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:61
-#: hr/templates/report_templates/sanchayakosh_katti.html:65
-#: hr/templates/report_templates/social_security_tax.html:56
-#: ils/templates/view_record.html:189 inventory/templates/entry_report.html:77
+#: hr/templates/report_templates/payment_detail_report.html:83
+#: hr/templates/report_templates/social_security_tax.html:63 hr/views.py:1588
+#: ils/templates/view_record.html.py:189
+#: inventory/templates/entry_report.html:77
 #: inventory/templates/inventory/itemlocation_detail.html:28
 #: inventory/templates/inventory/itemlocation_detail.html:36
 #: inventory/templates/inventory/itemlocation_detail.html:54
@@ -1677,42 +1709,130 @@ msgid "Total"
 msgstr "जम्मा"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:79
-#: hr/templates/report_templates/sanchayakosh_katti.html:83
-#: hr/templates/report_templates/social_security_tax.html:72
-#, fuzzy
-#| msgid "Signature"
+#: hr/templates/report_templates/payment_detail_report.html:114
+#: hr/templates/report_templates/sanchayakosh_katti.html:114
+#: hr/templates/report_templates/social_security_tax.html:80
 msgid "Creator Signatute"
-msgstr "दस्तखत"
+msgstr "प्रतिबेदन तैयार पर्नेको दस्तखत"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:83
-#: hr/templates/report_templates/sanchayakosh_katti.html:87
-#: hr/templates/report_templates/social_security_tax.html:76
+#: hr/templates/report_templates/payment_detail_report.html:118
+#: hr/templates/report_templates/sanchayakosh_katti.html:118
+#: hr/templates/report_templates/social_security_tax.html:84
 msgid "Head Accountant Signature"
-msgstr ""
+msgstr "लेख प्रमुखको दस्तखत"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:87
-#: hr/templates/report_templates/sanchayakosh_katti.html:91
-#: hr/templates/report_templates/social_security_tax.html:80
-#, fuzzy
-#| msgid "Signature"
+#: hr/templates/report_templates/payment_detail_report.html:122
+#: hr/templates/report_templates/sanchayakosh_katti.html:122
+#: hr/templates/report_templates/social_security_tax.html:88
 msgid "Approved by Signature"
-msgstr "दस्तखत"
+msgstr "सदर गर्नेको दस्तखत"
 
-#: hr/templates/report_templates/sanchayakosh_katti.html:29
-msgid "Dear PF"
+#: hr/templates/report_templates/payment_detail_report.html:31
+#: hr/templates/report_templates/social_security_tax.html:39
+#: templates/hr_report_base.html:95 training/templates/print_training.html:33
+#: training/templates/training_report.html:34
+msgid "To"
+msgstr "देखि"
+
+#: hr/templates/report_templates/payment_detail_report.html:32
+#: hr/templates/report_templates/social_security_tax.html:40
+#: inventory/templates/depreciation_report.html:43
+#: templates/hr_report_base.html:96
+msgid "Time"
+msgstr "समय"
+
+#: hr/templates/report_templates/payment_detail_report.html:39
+msgid "Salary Scale"
 msgstr ""
 
-#: hr/templates/report_templates/sanchayakosh_katti.html:30
-msgid "Tridevi Marg, Thamel, Kathmandu"
+#: hr/templates/report_templates/payment_detail_report.html:41
+msgid "PF Addition"
 msgstr ""
+
+#: hr/templates/report_templates/payment_detail_report.html:42
+msgid "Bima Addition"
+msgstr ""
+
+#: hr/templates/report_templates/payment_detail_report.html:43
+msgid "Chad Kharcha"
+msgstr ""
+
+#: hr/templates/report_templates/payment_detail_report.html:44
+#, fuzzy
+#| msgid "Total Price"
+msgid "Total Salary"
+msgstr "जम्मा मूल्य"
+
+#: hr/templates/report_templates/payment_detail_report.html:46
+msgid "Salary Including Allowance"
+msgstr ""
+
+#: hr/templates/report_templates/payment_detail_report.html:47
+#, fuzzy
+#| msgid "Auction"
+msgid "PF Deduction"
+msgstr "लिलाम"
+
+#: hr/templates/report_templates/payment_detail_report.html:48
+#, fuzzy
+#| msgid "Auction"
+msgid "Na La Kosh Deduction"
+msgstr "लिलाम"
+
+#: hr/templates/report_templates/payment_detail_report.html:49
+#, fuzzy
+#| msgid "Auction"
+msgid "Bima Deduction"
+msgstr "लिलाम"
+
+#: hr/templates/report_templates/payment_detail_report.html:50
+#, fuzzy
+#| msgid "Total Fine"
+msgid "PF Loan Deduction"
+msgstr "जम्मा जरिमाना"
+
+#: hr/templates/report_templates/payment_detail_report.html:54
+#, fuzzy
+#| msgid "Total Fine"
+msgid "Total Income"
+msgstr "जम्मा जरिमाना"
+
+#. Translators: PF deduction distribution message
+#: hr/templates/report_templates/sanchayakosh_katti.html:11
+msgid "Employee PF Deduction"
+msgstr "कर्मचारी संचय कोष"
+
+#: hr/templates/report_templates/sanchayakosh_katti.html:12
+msgid "PF Deduction Distribution"
+msgstr "संचयकोष कट्टी फाटबारी"
 
 #: hr/templates/report_templates/sanchayakosh_katti.html:40
-msgid "Personal Number"
-msgstr ""
+msgid "For account use only"
+msgstr "कोष प्रयोजन को  मात्र"
 
-#: hr/templates/report_templates/sanchayakosh_katti.html:42
-msgid "PF ID Number"
+#. Translators: PF deduction distribution message
+#: hr/templates/report_templates/sanchayakosh_katti.html:103
+msgid "Dear Employee PF"
+msgstr "श्री कर्मचारी संचयकोष"
+
+#: hr/templates/report_templates/sanchayakosh_katti.html:104
+msgid "Tridevi Marg, Thamel, Kathmandu"
+msgstr "त्रिदेवी मार्ग, ठमेल, काठमाडौँ"
+
+#: hr/templates/report_templates/sanchayakosh_katti.html:105
+msgid ""
+"PF deduction distribution of this branch of this detail has been deposited "
+"to the"
 msgstr ""
+"यस कार्यालयका निम्न कर्मचारीहरुको कर्मचारी संचय कोष कट्टी वापत सम्लग्न फाटबारीमा उल्लेख "
+"भए आनुशर हिसाब मा जनाउने गरि"
+
+#: hr/templates/report_templates/sanchayakosh_katti.html:105
+msgid "bank. The diposited vaoucher is also attached to this document."
+msgstr ""
+"साखामा जम्मा गरेको भौचर समेत सम्लग्न गरि आवश्यक कार्यार्थ पठाईएको व्योहोरा आनुरोध छ । "
 
 #: hr/templates/report_templates/social_security_tax.html:29
 msgid ""
@@ -1720,11 +1840,7 @@ msgid ""
 "mentioned date range is shown in table below. "
 msgstr ""
 
-#: hr/templates/report_templates/social_security_tax.html:40
-msgid "Social Security Tax"
-msgstr ""
-
-#: hr/templates/report_templates/social_security_tax.html:41
+#: hr/templates/report_templates/social_security_tax.html:48
 msgid "Pan Number"
 msgstr ""
 
@@ -1979,7 +2095,6 @@ msgstr "प्रकाशन"
 
 #: ils/templates/view_record.html:88
 #, fuzzy
-#| msgid "Designation"
 msgid "Pagination"
 msgstr "पद"
 
@@ -2810,10 +2925,6 @@ msgstr "दाखिला मिति"
 #: inventory/views.py:312 inventory/views.py:313
 msgid "Price"
 msgstr "मूल्य"
-
-#: inventory/templates/depreciation_report.html:43
-msgid "Time"
-msgstr "समय"
 
 #: inventory/templates/depreciation_report.html:44
 msgid "Duration"
@@ -4187,6 +4298,16 @@ msgstr "दर्ता गर्नु"
 msgid "Project Accounts"
 msgstr "खाताहरु"
 
+#: templates/hr_report_base.html:93
+msgid "Table Name"
+msgstr "तालिकाको नाम"
+
+#: templates/hr_report_base.html:95
+#, fuzzy
+#| msgid "Range"
+msgid "Range: "
+msgstr "श्रेणी"
+
 #: training/templates/category_form.html:39
 msgid "No trainings under this category!"
 msgstr "यो वर्ग अन्तर्गत कुनै तालीम छैन !"
@@ -4286,9 +4407,6 @@ msgstr "कुनै तालीममा सहभागी नभएको !"
 #: training/templates/training_report.html:29
 msgid "From"
 msgstr "देखि"
-
-#: training/templates/print_training.html:33
-#: training/templates/training_report.html:34
 
 #: training/templates/print_training.html:75
 #: training/templates/training_form.html:106
@@ -4431,6 +4549,12 @@ msgstr "तपाईंको प्रयोगकर्ता नाम र �
 #: users/templates/registration/login.html:58
 msgid "Remember Me"
 msgstr "मलाई यस कम्प्युटरमा सम्झिराख्नुहोस"
+
+#~ msgid "Poush"
+#~ msgstr "पौष"
+
+#~ msgid "Allowance"
+#~ msgstr "भत्ता"
 
 #, fuzzy
 #~| msgid "Month(s)"

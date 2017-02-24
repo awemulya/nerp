@@ -20,9 +20,12 @@ class ReportTableDetailTranslationOption(TranslationOptions):
     fields = ('field_name',)
 
 
+class BranchOfficeTranslationOptions(TranslationOptions):
+    fields = ('name', 'address')
+
 translator.register(Employee, NameTranslationOptions)
 translator.register(DeductionName, NameTranslationOptions)
-translator.register(BranchOffice, NameTranslationOptions)
+translator.register(BranchOffice, BranchOfficeTranslationOptions)
 translator.register(IncentiveName, NameTranslationOptions)
 translator.register(AllowanceName, NameTranslationOptions)
 translator.register(EmployeeGradeGroup, NameTranslationOptions)

@@ -53,6 +53,20 @@ payment_cycle = [('M', _('Monthly')),
 #  >> Salary Giving
 
 
+class Bank(models.Model):
+    name = models.CharField(max_length=256)
+
+    def __unicode__(self):
+        return self.name
+
+
+class BankBranch(models.Model):
+    name = models.CharField(max_length=256)
+
+    def __unicode__(self):
+        return self.name
+
+
 class EmployeeGradeGroup(models.Model):
     name = models.CharField(max_length=100)
 
@@ -355,6 +369,12 @@ class Employee(models.Model):
     # TODO see this accounts
     accounts = models.ManyToManyField(Account, through="EmployeeAccount")
 
+    # BankDetails
+    bank = models.ForeignKey(Bank, related_name='employees', null=True, blank=True)
+    bank_branch = models.ForeignKey(BankBranch, related_name='employees', null=True, blank=True)
+    bank_account_number = models.CharField(max_length=256)
+    # BankDetailsEnd
+
     appoint_date = HRBSDateField(null=True, blank=True)
     # On newly apponted employee appoint date and scale start date will be same
     # On previous employee(employee working before this software arrival appoint date be null and salary scale date be calculated)
@@ -380,6 +400,10 @@ class Employee(models.Model):
         blank=True
     )
     facilities = models.ManyToManyField(EmployeeFacility, blank=True)
+
+    class Meta:
+        unique_together = (('bank', 'bank_branch', 'bank_account_number'),)
+        verbose_name = _('Employee')
 
     def excluded_days_for_grade_pause(self, scale_start_date, check_upto_date):
         excluded_days = 0
