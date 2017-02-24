@@ -5,6 +5,7 @@ import json
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
+from django.utils import timezone
 from django.views.generic import UpdateView
 
 from app import settings
@@ -38,7 +39,7 @@ from .models import Employee, Deduction, EmployeeAccount, IncomeTaxScheme, ProTe
 from django.http import HttpResponse, JsonResponse
 from datetime import datetime, date
 from calendar import monthrange as mr
-from njango.nepdate import bs
+from njango.nepdate import bs, ad2bs
 from .models import get_y_m_tuple_list
 from .bsdate import BSDate, get_bs_datetime, date_str_repr
 from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_date, delta_month_date_impure, \
@@ -1606,6 +1607,9 @@ def get_report(request):
                         record_table['data'].append(field_data)
                     record_table['data'].append(total_fields)
 
+                    # This works only if we have one table( multiple table may lead to confustion)
+                    context['tatals_row'] = total_fields
+
                     # TODO manage rowspan and colspan of total fields here and push it to record_table[data]
                     if distinguish_entry:
                         record_table['entry_datetime'] = payment_record[
@@ -1616,6 +1620,9 @@ def get_report(request):
 
 
             context['tables'] = tables
+            context['today'] = timezone.now().date() if PayrollConfig.hr_calendar == 'AD' else ad2bs(timezone.now().date())
+            # TODO include totals array into context (works only when we have one table report)
+            # context['tables'] = tables
 
             return render(request, template_path, context)
 

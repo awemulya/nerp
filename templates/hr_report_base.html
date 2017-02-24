@@ -84,7 +84,11 @@
     </ol>
 
     <div class="well">
-        {% block report_header %}{% endblock %}
+        {% block report_header %}
+            <h1 class="text-center">{% trans 'Nepal Government' %}</h1>
+            <h1 class="text-center">{% trans 'Ministry of Home Affairs' %}</h1>
+            <p class="text-right">{% trans 'Date' %}: {{ today }}</p>
+        {% endblock %}
         {% block report_body %}{% endblock %}
         {% block report_main_table %}
             {#    Detail table here #}

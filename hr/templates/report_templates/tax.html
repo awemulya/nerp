@@ -1,0 +1,50 @@
+{% extends 'hr_report_base.html' %}
+{% load staticfiles %}
+
+{% load filters %}
+{% load i18n %}
+{% load arithmatic %}
+
+{% block report_body %}
+    <p class="lead text-center">{% trans 'Subject' %}: {{ report_title }}</p>
+{#    <h5>{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}</h5>#}
+
+    {#    Office detail block#}
+{#    <h5>{% trans 'Office' %} {% trans 'Name' %} : {{ branch.name }}</h5>#}
+{#    <h5>{% trans 'Office' %} {% trans 'Address' %} : {{ branch.address }}</h5>#}
+{#    <h5>{% trans 'Office' %} {% trans 'Code' %} : {{ branch.code }}</h5>#}
+    {#    End Office detail block#}
+{##}
+    {#    Bank Detail Block#}
+{#    <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Name' %} : _________</h5>#}
+{#    <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Address' %} : _________</h5>#}
+{#    <h5>{% trans 'Amount' %} {% trans 'Deposited' %} : _________</h5>#}
+    {#    End Bank Detail Block#}
+{##}
+    {#    Message text#}
+{#    <p>{% trans 'Social Security Tax details of employees working over this branch of above mentioned date range is shown in table below. ' %}</p>#}
+    {#    End <Me></Me>ssege text#}
+
+    <p class="text-left lead">{% trans 'Dear Internal Tax Office' %},</p>
+    <input type="text">
+    <p class="lead">{% trans '' %}</p>
+{% endblock %}
+{% block report_footer %}
+
+    {#    This is report footer#}
+    <div class="row">
+        <div class="col-lg-4">
+            <p>{% trans 'Creator Signatute' %}</p>
+            <p>{% trans 'Date' %}: ________</p>
+        </div>
+        <div class="col-lg-4">
+            <p>{% trans 'Head Accountant Signature' %}</p>
+            <p>{% trans 'Date' %}: _________</p>
+        </div>
+        <div class="col-lg-4">
+            <p>{% trans 'Approved by Signature' %}</p>
+            <p>{% trans 'Date' %}: __________</p>
+        </div>
+    </div>
+    {#    End This is report footer#}
+{% endblock %}
