@@ -1022,7 +1022,7 @@ class ReportTableDetail(models.Model):
         return self.field_name
 
     class Meta:
-        unique_together = ('order', 'table',)
+        unique_together = (('order', 'table'),)
 
 
 class PayrollConfig(SingletonModel):

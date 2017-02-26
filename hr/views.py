@@ -1612,7 +1612,7 @@ def get_report(request):
                     record_table['data'].append(total_fields)
 
                     # This works only if we have one table( multiple table may lead to confustion)
-                    context['tatals_row'] = total_fields
+                    context['totals_row'] = total_fields
 
                     # TODO manage rowspan and colspan of total fields here and push it to record_table[data]
                     if distinguish_entry:
@@ -1621,7 +1621,6 @@ def get_report(request):
                         record_table['date_range'] = payment_record[
                             2]  # Tuple from, to
                     tables.append(record_table)
-
 
             context['tables'] = tables
             context['today'] = timezone.now().date() if PayrollConfig.get_solo().hr_calendar == 'AD' else BSDate(*ad2bs(timezone.now().date()))
@@ -1733,31 +1732,39 @@ def load_selected_options(request):
         splitted_12m_qry = qry.split('___')
         for i, qr in enumerate(splitted_12m_qry[0].split('__')):
             if qr:
-                field_obj = model._meta.get_field(qr)
-                if field_obj.many_to_one or field_obj.one_to_one or field_obj.one_to_many or field_obj.many_to_many:
-
-                    if len(splitted_12m_qry) == 2 and i == len(splitted_12m_qry[0].split('__')) - 1:
-                        selected_options.append(
-                            {
-                                'options': get_all_field_options(model),
-                                'selected': ('%s___') % qr
-                            }
-                        )
-                    else:
-                        selected_options.append(
-                            {
-                                'options': get_all_field_options(model),
-                                'selected': ('%s__') % qr
-                            }
-                        )
-                    model = field_obj.related_model
-                else:
+                if qr in get_property_methods(model):
                     selected_options.append(
                         {
                             'options': get_all_field_options(model),
                             'selected': ('%s') % qr
                         }
                     )
+                else:
+                    field_obj = model._meta.get_field(qr)
+                    if field_obj.many_to_one or field_obj.one_to_one or field_obj.one_to_many or field_obj.many_to_many:
+
+                        if len(splitted_12m_qry) == 2 and i == len(splitted_12m_qry[0].split('__')) - 1:
+                            selected_options.append(
+                                {
+                                    'options': get_all_field_options(model),
+                                    'selected': ('%s___') % qr
+                                }
+                            )
+                        else:
+                            selected_options.append(
+                                {
+                                    'options': get_all_field_options(model),
+                                    'selected': ('%s__') % qr
+                                }
+                            )
+                        model = field_obj.related_model
+                    else:
+                        selected_options.append(
+                            {
+                                'options': get_all_field_options(model),
+                                'selected': ('%s') % qr
+                            }
+                        )
         if len(splitted_12m_qry) == 2:
             if splitted_12m_qry[1]:
                 # filter generating options here
