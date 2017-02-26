@@ -85,10 +85,10 @@
 
     <div class="well">
         {% block report_header %}
-            <h1 class="text-center">{% trans 'Nepal Government' %}</h1>
-            <h1 class="text-center">{% trans 'Ministry of Home Affairs' %}</h1>
-            <h1 class="text-center">{{ branch.name }}</h1>
-            <h1 class="text-center">{{ branch.address }}</h1>
+            <h3 class="text-center">{% trans 'Nepal Government' %}</h3>
+            <h3 class="text-center">{% trans 'Ministry of Home Affairs' %}</h3>
+            <h3 class="text-center">{{ branch.name }}</h3>
+            <h3 class="text-center">{{ branch.address }}</h3>
             <p class="text-right">{% trans 'Date' %}: {{ today }}</p>
         {% endblock %}
         {% block report_body %}{% endblock %}

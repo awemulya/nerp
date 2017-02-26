@@ -7,41 +7,39 @@
 
 {% block report_body %}
     <p class="lead text-center">{% trans 'Subject' %}: {{ months }} {{ report_title }}</p>
-{#    <h5>{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}</h5>#}
-
-    {#    Office detail block#}
-{#    <h5>{% trans 'Office' %} {% trans 'Name' %} : {{ branch.name }}</h5>#}
-{#    <h5>{% trans 'Office' %} {% trans 'Address' %} : {{ branch.address }}</h5>#}
-{#    <h5>{% trans 'Office' %} {% trans 'Code' %} : {{ branch.code }}</h5>#}
-    {#    End Office detail block#}
-{##}
-    {#    Bank Detail Block#}
-{#    <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Name' %} : _________</h5>#}
-{#    <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Address' %} : _________</h5>#}
-{#    <h5>{% trans 'Amount' %} {% trans 'Deposited' %} : _________</h5>#}
-    {#    End Bank Detail Block#}
-{##}
-    {#    Message text#}
-{#    <p>{% trans 'Social Security Tax details of employees working over this branch of above mentioned date range is shown in table below. ' %}</p>#}
-    {#    End <Me></Me>ssege text#}
-
-    <p class="text-left lead">{% trans 'Dear Internal Tax Office' %},</p>
-    <input type="text">
-    <p class="lead">{% trans '' %}</p>
+    <p class="text-left lead">{% trans 'Dear Internal Tax Office' %},
+    </p>
+    <p class="lead">
+        <input type="text" placeholder="{% trans 'Name of Branch' %}">
+    </p>
+    {#    Translators: Tax Report Text #}
+    <p class="lead">
+        {% trans 'Yash karyalaya/ aayojanama karyarat karmachariharulai' %} {{ months }}
+        {% trans 'mahinako talab bitaran garda tapasheel ma ullekhit padhadhikariharubata sasukar tatha parishramik kar bapat katti bhaeko rakam ru. ' %}
+        {% if totals_row.3.0 %}
+            {{ totals_row.3.0 }}
+        {% else %}
+            <em>Not Assigned</em>
+        {% endif %}
+    {% trans 'aakhcharepi' %} <input type="text" placeholder="{% trans 'Amount in words' %}"> <input type="text"
+                                                                                                     placeholder="{% trans 'Name of Bank' %}">
+    {% trans 'ma jamma garieko miti' %} <input type="text" placeholder="{% trans 'Date of deposit' %}"> {% trans 'ko no.' %} <input type="text"
+                                                                                                placeholder="{% trans 'Voucher number' %}">{% trans 'ko bank voucher than 2 yasaisath sanlagna rakhi pathaieko behora anurodh cha.' %}
+    </p>
 {% endblock %}
 {% block report_footer %}
 
     {#    This is report footer#}
     <div class="row">
-        <div class="col-lg-4">
+        <div class="col-lg-4 col-xs-4">
             <p>{% trans 'Creator Signatute' %}</p>
             <p>{% trans 'Date' %}: ________</p>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-4 col-xs-4">
             <p>{% trans 'Head Accountant Signature' %}</p>
             <p>{% trans 'Date' %}: _________</p>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-4 col-xs-4">
             <p>{% trans 'Approved by Signature' %}</p>
             <p>{% trans 'Date' %}: __________</p>
         </div>
