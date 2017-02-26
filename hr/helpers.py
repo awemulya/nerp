@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import AccessMixin
 from django.core.exceptions import ImproperlyConfigured
 
-from bsdate import BSDate
+from bsdate import BSDate, month
 from njango.nepdate import bs, bs2ad, ad2bs
 from calendar import monthrange as mr
 from django.utils.translation import ugettext_lazy as _
@@ -44,6 +44,10 @@ def get_y_m_tuple_list(from_date, to_date):
                     from_date.day
                 )
     return return_list
+
+def get_y_m_in_words(from_date, to_date):
+    list_in_words = ['%s-%s' % (tup[0], month[tup[1]]) for tup in get_y_m_tuple_list(from_date, to_date)]
+    return (' / ').join(list_in_words)
 
 
 def month_cnt_inrange(month, frm, to):

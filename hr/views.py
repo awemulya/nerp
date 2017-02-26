@@ -46,7 +46,7 @@ from .helpers import are_side_months, bs_str2tuple, get_account_id, delta_month_
     emp_salary_eligibility, month_cnt_inrange, fiscal_year_data, employee_last_payment_record, \
     emp_salary_eligibility_on_edit, get_validity_slots, get_validity_id, is_required_data_present, \
     user_is_branch_accountant, GroupRequiredMixin, IsBranchAccountantMixin, getattr_custom, json_file_to_dict, \
-    get_property_methods, get_all_field_options, get_m2m_filter_options
+    get_property_methods, get_all_field_options, get_m2m_filter_options, get_y_m_in_words
 from account.models import set_transactions, JournalEntry
 from .filters import EmployeeFilter, PayrollEntryFilter
 from django.core import serializers
@@ -1533,11 +1533,15 @@ def get_report(request):
             if report.for_employee_type != 'ALL':
                 branch_qry['paid_employee__type'] = report.for_employee_type
 
+            months = get_y_m_in_words(from_date, to_date)
+            # import ipdb
+            # ipdb.set_trace()
             context = {
                 'report_title': report.name,
                 'branch': branch,
                 'from_date': from_date,
                 'to_date': to_date,
+                'months': months,
                 'distinguish_entry': distinguish_entry
             }
 
@@ -1620,7 +1624,7 @@ def get_report(request):
 
 
             context['tables'] = tables
-            context['today'] = timezone.now().date() if PayrollConfig.hr_calendar == 'AD' else ad2bs(timezone.now().date())
+            context['today'] = timezone.now().date() if PayrollConfig.get_solo().hr_calendar == 'AD' else BSDate(*ad2bs(timezone.now().date()))
             # TODO include totals array into context (works only when we have one table report)
             # context['tables'] = tables
 

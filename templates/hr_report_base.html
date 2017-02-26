@@ -87,6 +87,8 @@
         {% block report_header %}
             <h1 class="text-center">{% trans 'Nepal Government' %}</h1>
             <h1 class="text-center">{% trans 'Ministry of Home Affairs' %}</h1>
+            <h1 class="text-center">{{ branch.name }}</h1>
+            <h1 class="text-center">{{ branch.address }}</h1>
             <p class="text-right">{% trans 'Date' %}: {{ today }}</p>
         {% endblock %}
         {% block report_body %}{% endblock %}
