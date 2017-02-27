@@ -10,7 +10,7 @@ from hr.helpers import bs_str2tuple, employee_last_payment_record, inc_1_day, dr
 from users.models import User
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, ReportTableDetail, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
-    PayrollAccountant, ProTempore, EmployeeGradeNumberPause, TaxDeduction, EmployeeFacility
+    PayrollAccountant, ProTempore, EmployeeGradeNumberPause, TaxDeduction, EmployeeFacility, Bank
 from django.forms.widgets import Select, DateInput, NumberInput, CheckboxInput, DateTimeInput, TextInput   # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -146,6 +146,7 @@ class GetReportForm(forms.Form):
         label=_('To Date')
     )
     branch = TreeNodeChoiceField(
+        widget=Select(attrs={"data-bind": "value:branch" }),
         queryset=BranchOffice.objects.all(),
         empty_label=None,
         label=_('Select Branch')
@@ -160,7 +161,26 @@ class GetReportForm(forms.Form):
         ('TEMPORARY', _('Temporary')),
         ('ALL', _('All Type')),
     )
-    employee_type = forms.ChoiceField(choices=emp_type_choices, label=_('Employee Type'), initial='ALL')
+    employee_type = forms.ChoiceField(
+        widget=Select(attrs={"data-bind": "value: employee_type"}),
+        choices=emp_type_choices,
+        label=_('Employee Type'),
+        initial='ALL'
+    )
+
+    employee_bank = forms.ModelChoiceField(
+        queryset=Bank.objects.all(),
+        label=_('Employee Bank'),
+        initial=None,
+        required=False
+    )
+
+    employee = forms.ModelChoiceField(
+        queryset=Employee.objects.all(),
+        widget=Select(attrs={"data-bind": "options: employee_options, optionsText: 'name', optionsValue:'id', optionsCaption: 'Choose..'"}),
+        label=_('Employee'), initial=None,
+        required=False
+    )
 
     # distinguish
 
@@ -169,11 +189,12 @@ class GetReportForm(forms.Form):
         from_date = cleaned_data.get('from_date')
         to_date = cleaned_data.get('to_date')
 
-        if to_date < from_date:
-            self.add_error(
-                'from_date',
-                _('From date must be less than to date')
-            )
+        if from_date and to_date:
+            if to_date < from_date:
+                self.add_error(
+                    'from_date',
+                    _('From date must be less than to date')
+                )
 
 
 class EmployeeAccountInlineFormset(forms.BaseInlineFormSet):

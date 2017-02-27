@@ -1524,12 +1524,25 @@ def get_report(request):
         if report_request_query.is_valid():
             report = report_request_query.cleaned_data.get('report')
             branch = report_request_query.cleaned_data.get('branch')
+
             employee_type = report_request_query.cleaned_data.get('employee_type')
+            employee_bank = report_request_query.cleaned_data.get('employee_bank')
+
+            employee = report_request_query.cleaned_data.get('employee')
+
             from_date = report_request_query.cleaned_data.get('from_date')
             to_date = report_request_query.cleaned_data.get('to_date')
             distinguish_entry = report_request_query.cleaned_data.get('distinguish_entry')
 
+
             branch_qry = {'paid_employee__working_branch': branch}
+
+            if employee:
+                branch_qry['paid_employee'] = employee
+
+            if employee_bank:
+                branch_qry['paid_employee__bank'] = employee_bank
+
 
             if employee_type != 'ALL':
                 branch_qry['paid_employee__type'] = employee_type
@@ -1653,7 +1666,7 @@ def report_setting(request, pk=None):
     else:
         ko_data['obj_id'] = None
         ko_data['ctx_data'] = None
-        hr_report = ReportHR()
+        # hr_report = ReportHR()
 
     if request.method == "POST":
         if pk:

@@ -5,21 +5,25 @@
 {% load i18n %}
 
 {% block head_end %}
-
-{#    <script src="{% static 'js/hr/entry_detail.js' %}"></script>#}
+    <link rel="stylesheet" href="{% static 'hr/css/plugins/toastr/toastr.css' %}">
+    <script src="{% static 'hr/js/plugins/toastr/toastr.js' %}"></script>
+    <script src="{% static 'hr/js/plugins/blockUI/jquery.blockUI.js' %}"></script>
+    <script src="{% static 'hr/js/App.js' %}"></script>
+    <script src="{% static 'hr/js/get_report.js' %}"></script>
+    {#    <script src="{% static 'js/hr/entry_detail.js' %}"></script>#}
     <script>
-{#        ko_data = {{ko_data|jsonify}};#}
+        {#        ko_data = {{ko_data|jsonify}};#}
     </script>
 {% endblock %}
 {% block breadcrumbs %}
     {{ block.super }}
-        <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
-        <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
+    <li><a href="{% url 'payroll_entry' %}">{% trans 'Payroll Entry' %}</a>
+    <li><a href="{% url 'entry_list' %}">{% trans 'Entry List' %}</a>
 
 {% endblock %}
 {% block breadcrumbs_before_print %}
 {% endblock %}
-    Here the report will be generated dynamically
+Here the report will be generated dynamically
 {% block alert %}
 
     <!-- <div id="alert_placeholder">
@@ -34,7 +38,7 @@
 {% block  content %}
     <div class="well">
         <form method="post" action="{% url 'get_report' %}">
-        {{ get_report_form.media }}
+            {{ get_report_form.media }}
             {% csrf_token %}
             {{ get_report_form.as_table }}
             <input type="submit" class="btn btn-raised btn-primary" value="Get Report">

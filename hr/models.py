@@ -19,7 +19,7 @@ from calendar import monthrange as mr
 from datetime import date
 from hr.bsdate import BSDate
 from .helpers import get_y_m_tuple_list, are_side_months, get_validity_slots, get_validity_id, \
-    employee_last_payment_record, drc_1_day
+    employee_last_payment_record, drc_1_day, get_y_m_in_words
 from django.core.exceptions import ValidationError
 # import pdb
 
@@ -856,6 +856,11 @@ class PaymentRecord(models.Model):
 
     def __unicode__(self):
         return 'payment-record-#%s' % (self.id)
+
+
+    @property
+    def months_in_range(self):
+        return get_y_m_in_words(self.paid_from_date, self.paid_to_date)
 
     @property
     def pro_tempore_amount(self):
