@@ -5,85 +5,44 @@
 {% load i18n %}
 {% load arithmatic %}
 
-{% block report_header %}{% endblock %}
-
-{% block report_header_table %}{% endblock %}
-
 {% block report_body %}
-    <h1>{{ report_title }}</h1>
-    <h5>{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}</h5>
+    <p class="lead text-center">{% trans 'Subject' %}: {{ report_title }}</p>    
+        <h5>{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}, {{ months }}</h5>
 
-    {#    Office detail block#}
-    <h5>{% trans 'Office' %} {% trans 'Name' %} : {{ branch.name }}</h5>
-    <h5>{% trans 'Office' %} {% trans 'Address' %} : {{ branch.address }}</h5>
-    <h5>{% trans 'Office' %} {% trans 'Code' %} : {{ branch.code }}</h5>
-    {#    End Office detail block#}
+        {#    Office detail block#}
+        <h5>{% trans 'Office' %} {% trans 'Name' %} : {{ branch.name }}</h5>
+        <h5>{% trans 'Office' %} {% trans 'Address' %} : {{ branch.address }}</h5>
+        <h5>{% trans 'Office' %} {% trans 'Code' %} : {{ branch.code }}</h5>
+        {#    End Office detail block#}
 
-    {#    Bank Detail Block#}
-    <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Name' %} : _________</h5>
-    <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Address' %} : _________</h5>
-    <h5>{% trans 'Amount' %} {% trans 'Deposited' %} : _________</h5>
-    {#    End Bank Detail Block#}
+        {#    Bank Detail Block#}
+        <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Name' %} : <input type="text" placeholder="{% trans 'Name of Bank' %}"></h5>
+        <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Address' %} : <input type="text" placeholder="{% trans 'Deposit Bank Address' %}"></h5>
+        <h5>{% trans 'Diposited Date' %} : <input type="text" placeholder="{% trans 'Diposited Date'%}">, {% trans 'Check No.' %}: <input type="text" placeholder="{% trans 'Check No.' %}"></h5>
+        {#    End Bank Detail Block#}
 
     {#    Message text#}
-    <p>{% trans 'PF deduction of this branch of this detail has been deposited to the speciified bank above' %}</p>
+
+    {#    Translators: nalakosh bima template body message#}
+    <p class="lead">{% trans 'Dear Citizen Investment Fund' %},</p>
+    <p class="lead">{% trans 'New Baneswor, Kathmandu' %}</p>
+    <p class="lead">{% trans 'This is nalakosh bima template english body message' %} </p>
     {#    End Messege text#}
 {% endblock %}
-{% block report_main_table %}
-    {#    Detail table here #}
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <td>{% trans 'SN' %}</td>
-            <td>{% trans 'Designation' %}</td>
-            <td>{% trans 'Employee Name' %}</td>
-            <td>{% trans 'Insurance ID' %}</td>
-            <td>{% trans 'Compulsory Deduction' %}</td>
-            <td>{% trans 'Addition in deduction' %}</td>
-            <td>{% trans 'Total Deduction' %}</td>
-        </tr>
-        </thead>
 
-        <tbody>
-        {% for row in tables.nalakosh_bima_katti_bibaran.data %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ row.designation }}</td>
-                <td>{{ row.employee_name }}</td>
-                <td></td>
-                {% sub row.total_deduction row.addition_in_deduction as diff %}
-                <td>{{ diff }}</td>
-                <td>{{ row.addition_in_deduction }}</td>
-                <td>{{ row.total_deduction }}</td>
-            </tr>
-        {% endfor %}
-        <tr>
-            <td colspan="4">{% trans 'Total' %}</td>
-            {% sub tables.nalakosh_bima_katti_bibaran.totals.total_deduction tables.nalakosh_bima_katti_bibaran.totals.addition_in_deduction as total_diff %}
-            <td>{{ total_diff }}</td>
-            <td>{{ tables.nalakosh_bima_katti_bibaran.totals.addition_in_deduction }}</td>
-            <td>{{ tables.nalakosh_bima_katti_bibaran.totals.total_deduction }}</td>
-        </tr>
-        </tbody>
-
-
-    </table>
-
-    {#    End Detail table here #}
-{% endblock %}
 {% block report_footer %}
 
     {#    This is report footer#}
     <div class="row">
-        <div class="col-lg-4">
+        <div class="col-lg-4 col-xs-4">
             <p>{% trans 'Creator Signatute' %}</p>
             <p>{% trans 'Date' %}: ________</p>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-4 col-xs-4">
             <p>{% trans 'Head Accountant Signature' %}</p>
             <p>{% trans 'Date' %}: _________</p>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-4 col-xs-4">
             <p>{% trans 'Approved by Signature' %}</p>
             <p>{% trans 'Date' %}: __________</p>
         </div>

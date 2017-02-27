@@ -26,9 +26,15 @@
             {#    End Office detail block#}
 
             {#    Bank Detail Block#}
-            <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Name' %} : _________</h5>
-            <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Address' %} : _________</h5>
-            <h5>{% trans 'Amount' %} {% trans 'Deposited' %} : _________</h5>
+            <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Name' %} : <input type="text" placeholder="{% trans 'Name of Bank' %}"></h5>
+            <h5>{% trans 'Amount' %} {% trans 'Deposit Bank Address' %} : <input type="text" placeholder="{% trans 'Address of Bank' %}"></h5>
+            <h5>{% trans 'Amount' %} {% trans 'Deposited' %} : 
+                {% if totals_row.3.0 %}
+                    {{ totals_row.3.0 }}
+                {% else %}
+                    <em>Not Assigned</em>
+                {% endif %}
+            </h5>
             {#    End Bank Detail Block#}
 
         </div>
@@ -102,7 +108,7 @@
     {#    Translators: PF deduction distribution message#}
     <p class="lead">{% trans 'Dear Employee PF' %},</p>
     <p class="lead">{% trans 'Tridevi Marg, Thamel, Kathmandu' %}</p>
-    <p class="lead">{% trans 'PF deduction distribution of this branch of this detail has been deposited to the' %} __________ {% trans 'bank. The diposited vaoucher is also attached to this document.' %}</p>
+    <p class="lead">{% trans 'PF deduction distribution of this branch of this detail has been deposited to the' %} <input type="text" placeholder="{% trans 'Name of Bank' %}"> {% trans 'bank. The diposited vaoucher is also attached to this document.' %}</p>
     {#    End Messege text#}
 {% endblock %}
 
