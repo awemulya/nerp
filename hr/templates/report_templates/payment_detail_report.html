@@ -5,6 +5,8 @@
 {% load i18n %}
 {% load arithmatic %}
 
+{% block report_header %} {% endblock %}
+
 {% block report_body %}
     <h1 class="text-center">{{ report_title }}</h1>
     <h5 class="text-center">{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}</h5>

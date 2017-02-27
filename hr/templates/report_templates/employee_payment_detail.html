@@ -5,13 +5,17 @@
 {% load i18n %}
 {% load arithmatic %}
 
+{% block report_header %} {% endblock %}
+
 {% block report_body %}
-    <h1 class="text-center">{{ report_title }}</h1>
-    <h5 class="text-center">{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}</h5>
+    <p class="lead text-left">{{ report_title }}</p>
+    <p class="lead text-left">{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}, {{ months }}</p>
 
     {#    Office detail block#}
-    <h5 class="text-center">{% trans 'Office' %} {% trans 'Name' %} : {{ branch.name }}</h5>
-    <h5 class="text-center">{% trans 'Office' %} {% trans 'Address' %} : {{ branch.address }}</h5>
+    <p class="lead text-left">{% trans 'Employee' %} {% trans 'Name' %} : {{ employee.name }}</p>
+    <p class="lead text-left">{% trans 'Employee' %} {% trans 'Designation' %} : {{ employee.designation.designation_name }}</p>
+    <p class="text-left">{% trans 'Office' %} {% trans 'Name' %} : {{ branch.name }}</p>
+    <p class="text-left">{% trans 'Office' %} {% trans 'Address' %} : {{ branch.address }}</p>
     {#    End Office detail block#}
 
 

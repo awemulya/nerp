@@ -1534,7 +1534,6 @@ def get_report(request):
             to_date = report_request_query.cleaned_data.get('to_date')
             distinguish_entry = report_request_query.cleaned_data.get('distinguish_entry')
 
-
             branch_qry = {'paid_employee__working_branch': branch}
 
             if employee:
@@ -1542,7 +1541,6 @@ def get_report(request):
 
             if employee_bank:
                 branch_qry['paid_employee__bank'] = employee_bank
-
 
             if employee_type != 'ALL':
                 branch_qry['paid_employee__type'] = employee_type
@@ -1556,7 +1554,8 @@ def get_report(request):
                 'from_date': from_date,
                 'to_date': to_date,
                 'months': months,
-                'distinguish_entry': distinguish_entry
+                'distinguish_entry': distinguish_entry,
+                'employee': employee
             }
 
             if distinguish_entry:
