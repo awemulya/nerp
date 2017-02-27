@@ -1524,14 +1524,15 @@ def get_report(request):
         if report_request_query.is_valid():
             report = report_request_query.cleaned_data.get('report')
             branch = report_request_query.cleaned_data.get('branch')
+            employee_type = report_request_query.cleaned_data.get('employee_type')
             from_date = report_request_query.cleaned_data.get('from_date')
             to_date = report_request_query.cleaned_data.get('to_date')
             distinguish_entry = report_request_query.cleaned_data.get('distinguish_entry')
 
             branch_qry = {'paid_employee__working_branch': branch}
 
-            if report.for_employee_type != 'ALL':
-                branch_qry['paid_employee__type'] = report.for_employee_type
+            if employee_type != 'ALL':
+                branch_qry['paid_employee__type'] = employee_type
 
             months = get_y_m_in_words(from_date, to_date)
             # import ipdb
@@ -1556,7 +1557,8 @@ def get_report(request):
                                                              format=PayrollConfig.get_solo().hr_calendar),
                                                date_str_repr(p_e.paid_to_date,
                                                              format=PayrollConfig.get_solo().hr_calendar),
-                                           )
+                                           ), get_y_m_in_words(from_date, to_date)
+
                                        ) for p_e in PayrollEntry.objects.filter(
                     paid_from_date__gte=from_date,
                     paid_to_date__lte=to_date,
@@ -1620,6 +1622,8 @@ def get_report(request):
                             1]  # Tuple date, time
                         record_table['date_range'] = payment_record[
                             2]  # Tuple from, to
+                        record_table['included_months'] = payment_record[
+                            3]  # Tuple from, to
                     tables.append(record_table)
 
             context['tables'] = tables
@@ -1663,7 +1667,7 @@ def report_setting(request, pk=None):
                 report_hr.name = params.get('name')
                 report_hr.code = params.get('code')
                 report_hr.template = params.get('template')
-                report_hr.for_employee_type = params.get('for_employee_type')
+                # report_hr.for_employee_type = params.get('for_employee_type')
                 report_hr.save()
 
                 for table_to_dlt in params.get('to_remove'):

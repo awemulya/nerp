@@ -380,6 +380,6 @@ class ReportHRSerializer(serializers.ModelSerializer):
             'name',
             'code',
             'template',
-            'for_employee_type',
+            # 'for_employee_type',
             'report_tables'
             )

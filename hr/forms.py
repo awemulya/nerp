@@ -155,6 +155,12 @@ class GetReportForm(forms.Form):
         label=_("Distinguish Entry"),
         required=False
     )
+    emp_type_choices = (
+        ('PERMANENT', _('Permanent')),
+        ('TEMPORARY', _('Temporary')),
+        ('ALL', _('All Type')),
+    )
+    employee_type = forms.ChoiceField(choices=emp_type_choices, label=_('Employee Type'), initial='ALL')
 
     # distinguish
 
@@ -556,7 +562,7 @@ class ReportHrForm(HTML5BootstrapModelForm):
          'name': TextInput(attrs={'data-bind': "value: name"}),
          'code': TextInput(attrs={'data-bind': "value: code"}),
          'template': Select(attrs={'data-bind': "value: template"}),
-         'for_employee_type': Select(attrs={'data-bind': "value: for_employee_type"}),
+         # 'for_employee_type': Select(attrs={'data-bind': "value: for_employee_type"}),
 
         }
 

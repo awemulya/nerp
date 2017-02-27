@@ -984,16 +984,11 @@ class EmployeeAccount(models.Model):
 
 
 class ReportHR(models.Model):
-    emp_type_choices = (
-        ('PERMANENT', _('Permanent')),
-        ('TEMPORARY', _('Temporary')),
-        ('ALL', _('All Type')),
-    )
     hr_report_template_folder = BASE_DIR + '/hr/templates/report_templates'
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=100)
     template = models.FilePathField(path=hr_report_template_folder, match=".*\.html$")
-    for_employee_type = models.CharField(max_length=50, choices=emp_type_choices)
+    # for_employee_type = models.CharField(max_length=50, choices=emp_type_choices)
     
     def __unicode__(self):
         return self.name
