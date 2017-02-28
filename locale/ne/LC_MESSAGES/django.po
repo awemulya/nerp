@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-27 23:18+0545\n"
+"POT-Creation-Date: 2017-02-28 13:14+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -818,51 +818,51 @@ msgstr "कर्मचारी"
 msgid "Employees"
 msgstr "कर्मचारीहरु"
 
-#: hr/bsdate.py:7
+#: hr/bsdate.py:8
 msgid "Baisakh"
 msgstr "बैसाख"
 
-#: hr/bsdate.py:8
+#: hr/bsdate.py:9
 msgid "Jestha"
 msgstr "जेस्ठ"
 
-#: hr/bsdate.py:9
+#: hr/bsdate.py:10
 msgid "Aasad"
 msgstr "असाड"
 
-#: hr/bsdate.py:10
+#: hr/bsdate.py:11
 msgid "Shrawan"
 msgstr "श्रावन"
 
-#: hr/bsdate.py:11
+#: hr/bsdate.py:12
 msgid "Bhadra"
 msgstr "भाद्र"
 
-#: hr/bsdate.py:12
+#: hr/bsdate.py:13
 msgid "Asoj"
 msgstr "असोज"
 
-#: hr/bsdate.py:13
+#: hr/bsdate.py:14
 msgid "Kartik"
 msgstr "कार्तिक"
 
-#: hr/bsdate.py:14
+#: hr/bsdate.py:15
 msgid "Mansir"
 msgstr "मङ्सिर"
 
-#: hr/bsdate.py:15
+#: hr/bsdate.py:16
 msgid "Push"
 msgstr ""
 
-#: hr/bsdate.py:16
+#: hr/bsdate.py:17
 msgid "Magh"
 msgstr "माघ"
 
-#: hr/bsdate.py:17
+#: hr/bsdate.py:18
 msgid "Falgun"
 msgstr "फाल्गुन"
 
-#: hr/bsdate.py:18
+#: hr/bsdate.py:19
 msgid "Chaitra"
 msgstr "चैत्र"
 
@@ -975,10 +975,8 @@ msgid "Rate"
 msgstr "दर"
 
 #: hr/models.py:37
-#, fuzzy
-#| msgid "Month(s)"
 msgid "Monthly"
-msgstr "महिना(हरू)"
+msgstr "महिनाबारी"
 
 #: hr/models.py:38 inventory/templates/_dashboard_inventory.html.py:57
 #: inventory/templates/yearly_report.html:5
@@ -1587,6 +1585,7 @@ msgstr "रकम"
 #: hr/templates/report_templates/nalakosh_bima_katti.html:10
 #: hr/templates/report_templates/payment_detail_report.html:12
 #: hr/templates/report_templates/sanchayakosh_katti.html:20
+#: templates/hr_report_base.html:101
 msgid "Range"
 msgstr "श्रेणी"
 
@@ -1659,9 +1658,6 @@ msgstr "बैंक को नाम "
 msgid "Deposit Bank Address"
 msgstr "जम्मा गरिएको ठेगाना"
 
-#: hr/templates/report_templates/nalakosh_bima_katti.html:20
-#: hr/templates/report_templates/sanchayakosh_katti.html:30
-
 #: hr/templates/report_templates/nalakosh_bima_katti.html:21
 msgid "Diposited Date"
 msgstr "जम्मा गरिएको मिति"
@@ -1681,7 +1677,10 @@ msgstr "नया बानेश्वोर, काठमाडौँ"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:29
 msgid "This is nalakosh bima template english body message"
-msgstr "यस कार्यालयका निम्न कर्मचारीहरुको साबधिक जीवन बिमा कोष बापत रकम कट्टी गरि फात्बारी र भौचर समाबेस गरि आबस्यक कार्यथको लागि पठाएको वेहोरा आनुरोध छ। बीमा परिचय पत्र न. प्राप्त हुन नसकेका कर्मचारीहरुको नंबर साबिक कार्यालयबाट भीडन गरी पठाईदिनहुन आनुरोध छ। "
+msgstr ""
+"यस कार्यालयका निम्न कर्मचारीहरुको साबधिक जीवन बिमा कोष बापत रकम कट्टी गरि फात्बारी "
+"र भौचर समाबेस गरि आबस्यक कार्यथको लागि पठाएको वेहोरा आनुरोध छ। बीमा परिचय पत्र न. "
+"प्राप्त हुन नसकेका कर्मचारीहरुको नंबर साबिक कार्यालयबाट भीडन गरी पठाईदिनहुन आनुरोध छ। "
 
 #. Translators: PF deduction distribution message
 #: hr/templates/report_templates/sanchayakosh_katti.html:11
@@ -1691,6 +1690,12 @@ msgstr "कर्मचारी संचय कोष"
 #: hr/templates/report_templates/sanchayakosh_katti.html:12
 msgid "PF Deduction Distribution"
 msgstr "संचयकोष कट्टी फाटबारी"
+
+#: hr/templates/report_templates/sanchayakosh_katti.html:30
+#, fuzzy
+#| msgid "Name of Bank"
+msgid "Address of Bank"
+msgstr "बैंक को नाम "
 
 #: hr/templates/report_templates/sanchayakosh_katti.html:31
 msgid "Deposited"
@@ -2203,7 +2208,7 @@ msgstr "निर्धारित मूल्य"
 msgid "Day(s)"
 msgstr "दिन(हरू)"
 
-#: inventory/models.py:193
+#: inventory/models.py:193 templates/hr_report_base.html.py:101
 msgid "Month(s)"
 msgstr "महिना(हरू)"
 
@@ -4267,22 +4272,10 @@ msgstr ""
 msgid "Table Name"
 msgstr "तालिकाको नाम"
 
-#: templates/hr_report_base.html:101
-#, fuzzy
-#| msgid "Range"
-msgid "Range: "
-msgstr "श्रेणी"
-
 #: templates/hr_report_base.html:101 training/templates/print_training.html:33
 #: training/templates/training_report.html:34
 msgid "To"
 msgstr "देखि"
-
-#: templates/hr_report_base.html:101
-#, fuzzy
-#| msgid "Month(s)"
-msgid "Months"
-msgstr "महिना(हरू)"
 
 #: training/templates/category_form.html:39
 msgid "No trainings under this category!"

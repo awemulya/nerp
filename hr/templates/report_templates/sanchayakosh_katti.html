@@ -17,7 +17,7 @@
     <div class="row">
         <div class="col-lg-6 col-xs-6">
             <h1>{{ report_title }}</h1>
-            <h5>{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}</h5>
+            <h5>{% trans 'Date' %} {% trans 'Range' %} : {{ from_date | localizen }} {% trans 'to' %} {{ to_date | localizen}}</h5>
 
             {#    Office detail block#}
             <h5>{% trans 'Office' %} {% trans 'Name' %} : {{ branch.name }}</h5>

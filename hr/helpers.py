@@ -12,6 +12,8 @@ from njango.nepdate import bs, bs2ad, ad2bs
 from calendar import monthrange as mr
 from django.utils.translation import ugettext_lazy as _
 
+from users.templatetags.filters import localize
+
 
 def get_y_m_tuple_list(from_date, to_date):
     return_list = []
@@ -46,7 +48,7 @@ def get_y_m_tuple_list(from_date, to_date):
     return return_list
 
 def get_y_m_in_words(from_date, to_date):
-    list_in_words = ['%s-%s' % (tup[0], month[tup[1]]) for tup in get_y_m_tuple_list(from_date, to_date)]
+    list_in_words = ['%s-%s' % (localize(tup[0]), month[tup[1]]) for tup in get_y_m_tuple_list(from_date, to_date)]
     return (' / ').join(list_in_words)
 
 

@@ -9,7 +9,7 @@
 
 {% block report_body %}
     <p class="lead text-left">{{ report_title }}</p>
-    <p class="lead text-left">{% trans 'Date' %} {% trans 'Range' %} : {{ from_date }} {% trans 'to' %} {{ to_date }}, {{ months }}</p>
+    <p class="lead text-left">{% trans 'Date' %} {% trans 'Range' %} : {{ from_date | localizen }} {% trans 'to' %} {{ to_date | localizen }}, {{ months }}</p>
 
     {#    Office detail block#}
     <p class="lead text-left">{% trans 'Employee' %} {% trans 'Name' %} : {{ employee.name }}</p>

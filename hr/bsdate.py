@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 # This module uses njango module for Bikram Sambat Calendar
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, get_language
 from njango.nepdate import bs, bs2ad
 from datetime import date
 
@@ -18,14 +19,35 @@ month[11] = _('Falgun')
 month[12] = _('Chaitra')
 
 
+def localize_num(text):
+    lang_code = get_language()
+    if lang_code == 'ne':
+        text = str(text)
+        dic = {
+            '०': '0',
+            '१': '1',
+            '२': '2',
+            '३': '3',
+            '४': '4',
+            '५': '5',
+            '६': '6',
+            '७': '7',
+            '८': '8',
+            '९': '9'
+        }
+        res = dict((v, k) for k, v in dic.iteritems())
+        for i, j in res.iteritems():
+            text = text.replace(i, j)
+    return text
+
 def get_bs_datetime(ad_datetime, bs_date, format=None):
     time = ad_datetime.strftime('%X')
     if format=='AD':
-        return ad_datetime.strftime('%d, %B, %Y'), time
+        return ad_datetime.strftime('%d, %B, %Y'), localize_num(time)
     elif format=='BS':
-        return bs_date.as_string(format='words'), time
+        return bs_date.as_string(format='words'), localize_num(time)
 
-    return str(bs_date), time
+    return str(bs_date), localize_num(time)
 
 
 def date_str_repr(date_obj, format=None):
@@ -66,9 +88,9 @@ class BSDate(object):
     def as_string(self, format=None):
         if format == 'words':
             return '%s, %s, %s' % (
-                str(self._day).zfill(2),
+                localize_num(str(self._day).zfill(2)),
                 month[self._month],
-                str(self.year)
+                localize_num(str(self.year))
             )
         return '%s-%s-%s' % (
             str(self._year),

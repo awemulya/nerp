@@ -89,7 +89,7 @@
             <h3 class="text-center">{% trans 'Ministry of Home Affairs' %}</h3>
             <h3 class="text-center">{{ branch.name }}</h3>
             <h3 class="text-center">{{ branch.address }}</h3>
-            <p class="text-right">{% trans 'Date' %}: {{ today }}</p>
+            <p class="text-right">{% trans 'Date' %}: {{ today | localizen }}</p>
         {% endblock %}
         {% block report_body %}{% endblock %}
         {% block report_main_table %}
@@ -98,7 +98,7 @@
             {% for table in tables %}
                 <h4>{% trans 'Table Name' %}: {{ table.name }}</h4>
                 {% if distinguish_entry %}
-                    <h5>{% trans 'Range: ' %}{{ table.date_range.0 }} {% trans 'To' %} {{ table.date_range.1 }}, {% trans 'Months' %} : {{ table.included_months }}</h5>
+                    <h5>{% trans 'Date' %} {% trans 'Range' %}: {{ table.date_range.0 }} {% trans 'To' %} {{ table.date_range.1 }}, {% trans 'Month(s)' %} : {{ table.included_months }}</h5>
                     <h5>{% trans 'Entry' %} {% trans 'Date' %}: {{ table.entry_datetime.0 }}, {% trans 'Entry' %} {% trans 'Time' %}: {{ table.entry_datetime.1 }}</h5>
                 {% endif %}
                 <table class="table table-bordered">
@@ -115,9 +115,9 @@
                         {% endif %}
                         {% if forloop.counter > 1 and forloop.counter < table.data|length %}
                             <tr>
-                                <td>{{ forloop.counter0 }}</td>
+                                <td>{{ forloop.counter0| localize }}</td>
                                 {% for data in row %}
-                                    <td rowspan="{{ data.1 }}" colspan="{{ data.2 }}">{{ data.0 }}</td>
+                                    <td rowspan="{{ data.1 }}" colspan="{{ data.2 }}">{{ data.0 | localizen }}</td>
                                 {% endfor %}
                             </tr>
                             </thead>
@@ -125,7 +125,7 @@
                         {% if forloop.counter == table.data|length %}
                             <tr>
                                 {% for data in row %}
-                                    <td rowspan="{{ data.1 }}" colspan="{{ data.2 }}">{{ data.0 }}</td>
+                                    <td rowspan="{{ data.1 }}" colspan="{{ data.2 }}">{{ data.0 | localizen }}</td>
                                 {% endfor %}
                             </tr>
                         {% endif %}

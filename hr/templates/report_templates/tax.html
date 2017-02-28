@@ -17,14 +17,14 @@
         {% trans 'Yash karyalaya/ aayojanama karyarat karmachariharulai' %} {{ months }}
         {% trans 'mahinako talab bitaran garda tapasheel ma ullekhit padhadhikariharubata sasukar tatha parishramik kar bapat katti bhaeko rakam ru. ' %}
         {% if totals_row.3.0 %}
-            {{ totals_row.3.0 }}
+            {{ totals_row.3.0 | localizen }}
         {% else %}
             <em>Not Assigned</em>
         {% endif %}
     {% trans 'aakhcharepi' %} <input type="text" placeholder="{% trans 'Amount in words' %}"> <input type="text"
                                                                                                      placeholder="{% trans 'Name of Bank' %}">
     {% trans 'ma jamma garieko miti' %} <input type="text" placeholder="{% trans 'Date of deposit' %}"> {% trans 'ko no.' %} <input type="text"
-                                                                                                placeholder="{% trans 'Voucher number' %}">{% trans 'ko bank voucher than 2 yasaisath sanlagna rakhi pathaieko behora anurodh cha.' %}
+                                                                                                placeholder="{% trans 'Check No.' %}">{% trans 'ko bank voucher than 2 yasaisath sanlagna rakhi pathaieko behora anurodh cha.' %}
     </p>
 {% endblock %}
 {% block report_footer %}
