@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-28 13:14+0545\n"
+"POT-Creation-Date: 2017-02-28 13:52+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -465,7 +465,8 @@ msgstr "न."
 #: project/templates/project/imprestjournalvoucher_list.html:25
 #: project/templates/project/imprestledger_list.html:25
 #: project/templates/project/reimbursement_list.html:24
-#: templates/hr_report_base.html:92 templates/hr_report_base.html.py:102
+#: templates/hr_report_base.html:92 templates/hr_report_base.html.py:101
+#: templates/hr_report_base.html:102
 msgid "Date"
 msgstr "मिति"
 
@@ -805,7 +806,7 @@ msgid "Donors"
 msgstr ""
 
 #: core/templates/employee_form.html:4 core/templates/employee_form.html:9
-#: core/templates/list_employees.html:50 hr/forms.py:181 hr/models.py:406
+#: core/templates/list_employees.html:50 hr/forms.py:181 hr/models.py:407
 #: hr/templates/hr/protempore_list.html:31 hr/templates/hr_index.html.py:31
 #: hr/templates/payroll_entry.html:112 hr/templates/payroll_entry.html:291
 #: hr/templates/report_templates/employee_payment_detail.html:15
@@ -976,7 +977,7 @@ msgstr "दर"
 
 #: hr/models.py:37
 msgid "Monthly"
-msgstr "महिनाबारी"
+msgstr "मासिक"
 
 #: hr/models.py:38 inventory/templates/_dashboard_inventory.html.py:57
 #: inventory/templates/yearly_report.html:5
@@ -1031,61 +1032,61 @@ msgstr ""
 msgid "Salary Paused"
 msgstr ""
 
-#: hr/models.py:354
+#: hr/models.py:355
 msgid "Male"
 msgstr ""
 
-#: hr/models.py:354
+#: hr/models.py:355
 msgid "Female"
 msgstr ""
 
-#: hr/models.py:356 hr/models.py:736
+#: hr/models.py:357 hr/models.py:737
 msgid "Married"
 msgstr ""
 
-#: hr/models.py:356 hr/models.py:736
+#: hr/models.py:357 hr/models.py:737
 msgid "Unmarried"
 msgstr ""
 
-#: hr/models.py:719
+#: hr/models.py:720
 #, fuzzy
 #| msgid "Register"
 msgid "Registered"
 msgstr "दर्ता गर्नु"
 
-#: hr/models.py:720
+#: hr/models.py:721
 msgid "Ready for Payment"
 msgstr ""
 
-#: hr/models.py:721
+#: hr/models.py:722
 #, fuzzy
 #| msgid "Fine Paid"
 msgid "Paid"
 msgstr "तिरेको जरिमाना"
 
-#: hr/models.py:750
+#: hr/models.py:751
 msgid "Remuneration Tax"
 msgstr ""
 
-#: hr/models.py:751
+#: hr/models.py:752
 msgid "Social Security Tax"
 msgstr ""
 
-#: hr/models.py:968
+#: hr/models.py:969
 msgid "Account must be of Category BASIC SALARY or DEDUCTION"
 msgstr ""
 
-#: hr/models.py:1050 hr/models.py:1054
+#: hr/models.py:1051 hr/models.py:1055
 msgid "Remuneration tax discount for married employee on taxable amount."
 msgstr ""
 
-#: hr/models.py:1060
+#: hr/models.py:1061
 msgid ""
 "Remuneration tax additional discount for disabled employee on taxable amount."
 "(%)"
 msgstr ""
 
-#: hr/models.py:1064
+#: hr/models.py:1065
 msgid "Discount for female on evaluated remuneration tax. (%)"
 msgstr ""
 
@@ -1663,6 +1664,7 @@ msgid "Diposited Date"
 msgstr "जम्मा गरिएको मिति"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:21
+#: hr/templates/report_templates/tax.html:27
 msgid "Check No."
 msgstr "चेक न."
 
@@ -1766,10 +1768,6 @@ msgstr "जम्मा गरेको मिति"
 #: hr/templates/report_templates/tax.html:26
 msgid "ko no."
 msgstr "को न."
-
-#: hr/templates/report_templates/tax.html:27
-msgid "Voucher number"
-msgstr "भौचर संख्या"
 
 #: hr/templates/report_templates/tax.html:27
 msgid ""
@@ -4518,6 +4516,9 @@ msgstr "तपाईंको प्रयोगकर्ता नाम र �
 #: users/templates/registration/login.html:58
 msgid "Remember Me"
 msgstr "मलाई यस कम्प्युटरमा सम्झिराख्नुहोस"
+
+#~ msgid "Voucher number"
+#~ msgstr "भौचर संख्या"
 
 #, fuzzy
 #~| msgid "Instances"

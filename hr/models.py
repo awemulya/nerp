@@ -349,6 +349,7 @@ class Employee(models.Model):
     # Budget code (Functionality to change budget code for employee group)
     budget_code = models.CharField(max_length=100)
     pf_id_number = models.PositiveIntegerField(blank=True, null=True)
+    insurance_id_number = models.PositiveIntegerField(blank=True, null=True)
     # working_branch = models.CharField(max_length=100)
     # Employee ko section or branch coz he can be in another branch and paid from central
     sex_choice = [('M', _('Male')), ('F', _('Female'))]
