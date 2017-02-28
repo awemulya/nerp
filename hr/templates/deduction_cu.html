@@ -71,16 +71,15 @@
           </tr>
         {% endfor %}
         </table>
+      {{ deduction_formset.management_form }}
+      
+      {% conf_has_category as has_config %}
+      {% if has_config %}
+      <input class="btn btn-raised btn-primary" type="submit" value="Save">
+      {% else %}
+          {% include '_pconfig.html' %}
+      {% endif %}
     </div>
-    {{ deduction_formset.management_form }}
-    
-    {% conf_has_category as has_config %}
-    {% if has_config %}
-    <input class="btn btn-raised btn-primary" type="submit" value="Save">
-    {% else %}
-        {% include '_pconfig.html' %}
-    {% endif %}
-
 </form>
 
     
