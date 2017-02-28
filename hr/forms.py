@@ -10,7 +10,7 @@ from hr.helpers import bs_str2tuple, employee_last_payment_record, inc_1_day, dr
 from users.models import User
 from .models import PaymentRecord, PayrollEntry, BranchOffice, Employee, ReportHR, ReportTableDetail, EmployeeGrade, EmployeeGradeGroup, \
     Designation, ReportTable, DeductionName, GradeScaleValidity, AllowanceValidity, DeductionValidity, PayrollConfig, \
-    PayrollAccountant, ProTempore, EmployeeGradeNumberPause, TaxDeduction, EmployeeFacility, Bank
+    PayrollAccountant, ProTempore, EmployeeGradeNumberPause, TaxDeduction, EmployeeFacility, Bank, BankBranch
 from django.forms.widgets import Select, DateInput, NumberInput, CheckboxInput, DateTimeInput, TextInput   # , MultiWidget
 from njango.fields import BSDateField, today
 from django.utils.translation import ugettext_lazy as _
@@ -171,6 +171,13 @@ class GetReportForm(forms.Form):
     employee_bank = forms.ModelChoiceField(
         queryset=Bank.objects.all(),
         label=_('Employee Bank'),
+        initial=None,
+        required=False
+    )
+
+    employee_bank_branch = forms.ModelChoiceField(
+        queryset=BankBranch.objects.all(),
+        label=_('Employee Bank Branch'),
         initial=None,
         required=False
     )

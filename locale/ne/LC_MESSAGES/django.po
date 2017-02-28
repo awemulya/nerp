@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-28 15:28+0545\n"
+"POT-Creation-Date: 2017-02-28 23:57+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 #: hr/templates/report_templates/employee_payment_detail.html:18
 #: hr/templates/report_templates/nalakosh_bima_katti.html:14
 #: hr/templates/report_templates/payment_detail_report.html:16
-#: hr/templates/report_templates/pf_deduction.html:21
+#: hr/templates/report_templates/pf_deduction.html:24
 #: hr/templates/report_templates/sanchayakosh_katti.html:24
 #: inventory/templates/pdf/purchase_order_pdf.html:20
 #: inventory/templates/purchase_order.html:41 inventory/views.py:217
@@ -55,7 +55,7 @@ msgstr "पान न."
 #: hr/templates/report_templates/employee_payment_detail.html:17
 #: hr/templates/report_templates/nalakosh_bima_katti.html:13
 #: hr/templates/report_templates/payment_detail_report.html:15
-#: hr/templates/report_templates/pf_deduction.html:20
+#: hr/templates/report_templates/pf_deduction.html:23
 #: hr/templates/report_templates/sanchayakosh_katti.html:23
 #: inventory/forms.py:21 inventory/templates/demand_form.html.py:237
 #: inventory/templates/entry_report.html:167
@@ -195,7 +195,7 @@ msgstr "मेट्नुहोस"
 #: account/templates/view_ledger.html:32
 #: hr/templates/hr/branchoffice_list.html:32
 #: hr/templates/report_templates/nalakosh_bima_katti.html:15
-#: hr/templates/report_templates/pf_deduction.html:22
+#: hr/templates/report_templates/pf_deduction.html:25
 #: hr/templates/report_templates/sanchayakosh_katti.html:25
 msgid "Code"
 msgstr "कोड"
@@ -382,6 +382,11 @@ msgid "No."
 msgstr "न."
 
 #: account/templates/receipt.html:36 account/templates/view_ledger.html:70
+#: hr/templates/report_templates/bank_report.html:10
+#: hr/templates/report_templates/bank_report.html:16
+#: hr/templates/report_templates/bank_report.html:26
+#: hr/templates/report_templates/bank_report.html:30
+#: hr/templates/report_templates/bank_report.html:34
 #: hr/templates/report_templates/employee_payment_detail.html:12
 #: hr/templates/report_templates/employee_payment_detail.html:30
 #: hr/templates/report_templates/employee_payment_detail.html:34
@@ -394,10 +399,10 @@ msgstr "न."
 #: hr/templates/report_templates/payment_detail_report.html:28
 #: hr/templates/report_templates/payment_detail_report.html:32
 #: hr/templates/report_templates/payment_detail_report.html:36
-#: hr/templates/report_templates/pf_deduction.html:17
-#: hr/templates/report_templates/pf_deduction.html:46
-#: hr/templates/report_templates/pf_deduction.html:50
-#: hr/templates/report_templates/pf_deduction.html:54
+#: hr/templates/report_templates/pf_deduction.html:19
+#: hr/templates/report_templates/pf_deduction.html:121
+#: hr/templates/report_templates/pf_deduction.html:125
+#: hr/templates/report_templates/pf_deduction.html:129
 #: hr/templates/report_templates/sanchayakosh_katti.html:20
 #: hr/templates/report_templates/sanchayakosh_katti.html:121
 #: hr/templates/report_templates/sanchayakosh_katti.html:125
@@ -528,8 +533,8 @@ msgstr "इन्भ्वाइस न."
 #: hr/templates/payroll_entry.html:262 hr/templates/payroll_entry.html:295
 #: hr/templates/report_templates/nalakosh_bima_katti.html:19
 #: hr/templates/report_templates/nalakosh_bima_katti.html:20
-#: hr/templates/report_templates/pf_deduction.html:26
-#: hr/templates/report_templates/pf_deduction.html:27
+#: hr/templates/report_templates/pf_deduction.html:29
+#: hr/templates/report_templates/pf_deduction.html:32
 #: hr/templates/report_templates/sanchayakosh_katti.html:29
 #: hr/templates/report_templates/sanchayakosh_katti.html:30
 #: hr/templates/report_templates/sanchayakosh_katti.html:31
@@ -815,7 +820,7 @@ msgid "Donors"
 msgstr ""
 
 #: core/templates/employee_form.html:4 core/templates/employee_form.html:9
-#: core/templates/list_employees.html:50 hr/forms.py:181 hr/models.py:407
+#: core/templates/list_employees.html:50 hr/forms.py:188 hr/models.py:407
 #: hr/templates/hr/protempore_list.html:31 hr/templates/hr_index.html.py:31
 #: hr/templates/payroll_entry.html:112 hr/templates/payroll_entry.html:291
 #: hr/templates/report_templates/employee_payment_detail.html:15
@@ -935,38 +940,44 @@ msgstr "कर्मचारीको नाम"
 msgid "Employee Bank"
 msgstr "कर्मचारीको नाम"
 
-#: hr/forms.py:185
+#: hr/forms.py:180
+#, fuzzy
+#| msgid "Employee Name"
+msgid "Employee Bank Branch"
+msgstr "कर्मचारीको नाम"
+
+#: hr/forms.py:194
 msgid "Employee with deduction"
 msgstr "कर्मचारीको कट्टी"
 
-#: hr/forms.py:198 hr/forms.py:254
+#: hr/forms.py:209 hr/forms.py:265
 msgid "From date must be less than to date"
 msgstr ""
 
-#: hr/forms.py:213
+#: hr/forms.py:224
 msgid "Account should be unique."
 msgstr ""
 
-#: hr/forms.py:233
+#: hr/forms.py:244
 msgid "This field is needed if it is a yearly allowance"
 msgstr ""
 
-#: hr/forms.py:265
+#: hr/forms.py:276
 #, python-format
 msgid ""
 "From date cannot be less than employee last paid date. Last paid on "
 "%(hrbs_date)s"
 msgstr ""
 
-#: hr/forms.py:272
+#: hr/forms.py:283
 msgid "This range overlaps with previous range entry."
 msgstr ""
 
-#: hr/forms.py:764
+#: hr/forms.py:775
 msgid "Same employee cannot be assigned as pro tempore."
 msgstr ""
 
-#: hr/forms.py:766
+#: hr/forms.py:777
 msgid "Dismiss date must be greater than appoint date"
 msgstr ""
 
@@ -1595,22 +1606,95 @@ msgstr ""
 msgid "Deduced Amount"
 msgstr "रकम"
 
+#: hr/templates/report_templates/bank_report.html:9
+#: hr/templates/report_templates/nalakosh_bima_katti.html:9
+#: hr/templates/report_templates/tax.html:9
+msgid "Subject"
+msgstr "विषय"
+
+#: hr/templates/report_templates/bank_report.html:10
 #: hr/templates/report_templates/employee_payment_detail.html:12
 #: hr/templates/report_templates/nalakosh_bima_katti.html:10
 #: hr/templates/report_templates/payment_detail_report.html:12
-#: hr/templates/report_templates/pf_deduction.html:17
+#: hr/templates/report_templates/pf_deduction.html:19
 #: hr/templates/report_templates/sanchayakosh_katti.html:20
 #: templates/hr_report_base.html:101
 msgid "Range"
 msgstr "श्रेणी"
 
+#: hr/templates/report_templates/bank_report.html:10
 #: hr/templates/report_templates/employee_payment_detail.html:12
 #: hr/templates/report_templates/nalakosh_bima_katti.html:10
 #: hr/templates/report_templates/payment_detail_report.html:12
-#: hr/templates/report_templates/pf_deduction.html:17
+#: hr/templates/report_templates/pf_deduction.html:20
 #: hr/templates/report_templates/sanchayakosh_katti.html:20
 msgid "to"
 msgstr "देखि"
+
+#: hr/templates/report_templates/bank_report.html:16
+msgid "bosy msg part1"
+msgstr "यस कार्यालयका निम्न लिखित कर्मचारीहरुको"
+
+#: hr/templates/report_templates/bank_report.html:16
+msgid "bosy msg part2"
+msgstr "महिनाको तलब भत्ता बापत तपशिल बमोजिम पाउने रकम निजहरुको त्यस बैंकमा खोलिएको बचत खातामा तपसील बमोजिम जम्मा गरि दिनु हुन त्यस बैंक को नाम लेखिएको"
+
+#: hr/templates/report_templates/bank_report.html:16
+#: hr/templates/report_templates/nalakosh_bima_katti.html:19
+#: hr/templates/report_templates/pf_deduction.html:29
+#: hr/templates/report_templates/sanchayakosh_katti.html:29
+msgid "Deposit Bank Name"
+msgstr "जम्मा गरिएको बैंक"
+
+#: hr/templates/report_templates/bank_report.html:16
+msgid "bosy msg part3"
+msgstr "को चे. न."
+
+#: hr/templates/report_templates/bank_report.html:16
+#: hr/templates/report_templates/nalakosh_bima_katti.html:21
+#: hr/templates/report_templates/pf_deduction.html:36
+#: hr/templates/report_templates/pf_deduction.html:37
+#: hr/templates/report_templates/tax.html:27
+msgid "Check No."
+msgstr "चेक न."
+
+#: hr/templates/report_templates/bank_report.html:16
+msgid "bosy msg part4"
+msgstr "मिति"
+
+#: hr/templates/report_templates/bank_report.html:16
+msgid "bosy msg part5"
+msgstr "बाट यसैसाथ पठाइएको व्यहोरा अनुरोध छ।"
+
+#: hr/templates/report_templates/bank_report.html:25
+#: hr/templates/report_templates/employee_payment_detail.html:29
+#: hr/templates/report_templates/nalakosh_bima_katti.html:38
+#: hr/templates/report_templates/payment_detail_report.html:27
+#: hr/templates/report_templates/pf_deduction.html:120
+#: hr/templates/report_templates/sanchayakosh_katti.html:120
+#: hr/templates/report_templates/tax.html:35
+msgid "Creator Signatute"
+msgstr "प्रतिबेदन तैयार पर्नेको दस्तखत"
+
+#: hr/templates/report_templates/bank_report.html:29
+#: hr/templates/report_templates/employee_payment_detail.html:33
+#: hr/templates/report_templates/nalakosh_bima_katti.html:42
+#: hr/templates/report_templates/payment_detail_report.html:31
+#: hr/templates/report_templates/pf_deduction.html:124
+#: hr/templates/report_templates/sanchayakosh_katti.html:124
+#: hr/templates/report_templates/tax.html:39
+msgid "Head Accountant Signature"
+msgstr "लेख प्रमुखको दस्तखत"
+
+#: hr/templates/report_templates/bank_report.html:33
+#: hr/templates/report_templates/employee_payment_detail.html:37
+#: hr/templates/report_templates/nalakosh_bima_katti.html:46
+#: hr/templates/report_templates/payment_detail_report.html:35
+#: hr/templates/report_templates/pf_deduction.html:128
+#: hr/templates/report_templates/sanchayakosh_katti.html:128
+#: hr/templates/report_templates/tax.html:43
+msgid "Approved by Signature"
+msgstr "सदर गर्नेको दस्तखत"
 
 #: hr/templates/report_templates/employee_payment_detail.html:17
 #: hr/templates/report_templates/employee_payment_detail.html:18
@@ -1619,9 +1703,9 @@ msgstr "देखि"
 #: hr/templates/report_templates/nalakosh_bima_katti.html:15
 #: hr/templates/report_templates/payment_detail_report.html:15
 #: hr/templates/report_templates/payment_detail_report.html:16
-#: hr/templates/report_templates/pf_deduction.html:20
-#: hr/templates/report_templates/pf_deduction.html:21
-#: hr/templates/report_templates/pf_deduction.html:22
+#: hr/templates/report_templates/pf_deduction.html:23
+#: hr/templates/report_templates/pf_deduction.html:24
+#: hr/templates/report_templates/pf_deduction.html:25
 #: hr/templates/report_templates/sanchayakosh_katti.html:23
 #: hr/templates/report_templates/sanchayakosh_katti.html:24
 #: hr/templates/report_templates/sanchayakosh_katti.html:25
@@ -1631,46 +1715,8 @@ msgstr "देखि"
 msgid "Office"
 msgstr "कार्यालय"
 
-#: hr/templates/report_templates/employee_payment_detail.html:29
-#: hr/templates/report_templates/nalakosh_bima_katti.html:38
-#: hr/templates/report_templates/payment_detail_report.html:27
-#: hr/templates/report_templates/pf_deduction.html:45
-#: hr/templates/report_templates/sanchayakosh_katti.html:120
-#: hr/templates/report_templates/tax.html:35
-msgid "Creator Signatute"
-msgstr "प्रतिबेदन तैयार पर्नेको दस्तखत"
-
-#: hr/templates/report_templates/employee_payment_detail.html:33
-#: hr/templates/report_templates/nalakosh_bima_katti.html:42
-#: hr/templates/report_templates/payment_detail_report.html:31
-#: hr/templates/report_templates/pf_deduction.html:49
-#: hr/templates/report_templates/sanchayakosh_katti.html:124
-#: hr/templates/report_templates/tax.html:39
-msgid "Head Accountant Signature"
-msgstr "लेख प्रमुखको दस्तखत"
-
-#: hr/templates/report_templates/employee_payment_detail.html:37
-#: hr/templates/report_templates/nalakosh_bima_katti.html:46
-#: hr/templates/report_templates/payment_detail_report.html:35
-#: hr/templates/report_templates/pf_deduction.html:53
-#: hr/templates/report_templates/sanchayakosh_katti.html:128
-#: hr/templates/report_templates/tax.html:43
-msgid "Approved by Signature"
-msgstr "सदर गर्नेको दस्तखत"
-
-#: hr/templates/report_templates/nalakosh_bima_katti.html:9
-#: hr/templates/report_templates/tax.html:9
-msgid "Subject"
-msgstr "विषय"
-
 #: hr/templates/report_templates/nalakosh_bima_katti.html:19
-#: hr/templates/report_templates/pf_deduction.html:26
-#: hr/templates/report_templates/sanchayakosh_katti.html:29
-msgid "Deposit Bank Name"
-msgstr "जम्मा गरिएको बैंक"
-
-#: hr/templates/report_templates/nalakosh_bima_katti.html:19
-#: hr/templates/report_templates/pf_deduction.html:26
+#: hr/templates/report_templates/pf_deduction.html:30
 #: hr/templates/report_templates/sanchayakosh_katti.html:29
 #: hr/templates/report_templates/sanchayakosh_katti.html:111
 #: hr/templates/report_templates/tax.html:25
@@ -1678,21 +1724,17 @@ msgid "Name of Bank"
 msgstr "बैंक को नाम "
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:20
-#: hr/templates/report_templates/pf_deduction.html:27
+#: hr/templates/report_templates/pf_deduction.html:32
+#: hr/templates/report_templates/pf_deduction.html:33
 #: hr/templates/report_templates/sanchayakosh_katti.html:30
 msgid "Deposit Bank Address"
 msgstr "जम्मा गरिएको ठेगाना"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:21
-#: hr/templates/report_templates/pf_deduction.html:28
+#: hr/templates/report_templates/pf_deduction.html:35
+#: hr/templates/report_templates/pf_deduction.html:36
 msgid "Diposited Date"
 msgstr "जम्मा गरिएको मिति"
-
-#: hr/templates/report_templates/nalakosh_bima_katti.html:21
-#: hr/templates/report_templates/pf_deduction.html:28
-#: hr/templates/report_templates/tax.html:27
-msgid "Check No."
-msgstr "चेक न."
 
 #. Translators: nalakosh bima template body message
 #: hr/templates/report_templates/nalakosh_bima_katti.html:27
@@ -1721,19 +1763,24 @@ msgstr "कर्मचारी संचय कोष"
 msgid "PF Deduction Detail"
 msgstr "सापटी कट्टी फ़ाट्बारि"
 
+#: hr/templates/report_templates/pf_deduction.html:47
+#: hr/templates/report_templates/sanchayakosh_katti.html:46
+msgid "For account use only"
+msgstr "कोष प्रयोजन को  मात्र"
+
 #. Translators: nalakosh bima template body message
 #. Translators: PF deduction distribution message
-#: hr/templates/report_templates/pf_deduction.html:34
+#: hr/templates/report_templates/pf_deduction.html:109
 #: hr/templates/report_templates/sanchayakosh_katti.html:109
 msgid "Dear Employee PF"
 msgstr "श्री कर्मचारी संचयकोष"
 
-#: hr/templates/report_templates/pf_deduction.html:35
+#: hr/templates/report_templates/pf_deduction.html:110
 #: hr/templates/report_templates/sanchayakosh_katti.html:110
 msgid "Tridevi Marg, Thamel, Kathmandu"
 msgstr "त्रिदेवी मार्ग, ठमेल, काठमाडौँ"
 
-#: hr/templates/report_templates/pf_deduction.html:36
+#: hr/templates/report_templates/pf_deduction.html:111
 msgid "This is pf-deduction template english body message"
 msgstr ""
 "यस कार्यालयका निम्न कर्मचारीहरुको कर्मचारी संचय कोष सापटी कट्टी बापत रकम कट्टी गरि "
@@ -1754,10 +1801,6 @@ msgstr "बैंक को नाम "
 #: hr/templates/report_templates/sanchayakosh_katti.html:31
 msgid "Deposited"
 msgstr "जम्मा गरिएको"
-
-#: hr/templates/report_templates/sanchayakosh_katti.html:46
-msgid "For account use only"
-msgstr "कोष प्रयोजन को  मात्र"
 
 #: hr/templates/report_templates/sanchayakosh_katti.html:111
 msgid ""
@@ -1817,7 +1860,7 @@ msgid ""
 "ko bank voucher than 2 yasaisath sanlagna rakhi pathaieko behora anurodh cha."
 msgstr "को बैंक भौचर् थान २ यसैसाथ संलग्न राखी पठाईएको बेहोरा  आनुरोध छ ।"
 
-#: hr/views.py:1607 ils/templates/view_record.html.py:189
+#: hr/views.py:1620 ils/templates/view_record.html.py:189
 #: inventory/templates/entry_report.html:77
 #: inventory/templates/inventory/itemlocation_detail.html:28
 #: inventory/templates/inventory/itemlocation_detail.html:36

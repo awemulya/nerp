@@ -1526,7 +1526,10 @@ def get_report(request):
             branch = report_request_query.cleaned_data.get('branch')
 
             employee_type = report_request_query.cleaned_data.get('employee_type')
+            
             employee_bank = report_request_query.cleaned_data.get('employee_bank')
+
+            employee_bank_branch = report_request_query.cleaned_data.get('employee_bank_branch')
 
             employee_with_deduction = report_request_query.cleaned_data.get('employee_with_deduction')
 
@@ -1544,6 +1547,9 @@ def get_report(request):
             if employee_bank:
                 branch_qry['paid_employee__bank'] = employee_bank
 
+            if employee_bank_branch:
+                branch_qry['paid_employee__bank_branch'] = employee_bank_branch
+
             if employee_type != 'ALL':
                 branch_qry['paid_employee__type'] = employee_type
 
@@ -1560,7 +1566,9 @@ def get_report(request):
                 'to_date': to_date,
                 'months': months,
                 'distinguish_entry': distinguish_entry,
-                'employee': employee
+                'employee': employee,
+                'employee_bank': employee_bank,
+                'employee_bank_branch': employee_bank_branch,
             }
 
             if distinguish_entry:
