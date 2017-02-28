@@ -1528,6 +1528,8 @@ def get_report(request):
             employee_type = report_request_query.cleaned_data.get('employee_type')
             employee_bank = report_request_query.cleaned_data.get('employee_bank')
 
+            employee_with_deduction = report_request_query.cleaned_data.get('employee_with_deduction')
+
             employee = report_request_query.cleaned_data.get('employee')
 
             from_date = report_request_query.cleaned_data.get('from_date')
@@ -1544,6 +1546,9 @@ def get_report(request):
 
             if employee_type != 'ALL':
                 branch_qry['paid_employee__type'] = employee_type
+
+            if employee_with_deduction:
+                branch_qry['paid_employee__optional_deductions'] = employee_with_deduction
 
             months = get_y_m_in_words(from_date, to_date)
             # import ipdb

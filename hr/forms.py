@@ -182,6 +182,12 @@ class GetReportForm(forms.Form):
         required=False
     )
 
+    employee_with_deduction = forms.ModelChoiceField(
+        queryset=DeductionName.objects.all(),
+        initial=None, label=_('Employee with deduction'),
+        required=False
+    )
+
     # distinguish
 
     def clean(self):
