@@ -48,40 +48,40 @@ def get_incentive(employee, **kwargs):
                 if cnt:
                     if obj.sum_type == 'AMOUNT':
                         incentive_details.append({
-                            'amount': obj.value * cnt
+                            'amount': round(obj.value * cnt, 3)
                         })
                     else:
                         incentive_details.append({
-                            'amount': obj.value / 100.0 * i_salary
+                            'amount': round(obj.value / 100.0 * i_salary, 3)
                         })
                 else:
                     incentive_details.append({
-                        'amount': 0
+                        'amount': round(0, 3)
                     })
 
             elif obj.payment_cycle == 'M':
                 if obj.sum_type == 'AMOUNT':
                     incentive_details.append({
-                        'amount': obj.value * total_month
+                        'amount': round(obj.value * total_month, 3)
                     })
                 else:
                     incentive_details.append({
-                        'amount': obj.value / 100.0 * i_salary
+                        'amount': round(obj.value / 100.0 * i_salary, 3)
                     })
             elif obj.payment_cycle == 'D':
                 if obj.sum_type == 'AMOUNT':
                     incentive_details.append({
-                        'amount': obj.value * total_work_day
+                        'amount': round(obj.value * total_work_day, 3)
                     })
                 else:
                     # Does this mean percentage in daily wages
                     incentive_details.append({
-                        'amount': obj.value / 100.0 * i_salary
+                        'amount': round(obj.value / 100.0 * i_salary, 3)
                     })
             else:
                 # This is hourly case(Dont think we have it)
                 incentive_details.append({
-                    'amount': 0
+                    'amount': round(0, 3)
                 })
                 # else:
                 #     employee_response['incentive_%d' % (_name.id)] = 0
@@ -116,7 +116,7 @@ def get_allowance(employee, **kwargs):
     for _name in employee.allowances.filter(**a_filter):
 
         allowance_details.append({
-            'amount': 0
+            'amount': round(0, 3)
         })
 
         for slot in allowance_validity_slots:
@@ -144,24 +144,24 @@ def get_allowance(employee, **kwargs):
                     )
                     if cnt:
                         if obj.sum_type == 'AMOUNT':
-                            allowance_details[-1]['amount'] += obj.value * cnt
+                            allowance_details[-1]['amount'] += round(obj.value * cnt, 3)
                         else:
-                            allowance_details[-1]['amount'] += obj.value / 100.0 * a_salary
+                            allowance_details[-1]['amount'] += round(obj.value / 100.0 * a_salary, 3)
                     else:
-                        allowance_details[-1]['amount'] += 0
+                        allowance_details[-1]['amount'] += round(0, 3)
 
                 elif obj.payment_cycle == 'M':
                     if obj.sum_type == 'AMOUNT':
-                        allowance_details[-1]['amount'] += obj.value * total_month
+                        allowance_details[-1]['amount'] += round(obj.value * total_month, 3)
                     else:
-                        allowance_details[-1]['amount'] += obj.value / 100.0 * a_salary
+                        allowance_details[-1]['amount'] += round(obj.value / 100.0 * a_salary, 3)
 
                 elif obj.payment_cycle == 'D':
                     if obj.sum_type == 'AMOUNT':
-                        allowance_details[-1]['amount'] += obj.value * total_work_day
+                        allowance_details[-1]['amount'] += round(obj.value * total_work_day, 3)
 
                     else:
-                        allowance_details[-1]['amount'] += obj.value / 100.0 * a_salary
+                        allowance_details[-1]['amount'] += round(obj.value / 100.0 * a_salary, 3)
 
                 allowance += allowance_details[-1]['amount']
             except IndexError:
@@ -226,9 +226,9 @@ def get_deduction(employee, **kwargs):
                     deduct_obj = Deduction.objects.filter(validity_id=slot.validity_id, name=obj)[0]
 
                     if deduct_obj.deduct_type == 'AMOUNT':
-                        deduction_details[-1]['amount'] += deduct_obj.value * total_month
+                        deduction_details[-1]['amount'] += round(deduct_obj.value * total_month, 3)
                     else:
-                        deduction_details[-1]['amount'] += deduct_obj.value / 100.0 * d_salary
+                        deduction_details[-1]['amount'] += round(deduct_obj.value / 100.0 * d_salary, 3)
 
                     if employee.type == 'PERMANENT' and obj.first_add_to_salary:
                         deduction_details[-1]['amount'] += deduction_details[-1]['amount']
@@ -265,10 +265,10 @@ def get_deduction(employee, **kwargs):
                     if employee.type == 'PERMANENT' and obj.first_add_to_salary:
                         if deduct_obj.deduct_type == 'AMOUNT':
                             salary_addition_amount += deduct_obj.value * total_month
-                            addition_from_deduction_details[-1]['amount'] += deduct_obj.value * total_month
+                            addition_from_deduction_details[-1]['amount'] += round(deduct_obj.value * total_month, 3)
                         else:
-                            salary_addition_amount += deduct_obj.value / 100.0 * d_salary
-                            addition_from_deduction_details[-1]['amount'] += deduct_obj.value / 100.0 * d_salary
+                            salary_addition_amount += round(deduct_obj.value / 100.0 * d_salary, 3)
+                            addition_from_deduction_details[-1]['amount'] += round(deduct_obj.value / 100.0 * d_salary, 3)
                 except IndexError:
                     pass
             addition_from_deduction_details[-1]['deduction'] = obj.id
@@ -315,7 +315,7 @@ def get_pro_tempore_data(employee):
         diff_total = e_total - pte_total
         if diff_total < 0:
             diff_total = 0
-        pro_tempore_details[-1]['amount'] = diff_total
+        pro_tempore_details[-1]['amount'] = round(diff_total, 3)
         pro_tempore_details[-1]['p_t_id'] = p_t.id
         pro_tempore_details[-1]['appoint_date'] = str(p_t.appoint_date)
         pro_tempore_details[-1]['dismiss_date'] = str(p_t.dismiss_date)

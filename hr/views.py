@@ -413,13 +413,13 @@ def get_employee_salary_detail(employee, paid_from_date, paid_to_date, eligibili
             tax_details.append({
                 'id': tax_deduction.id,
                 'name': tax_deduction.name,
-                'amount': social_security_tax
+                'amount': round(social_security_tax,3)
             })
         elif tax_deduction.code_name == "Remuneration Tax":
             tax_details.append({
                 'id': tax_deduction.id,
                 'name': tax_deduction.name,
-                'amount': remuneration_tax
+                'amount': round(remuneration_tax,3)
             })
 
     employee_response['tax_details'] = tax_details
