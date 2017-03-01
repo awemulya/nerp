@@ -1052,7 +1052,7 @@ class PayrollConfig(SingletonModel):
     )
     unmarried_remuneration_discount = models.FloatField(
         default=300000.0,
-        verbose_name=_('Remuneration tax discount for married employee on taxable amount.')
+        verbose_name=_('Remuneration tax discount for unmarried employee on taxable amount.')
     )
 
     # below field is in percentage

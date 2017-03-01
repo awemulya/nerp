@@ -47,7 +47,7 @@
             </tr>
             {% for obj in objects %}
                 <tr>
-                    <td><a href={% url 'entry_detail' obj.id %}>{{ obj }}</a></td>
+                    <td><a href={% url 'payroll_entry_edit' obj.id %}>{{ obj }}</a></td>
                     <td>
                         {% if not obj.transacted and not obj.approved%}
                             <a href={% url 'payroll_entry_edit' obj.id %}>
@@ -62,7 +62,7 @@
 {#                        {% endif %}#}
                     </td>
                     {% if obj.transacted %}
-                        <td>Entry Transacted</td>
+                        <td><button class="btn btn-primary btn-raised">{% trans 'Entry Transacted' %}</button></td>
                     {% else %}
                         {% if obj.approved %}
                             <td><a href={% url 'transact_entry' obj.id %}>

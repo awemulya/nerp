@@ -10,7 +10,6 @@
     <script src="{% static 'hr/js/plugins/blockUI/jquery.blockUI.js' %}"></script>
     <script src="{% static 'hr/js/App.js' %}"></script>
     <script src="{% static 'hr/js/get_report.js' %}"></script>
-    {#    <script src="{% static 'js/hr/entry_detail.js' %}"></script>#}
     <script>
         {#        ko_data = {{ko_data|jsonify}};#}
     </script>
@@ -40,8 +39,10 @@ Here the report will be generated dynamically
         <form method="post" action="{% url 'get_report' %}">
             {{ get_report_form.media }}
             {% csrf_token %}
+
             {{ get_report_form.as_table }}
             <input type="submit" class="btn btn-raised btn-primary" value="Get Report">
+
         </form>
     </div>
 {% endblock %}
