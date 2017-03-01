@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-01 16:20+0545\n"
+"POT-Creation-Date: 2017-03-01 16:36+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,7 @@ msgstr ""
 
 #: account/forms.py:20 account/templates/list_parties.html.py:22
 #: hr/templates/report_templates/employee_payment_detail.html:18
+#: hr/templates/report_templates/nakakosh.html:15
 #: hr/templates/report_templates/nalakosh_bima_katti.html:14
 #: hr/templates/report_templates/payment_detail_report.html:16
 #: hr/templates/report_templates/pf_deduction.html:24
@@ -53,6 +54,7 @@ msgstr "पान न."
 #: hr/templates/payroll_entry.html:261
 #: hr/templates/report_templates/employee_payment_detail.html:15
 #: hr/templates/report_templates/employee_payment_detail.html:17
+#: hr/templates/report_templates/nakakosh.html:14
 #: hr/templates/report_templates/nalakosh_bima_katti.html:13
 #: hr/templates/report_templates/payment_detail_report.html:15
 #: hr/templates/report_templates/pf_deduction.html:23
@@ -194,6 +196,7 @@ msgstr "मेट्नुहोस"
 #: account/templates/account/account_list.html:22
 #: account/templates/view_ledger.html:32
 #: hr/templates/hr/branchoffice_list.html:32
+#: hr/templates/report_templates/nakakosh.html:16
 #: hr/templates/report_templates/nalakosh_bima_katti.html:15
 #: hr/templates/report_templates/pf_deduction.html:25
 #: hr/templates/report_templates/sanchayakosh_katti.html:25
@@ -392,9 +395,9 @@ msgstr "न."
 #: hr/templates/report_templates/employee_payment_detail.html:34
 #: hr/templates/report_templates/employee_payment_detail.html:38
 #: hr/templates/report_templates/nakakosh.html:10
-#: hr/templates/report_templates/nakakosh.html:27
-#: hr/templates/report_templates/nakakosh.html:31
 #: hr/templates/report_templates/nakakosh.html:35
+#: hr/templates/report_templates/nakakosh.html:39
+#: hr/templates/report_templates/nakakosh.html:43
 #: hr/templates/report_templates/nalakosh_bima_katti.html:10
 #: hr/templates/report_templates/nalakosh_bima_katti.html:39
 #: hr/templates/report_templates/nalakosh_bima_katti.html:43
@@ -407,10 +410,16 @@ msgstr "न."
 #: hr/templates/report_templates/pf_deduction.html:121
 #: hr/templates/report_templates/pf_deduction.html:125
 #: hr/templates/report_templates/pf_deduction.html:129
+#: hr/templates/report_templates/remuneration_tax_report.html:36
+#: hr/templates/report_templates/remuneration_tax_report.html:40
+#: hr/templates/report_templates/remuneration_tax_report.html:44
 #: hr/templates/report_templates/sanchayakosh_katti.html:20
 #: hr/templates/report_templates/sanchayakosh_katti.html:121
 #: hr/templates/report_templates/sanchayakosh_katti.html:125
 #: hr/templates/report_templates/sanchayakosh_katti.html:129
+#: hr/templates/report_templates/social_security_tax_report.html:36
+#: hr/templates/report_templates/social_security_tax_report.html:40
+#: hr/templates/report_templates/social_security_tax_report.html:44
 #: hr/templates/report_templates/tax.html:36
 #: hr/templates/report_templates/tax.html:40
 #: hr/templates/report_templates/tax.html:44 inventory/models.py:936
@@ -824,7 +833,7 @@ msgid "Donors"
 msgstr ""
 
 #: core/templates/employee_form.html:4 core/templates/employee_form.html:9
-#: core/templates/list_employees.html:50 hr/forms.py:188 hr/models.py:407
+#: core/templates/list_employees.html:50 hr/forms.py:188 hr/models.py:408
 #: hr/templates/hr/protempore_list.html:31 hr/templates/hr_index.html.py:31
 #: hr/templates/payroll_entry.html:112 hr/templates/payroll_entry.html:291
 #: hr/templates/report_templates/employee_payment_detail.html:15
@@ -1060,65 +1069,65 @@ msgstr ""
 msgid "Salary Paused"
 msgstr ""
 
-#: hr/models.py:355
+#: hr/models.py:356
 msgid "Male"
 msgstr ""
 
-#: hr/models.py:355
+#: hr/models.py:356
 msgid "Female"
 msgstr ""
 
-#: hr/models.py:357 hr/models.py:737
+#: hr/models.py:358 hr/models.py:738
 msgid "Married"
 msgstr ""
 
-#: hr/models.py:357 hr/models.py:737
+#: hr/models.py:358 hr/models.py:738
 msgid "Unmarried"
 msgstr ""
 
-#: hr/models.py:720
+#: hr/models.py:721
 #, fuzzy
 #| msgid "Register"
 msgid "Registered"
 msgstr "दर्ता गर्नु"
 
-#: hr/models.py:721
+#: hr/models.py:722
 msgid "Ready for Payment"
 msgstr ""
 
-#: hr/models.py:722
+#: hr/models.py:723
 #, fuzzy
 #| msgid "Fine Paid"
 msgid "Paid"
 msgstr "तिरेको जरिमाना"
 
-#: hr/models.py:751
+#: hr/models.py:752
 msgid "Remuneration Tax"
 msgstr ""
 
-#: hr/models.py:752
+#: hr/models.py:753
 msgid "Social Security Tax"
 msgstr ""
 
-#: hr/models.py:969
+#: hr/models.py:970
 msgid "Account must be of Category BASIC SALARY or DEDUCTION"
 msgstr ""
 
-#: hr/models.py:1058
+#: hr/models.py:1059
 msgid "Remuneration tax discount for married employee on taxable amount."
 msgstr ""
 
-#: hr/models.py:1062
+#: hr/models.py:1063
 msgid "Remuneration tax discount for unmarried employee on taxable amount."
 msgstr ""
 
-#: hr/models.py:1068
+#: hr/models.py:1069
 msgid ""
 "Remuneration tax additional discount for disabled employee on taxable amount."
 "(%)"
 msgstr ""
 
-#: hr/models.py:1072
+#: hr/models.py:1073
 msgid "Discount for female on evaluated remuneration tax. (%)"
 msgstr ""
 
@@ -1623,6 +1632,8 @@ msgstr "रकम"
 #: hr/templates/report_templates/bank_report.html:9
 #: hr/templates/report_templates/nakakosh.html:9
 #: hr/templates/report_templates/nalakosh_bima_katti.html:9
+#: hr/templates/report_templates/remuneration_tax_report.html:9
+#: hr/templates/report_templates/social_security_tax_report.html:9
 #: hr/templates/report_templates/tax.html:9
 msgid "Subject"
 msgstr "विषय"
@@ -1640,7 +1651,7 @@ msgstr "श्रेणी"
 
 #: hr/templates/report_templates/bank_report.html:10
 #: hr/templates/report_templates/employee_payment_detail.html:12
-#: hr/templates/report_templates/nakakosh.html:10
+#: hr/templates/report_templates/nakakosh.html:11
 #: hr/templates/report_templates/nalakosh_bima_katti.html:10
 #: hr/templates/report_templates/payment_detail_report.html:12
 #: hr/templates/report_templates/pf_deduction.html:20
@@ -1673,6 +1684,8 @@ msgstr "को चे. न."
 #: hr/templates/report_templates/nalakosh_bima_katti.html:21
 #: hr/templates/report_templates/pf_deduction.html:36
 #: hr/templates/report_templates/pf_deduction.html:37
+#: hr/templates/report_templates/remuneration_tax_report.html:27
+#: hr/templates/report_templates/social_security_tax_report.html:27
 #: hr/templates/report_templates/tax.html:27
 msgid "Check No."
 msgstr "चेक न."
@@ -1687,39 +1700,48 @@ msgstr "बाट यसैसाथ पठाइएको व्यहोरा
 
 #: hr/templates/report_templates/bank_report.html:25
 #: hr/templates/report_templates/employee_payment_detail.html:29
-#: hr/templates/report_templates/nakakosh.html:26
+#: hr/templates/report_templates/nakakosh.html:34
 #: hr/templates/report_templates/nalakosh_bima_katti.html:38
 #: hr/templates/report_templates/payment_detail_report.html:27
 #: hr/templates/report_templates/pf_deduction.html:120
+#: hr/templates/report_templates/remuneration_tax_report.html:35
 #: hr/templates/report_templates/sanchayakosh_katti.html:120
+#: hr/templates/report_templates/social_security_tax_report.html:35
 #: hr/templates/report_templates/tax.html:35
 msgid "Creator Signatute"
 msgstr "प्रतिबेदन तैयार पर्नेको दस्तखत"
 
 #: hr/templates/report_templates/bank_report.html:29
 #: hr/templates/report_templates/employee_payment_detail.html:33
-#: hr/templates/report_templates/nakakosh.html:30
+#: hr/templates/report_templates/nakakosh.html:38
 #: hr/templates/report_templates/nalakosh_bima_katti.html:42
 #: hr/templates/report_templates/payment_detail_report.html:31
 #: hr/templates/report_templates/pf_deduction.html:124
+#: hr/templates/report_templates/remuneration_tax_report.html:39
 #: hr/templates/report_templates/sanchayakosh_katti.html:124
+#: hr/templates/report_templates/social_security_tax_report.html:39
 #: hr/templates/report_templates/tax.html:39
 msgid "Head Accountant Signature"
 msgstr "लेख प्रमुखको दस्तखत"
 
 #: hr/templates/report_templates/bank_report.html:33
 #: hr/templates/report_templates/employee_payment_detail.html:37
-#: hr/templates/report_templates/nakakosh.html:34
+#: hr/templates/report_templates/nakakosh.html:42
 #: hr/templates/report_templates/nalakosh_bima_katti.html:46
 #: hr/templates/report_templates/payment_detail_report.html:35
 #: hr/templates/report_templates/pf_deduction.html:128
+#: hr/templates/report_templates/remuneration_tax_report.html:43
 #: hr/templates/report_templates/sanchayakosh_katti.html:128
+#: hr/templates/report_templates/social_security_tax_report.html:43
 #: hr/templates/report_templates/tax.html:43
 msgid "Approved by Signature"
 msgstr "सदर गर्नेको दस्तखत"
 
 #: hr/templates/report_templates/employee_payment_detail.html:17
 #: hr/templates/report_templates/employee_payment_detail.html:18
+#: hr/templates/report_templates/nakakosh.html:14
+#: hr/templates/report_templates/nakakosh.html:15
+#: hr/templates/report_templates/nakakosh.html:16
 #: hr/templates/report_templates/nalakosh_bima_katti.html:13
 #: hr/templates/report_templates/nalakosh_bima_katti.html:14
 #: hr/templates/report_templates/nalakosh_bima_katti.html:15
@@ -1737,29 +1759,38 @@ msgstr "सदर गर्नेको दस्तखत"
 msgid "Office"
 msgstr "कार्यालय"
 
+#: hr/templates/report_templates/nakakosh.html:17
+#: hr/templates/report_templates/nalakosh_bima_katti.html:21
+#: hr/templates/report_templates/pf_deduction.html:35
+#: hr/templates/report_templates/pf_deduction.html:36
+msgid "Diposited Date"
+msgstr "जम्मा गरिएको मिति"
+
 #. Translators: nalakosh template body message
 #. Translators: nalakosh bima template body message
-#: hr/templates/report_templates/nakakosh.html:15
+#: hr/templates/report_templates/nakakosh.html:23
 #: hr/templates/report_templates/nalakosh_bima_katti.html:27
 msgid "Dear Citizen Investment Fund"
 msgstr "श्री नागरिक लगानी कोष"
 
-#: hr/templates/report_templates/nakakosh.html:16
+#: hr/templates/report_templates/nakakosh.html:24
 #: hr/templates/report_templates/nalakosh_bima_katti.html:28
 msgid "New Baneswor, Kathmandu"
 msgstr "नया बानेश्वोर, काठमाडौँ"
 
-#: hr/templates/report_templates/nakakosh.html:17
+#: hr/templates/report_templates/nakakosh.html:25
 msgid "This is nalakosh template english body message"
 msgstr ""
-"यस कार्यालयका निम्न कर्मचारीहरुको नागरिक लगानी कोष बापत रकम कट्टी गरि फात्बारी "
-"र भौचर समाबेस गरि आबस्यक कार्यथको लागि पठाएको वेहोरा आनुरोध छ। बीमा परिचय पत्र न. "
+"यस कार्यालयका निम्न कर्मचारीहरुको नागरिक लगानी कोष बापत रकम कट्टी गरि फात्बारी र "
+"भौचर समाबेस गरि आबस्यक कार्यथको लागि पठाएको वेहोरा आनुरोध छ। बीमा परिचय पत्र न. "
 "प्राप्त हुन नसकेका कर्मचारीहरुको नंबर साबिक कार्यालयबाट भीडन गरी पठाईदिनहुन आनुरोध छ। "
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:19
 #: hr/templates/report_templates/pf_deduction.html:30
+#: hr/templates/report_templates/remuneration_tax_report.html:25
 #: hr/templates/report_templates/sanchayakosh_katti.html:29
 #: hr/templates/report_templates/sanchayakosh_katti.html:111
+#: hr/templates/report_templates/social_security_tax_report.html:25
 #: hr/templates/report_templates/tax.html:25
 msgid "Name of Bank"
 msgstr "बैंक को नाम "
@@ -1770,12 +1801,6 @@ msgstr "बैंक को नाम "
 #: hr/templates/report_templates/sanchayakosh_katti.html:30
 msgid "Deposit Bank Address"
 msgstr "जम्मा गरिएको ठेगाना"
-
-#: hr/templates/report_templates/nalakosh_bima_katti.html:21
-#: hr/templates/report_templates/pf_deduction.html:35
-#: hr/templates/report_templates/pf_deduction.html:36
-msgid "Diposited Date"
-msgstr "जम्मा गरिएको मिति"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:29
 msgid "This is nalakosh bima template english body message"
@@ -1820,13 +1845,74 @@ msgstr ""
 "पत्र न. प्राप्त हुन नसकेका कर्मचारीहरुको नंबर साबिक कार्यालयबाट भीडन गरी पठाईदिनहुन "
 "आनुरोध छ। "
 
+#: hr/templates/report_templates/remuneration_tax_report.html:10
+#: hr/templates/report_templates/social_security_tax_report.html:10
+#: hr/templates/report_templates/tax.html:10
+msgid "Dear Internal Tax Office"
+msgstr "श्री आन्तरिक राजस्व कार्यालय"
+
+#: hr/templates/report_templates/remuneration_tax_report.html:13
+#: hr/templates/report_templates/social_security_tax_report.html:13
+#: hr/templates/report_templates/tax.html:13
+msgid "Name of Branch"
+msgstr "साखाको नाम"
+
+#: hr/templates/report_templates/remuneration_tax_report.html:17
+#: hr/templates/report_templates/social_security_tax_report.html:17
+#: hr/templates/report_templates/tax.html:17
+msgid "Yash karyalaya/ aayojanama karyarat karmachariharulai"
+msgstr "यश कार्यालय / आयोजनामा कार्यरत कर्मचारीहरुलाई"
+
+#: hr/templates/report_templates/remuneration_tax_report.html:18
+msgid ""
+"mahinako talab bitaran garda tapasheel ma ullekhit padhadhikariharubata "
+"parishramik kar bapat katti bhaeko rakam ru. "
+msgstr ""
+"महिनाको तलब वितरण गर्दा तपशिलमा  उल्लेखित पदाधिकारीहरुबाट "
+"पारिश्रामिककर बापत कट्टी भएको रकम रु. "
+
+#: hr/templates/report_templates/remuneration_tax_report.html:24
+#: hr/templates/report_templates/social_security_tax_report.html:24
+#: hr/templates/report_templates/tax.html:24
+msgid "aakhcharepi"
+msgstr "आक्षरेपी"
+
+#: hr/templates/report_templates/remuneration_tax_report.html:24
+#: hr/templates/report_templates/social_security_tax_report.html:24
+#: hr/templates/report_templates/tax.html:24
+msgid "Amount in words"
+msgstr "पूर्णराशी सब्दमा"
+
+#: hr/templates/report_templates/remuneration_tax_report.html:26
+#: hr/templates/report_templates/social_security_tax_report.html:26
+#: hr/templates/report_templates/tax.html:26
+msgid "ma jamma garieko miti"
+msgstr "मा जम्मा गरेको मिति"
+
+#: hr/templates/report_templates/remuneration_tax_report.html:26
+#: hr/templates/report_templates/social_security_tax_report.html:26
+#: hr/templates/report_templates/tax.html:26
+msgid "Date of deposit"
+msgstr "जम्मा गरेको मिति"
+
+#: hr/templates/report_templates/remuneration_tax_report.html:26
+#: hr/templates/report_templates/social_security_tax_report.html:26
+#: hr/templates/report_templates/tax.html:26
+msgid "ko no."
+msgstr "को न."
+
+#: hr/templates/report_templates/remuneration_tax_report.html:27
+#: hr/templates/report_templates/social_security_tax_report.html:27
+#: hr/templates/report_templates/tax.html:27
+msgid ""
+"ko bank voucher than 2 yasaisath sanlagna rakhi pathaieko behora anurodh cha."
+msgstr "को बैंक भौचर् थान २ यसैसाथ संलग्न राखी पठाईएको बेहोरा  आनुरोध छ ।"
+
 #: hr/templates/report_templates/sanchayakosh_katti.html:12
 msgid "PF Deduction Distribution"
 msgstr "संचयकोष कट्टी फाटबारी"
 
 #: hr/templates/report_templates/sanchayakosh_katti.html:30
-#, fuzzy
-#| msgid "Name of Bank"
 msgid "Address of Bank"
 msgstr "बैंक को नाम "
 
@@ -1847,17 +1933,13 @@ msgid "bank. The diposited vaoucher is also attached to this document."
 msgstr ""
 "साखामा जम्मा गरेको भौचर समेत सम्लग्न गरि आवश्यक कार्यार्थ पठाईएको व्योहोरा आनुरोध छ । "
 
-#: hr/templates/report_templates/tax.html:10
-msgid "Dear Internal Tax Office"
-msgstr "श्री आन्तरिक राजस्व कार्यालय"
-
-#: hr/templates/report_templates/tax.html:13
-msgid "Name of Branch"
-msgstr "साखाको नाम"
-
-#: hr/templates/report_templates/tax.html:17
-msgid "Yash karyalaya/ aayojanama karyarat karmachariharulai"
-msgstr "यश कार्यालय / आयोजनामा कार्यरत कर्मचारीहरुलाई"
+#: hr/templates/report_templates/social_security_tax_report.html:18
+msgid ""
+"mahinako talab bitaran garda tapasheel ma ullekhit padhadhikariharubata "
+"sasukar bapat katti bhaeko rakam ru. "
+msgstr ""
+"महिनाको तलब वितरण गर्दा तपशिलमा  उल्लेखित पदाधिकारीहरुबाट सा. सु. कर "
+" बापत कट्टी भएको रकम रु. "
 
 #: hr/templates/report_templates/tax.html:18
 msgid ""
@@ -1866,31 +1948,6 @@ msgid ""
 msgstr ""
 "महिनाको तलब वितरण गर्दा तपशिलमा  उल्लेखित पदाधिकारीहरुबाट सा. सु. कर तथा "
 "पारिश्रामिककर बापत कट्टी भएको रकम रु. "
-
-#: hr/templates/report_templates/tax.html:24
-msgid "aakhcharepi"
-msgstr "आक्षरेपी"
-
-#: hr/templates/report_templates/tax.html:24
-msgid "Amount in words"
-msgstr "पूर्णराशी सब्दमा"
-
-#: hr/templates/report_templates/tax.html:26
-msgid "ma jamma garieko miti"
-msgstr "मा जम्मा गरेको मिति"
-
-#: hr/templates/report_templates/tax.html:26
-msgid "Date of deposit"
-msgstr "जम्मा गरेको मिति"
-
-#: hr/templates/report_templates/tax.html:26
-msgid "ko no."
-msgstr "को न."
-
-#: hr/templates/report_templates/tax.html:27
-msgid ""
-"ko bank voucher than 2 yasaisath sanlagna rakhi pathaieko behora anurodh cha."
-msgstr "को बैंक भौचर् थान २ यसैसाथ संलग्न राखी पठाईएको बेहोरा  आनुरोध छ ।"
 
 #: hr/views.py:1634 ils/templates/view_record.html.py:189
 #: inventory/templates/entry_report.html:77
