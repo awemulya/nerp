@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-28 23:57+0545\n"
+"POT-Creation-Date: 2017-03-01 16:20+0545\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgstr "पान न."
 #: account/templates/list_parties.html:21
 #: core/templates/core/budgethead_list.html:22
 #: core/templates/core/donor_list.html:22 hr/models.py:151
-#: hr/templates/allowance.html:115 hr/templates/deduction.html.py:82
+#: hr/templates/allowance.html:115 hr/templates/deduction.html.py:88
 #: hr/templates/deduction_cu.html:19 hr/templates/employee_list.html.py:51
 #: hr/templates/hr/branchoffice_list.html:31
 #: hr/templates/hr/taxdeduction_list.html:31
@@ -140,7 +140,7 @@ msgstr "खाताहरु"
 
 #: account/templates/account/account_form.html:21
 #: account/templates/account/category_form.html:21
-#: account/templates/receipt.html:166 hr/templates/deduction.html.py:102
+#: account/templates/receipt.html:166 hr/templates/deduction.html.py:108
 #: hr/templates/employee_cu.html:136
 #: hr/templates/employee_designation_cu.html:75
 #: inventory/templates/demand_form.html:276
@@ -391,6 +391,10 @@ msgstr "न."
 #: hr/templates/report_templates/employee_payment_detail.html:30
 #: hr/templates/report_templates/employee_payment_detail.html:34
 #: hr/templates/report_templates/employee_payment_detail.html:38
+#: hr/templates/report_templates/nakakosh.html:10
+#: hr/templates/report_templates/nakakosh.html:27
+#: hr/templates/report_templates/nakakosh.html:31
+#: hr/templates/report_templates/nakakosh.html:35
 #: hr/templates/report_templates/nalakosh_bima_katti.html:10
 #: hr/templates/report_templates/nalakosh_bima_katti.html:39
 #: hr/templates/report_templates/nalakosh_bima_katti.html:43
@@ -477,8 +481,8 @@ msgstr "न."
 #: project/templates/project/imprestjournalvoucher_list.html:25
 #: project/templates/project/imprestledger_list.html:25
 #: project/templates/project/reimbursement_list.html:24
-#: templates/hr_report_base.html:92 templates/hr_report_base.html.py:101
-#: templates/hr_report_base.html:102
+#: templates/hr_report_base.html:93 templates/hr_report_base.html.py:102
+#: templates/hr_report_base.html:103
 msgid "Date"
 msgstr "मिति"
 
@@ -501,7 +505,7 @@ msgstr "मिति"
 #: inventory/templates/yearly_report.html:34
 #: inventory/templates/yearly_report_detail.html:40 inventory/views.py:155
 #: inventory/views.py:233 inventory/views.py:307
-#: templates/hr_report_base.html:109
+#: templates/hr_report_base.html:110
 msgid "SN"
 msgstr "क. स."
 
@@ -591,7 +595,7 @@ msgstr "क्रियाकलाप"
 msgid "Remarks"
 msgstr "कैफियत"
 
-#: account/templates/receipt.html:84 templates/hr_report_base.html.py:88
+#: account/templates/receipt.html:84
 msgid "Nepal Government"
 msgstr "नेपाल सरकार"
 
@@ -1100,17 +1104,21 @@ msgstr ""
 msgid "Account must be of Category BASIC SALARY or DEDUCTION"
 msgstr ""
 
-#: hr/models.py:1051 hr/models.py:1055
+#: hr/models.py:1058
 msgid "Remuneration tax discount for married employee on taxable amount."
 msgstr ""
 
-#: hr/models.py:1061
+#: hr/models.py:1062
+msgid "Remuneration tax discount for unmarried employee on taxable amount."
+msgstr ""
+
+#: hr/models.py:1068
 msgid ""
 "Remuneration tax additional discount for disabled employee on taxable amount."
 "(%)"
 msgstr ""
 
-#: hr/models.py:1065
+#: hr/models.py:1072
 msgid "Discount for female on evaluated remuneration tax. (%)"
 msgstr ""
 
@@ -1147,7 +1155,7 @@ msgstr "तलबी विवरण"
 #: inventory/templates/list_entry_reports.html:4
 #: inventory/templates/list_entry_reports.html:8
 #: inventory/templates/transaction_list.html:64
-#: templates/hr_report_base.html:102
+#: templates/hr_report_base.html:103
 msgid "Entry"
 msgstr "दाखिला"
 
@@ -1176,7 +1184,7 @@ msgstr "तह"
 msgid "Sum Type"
 msgstr "प्रकार"
 
-#: hr/templates/allowance.html:117 hr/templates/deduction.html.py:84
+#: hr/templates/allowance.html:117 hr/templates/deduction.html.py:90
 #: inventory/templates/depreciation_report.html:45
 msgid "Value"
 msgstr "मूल्य"
@@ -1195,18 +1203,18 @@ msgstr "चक्र"
 msgid "Year Payment Cycle Month"
 msgstr "बार्षिक भुक्तानी चक्र महीना"
 
-#: hr/templates/deduction.html:27 hr/templates/deduction_cu.html.py:19
+#: hr/templates/deduction.html:33 hr/templates/deduction_cu.html.py:19
 msgid "Add or Remove Deductions"
 msgstr "कट्टी प्रकार थप्नु वा हटाउनु"
 
-#: hr/templates/deduction.html:31 hr/templates/deduction_cu.html.py:23
+#: hr/templates/deduction.html:37 hr/templates/deduction_cu.html.py:23
 #: hr/templates/employee_cu.html:24
 #: hr/templates/employee_designation_cu.html:22
 #: hr/templates/employee_grade_cu.html:22
 #: hr/templates/employee_grade_group_cu.html:22
 #: hr/templates/employee_list.html:12
 #: hr/templates/employeefacility_curd.html:19 hr/templates/entry_detail.html:16
-#: hr/templates/entry_list.html.py:13 hr/templates/get_report.html:20
+#: hr/templates/entry_list.html.py:13 hr/templates/get_report.html:19
 #: hr/templates/grades_scale.html.py:28 hr/templates/hr_report_cu.html:29
 #: hr/templates/hr_report_list.html.py:15 hr/templates/incentive_list.html:12
 #: hr/templates/incentivename_curd.html:19
@@ -1215,14 +1223,14 @@ msgstr "कट्टी प्रकार थप्नु वा हटाउ�
 msgid "Payroll Entry"
 msgstr "नया तलबी विवरण "
 
-#: hr/templates/deduction.html:32 hr/templates/deduction_cu.html.py:24
+#: hr/templates/deduction.html:38 hr/templates/deduction_cu.html.py:24
 #: hr/templates/employee_cu.html:25
 #: hr/templates/employee_designation_cu.html:23
 #: hr/templates/employee_grade_cu.html:23
 #: hr/templates/employee_grade_group_cu.html:23
 #: hr/templates/employee_list.html:13
 #: hr/templates/employeefacility_curd.html:20 hr/templates/entry_detail.html:17
-#: hr/templates/get_report.html.py:21 hr/templates/grades_scale.html:29
+#: hr/templates/get_report.html.py:20 hr/templates/grades_scale.html:29
 #: hr/templates/hr_report_cu.html.py:30 hr/templates/hr_report_list.html:16
 #: hr/templates/incentivename_curd.html:20 hr/templates/payroll_entry.html:34
 #: hr/templates/tax_detail_scheme_cu.html:25 hr/templates/tax_scheme_cu.html:20
@@ -1232,13 +1240,13 @@ msgstr "नया तलबी विवरण "
 msgid "Entry List"
 msgstr "दाखिला मिति"
 
-#: hr/templates/deduction.html:83
+#: hr/templates/deduction.html:89
 #, fuzzy
 #| msgid "Auction"
 msgid "Deduction"
 msgstr "लिलाम"
 
-#: hr/templates/deduction.html:83 hr/templates/employee_list.html.py:57
+#: hr/templates/deduction.html:89 hr/templates/employee_list.html.py:57
 #: ils/templates/view_record.html:150 inventory/forms.py:36
 #: inventory/models.py:970 inventory/templates/depreciation_report.html.py:41
 #: inventory/templates/list_handovers.html:33
@@ -1314,6 +1322,12 @@ msgstr "स्थिति"
 #: inventory/templates/list_demand_forms.html:35
 msgid "Status"
 msgstr "स्थिति"
+
+#: hr/templates/entry_list.html:65
+#, fuzzy
+#| msgid "Entry Date"
+msgid "Entry Transacted"
+msgstr "दाखिला मिति"
 
 #: hr/templates/grades_scale.html:52
 msgid "Employee Grade Scales"
@@ -1607,6 +1621,7 @@ msgid "Deduced Amount"
 msgstr "रकम"
 
 #: hr/templates/report_templates/bank_report.html:9
+#: hr/templates/report_templates/nakakosh.html:9
 #: hr/templates/report_templates/nalakosh_bima_katti.html:9
 #: hr/templates/report_templates/tax.html:9
 msgid "Subject"
@@ -1614,16 +1629,18 @@ msgstr "विषय"
 
 #: hr/templates/report_templates/bank_report.html:10
 #: hr/templates/report_templates/employee_payment_detail.html:12
+#: hr/templates/report_templates/nakakosh.html:10
 #: hr/templates/report_templates/nalakosh_bima_katti.html:10
 #: hr/templates/report_templates/payment_detail_report.html:12
 #: hr/templates/report_templates/pf_deduction.html:19
 #: hr/templates/report_templates/sanchayakosh_katti.html:20
-#: templates/hr_report_base.html:101
+#: templates/hr_report_base.html:102
 msgid "Range"
 msgstr "श्रेणी"
 
 #: hr/templates/report_templates/bank_report.html:10
 #: hr/templates/report_templates/employee_payment_detail.html:12
+#: hr/templates/report_templates/nakakosh.html:10
 #: hr/templates/report_templates/nalakosh_bima_katti.html:10
 #: hr/templates/report_templates/payment_detail_report.html:12
 #: hr/templates/report_templates/pf_deduction.html:20
@@ -1637,7 +1654,9 @@ msgstr "यस कार्यालयका निम्न लिखित �
 
 #: hr/templates/report_templates/bank_report.html:16
 msgid "bosy msg part2"
-msgstr "महिनाको तलब भत्ता बापत तपशिल बमोजिम पाउने रकम निजहरुको त्यस बैंकमा खोलिएको बचत खातामा तपसील बमोजिम जम्मा गरि दिनु हुन त्यस बैंक को नाम लेखिएको"
+msgstr ""
+"महिनाको तलब भत्ता बापत तपशिल बमोजिम पाउने रकम निजहरुको त्यस बैंकमा खोलिएको बचत "
+"खातामा तपसील बमोजिम जम्मा गरि दिनु हुन त्यस बैंक को नाम लेखिएको"
 
 #: hr/templates/report_templates/bank_report.html:16
 #: hr/templates/report_templates/nalakosh_bima_katti.html:19
@@ -1668,6 +1687,7 @@ msgstr "बाट यसैसाथ पठाइएको व्यहोरा
 
 #: hr/templates/report_templates/bank_report.html:25
 #: hr/templates/report_templates/employee_payment_detail.html:29
+#: hr/templates/report_templates/nakakosh.html:26
 #: hr/templates/report_templates/nalakosh_bima_katti.html:38
 #: hr/templates/report_templates/payment_detail_report.html:27
 #: hr/templates/report_templates/pf_deduction.html:120
@@ -1678,6 +1698,7 @@ msgstr "प्रतिबेदन तैयार पर्नेको दस
 
 #: hr/templates/report_templates/bank_report.html:29
 #: hr/templates/report_templates/employee_payment_detail.html:33
+#: hr/templates/report_templates/nakakosh.html:30
 #: hr/templates/report_templates/nalakosh_bima_katti.html:42
 #: hr/templates/report_templates/payment_detail_report.html:31
 #: hr/templates/report_templates/pf_deduction.html:124
@@ -1688,6 +1709,7 @@ msgstr "लेख प्रमुखको दस्तखत"
 
 #: hr/templates/report_templates/bank_report.html:33
 #: hr/templates/report_templates/employee_payment_detail.html:37
+#: hr/templates/report_templates/nakakosh.html:34
 #: hr/templates/report_templates/nalakosh_bima_katti.html:46
 #: hr/templates/report_templates/payment_detail_report.html:35
 #: hr/templates/report_templates/pf_deduction.html:128
@@ -1715,6 +1737,25 @@ msgstr "सदर गर्नेको दस्तखत"
 msgid "Office"
 msgstr "कार्यालय"
 
+#. Translators: nalakosh template body message
+#. Translators: nalakosh bima template body message
+#: hr/templates/report_templates/nakakosh.html:15
+#: hr/templates/report_templates/nalakosh_bima_katti.html:27
+msgid "Dear Citizen Investment Fund"
+msgstr "श्री नागरिक लगानी कोष"
+
+#: hr/templates/report_templates/nakakosh.html:16
+#: hr/templates/report_templates/nalakosh_bima_katti.html:28
+msgid "New Baneswor, Kathmandu"
+msgstr "नया बानेश्वोर, काठमाडौँ"
+
+#: hr/templates/report_templates/nakakosh.html:17
+msgid "This is nalakosh template english body message"
+msgstr ""
+"यस कार्यालयका निम्न कर्मचारीहरुको नागरिक लगानी कोष बापत रकम कट्टी गरि फात्बारी "
+"र भौचर समाबेस गरि आबस्यक कार्यथको लागि पठाएको वेहोरा आनुरोध छ। बीमा परिचय पत्र न. "
+"प्राप्त हुन नसकेका कर्मचारीहरुको नंबर साबिक कार्यालयबाट भीडन गरी पठाईदिनहुन आनुरोध छ। "
+
 #: hr/templates/report_templates/nalakosh_bima_katti.html:19
 #: hr/templates/report_templates/pf_deduction.html:30
 #: hr/templates/report_templates/sanchayakosh_katti.html:29
@@ -1735,15 +1776,6 @@ msgstr "जम्मा गरिएको ठेगाना"
 #: hr/templates/report_templates/pf_deduction.html:36
 msgid "Diposited Date"
 msgstr "जम्मा गरिएको मिति"
-
-#. Translators: nalakosh bima template body message
-#: hr/templates/report_templates/nalakosh_bima_katti.html:27
-msgid "Dear Citizen Investment Fund"
-msgstr "श्री नागरिक लगानी कोष"
-
-#: hr/templates/report_templates/nalakosh_bima_katti.html:28
-msgid "New Baneswor, Kathmandu"
-msgstr "नया बानेश्वोर, काठमाडौँ"
 
 #: hr/templates/report_templates/nalakosh_bima_katti.html:29
 msgid "This is nalakosh bima template english body message"
@@ -1860,7 +1892,7 @@ msgid ""
 "ko bank voucher than 2 yasaisath sanlagna rakhi pathaieko behora anurodh cha."
 msgstr "को बैंक भौचर् थान २ यसैसाथ संलग्न राखी पठाईएको बेहोरा  आनुरोध छ ।"
 
-#: hr/views.py:1620 ils/templates/view_record.html.py:189
+#: hr/views.py:1634 ils/templates/view_record.html.py:189
 #: inventory/templates/entry_report.html:77
 #: inventory/templates/inventory/itemlocation_detail.html:28
 #: inventory/templates/inventory/itemlocation_detail.html:36
@@ -2292,7 +2324,7 @@ msgstr "निर्धारित मूल्य"
 msgid "Day(s)"
 msgstr "दिन(हरू)"
 
-#: inventory/models.py:193 templates/hr_report_base.html.py:101
+#: inventory/models.py:193 templates/hr_report_base.html.py:102
 msgid "Month(s)"
 msgstr "महिना(हरू)"
 
@@ -2972,7 +3004,7 @@ msgid "Price"
 msgstr "मूल्य"
 
 #: inventory/templates/depreciation_report.html:43
-#: templates/hr_report_base.html:102
+#: templates/hr_report_base.html:103
 msgid "Time"
 msgstr "समय"
 
@@ -4348,15 +4380,11 @@ msgstr "दर्ता गर्नु"
 msgid "Project Accounts"
 msgstr "खाताहरु"
 
-#: templates/hr_report_base.html:89
-msgid "Ministry of Home Affairs"
-msgstr ""
-
-#: templates/hr_report_base.html:99
+#: templates/hr_report_base.html:100
 msgid "Table Name"
 msgstr "तालिकाको नाम"
 
-#: templates/hr_report_base.html:101 training/templates/print_training.html:33
+#: templates/hr_report_base.html:102 training/templates/print_training.html:33
 #: training/templates/training_report.html:34
 msgid "To"
 msgstr "देखि"

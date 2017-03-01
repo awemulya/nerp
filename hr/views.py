@@ -1573,6 +1573,7 @@ def get_report(request):
             # import ipdb
             # ipdb.set_trace()
             context = {
+                'organization_title': PayrollConfig.get_solo().organization_title.split(','),
                 'report_title': report.name,
                 'branch': branch,
                 'from_date': from_date,

@@ -350,6 +350,7 @@ class Employee(models.Model):
     budget_code = models.CharField(max_length=100)
     pf_id_number = models.PositiveIntegerField(blank=True, null=True)
     insurance_id_number = models.PositiveIntegerField(blank=True, null=True)
+    citizen_investment_id_number = models.PositiveIntegerField(blank=True, null=True)
     # working_branch = models.CharField(max_length=100)
     # Employee ko section or branch coz he can be in another branch and paid from central
     sex_choice = [('M', _('Male')), ('F', _('Female'))]
@@ -1033,6 +1034,13 @@ class PayrollConfig(SingletonModel):
     )
     parent_can_generate_payroll = models.BooleanField(default=False)
     # TODO below can only be changed when hr has no entries in datefield model
+
+    organization_title = models.CharField(
+        max_length=500,
+        null=True,
+        blank=True
+    )
+
     hr_calendar = models.CharField(max_length=2, choices=calendar_choices, default='BS')
     pay_head_account_category = TreeOneToOneField(Category, related_name='config_pay_head', null=True, blank=True)
     deduction_account_category = TreeOneToOneField(Category, related_name='config_deduction', null=True, blank=True)
