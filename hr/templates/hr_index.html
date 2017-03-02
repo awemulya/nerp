@@ -13,104 +13,114 @@
 
 {% block content %}
     <div class="well">
-        <div class="link-group">
-            <h3>{% trans 'Payroll' %}</h3>
 
-            <div>
-                <a href="{% url 'payroll_entry' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Generate Payroll" %}</strong></h5></a>
+        <div class="listing-box">
+            <p class="text-center">Heading</p>
+            <ul class="list-unstyled">
+                <li class="text-center">Apple</li>
+                <li class="text-center">ball</li>
+                <li class="text-center">cat</li>
+                <li class="text-center">Apple</li>
+                <li class="text-center">ball</li>
+                <li class="text-center">cat</li>
+                <li class="text-center">Apple</li>
+                <li class="text-center">ball</li>
+                <li class="text-center">cat</li>
+            </ul>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                <div class="listing-box">
+                    <p class="text-center">{% trans 'Payroll' %}</p>
+                    <ul class="list-unstyled">
+                        <li class="text-center">
+                            <a href="{% url 'payroll_entry' %}">{% trans "Generate Payroll" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'entry_list' %}">{% trans "Payroll Entry List" %}</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div>
-                <a href="{% url 'entry_list' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Payroll Entry List" %}</strong></h5></a>
+            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                <div class="listing-box">
+                    <p class="text-center">{% trans 'Employee' %}</p>
+                    <ul class="list-unstyled">
+                        <li class="text-center">
+                            <a href="{% url 'employee_grade_group' %}">{% trans "Employee Grade Group" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'employee_grade' %}">{% trans "Employee Grade" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'employee_designation' %}">{% trans "Designation Entry" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'add_employee' %}">{% trans "Employee Add" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'list_employee' %}">{% trans "Employee List" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'grade-scale-entry' %}">{% trans "Grade Scale Entry" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="#">{% trans "Import Existing Employee" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'facility_curd' %}">{% trans "Add Employee Facility" %}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                <div class="listing-box">
+                    <p class="text-center">{% trans 'Allowances/ Incentives and Deductions' %}</p>
+                    <ul class="list-unstyled">
+                        <li class="text-center">
+                            <a href="{% url 'add_allowance' %}">{% trans "Allowance Add" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'incentivename_curd' %}">{% trans "Incentive Name Entry" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'deduction_name' %}">{% trans "Deduction Name Entry" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'deduction' %}">{% trans "Deduction Detail Entry" %}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                <div class="listing-box">
+                    <p class="text-center">{% trans 'Allowances/ Incentives and Deductions' %}</p>
+                    <ul class="list-unstyled">
+                        <li class="text-center">
+                            <a href="{% url 'taxdeduction_list' %}">{% trans "Tax Deduction List" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'list_tax_scheme' %}">{% trans "Tax Scheme List" %}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                <div class="listing-box">
+                    <p class="text-center">{% trans 'Report' %}</p>
+                    <ul class="list-unstyled">
+                        <li class="text-center">
+                            <a href="{% url 'get_report' %}">{% trans "Generate" %} {% trans "Report" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'list_report_setting' %}">{% trans "Report" %} {% trans "Settings" %} {% trans "List" %}</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-        <div class="link-group">
-            <h3>{% trans 'Employee' %}</h3>
-            <div>
-                <a href="{% url 'employee_grade_group' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Employee Grade Group" %}</strong></h5></a>
-            </div>
-            <div>
-                <a href="{% url 'employee_grade' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Employee Grade" %}</strong></h5></a>
-            </div>
-            <div>
-                <a href="{% url 'employee_designation' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Designation Entry" %}</strong></h5></a>
-            </div>
-            <div>
-                <a href="{% url 'add_employee' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Employee Add" %}</strong></h5></a>
-            </div>
-            <div>
-                <a href="{% url 'list_employee' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Employee List" %}</strong></h5></a>
-            </div>
-            <div>
-                <a href="{% url 'grade-scale-entry' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Grade Scale Entry" %}</strong></h5></a>
-            </div>
 
-            <div>
-                <a href="#">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Import Existing Employee" %}</strong></h5></a>
-            </div>
-
-            <div>
-                <a href="{% url 'facility_curd' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Add Employee Facility" %}</strong></h5></a>
-            </div>
-
-        </div>
-        <div class="link-group">
-            <h3>{% trans 'Allowances/ Incentives and Deductions' %}</h3>
-
-            <div>
-                <a href="{% url 'add_allowance' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Allowance Add" %}</strong></h5></a>
-            </div>
-
-            <div>
-                <a href="{% url 'incentivename_curd' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Incentive Name Entry" %}</strong></h5></a>
-            </div>
-            <div>
-                <a href="{% url 'deduction_name' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Deduction Name Entry" %}</strong></h5></a>
-            </div>
-            <div>
-                <a href="{% url 'deduction' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Deduction Detail Entry" %}</strong></h5></a>
-            </div>
-        </div>
-        <div class="link-group">
-            <h3>{% trans 'Tax' %}</h3>
-            <div>
-                <a href="{% url 'taxdeduction_list' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Tax Deduction List" %}</strong></h5></a>
-            </div>
-            <div>
-                <a href="{% url 'list_tax_scheme' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Tax Scheme List" %}</strong></h5></a>
-            </div>
-        </div>
 
         <div class="link-group">
             <h3>{% trans 'Report' %}</h3>
