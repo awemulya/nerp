@@ -11,26 +11,11 @@
 
 {% endblock %}
 
+
 {% block content %}
     <div class="well">
-
-        <div class="listing-box">
-            <p class="text-center">Heading</p>
-            <ul class="list-unstyled">
-                <li class="text-center">Apple</li>
-                <li class="text-center">ball</li>
-                <li class="text-center">cat</li>
-                <li class="text-center">Apple</li>
-                <li class="text-center">ball</li>
-                <li class="text-center">cat</li>
-                <li class="text-center">Apple</li>
-                <li class="text-center">ball</li>
-                <li class="text-center">cat</li>
-            </ul>
-        </div>
-
         <div class="row">
-            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                 <div class="listing-box">
                     <p class="text-center">{% trans 'Payroll' %}</p>
                     <ul class="list-unstyled">
@@ -43,7 +28,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                 <div class="listing-box">
                     <p class="text-center">{% trans 'Employee' %}</p>
                     <ul class="list-unstyled">
@@ -74,7 +59,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                 <div class="listing-box">
                     <p class="text-center">{% trans 'Allowances/ Incentives and Deductions' %}</p>
                     <ul class="list-unstyled">
@@ -93,9 +78,9 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                 <div class="listing-box">
-                    <p class="text-center">{% trans 'Allowances/ Incentives and Deductions' %}</p>
+                    <p class="text-center">{% trans 'Tax' %}</p>
                     <ul class="list-unstyled">
                         <li class="text-center">
                             <a href="{% url 'taxdeduction_list' %}">{% trans "Tax Deduction List" %}</a>
@@ -106,7 +91,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                 <div class="listing-box">
                     <p class="text-center">{% trans 'Report' %}</p>
                     <ul class="list-unstyled">
@@ -119,67 +104,29 @@
                     </ul>
                 </div>
             </div>
-        </div>
-
-
-        <div class="link-group">
-            <h3>{% trans 'Report' %}</h3>
-
-            <div>
-                <a href="{% url 'get_report' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Generate" %} {% trans "Report" %}</strong></h5></a>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="listing-box">
+                    <p class="text-center">{% trans 'Branch' %} {% trans 'and' %} {% trans 'Accountant' %}</p>
+                    <ul class="list-unstyled">
+                        <li class="text-center">
+                            <a href="{% url 'branch_list' %}">{% trans "List" %} {% trans "Branch" %}</a>
+                        </li>
+                        <li class="text-center">
+                            <a href="{% url 'payroll_accountant_list' %}">{% trans "List" %} {% trans "Payroll" %} {% trans 'Accountant' %}</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div>
-                <a href="{% url 'list_report_setting' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Report" %} {% trans "Settings" %} {% trans "List" %}</strong></h5></a>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="listing-box">
+                    <p class="text-center">{% trans 'Pro Tempore' %}</p>
+                    <ul class="list-unstyled">
+                        <li class="text-center">
+                            <a href="{% url 'protempore_list' %}">{% trans "Pro Tempore" %} {% trans "List" %}</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        <div class="link-group">
-            <h3>{% trans 'Branch' %} {% trans 'and' %} {% trans 'Accountant' %}</h3>
-
-            <div>
-                <a href="{% url 'branch_add' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Add" %} {% trans "Branch" %}</strong></h5></a>
-            </div>
-            <div>
-                <a href="{% url 'branch_list' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "List" %} {% trans "Branch" %}</strong></h5></a>
-            </div>
-            <div>
-                <a href="{% url 'payroll_accountant_add' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Add" %} {% trans "Payroll" %} {% trans 'Accountant' %}</strong></h5></a>
-            </div>
-            <div>
-                <a href="{% url 'payroll_accountant_list' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "List" %} {% trans "Payroll" %} {% trans 'Accountant' %}</strong></h5></a>
-            </div>
-        </div>
-
-        <div class="link-group">
-            <h3>{% trans 'Pro Tempore' %}</h3>
-
-            <div>
-                <a href="{% url 'protempore_list' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Pro Tempore" %} {% trans "List" %}</strong></h5></a>
-            </div>
-
-        </div>
-        <div class="link-group">
-            <h3>{% trans 'Payroll' %} {% trans 'Configuration' %}</h3>
-
-            <div>
-                <a href="{% url 'payroll_config' %}">
-                    <img src="{% static 'img/icons/training.png' %}"><br>
-                    <h5><strong>{% trans "Payroll" %} {% trans "Configuration" %}</strong></h5></a>
-            </div>
-
         </div>
     </div>
 {% endblock %}

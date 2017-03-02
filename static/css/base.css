@@ -579,8 +579,8 @@ tr.total, tr.category, tr.subtotal {
 
 }
 .listing-box ul{
-    height: 200px;
-    overflow: scroll;
+    /*height: 200px;*/
+    /*overflow: scroll;*/
 }
 
 .listing-box ul > li {
@@ -592,5 +592,5 @@ tr.total, tr.category, tr.subtotal {
 }
 
 .listing-box ul > li:nth-child(even) {
-    background-color: lightgray;
+    /*background-color: lightgray;*/
 }
